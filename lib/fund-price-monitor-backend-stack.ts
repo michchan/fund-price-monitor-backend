@@ -1,12 +1,12 @@
 import * as cdk from '@aws-cdk/core';
-import cron from './cron';
+import { CronStack } from './cron';
 
 
 export class FundPriceMonitorBackendStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+    constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+        super(scope, id, props);
 
-    // Initialize cron jobs
-    cron.init(this);
-  }
+        // Initialize cron jobs
+        new CronStack(this);
+    }
 }
