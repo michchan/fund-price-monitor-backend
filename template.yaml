@@ -1,5 +1,5 @@
 Resources:
-  scrapeManulifeMPFPerformanceServiceRoleECD05979:
+  ScraperRole1944D0E8:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -7,22 +7,22 @@ Resources:
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
-              Service: lambda.amazonaws.com
+              Service: dynamodb.amazonaws.com
         Version: "2012-10-17"
       ManagedPolicyArns:
         - Fn::Join:
             - ""
             - - "arn:"
               - Ref: AWS::Partition
-              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+              - :iam::aws:policy/AmazonDynamoDBFullAccess
     Metadata:
-      aws:cdk:path: FundPriceMonitorBackendStack/scrapeManulifeMPFPerformance/ServiceRole/Resource
+      aws:cdk:path: FundPriceMonitorBackendStack/ScraperRole/Resource
   scrapeManulifeMPFPerformance9F5A8B56:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3Bucket4C5C9898
+          Ref: AssetParameters07b17d36a5b8c16f69a68faf34d2841010de30ebc0cdf6d1759bc388814e43a8S3Bucket06131B1A
         S3Key:
           Fn::Join:
             - ""
@@ -30,22 +30,22 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3VersionKey13000851
+                      - Ref: AssetParameters07b17d36a5b8c16f69a68faf34d2841010de30ebc0cdf6d1759bc388814e43a8S3VersionKey5CC93CD8
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3VersionKey13000851
+                      - Ref: AssetParameters07b17d36a5b8c16f69a68faf34d2841010de30ebc0cdf6d1759bc388814e43a8S3VersionKey5CC93CD8
       Handler: scrapeManulifeMPFPerformance.handler
       Role:
         Fn::GetAtt:
-          - scrapeManulifeMPFPerformanceServiceRoleECD05979
+          - ScraperRole1944D0E8
           - Arn
       Runtime: nodejs12.x
       MemorySize: 600
       Timeout: 300
     DependsOn:
-      - scrapeManulifeMPFPerformanceServiceRoleECD05979
+      - ScraperRole1944D0E8
     Metadata:
       aws:cdk:path: FundPriceMonitorBackendStack/scrapeManulifeMPFPerformance/Resource
       aws:asset:path: /Users/michaelchan/SANDBOX/michchan/fund-price-monitor-backend/bundles/cron/handlers
@@ -56,15 +56,15 @@ Resources:
       Modules: aws-cdk=1.59.0,@aws-cdk/assets=1.59.0,@aws-cdk/aws-applicationautoscaling=1.59.0,@aws-cdk/aws-autoscaling-common=1.59.0,@aws-cdk/aws-cloudwatch=1.59.0,@aws-cdk/aws-codeguruprofiler=1.59.0,@aws-cdk/aws-ec2=1.59.0,@aws-cdk/aws-events=1.59.0,@aws-cdk/aws-iam=1.59.0,@aws-cdk/aws-kms=1.59.0,@aws-cdk/aws-lambda=1.59.0,@aws-cdk/aws-logs=1.59.0,@aws-cdk/aws-s3=1.59.0,@aws-cdk/aws-s3-assets=1.59.0,@aws-cdk/aws-sqs=1.59.0,@aws-cdk/aws-ssm=1.59.0,@aws-cdk/cloud-assembly-schema=1.59.0,@aws-cdk/core=1.59.0,@aws-cdk/cx-api=1.59.0,@aws-cdk/region-info=1.59.0,jsii-runtime=node.js/v10.16.2
     Condition: CDKMetadataAvailable
 Parameters:
-  AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3Bucket4C5C9898:
+  AssetParameters07b17d36a5b8c16f69a68faf34d2841010de30ebc0cdf6d1759bc388814e43a8S3Bucket06131B1A:
     Type: String
-    Description: S3 bucket for asset "818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3"
-  AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3VersionKey13000851:
+    Description: S3 bucket for asset "07b17d36a5b8c16f69a68faf34d2841010de30ebc0cdf6d1759bc388814e43a8"
+  AssetParameters07b17d36a5b8c16f69a68faf34d2841010de30ebc0cdf6d1759bc388814e43a8S3VersionKey5CC93CD8:
     Type: String
-    Description: S3 key for asset version "818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3"
-  AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3ArtifactHash231B811A:
+    Description: S3 key for asset version "07b17d36a5b8c16f69a68faf34d2841010de30ebc0cdf6d1759bc388814e43a8"
+  AssetParameters07b17d36a5b8c16f69a68faf34d2841010de30ebc0cdf6d1759bc388814e43a8ArtifactHash493B9CAA:
     Type: String
-    Description: Artifact hash for asset "818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3"
+    Description: Artifact hash for asset "07b17d36a5b8c16f69a68faf34d2841010de30ebc0cdf6d1759bc388814e43a8"
 Conditions:
   CDKMetadataAvailable:
     Fn::Or:

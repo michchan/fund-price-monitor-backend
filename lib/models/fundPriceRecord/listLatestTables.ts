@@ -3,6 +3,7 @@ import { DynamoDB } from 'aws-sdk';
 import AWS from 'lib/AWS'
 import getCurrentQuarter, { Quarter } from 'lib/helpers/getCurrentQuarter';
 import getTableName from './getTableName'
+import { PROJECT_NAMESPACE } from 'lib/constants';
 
 
 // Initialize
@@ -36,7 +37,10 @@ const listLatestTables = (
         if (err) {
             reject(new Error(`Unable to list tables. Error JSON: ${err}`));
         } else {
-            resolve(data.TableNames);
+            resolve((data.TableNames ?? []).filter(name => {
+                // Filter out non project-scope tables
+                return new RegExp(`^${PROJECT_NAMESPACE}`, 'i').test(name)
+            }));
         }
     })
 })
