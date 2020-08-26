@@ -9,9 +9,9 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "local": "npm run build && cdk synth --no-staging > template.yaml",
-    "invoke": "npm run local && sam local invoke",
-    "deploy": "cdk deploy --profile root-programmatic-admin FundPriceMonitorBackendStack",
+    "template": "npm run build && cdk synth --no-staging > template.yaml",
+    "invoke": "npm run template && sam local invoke",
+    "deploy": "npm run build && cdk deploy --profile root-programmatic-admin FundPriceMonitorBackendStack",
     "pushDeploy": "git push && npm run deploy"
   },
   "devDependencies": {
