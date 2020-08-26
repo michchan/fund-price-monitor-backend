@@ -5,6 +5,7 @@ import { FundPriceRecord, CompanyType, FundType } from "../../models/fundPriceRe
 import { scrapeFromLink } from "../helpers/scrapeFromLink";
 import fundPriceRecord from "lib/models/fundPriceRecord";
 import isTableOfCurrentQuarter from "lib/models/fundPriceRecord/isTableOfCurrentQuarter";
+import getCurrentQuarter from "lib/helpers/getCurrentQuarter";
 
 
 const PRICE_LIST_PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
@@ -13,14 +14,12 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
     try {
         // Scrape records from the site
         const records = await scrapeFromLink(PRICE_LIST_PAGE_URL, getDataFromHTML)
-        console.log({ records })
         // List tables upon the current quarter
         const tableNames = await fundPriceRecord.listLatestTables();
-        console.log({ tableNames })
         // Check if table of the current quarter exists
         if (!tableNames.some(isTableOfCurrentQuarter)) {
-            console.log('Current quarter\'s table not exist!')
             // Create one if it doesn't exist
+            await fundPriceRecord.createTable(new Date().getFullYear(), getCurrentQuarter())
         }
         // Write bulk data to the table
         
