@@ -36,7 +36,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
             // Defined fundType
             const fundType: FundType = 'mpf'
             // Get code
-            const code = dataCells[0].innerText.trim()
+            const code = dataCells[0].innerText.trim().replace(/\s|\_/g, '')
 
             return {
                 company,
