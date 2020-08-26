@@ -19,30 +19,53 @@ export type TableRange = {
 export type Result = DynamoDB.TableNameList
 
 /**
- * Return a list of properties of tables that have been created and match the criteria
+ * List table recursively
  */
-const listLatestTables = (
-    /** Default to current quarter of the current year */
-    from?: TableRange,
-    limit?: DynamoDB.ListTablesInput['Limit']
+const listTablesRecur = (
+    accTableNames: DynamoDB.TableNameList,
+    ExclusiveStartTableName: string,
+    Limit?: DynamoDB.ListTablesInput['Limit'],
 ): Promise<Result> => new Promise((resolve, reject) => {
-    // Normalize params
-    const _from = from || { year: new Date().getFullYear(), quarter: getCurrentQuarter() };
-
-    // Send list tables request
     dynamodb.listTables({
-        // Offset a quarter before the `from.quarter` to make it inclusive
-        ExclusiveStartTableName: getTableName(_from.year, _from.quarter, -1),
-        Limit: limit
-    }, (err, data) => {
+        ExclusiveStartTableName,
+        Limit,
+    }, async (err, data) => {
         if (err) {
             reject(new Error(`Unable to list tables. Error JSON: ${err}`));
         } else {
-            resolve((data.TableNames ?? []).filter(name => {
-                // Filter out non project-scope tables
-                return new RegExp(`^${PROJECT_NAMESPACE}`).test(name)
-            }));
+            const { TableNames = [], LastEvaluatedTableName } = data
+            const mergedTableNames = [...accTableNames, ...TableNames]
+
+            if (LastEvaluatedTableName) {
+                // recur next
+                resolve(await listTablesRecur(
+                    mergedTableNames,
+                    ExclusiveStartTableName,
+                    Limit,
+                ))
+            } else {
+                // End recur
+                resolve(mergedTableNames);
+            }
         }
     })
 })
+
+/**
+ * Return a list of properties of tables that have been created and match the criteria
+ */
+const listLatestTables = async (
+    /** Default to current quarter of the current year */
+    from?: TableRange,
+    limit?: DynamoDB.ListTablesInput['Limit']
+): Promise<Result> => {
+    // Normalize params
+    const _from = from || { year: new Date().getFullYear(), quarter: getCurrentQuarter() };
+    // Offset a quarter before the `from.quarter` to make it inclusive
+    const exclusiveStartTableName = getTableName(_from.year, _from.quarter, -1)
+    // Send list tables request
+    const results = await listTablesRecur([], exclusiveStartTableName, limit)
+    // Filter out non project-scope tables
+    return results.filter(name => new RegExp(`^${PROJECT_NAMESPACE}`).test(name))
+}
 export default listLatestTables
