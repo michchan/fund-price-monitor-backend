@@ -40,7 +40,6 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
         { AttributeName: attributeNames.COMPANY_CODE, AttributeType: 'S' },
         { AttributeName: attributeNames.TIME_SK, AttributeType: 'S' },
         { AttributeName: attributeNames.RISK_LEVEL, AttributeType: 'S' },
-        { AttributeName: attributeNames.NAME, AttributeType: 'S' },
         { AttributeName: attributeNames.WEEK, AttributeType: 'S' },
         { AttributeName: attributeNames.MONTH, AttributeType: 'S' },
         { AttributeName: attributeNames.QUARTER, AttributeType: 'S' },
