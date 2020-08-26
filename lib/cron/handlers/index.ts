@@ -46,11 +46,9 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
             await fundPriceRecord.createTable(year, quarter)
         }
         // Wait for the table to be active
-        dynamodb.waitFor('tableExists', { TableName }, err => {
-            if (err) throw err;
-            // Write batch data to the table
-            fundPriceRecord.batchCreateItems(records, TableName)
-        })
+        await dynamodb.waitFor('tableExists', { TableName }).promise();
+        // Write batch data to the table
+        await fundPriceRecord.batchCreateItems(records, TableName);
     } catch (error) {
         callback(error)
     }

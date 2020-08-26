@@ -23,22 +23,16 @@ const batchCreateItems = (
     const chunks = chunk(records, 25)
     // Send batch requests for each chunk
     return Promise.all(
-        chunks.map((chunkedRecords, index): Promise<ChunkResult> => new Promise((resolve, reject) => {
+        chunks.map((chunkedRecords, index): Promise<ChunkResult> => {
             // Send batch create requests
-            docClient.batchWrite({
+            return docClient.batchWrite({
                 RequestItems: {
                     [tableName]: chunkedRecords.map(rec => ({
                         PutRequest: serialize(rec)
                     }))
                 }
-            }, (err, data) => {
-                if (err) {
-                    reject(new Error(`Unable to batch create items (index: ${index}). Error JSON: ${err}`));
-                } else {
-                    resolve(data);
-                }
-            })
-        })) 
+            }).promise()
+        }) 
     )
 }
 export default batchCreateItems

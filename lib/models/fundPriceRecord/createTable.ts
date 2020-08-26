@@ -95,16 +95,10 @@ const createTable = (
     /** In YYYY format */
     year: string | number,
     quarter: Quarter,
-): Promise<Result> => new Promise((resolve, reject) => {
+): Promise<Result> => {
     // Get based table name
     const tableName = getTableName(year, quarter)
     // Send create table request
-    dynamodb.createTable(getTableParams(tableName), (err, data) => {
-        if (err) {
-            reject(new Error(`Unable to create table. Error JSON: ${err}`));
-        } else {
-            resolve(data);
-        }
-    })
-})
+    return dynamodb.createTable(getTableParams(tableName)).promise()
+}
 export default createTable
