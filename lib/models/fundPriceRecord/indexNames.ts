@@ -5,6 +5,5 @@ const indexNames = {
     MONTH_PRICE_CHANGE_RATE: 'MonthPriceChangeRate',
     QUARTER_PRICE_CHANGE_RATE: 'QuarterPriceChangeRate',
     RECORDS_BY_RISK_LEVEL: 'RecordsByRiskLevel',
-    RECORDS_BY_NAME: 'RecordsByName',
 } as const
 export default indexNames

@@ -34,11 +34,11 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
     TableName: tableName,
     KeySchema: [
         { AttributeName: attributeNames.COMPANY_CODE, KeyType: 'HASH' },
-        { AttributeName: attributeNames.TIME, KeyType: 'RANGE' },
+        { AttributeName: attributeNames.TIME_SK, KeyType: 'RANGE' },
     ],
     AttributeDefinitions: [
         { AttributeName: attributeNames.COMPANY_CODE, AttributeType: 'S' },
-        { AttributeName: attributeNames.TIME, AttributeType: 'S' },
+        { AttributeName: attributeNames.TIME_SK, AttributeType: 'S' },
         { AttributeName: attributeNames.RISK_LEVEL, AttributeType: 'S' },
         { AttributeName: attributeNames.NAME, AttributeType: 'S' },
         { AttributeName: attributeNames.WEEK, AttributeType: 'S' },
@@ -78,12 +78,6 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
             IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
             KeySchema: [
                 { AttributeName: attributeNames.RISK_LEVEL, KeyType: 'HASH' },
-            ],
-        }),
-        createCommonGSI({
-            IndexName: indexNames.RECORDS_BY_NAME,
-            KeySchema: [
-                { AttributeName: attributeNames.NAME, KeyType: 'HASH' },
             ],
         }),
     ]

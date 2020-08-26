@@ -1,8 +1,10 @@
 
 
 const attributeNames = {
+    // Based table partition key
     COMPANY_CODE: 'company_code',
-    TIME: 'time',
+    // Based table sort key
+    TIME_SK: 'timeSK',
     NAME: 'name',
     RISK_LEVEL: 'riskLevel',
     PRICE: 'price',
