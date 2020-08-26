@@ -13,3 +13,6 @@ cdk.out
 
 # Ignore sample data
 __*__sample.json
+
+# Ignore template.yaml
+template.yaml
