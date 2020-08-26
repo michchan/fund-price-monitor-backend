@@ -91,13 +91,13 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
             KeySchema: [
                 { AttributeName: attributeNames.COMPANY, KeyType: 'HASH' },
             ],
-        }, [attributeNames.PRICE]),
+        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
         createInclusiveCSI({
             IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
             KeySchema: [
                 { AttributeName: attributeNames.RISK_LEVEL, KeyType: 'HASH' },
             ],
-        }, [attributeNames.PRICE]),
+        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
     ]
 })
 
