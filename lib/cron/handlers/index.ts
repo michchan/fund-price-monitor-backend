@@ -7,7 +7,11 @@ import isTableOfCurrentQuarter from "lib/models/fundPriceRecord/isTableOfCurrent
 import scrapeFromManulifeMPF from "./scrapers/scrapeFromManulifeMPF";
 import getCurrentQuarter from "lib/helpers/getCurrentQuarter";
 import getTableName from "lib/models/fundPriceRecord/getTableName";
+import AWS from 'lib/AWS'
 
+
+// Initialize
+const dynamodb = new AWS.DynamoDB();
 
 // Create list of scrapers
 const scrapers: (() => Promise<FundPriceRecord[]>)[] = [
@@ -32,6 +36,8 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         // Get current year
         const year = new Date().getFullYear()
         const quarter = getCurrentQuarter()
+        const TableName = getTableName(year, quarter)
+
         // List tables upon the current quarter
         const tableNames = await fundPriceRecord.listLatestTables();
         // Check if table of the current quarter exists
@@ -40,7 +46,10 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
             await fundPriceRecord.createTable(year, quarter)
         }
         // Write batch data to the table
-        await fundPriceRecord.batchCreateItems(records, getTableName(year, quarter))
+        dynamodb.waitFor('tableExists', { TableName }, (err, data) => {
+            if (err) throw err
+            fundPriceRecord.batchCreateItems(records, TableName)
+        })
     } catch (error) {
         callback(error)
     }
