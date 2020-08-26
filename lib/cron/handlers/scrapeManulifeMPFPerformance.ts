@@ -14,10 +14,13 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
     try {
         // Scrape records from the site
         const records = await scrapeFromLink(PRICE_LIST_PAGE_URL, getDataFromHTML)
+        console.log({ records })
         // List tables upon the current quarter
         const tableNames = await fundPriceRecord.listLatestTables();
+        console.log({ tableNames })
         // Check if table of the current quarter exists
         if (!tableNames.some(isTableOfCurrentQuarter)) {
+            console.log('Current quarter\'s table not exist!')
             // Create one if it doesn't exist
             await fundPriceRecord.createTable(new Date().getFullYear(), getCurrentQuarter())
         }
