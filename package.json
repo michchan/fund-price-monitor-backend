@@ -18,6 +18,7 @@
     "@aws-cdk/assert": "1.59.0",
     "@types/aws-lambda": "^8.10.61",
     "@types/jest": "^26.0.4",
+    "@types/lodash": "^4.14.160",
     "@types/node": "10.17.27",
     "@types/puppeteer": "^3.0.1",
     "@types/superagent": "^4.1.9",
@@ -40,6 +41,7 @@
     "@aws-cdk/core": "1.59.0",
     "aws-sdk": "2.739.0",
     "chrome-aws-lambda": "^5.2.1",
+    "lodash": "^4.17.20",
     "puppeteer": "^5.2.1",
     "puppeteer-core": "^5.2.1",
     "source-map-support": "^0.5.16"

@@ -5,6 +5,11 @@ const attributeNames = {
     TIME: 'time',
     NAME: 'name',
     RISK_LEVEL: 'riskLevel',
+    PRICE: 'price',
+    UPDATED_DATE: 'updatedDate',
+    LAUNCHED_DATE: 'launchedDate',
+    INITIAL_PRICE: 'initialPrice',
+    FUND_TYPE: 'fundType',
     /** Top-level fields (aggregate items) */
     WEEK: 'week',
     MONTH: 'month',

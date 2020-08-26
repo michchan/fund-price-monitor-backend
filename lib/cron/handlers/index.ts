@@ -6,6 +6,7 @@ import fundPriceRecord from "lib/models/fundPriceRecord";
 import isTableOfCurrentQuarter from "lib/models/fundPriceRecord/isTableOfCurrentQuarter";
 import scrapeFromManulifeMPF from "./scrapers/scrapeFromManulifeMPF";
 import getCurrentQuarter from "lib/helpers/getCurrentQuarter";
+import getTableName from "lib/models/fundPriceRecord/getTableName";
 
 
 // Create list of scrapers
@@ -17,19 +18,21 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
     try {
         // Scrape records from the site
         const results = await Promise.all(scrapers.map(scrape => scrape()))
+        // Merge records
         const records = results.reduce((acc, curr) => [...acc, ...curr], [])
-        console.log({ records })
+        
+        // Get current year
+        const year = new Date().getFullYear()
+        const quarter = getCurrentQuarter()
         // List tables upon the current quarter
         const tableNames = await fundPriceRecord.listLatestTables();
-        console.log({ tableNames })
         // Check if table of the current quarter exists
         if (!tableNames.some(isTableOfCurrentQuarter)) {
-            console.log('Current quarter\'s table not exist! Creating one...')
             // Create one if it doesn't exist
-            await fundPriceRecord.createTable(new Date().getFullYear(), getCurrentQuarter())
+            await fundPriceRecord.createTable(year, quarter)
         }
-        // Write bulk data to the table
-        
+        // Write batch data to the table
+        await fundPriceRecord.batchCreateItems(records, getTableName(year, quarter))
     } catch (error) {
         callback(error)
     }
