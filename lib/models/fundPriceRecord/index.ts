@@ -2,6 +2,7 @@ import getTableName from "./getTableName"
 import getCurrentQuarter from "lib/helpers/getCurrentQuarter"
 import createTable from "./createTable"
 import listLatestTables from "./listLatestTables"
+import isTableOfCurrentQuarter from "./isTableOfCurrentQuarter"
 
 
 const fundPriceRecord = {
@@ -9,5 +10,6 @@ const fundPriceRecord = {
     getCurrentQuarter,
     createTable,
     listLatestTables,
+    isTableOfCurrentQuarter,
 } as const
 export default fundPriceRecord

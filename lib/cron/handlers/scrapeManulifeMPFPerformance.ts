@@ -4,6 +4,7 @@ import puppeteer = require("puppeteer");
 import { FundPriceRecord, CompanyType, FundType } from "../../models/fundPriceRecord/FundPriceRecord.type";
 import { scrapeFromLink } from "../helpers/scrapeFromLink";
 import fundPriceRecord from "lib/models/fundPriceRecord";
+import isTableOfCurrentQuarter from "lib/models/fundPriceRecord/isTableOfCurrentQuarter";
 
 
 const PRICE_LIST_PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
@@ -13,14 +14,14 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         // Scrape records from the site
         const records = await scrapeFromLink(PRICE_LIST_PAGE_URL, getDataFromHTML)
         console.log({ records })
-        // Get current quarter
-        const quarter = fundPriceRecord.getCurrentQuarter();
-        console.log({ quarter })
-        // Check if table of the current quarter exists
+        // List tables upon the current quarter
         const tableNames = await fundPriceRecord.listLatestTables();
         console.log({ tableNames })
-        // Create one if it doesn't exist
-        
+        // Check if table of the current quarter exists
+        if (!tableNames.some(isTableOfCurrentQuarter)) {
+            console.log('Current quarter\'s table not exist!')
+            // Create one if it doesn't exist
+        }
         // Write bulk data to the table
         
     } catch (error) {

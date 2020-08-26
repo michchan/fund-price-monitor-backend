@@ -40,7 +40,7 @@ const listLatestTables = (
         } else {
             resolve((data.TableNames ?? []).filter(name => {
                 // Filter out non project-scope tables
-                return new RegExp(`^${PROJECT_NAMESPACE}`, 'i').test(name)
+                return new RegExp(`^${PROJECT_NAMESPACE}`).test(name)
             }));
         }
     })
