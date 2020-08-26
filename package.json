@@ -5,10 +5,11 @@
     "fund-price-monitor-backend": "bin/fund-price-monitor-backend.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && ./node_modules/.bin/webpack",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "local": "npm run build && cdk synth --no-staging > template.yaml"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.59.0",

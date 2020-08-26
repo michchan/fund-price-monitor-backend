@@ -1,5 +1,6 @@
 *.js
 !jest.config.js
+!webpack.config.js
 *.d.ts
 node_modules
 
@@ -9,3 +10,6 @@ cdk.out
 
 # Parcel default cache directory
 .parcel-cache
+
+# Ignore sample data
+__*__sample.json
