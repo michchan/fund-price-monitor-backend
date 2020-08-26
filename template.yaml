@@ -1,0 +1,133 @@
+Resources:
+  scrapeManulifeMPFPerformanceServiceRoleECD05979:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: FundPriceMonitorBackendStack/scrapeManulifeMPFPerformance/ServiceRole/Resource
+  scrapeManulifeMPFPerformance9F5A8B56:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3BucketD8E7B051
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3VersionKey828BE48D
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3VersionKey828BE48D
+      Handler: scrapeManulifeMPFPerformance.handler
+      Role:
+        Fn::GetAtt:
+          - scrapeManulifeMPFPerformanceServiceRoleECD05979
+          - Arn
+      Runtime: nodejs12.x
+      MemorySize: 600
+      Timeout: 300
+    DependsOn:
+      - scrapeManulifeMPFPerformanceServiceRoleECD05979
+    Metadata:
+      aws:cdk:path: FundPriceMonitorBackendStack/scrapeManulifeMPFPerformance/Resource
+      aws:asset:path: /Users/michaelchan/SANDBOX/michchan/fund-price-monitor-backend/bundles/cron/handlers
+      aws:asset:property: Code
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Modules: aws-cdk=1.59.0,@aws-cdk/assets=1.59.0,@aws-cdk/aws-applicationautoscaling=1.59.0,@aws-cdk/aws-autoscaling-common=1.59.0,@aws-cdk/aws-cloudwatch=1.59.0,@aws-cdk/aws-codeguruprofiler=1.59.0,@aws-cdk/aws-ec2=1.59.0,@aws-cdk/aws-events=1.59.0,@aws-cdk/aws-iam=1.59.0,@aws-cdk/aws-kms=1.59.0,@aws-cdk/aws-lambda=1.59.0,@aws-cdk/aws-logs=1.59.0,@aws-cdk/aws-s3=1.59.0,@aws-cdk/aws-s3-assets=1.59.0,@aws-cdk/aws-sqs=1.59.0,@aws-cdk/aws-ssm=1.59.0,@aws-cdk/cloud-assembly-schema=1.59.0,@aws-cdk/core=1.59.0,@aws-cdk/cx-api=1.59.0,@aws-cdk/region-info=1.59.0,jsii-runtime=node.js/v10.16.2
+    Condition: CDKMetadataAvailable
+Parameters:
+  AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3BucketD8E7B051:
+    Type: String
+    Description: S3 bucket for asset "e667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53"
+  AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3VersionKey828BE48D:
+    Type: String
+    Description: S3 key for asset version "e667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53"
+  AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53ArtifactHash2F1F0E40:
+    Type: String
+    Description: Artifact hash for asset "e667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53"
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+
