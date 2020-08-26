@@ -1,4 +1,5 @@
 import { DynamoDB } from 'aws-sdk';
+import { NonKeyAttributeNameList } from 'aws-sdk/clients/dynamodb';
 
 import AWS from 'lib/AWS'
 import getTableName from './getTableName';
@@ -11,21 +12,32 @@ import indexNames from './indexNames';
 const dynamodb = new AWS.DynamoDB();
 
 /** Common throughput for GSI */
-const GSI_COMMON_CONFIG: Pick<DynamoDB.GlobalSecondaryIndex, 'Projection' | 'ProvisionedThroughput'> = {
-    Projection: {
-        ProjectionType: 'KEYS_ONLY'
-    },
-    ProvisionedThroughput: {
-        ReadCapacityUnits: 1,
-        WriteCapacityUnits: 1,
-    }
+const GSI_COMMON_THROUGHPUT: DynamoDB.GlobalSecondaryIndex['ProvisionedThroughput'] = {
+    ReadCapacityUnits: 1,
+    WriteCapacityUnits: 1,
 }
 
 /** Helper to create common GSI */
-const createCommonGSI = (
+const createKeysOnlyCSI = (
     config: Pick<DynamoDB.GlobalSecondaryIndex, 'IndexName' | 'KeySchema'>
 ): DynamoDB.GlobalSecondaryIndex => ({
-    ...GSI_COMMON_CONFIG,
+    Projection: {
+        ProjectionType: 'KEYS_ONLY'
+    },
+    ProvisionedThroughput: GSI_COMMON_THROUGHPUT,
+    ...config
+})
+
+/** Helper to create common GSI */
+const createInclusiveCSI = (
+    config: Pick<DynamoDB.GlobalSecondaryIndex, 'IndexName' | 'KeySchema'>,
+    NonKeyAttributes: NonKeyAttributeNameList,
+): DynamoDB.GlobalSecondaryIndex => ({
+    Projection: {
+        ProjectionType: 'INCLUDE',
+        NonKeyAttributes: NonKeyAttributes
+    },
+    ProvisionedThroughput: GSI_COMMON_THROUGHPUT,
     ...config
 })
 
@@ -39,6 +51,7 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
     AttributeDefinitions: [
         { AttributeName: attributeNames.COMPANY_CODE, AttributeType: 'S' },
         { AttributeName: attributeNames.TIME_SK, AttributeType: 'S' },
+        { AttributeName: attributeNames.COMPANY, AttributeType: 'S' },
         { AttributeName: attributeNames.RISK_LEVEL, AttributeType: 'S' },
         { AttributeName: attributeNames.WEEK, AttributeType: 'S' },
         { AttributeName: attributeNames.MONTH, AttributeType: 'S' },
@@ -52,33 +65,39 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
         WriteCapacityUnits: 1,
     },
     GlobalSecondaryIndexes: [
-        createCommonGSI({
+        createKeysOnlyCSI({
             IndexName: indexNames.WEEK_PRICE_CHANGE_RATE,
             KeySchema: [
                 { AttributeName: attributeNames.WEEK, KeyType: 'HASH' },
                 { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
         }),
-        createCommonGSI({
+        createKeysOnlyCSI({
             IndexName: indexNames.MONTH_PRICE_CHANGE_RATE,
             KeySchema: [
                 { AttributeName: attributeNames.MONTH, KeyType: 'HASH' },
                 { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
         }),
-        createCommonGSI({
+        createKeysOnlyCSI({
             IndexName: indexNames.QUARTER_PRICE_CHANGE_RATE,
             KeySchema: [
                 { AttributeName: attributeNames.QUARTER, KeyType: 'HASH' },
                 { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
         }),
-        createCommonGSI({
+        createInclusiveCSI({
+            IndexName: indexNames.RECORDS_BY_COMPANY,
+            KeySchema: [
+                { AttributeName: attributeNames.COMPANY, KeyType: 'HASH' },
+            ],
+        }, [attributeNames.PRICE]),
+        createInclusiveCSI({
             IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
             KeySchema: [
                 { AttributeName: attributeNames.RISK_LEVEL, KeyType: 'HASH' },
             ],
-        }),
+        }, [attributeNames.PRICE]),
     ]
 })
 

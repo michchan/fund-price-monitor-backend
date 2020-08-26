@@ -5,6 +5,7 @@ const attributeNames = {
     COMPANY_CODE: 'company_code',
     // Based table sort key
     TIME_SK: 'timeSK',
+    COMPANY: 'company',
     NAME: 'name',
     RISK_LEVEL: 'riskLevel',
     PRICE: 'price',
