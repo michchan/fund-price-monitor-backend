@@ -6,7 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 function init (scope: cdk.Construct) {
     // Create IAM roles for scraping handlers
     const scraperRole = new iam.Role(scope, 'ScraperRole', {
-        assumedBy: new iam.ServicePrincipal('dynamodb.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
     });
     // Grant db access permissions for handler by assigning role
     scraperRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess'));
