@@ -17,7 +17,7 @@ function init (scope: cdk.Construct) {
         handler: 'scrapeManulifeMPFPerformance.handler',
         timeout: cdk.Duration.seconds(300),
         runtime: lambda.Runtime.NODEJS_12_X,
-        memorySize: 600,
+        memorySize: 700,
         role: scraperRole
     });    
 
