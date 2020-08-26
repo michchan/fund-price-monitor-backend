@@ -1,13 +1,13 @@
 
 
 
-export type Quarter = 'q1' | 'q2' | 'q3' | 'q4'
+export type Quarter = 1 | 2 | 3 | 4
 
 const quarterMap: { [key: string]: Quarter } = {
-    '1-3': 'q1',
-    '4-6': 'q2',
-    '7-9': 'q3',
-    '10-12': 'q4'
+    '1-3': 1,
+    '4-6': 2,
+    '7-9': 3,
+    '10-12': 4
 }
 
 const getCurrentQuarter = (): Quarter => {
