@@ -1,6 +1,6 @@
 
 
-const fieldNames = {
+const attributeNames = {
     COMPANY_CODE: 'company_code',
     TIME: 'time',
     NAME: 'name',
@@ -11,4 +11,4 @@ const fieldNames = {
     QUARTER: 'quarter',
     PRICE_CHANGE_RATE: 'priceChangeRate',
 } as const
-export default fieldNames
+export default attributeNames

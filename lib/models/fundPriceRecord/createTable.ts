@@ -3,7 +3,7 @@ import { DynamoDB } from 'aws-sdk';
 import AWS from 'lib/AWS'
 import getTableName from './getTableName';
 import { Quarter } from 'lib/helpers/getCurrentQuarter';
-import fieldNames from './fieldNames';
+import attributeNames from './attributeNames';
 import indexNames from './indexNames';
 
 
@@ -33,12 +33,12 @@ const createCommonGSI = (
 const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
     TableName: tableName,
     KeySchema: [
-        { AttributeName: fieldNames.COMPANY_CODE, KeyType: 'HASH' },
-        { AttributeName: fieldNames.TIME, KeyType: 'RANGE' },
+        { AttributeName: attributeNames.COMPANY_CODE, KeyType: 'HASH' },
+        { AttributeName: attributeNames.TIME, KeyType: 'RANGE' },
     ],
     AttributeDefinitions: [
-        { AttributeName: fieldNames.COMPANY_CODE, AttributeType: 'S' },
-        { AttributeName: fieldNames.TIME, AttributeType: 'S' },
+        { AttributeName: attributeNames.COMPANY_CODE, AttributeType: 'S' },
+        { AttributeName: attributeNames.TIME, AttributeType: 'S' },
     ],
     // Every created table are regarded as a table containing the latest time series data,
     // So assign the best capacity units.
@@ -50,34 +50,34 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
         createCommonGSI({
             IndexName: indexNames.WEEK_PRICE_CHANGE_RATE,
             KeySchema: [
-                { AttributeName: fieldNames.WEEK, KeyType: 'HASH' },
-                { AttributeName: fieldNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+                { AttributeName: attributeNames.WEEK, KeyType: 'HASH' },
+                { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
         }),
         createCommonGSI({
             IndexName: indexNames.MONTH_PRICE_CHANGE_RATE,
             KeySchema: [
-                { AttributeName: fieldNames.MONTH, KeyType: 'HASH' },
-                { AttributeName: fieldNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+                { AttributeName: attributeNames.MONTH, KeyType: 'HASH' },
+                { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
         }),
         createCommonGSI({
             IndexName: indexNames.QUARTER_PRICE_CHANGE_RATE,
             KeySchema: [
-                { AttributeName: fieldNames.QUARTER, KeyType: 'HASH' },
-                { AttributeName: fieldNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+                { AttributeName: attributeNames.QUARTER, KeyType: 'HASH' },
+                { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
         }),
         createCommonGSI({
             IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
             KeySchema: [
-                { AttributeName: fieldNames.RISK_LEVEL, KeyType: 'HASH' },
+                { AttributeName: attributeNames.RISK_LEVEL, KeyType: 'HASH' },
             ],
         }),
         createCommonGSI({
             IndexName: indexNames.RECORDS_BY_NAME,
             KeySchema: [
-                { AttributeName: fieldNames.NAME, KeyType: 'HASH' },
+                { AttributeName: attributeNames.NAME, KeyType: 'HASH' },
             ],
         }),
     ]

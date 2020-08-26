@@ -3,12 +3,12 @@ import getCurrentQuarter from "lib/helpers/getCurrentQuarter"
 import createTable from "./createTable"
 import listLatestTables from "./listLatestTables"
 import isTableOfCurrentQuarter from "./isTableOfCurrentQuarter"
-import fieldNames from "./fieldNames"
+import attributeNames from "./attributeNames"
 import indexNames from "./indexNames"
 
 
 const fundPriceRecord = {
-    fieldNames,
+    attributeNames,
     getTableName,
     getCurrentQuarter,
     createTable,
