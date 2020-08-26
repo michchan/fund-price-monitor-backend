@@ -20,7 +20,7 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         const tableNames = await fundPriceRecord.listLatestTables();
         console.log({ tableNames })
         // Create one if it doesn't exist
-
+        
         // Write bulk data to the table
         
     } catch (error) {
