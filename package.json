@@ -9,7 +9,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "local": "npm run build && cdk synth --no-staging > template.yaml"
+    "local": "npm run build && cdk synth --no-staging > template.yaml",
+    "invoke": "npm run local && sam local invoke"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.59.0",
