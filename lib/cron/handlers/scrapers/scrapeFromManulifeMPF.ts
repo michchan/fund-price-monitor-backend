@@ -1,14 +1,11 @@
 import { ScheduledHandler } from "aws-lambda";
 import puppeteer = require("puppeteer");
 
-import { FundPriceRecord, CompanyType, FundType } from "../../models/fundPriceRecord/FundPriceRecord.type";
-import { scrapeFromLink } from "../helpers/scrapeFromLink";
-import fundPriceRecord from "lib/models/fundPriceRecord";
-import isTableOfCurrentQuarter from "lib/models/fundPriceRecord/isTableOfCurrentQuarter";
-import getCurrentQuarter from "lib/helpers/getCurrentQuarter";
+import { FundPriceRecord, CompanyType, FundType } from "lib/models/fundPriceRecord/FundPriceRecord.type";
+import { scrapeFromLink } from "lib/cron/helpers/scrapeFromLink";
 
 
-const PRICE_LIST_PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
+const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
 /**
  * Helpers to query data from html
  */
@@ -81,23 +78,6 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
     return data
 }
 
-export const handler: ScheduledHandler = async (event, context, callback) => {
-    try {
-        // Scrape records from the site
-        const records = await scrapeFromLink(PRICE_LIST_PAGE_URL, getDataFromHTML)
-        console.log({ records })
-        // List tables upon the current quarter
-        const tableNames = await fundPriceRecord.listLatestTables();
-        console.log({ tableNames })
-        // Check if table of the current quarter exists
-        if (!tableNames.some(isTableOfCurrentQuarter)) {
-            console.log('Current quarter\'s table not exist! Creating one...')
-            // Create one if it doesn't exist
-            await fundPriceRecord.createTable(new Date().getFullYear(), getCurrentQuarter())
-        }
-        // Write bulk data to the table
-        
-    } catch (error) {
-        callback(error)
-    }
-}
+const scrapeFromManulifeMPF = () => scrapeFromLink(PAGE_URL, getDataFromHTML)
+
+export default scrapeFromManulifeMPF

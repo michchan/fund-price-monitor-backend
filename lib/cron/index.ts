@@ -5,20 +5,20 @@ import * as iam from '@aws-cdk/aws-iam';
 
 function init (scope: cdk.Construct) {
     // Create IAM roles for scraping handlers
-    const scraperRole = new iam.Role(scope, 'ScraperRole', {
+    const handlerRole = new iam.Role(scope, 'ScraperRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
     });
     // Grant db access permissions for handler by assigning role
-    scraperRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess'));
+    handlerRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess'));
     
     // Handler for Manulife MPF performance scraping
-    const scrapeManulifeMPFPerformance = new lambda.Function(scope, 'scrapeManulifeMPFPerformance', {
+    const handler = new lambda.Function(scope, 'cron.index', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
-        handler: 'scrapeManulifeMPFPerformance.handler',
+        handler: 'index.handler',
         timeout: cdk.Duration.seconds(300),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 610,
-        role: scraperRole
+        role: handlerRole
     });    
 
     // Run every day at 6PM UTC
@@ -27,7 +27,7 @@ function init (scope: cdk.Construct) {
     //   schedule: events.Schedule.expression('cron(0 18 ? * MON-FRI *)')
     // });
 
-    // rule.addTarget(new targets.LambdaFunction(scrapeManulifeMPFPerformance));
+    // rule.addTarget(new targets.LambdaFunction(handler));
 }
 
 const cron = { init } as const

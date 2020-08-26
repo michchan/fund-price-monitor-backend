@@ -7,8 +7,8 @@ const createConfig = (handlersPath) => ({
     target: 'node',
     entry: () => {
         const dirs = fs.readdirSync(handlersPath)
-        // Get names of folder or js files, filter out .ts files
-        const names = dirs.filter(dir => !/\.ts$/.test(dir))
+        // Get names of js files
+        const names = dirs.filter(dir => /\.js$/.test(dir))
         // Map entry object
         return names.reduce((obj, name) => {
             // Remove .js file extension
