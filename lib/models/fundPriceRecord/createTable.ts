@@ -39,6 +39,12 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
     AttributeDefinitions: [
         { AttributeName: attributeNames.COMPANY_CODE, AttributeType: 'S' },
         { AttributeName: attributeNames.TIME, AttributeType: 'S' },
+        { AttributeName: attributeNames.RISK_LEVEL, AttributeType: 'S' },
+        { AttributeName: attributeNames.NAME, AttributeType: 'S' },
+        { AttributeName: attributeNames.WEEK, AttributeType: 'S' },
+        { AttributeName: attributeNames.MONTH, AttributeType: 'S' },
+        { AttributeName: attributeNames.QUARTER, AttributeType: 'S' },
+        { AttributeName: attributeNames.PRICE_CHANGE_RATE, AttributeType: 'N' },
     ],
     // Every created table are regarded as a table containing the latest time series data,
     // So assign the best capacity units.
