@@ -42,7 +42,7 @@ Resources:
           - ScraperRole1944D0E8
           - Arn
       Runtime: nodejs12.x
-      MemorySize: 600
+      MemorySize: 700
       Timeout: 300
     DependsOn:
       - ScraperRole1944D0E8
