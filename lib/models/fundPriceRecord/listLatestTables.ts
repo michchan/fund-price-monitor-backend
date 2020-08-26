@@ -28,13 +28,11 @@ const listLatestTables = (
 ): Promise<Result> => new Promise((resolve, reject) => {
     // Normalize params
     const _from = from || { year: new Date().getFullYear(), quarter: getCurrentQuarter() };
-    const ExclusiveStartTableName = getTableName(_from.year, _from.quarter, -1)
-    console.log({ ExclusiveStartTableName })
 
     // Send list tables request
     dynamodb.listTables({
         // Offset a quarter before the `from.quarter` to make it inclusive
-        ExclusiveStartTableName,
+        ExclusiveStartTableName: getTableName(_from.year, _from.quarter, -1),
         Limit: limit
     }, (err, data) => {
         if (err) {
