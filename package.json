@@ -36,6 +36,7 @@
     "@aws-cdk/aws-events-targets": "1.59.0",
     "@aws-cdk/aws-lambda": "1.59.0",
     "@aws-cdk/core": "1.59.0",
+    "aws-sdk": "2.739.0",
     "chrome-aws-lambda": "^5.2.1",
     "puppeteer": "^5.2.1",
     "puppeteer-core": "^5.2.1",
