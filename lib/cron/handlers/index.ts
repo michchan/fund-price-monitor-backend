@@ -20,6 +20,14 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         const results = await Promise.all(scrapers.map(scrape => scrape()))
         // Merge records
         const records = results.reduce((acc, curr) => [...acc, ...curr], [])
+
+        // Throw an error if any of the fields got undefined (not scraped properly)
+        for (const rec of records) {
+            for (const [key, value] of Object.entries(rec)) {
+                if (value === undefined) 
+                    throw new Error(`${key} undefined from scraped data`)
+            }
+        }
         
         // Get current year
         const year = new Date().getFullYear()

@@ -11,22 +11,23 @@ const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/de
  */
 const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
     // Wait for the elements we want
-    await page.waitForSelector('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr');
+    await page.waitForSelector('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr > td > img');
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
     const data = await page.evaluate((): FundPriceRecord[] => {
         // Map gif name to risk level
         const riskLevelIndicatorImageNameMap: { [key: string]: FundPriceRecord['riskLevel'] } = {
-            'vc.gif': 'veryLow',
-            'wc.gif': 'low',
-            'xc.gif': 'neutral',
-            'yc.gif': 'high',
-            'zc.gif': 'veryHigh',
+            'v.gif': 'veryLow',
+            'w.gif': 'low',
+            'x.gif': 'neutral',
+            'y.gif': 'high',
+            'z.gif': 'veryHigh',
         }
 
         // Query table rows nodes
         const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr');
+
         // Map table rows data to FundPriceRecord[]
         return Array.from(tableRows).map((row): FundPriceRecord => {
             // Get table cells list
@@ -66,7 +67,6 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
                     // Find risk level key
                     const key = Object.keys(riskLevelIndicatorImageNameMap)
                         .find(name => riskIndicatorImg?.src.includes(name)) as keyof typeof riskLevelIndicatorImageNameMap;
-
                     return riskLevelIndicatorImageNameMap[key]
                 })(),
                 time: new Date().toISOString(),
