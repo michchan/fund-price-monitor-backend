@@ -3,10 +3,85 @@ import { DynamoDB } from 'aws-sdk';
 import AWS from 'lib/AWS'
 import getTableName from './getTableName';
 import { Quarter } from 'lib/helpers/getCurrentQuarter';
+import fieldNames from './fieldNames';
+import indexNames from './indexNames';
 
 
 // Initialize
 const dynamodb = new AWS.DynamoDB();
+
+/** Common throughput for GSI */
+const GSI_COMMON_CONFIG: Pick<DynamoDB.GlobalSecondaryIndex, 'Projection' | 'ProvisionedThroughput'> = {
+    Projection: {
+        ProjectionType: 'KEYS_ONLY'
+    },
+    ProvisionedThroughput: {
+        ReadCapacityUnits: 1,
+        WriteCapacityUnits: 1,
+    }
+}
+
+/** Helper to create common GSI */
+const createCommonGSI = (
+    config: Pick<DynamoDB.GlobalSecondaryIndex, 'IndexName' | 'KeySchema'>
+): DynamoDB.GlobalSecondaryIndex => ({
+    ...GSI_COMMON_CONFIG,
+    ...config
+})
+
+/** Helper to get table params */
+const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
+    TableName: tableName,
+    KeySchema: [
+        { AttributeName: fieldNames.COMPANY_CODE, KeyType: 'HASH' },
+        { AttributeName: fieldNames.TIME, KeyType: 'RANGE' },
+    ],
+    AttributeDefinitions: [
+        { AttributeName: fieldNames.COMPANY_CODE, AttributeType: 'S' },
+        { AttributeName: fieldNames.TIME, AttributeType: 'S' },
+    ],
+    // Every created table are regarded as a table containing the latest time series data,
+    // So assign the best capacity units.
+    ProvisionedThroughput: {
+        ReadCapacityUnits: 5,
+        WriteCapacityUnits: 1,
+    },
+    GlobalSecondaryIndexes: [
+        createCommonGSI({
+            IndexName: indexNames.WEEK_PRICE_CHANGE_RATE,
+            KeySchema: [
+                { AttributeName: fieldNames.WEEK, KeyType: 'HASH' },
+                { AttributeName: fieldNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+            ],
+        }),
+        createCommonGSI({
+            IndexName: indexNames.MONTH_PRICE_CHANGE_RATE,
+            KeySchema: [
+                { AttributeName: fieldNames.MONTH, KeyType: 'HASH' },
+                { AttributeName: fieldNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+            ],
+        }),
+        createCommonGSI({
+            IndexName: indexNames.QUARTER_PRICE_CHANGE_RATE,
+            KeySchema: [
+                { AttributeName: fieldNames.QUARTER, KeyType: 'HASH' },
+                { AttributeName: fieldNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+            ],
+        }),
+        createCommonGSI({
+            IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
+            KeySchema: [
+                { AttributeName: fieldNames.RISK_LEVEL, KeyType: 'HASH' },
+            ],
+        }),
+        createCommonGSI({
+            IndexName: indexNames.RECORDS_BY_NAME,
+            KeySchema: [
+                { AttributeName: fieldNames.NAME, KeyType: 'HASH' },
+            ],
+        }),
+    ]
+})
 
 export interface Result extends DynamoDB.CreateTableOutput {};
 
@@ -15,27 +90,10 @@ const createTable = (
     year: string | number,
     quarter: Quarter,
 ): Promise<Result> => new Promise((resolve, reject) => {
-    dynamodb.createTable({
-        TableName: getTableName(year, quarter),
-        KeySchema: [
-            // Partition key
-            { AttributeName: 'company_code', KeyType: 'HASH' },
-            // Sort key
-            { AttributeName: 'record_time', KeyType: 'RANGE' },
-        ],
-        AttributeDefinitions: [
-            // Partition key
-            { AttributeName: 'company_code', AttributeType: 'S' },
-            // Sort key
-            { AttributeName: 'record_time', AttributeType: 'S' },
-        ],
-        // Every created table are regarded as a table containing the latest time series data,
-        // So assign the best capacity units.
-        ProvisionedThroughput: {
-            ReadCapacityUnits: 5,
-            WriteCapacityUnits: 1,
-        }
-    }, (err, data) => {
+    // Get based table name
+    const tableName = getTableName(year, quarter)
+    // Send create table request
+    dynamodb.createTable(getTableParams(tableName), (err, data) => {
         if (err) {
             reject(new Error(`Unable to create table. Error JSON: ${err}`));
         } else {
