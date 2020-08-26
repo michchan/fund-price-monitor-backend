@@ -1,0 +1,43 @@
+import { DynamoDB } from 'aws-sdk';
+
+import AWS from 'lib/AWS'
+import getCurrentQuarter, { Quarter } from 'lib/helpers/getCurrentQuarter';
+import getTableName from './getTableName'
+
+
+// Initialize
+const dynamodb = new AWS.DynamoDB();
+
+
+export type TableRange = {
+    // YYYY
+    year: string;
+    quarter: Quarter;
+}
+
+export type Result = DynamoDB.TableNameList
+
+/**
+ * Return a list of properties of tables that have been created and match the criteria
+ */
+const listLatestTables = (
+    /** Default to current quarter of the current year */
+    from?: TableRange,
+    limit?: DynamoDB.ListTablesInput['Limit']
+): Promise<Result> => new Promise((resolve, reject) => {
+    // Normalize params
+    const _from = from || { year: new Date().getFullYear(), quarter: getCurrentQuarter() };
+
+    // Send list tables request
+    dynamodb.listTables({
+        ExclusiveStartTableName: getTableName(_from.year, _from.quarter),
+        Limit: limit
+    }, (err, data) => {
+        if (err) {
+            reject(new Error(`Unable to list tables. Error JSON: ${err}`));
+        } else {
+            resolve(data.TableNames);
+        }
+    })
+})
+export default listLatestTables

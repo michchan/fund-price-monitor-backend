@@ -22,7 +22,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3BucketD8E7B051
+          Ref: AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3Bucket4C5C9898
         S3Key:
           Fn::Join:
             - ""
@@ -30,12 +30,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3VersionKey828BE48D
+                      - Ref: AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3VersionKey13000851
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3VersionKey828BE48D
+                      - Ref: AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3VersionKey13000851
       Handler: scrapeManulifeMPFPerformance.handler
       Role:
         Fn::GetAtt:
@@ -56,15 +56,15 @@ Resources:
       Modules: aws-cdk=1.59.0,@aws-cdk/assets=1.59.0,@aws-cdk/aws-applicationautoscaling=1.59.0,@aws-cdk/aws-autoscaling-common=1.59.0,@aws-cdk/aws-cloudwatch=1.59.0,@aws-cdk/aws-codeguruprofiler=1.59.0,@aws-cdk/aws-ec2=1.59.0,@aws-cdk/aws-events=1.59.0,@aws-cdk/aws-iam=1.59.0,@aws-cdk/aws-kms=1.59.0,@aws-cdk/aws-lambda=1.59.0,@aws-cdk/aws-logs=1.59.0,@aws-cdk/aws-s3=1.59.0,@aws-cdk/aws-s3-assets=1.59.0,@aws-cdk/aws-sqs=1.59.0,@aws-cdk/aws-ssm=1.59.0,@aws-cdk/cloud-assembly-schema=1.59.0,@aws-cdk/core=1.59.0,@aws-cdk/cx-api=1.59.0,@aws-cdk/region-info=1.59.0,jsii-runtime=node.js/v10.16.2
     Condition: CDKMetadataAvailable
 Parameters:
-  AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3BucketD8E7B051:
+  AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3Bucket4C5C9898:
     Type: String
-    Description: S3 bucket for asset "e667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53"
-  AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53S3VersionKey828BE48D:
+    Description: S3 bucket for asset "818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3"
+  AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3S3VersionKey13000851:
     Type: String
-    Description: S3 key for asset version "e667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53"
-  AssetParameterse667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53ArtifactHash2F1F0E40:
+    Description: S3 key for asset version "818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3"
+  AssetParameters818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3ArtifactHash231B811A:
     Type: String
-    Description: Artifact hash for asset "e667350a3b499f6c4be8c71487eec95adf349d6f856576851069f1e980254b53"
+    Description: Artifact hash for asset "818f0182d992bc0c839e253f8df5dc4da223222773bebaaf031cdc699ae26ad3"
 Conditions:
   CDKMetadataAvailable:
     Fn::Or:

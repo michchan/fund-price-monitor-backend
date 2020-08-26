@@ -19,7 +19,8 @@
     "strictPropertyInitialization": false,
     "typeRoots": ["./node_modules/@types"],
     "rootDir": "lib",
-    "outDir": "build"
+    "outDir": "build",
+    "baseUrl": "./"
   },
   "exclude": ["cdk.out"],
   "include": ["lib"]

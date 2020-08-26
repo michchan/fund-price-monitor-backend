@@ -3,15 +3,26 @@ import puppeteer = require("puppeteer");
 
 import { FundPriceRecord, CompanyType, FundType } from "../../models/fundPriceRecord/FundPriceRecord.type";
 import { scrapeFromLink } from "../helpers/scrapeFromLink";
+import fundPriceRecord from "lib/models/fundPriceRecord";
 
 
 const PRICE_LIST_PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
 
-// @ts-ignore
 export const handler: ScheduledHandler = async (event, context, callback) => {
     try {
+        // Scrape records from the site
         const records = await scrapeFromLink(PRICE_LIST_PAGE_URL, getDataFromHTML)
-        return JSON.stringify(records)
+        console.log({ records })
+        // Get current quarter
+        const quarter = fundPriceRecord.getCurrentQuarter();
+        console.log({ quarter })
+        // Check if table of the current quarter exists
+        const tableNames = await fundPriceRecord.listLatestTables();
+        console.log({ tableNames })
+        // Create one if it doesn't exist
+
+        // Write bulk data to the table
+        
     } catch (error) {
         callback(error)
     }

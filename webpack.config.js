@@ -1,11 +1,12 @@
 const fs = require('fs');
+const path = require('path');
 
 
-const createConfig = (path) => ({
+const createConfig = (handlersPath) => ({
     mode: 'development',
     target: 'node',
     entry: () => {
-        const dirs = fs.readdirSync(path)
+        const dirs = fs.readdirSync(handlersPath)
         // Get names of folder or js files, filter out .ts files
         const names = dirs.filter(dir => !/\.ts$/.test(dir))
         // Map entry object
@@ -17,12 +18,12 @@ const createConfig = (path) => ({
             
             return { 
                 ...obj, 
-                [key]: `./${path}/${filePath}` 
+                [key]: `./${handlersPath}/${filePath}` 
             }
         }, {})
     },
     output: {
-        path: `${process.cwd()}/${path.replace(/build/i, 'bundles')}`,
+        path: `${process.cwd()}/${handlersPath.replace(/build/i, 'bundles')}`,
         // Keep the bundle name same as the orignal function name
         filename: `[name].js`,
         libraryTarget: 'umd'
@@ -43,6 +44,11 @@ const createConfig = (path) => ({
           },
         ],
     },
+    resolve: {
+        alias: {
+            lib: path.resolve(__dirname, 'build')
+        }
+    }
 })
 
 module.exports = [

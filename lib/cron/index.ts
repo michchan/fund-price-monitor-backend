@@ -21,4 +21,5 @@ function init (scope: cdk.Construct) {
     // rule.addTarget(new targets.LambdaFunction(scrapeManulifeMPFPerformance));
 }
 
-export default { init }
+const cron = { init } as const
+export default cron
