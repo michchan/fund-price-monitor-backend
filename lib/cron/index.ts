@@ -1,15 +1,45 @@
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as iam from '@aws-cdk/aws-iam';
+import { Effect } from '@aws-cdk/aws-iam';
 
 
 function init (scope: cdk.Construct) {
+
+    /** ------------------ IAM Role Definition ------------------ */
+
     // Create IAM roles for scraping handlers
     const cronRole = new iam.Role(scope, 'CronRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
     });
     // Grant db access permissions for handler by assigning role
-    cronRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess'));
+    cronRole.addToPolicy(
+        new iam.PolicyStatement({
+            sid: 'ListCreateTable_BatchWriteItem',
+            resources: ['*'],
+            effect: Effect.ALLOW,
+            actions: [
+                'dynamodb:ListTables',
+                'dynamodb:CreateTable',
+                'dynamodb:BatchWriteItem',
+            ],
+        })
+    )
+    // Grant cloudwatch log group access
+    cronRole.addToPolicy(
+        new iam.PolicyStatement({
+            sid: 'LogGroupWrite',
+            resources: ['*'],
+            effect: Effect.ALLOW,
+            actions: [
+                'logs:CreateLogGroup',
+                'logs:CreateLogStream',
+                'logs:PutLogEvents',
+            ],
+        })
+    )
+
+    /** ------------------ Lambda Handlers Definition ------------------ */
 
     // Handler for aggregating top-level items of records
     const aggregationHandler = new lambda.Function(scope, 'cron.aggregate', {
@@ -32,6 +62,8 @@ function init (scope: cdk.Construct) {
             AGGREGATION_HANDLER_ARN: aggregationHandler.functionArn,
         },
     });
+
+    /** ------------------ Events Rule Definition ------------------ */
 
     // Run every day at 6PM UTC
     // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
