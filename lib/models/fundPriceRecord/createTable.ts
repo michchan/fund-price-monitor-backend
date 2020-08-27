@@ -10,6 +10,7 @@ import indexNames from './indexNames';
 
 // Initialize
 const dynamodb = new AWS.DynamoDB();
+const lambda = new AWS.Lambda()
 
 /** Common throughput for GSI */
 const GSI_COMMON_THROUGHPUT: DynamoDB.GlobalSecondaryIndex['ProvisionedThroughput'] = {
@@ -87,12 +88,17 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
                 { AttributeName: attributeNames.RISK_LEVEL, KeyType: 'HASH' },
             ],
         }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
-    ]
+    ],
+    // Add stream for aggregation of top-level items
+    StreamSpecification: {
+        StreamEnabled: true,
+        StreamViewType: 'NEW_AND_OLD_IMAGES',
+    },
 })
 
 export interface Result extends DynamoDB.CreateTableOutput {};
 
-const createTable = (
+const createTable = async (
     /** In YYYY format */
     year: string | number,
     quarter: Quarter,
@@ -100,6 +106,17 @@ const createTable = (
     // Get based table name
     const tableName = getTableName(year, quarter)
     // Send create table request
-    return dynamodb.createTable(getTableParams(tableName)).promise()
+    const createTableResult = await dynamodb.createTable(getTableParams(tableName)).promise()
+
+    if (createTableResult.TableDescription) {
+        // Create event source mapping for stream
+        // lambda.createEventSourceMapping({
+        //     // Assign function name passed
+        //     FunctionName: '',
+        //     EventSourceArn: createTableResult.TableDescription.LatestStreamArn,
+        //     StartingPosition: '',
+        // })
+    }
+    return createTableResult
 }
 export default createTable
