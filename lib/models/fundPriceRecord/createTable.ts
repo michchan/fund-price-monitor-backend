@@ -18,17 +18,6 @@ const GSI_COMMON_THROUGHPUT: DynamoDB.GlobalSecondaryIndex['ProvisionedThroughpu
 }
 
 /** Helper to create common GSI */
-const createKeysOnlyCSI = (
-    config: Pick<DynamoDB.GlobalSecondaryIndex, 'IndexName' | 'KeySchema'>
-): DynamoDB.GlobalSecondaryIndex => ({
-    Projection: {
-        ProjectionType: 'KEYS_ONLY'
-    },
-    ProvisionedThroughput: GSI_COMMON_THROUGHPUT,
-    ...config
-})
-
-/** Helper to create common GSI */
 const createInclusiveCSI = (
     config: Pick<DynamoDB.GlobalSecondaryIndex, 'IndexName' | 'KeySchema'>,
     NonKeyAttributes: NonKeyAttributeNameList,
@@ -65,27 +54,27 @@ const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
         WriteCapacityUnits: 1,
     },
     GlobalSecondaryIndexes: [
-        createKeysOnlyCSI({
+        createInclusiveCSI({
             IndexName: indexNames.WEEK_PRICE_CHANGE_RATE,
             KeySchema: [
                 { AttributeName: attributeNames.WEEK, KeyType: 'HASH' },
                 { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }),
-        createKeysOnlyCSI({
+        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
+        createInclusiveCSI({
             IndexName: indexNames.MONTH_PRICE_CHANGE_RATE,
             KeySchema: [
                 { AttributeName: attributeNames.MONTH, KeyType: 'HASH' },
                 { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }),
-        createKeysOnlyCSI({
+        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
+        createInclusiveCSI({
             IndexName: indexNames.QUARTER_PRICE_CHANGE_RATE,
             KeySchema: [
                 { AttributeName: attributeNames.QUARTER, KeyType: 'HASH' },
                 { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }),
+        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
         createInclusiveCSI({
             IndexName: indexNames.RECORDS_BY_COMPANY,
             KeySchema: [
