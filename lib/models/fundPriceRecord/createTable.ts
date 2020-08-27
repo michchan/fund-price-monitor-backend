@@ -112,12 +112,12 @@ const createTable = async (
 
     if (createTableResult?.TableDescription?.LatestStreamArn) {
         // Create event source mapping for dynamodb stream and the handler
-        lambda.createEventSourceMapping({
+        await lambda.createEventSourceMapping({
             // Assign function name passed
             FunctionName: streamHandlerArn,
             EventSourceArn: createTableResult.TableDescription.LatestStreamArn,
             StartingPosition: StartingPosition.LATEST,
-        })
+        }).promise()
     }
     return createTableResult
 }
