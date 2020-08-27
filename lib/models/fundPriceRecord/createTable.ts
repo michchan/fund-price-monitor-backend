@@ -13,8 +13,6 @@ import indexNames from './indexNames';
 const dynamodb = new AWS.DynamoDB();
 const lambda = new AWS.Lambda();
 
-lambda.waitFor
-
 /** Common throughput for GSI */
 const GSI_COMMON_THROUGHPUT: DynamoDB.GlobalSecondaryIndex['ProvisionedThroughput'] = {
     ReadCapacityUnits: 1,
