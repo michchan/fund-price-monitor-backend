@@ -15,7 +15,7 @@ function init (scope: cdk.Construct) {
     // Grant db access permissions for handler by assigning role
     cronRole.addToPolicy(
         new iam.PolicyStatement({
-            sid: 'ListCreateTable_BatchWriteItem',
+            sid: 'ListCreateTableBatchWriteItem',
             resources: ['*'],
             effect: Effect.ALLOW,
             actions: [
