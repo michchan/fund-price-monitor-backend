@@ -11,7 +11,9 @@ import indexNames from './indexNames';
 
 // Initialize
 const dynamodb = new AWS.DynamoDB();
-const lambda = new AWS.Lambda()
+const lambda = new AWS.Lambda();
+
+lambda.waitFor
 
 /** Common throughput for GSI */
 const GSI_COMMON_THROUGHPUT: DynamoDB.GlobalSecondaryIndex['ProvisionedThroughput'] = {
@@ -33,8 +35,8 @@ const createInclusiveCSI = (
 })
 
 /** Helper to get table params */
-const getTableParams = (tableName: string): DynamoDB.CreateTableInput => ({
-    TableName: tableName,
+const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
+    TableName: TableName,
     KeySchema: [
         { AttributeName: attributeNames.COMPANY_CODE, KeyType: 'HASH' },
         { AttributeName: attributeNames.TIME_SK, KeyType: 'RANGE' },
@@ -106,19 +108,26 @@ const createTable = async (
     streamHandlerArn: Lambda.CreateEventSourceMappingRequest['FunctionName'],
 ): Promise<Result> => {
     // Get based table name
-    const tableName = getTableName(year, quarter)
+    const TableName = getTableName(year, quarter)
     // Send create table request
-    const createTableResult = await dynamodb.createTable(getTableParams(tableName)).promise()
+    const createTableResult = await dynamodb.createTable(getTableParams(TableName)).promise()
+    // Wait for the table to be active
+    await dynamodb.waitFor('tableExists', { TableName }).promise();
 
+    // Create event source mapping for dynamodb stream and the handler
     if (createTableResult?.TableDescription?.LatestStreamArn) {
-        // Create event source mapping for dynamodb stream and the handler
+        // Create event source mapping request
         await lambda.createEventSourceMapping({
             // Assign function name passed
             FunctionName: streamHandlerArn,
             EventSourceArn: createTableResult.TableDescription.LatestStreamArn,
             StartingPosition: StartingPosition.LATEST,
         }).promise()
+        // Wait for function event-source mapping updated
+        await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
     }
+
+    // Return the create table result
     return createTableResult
 }
 export default createTable
