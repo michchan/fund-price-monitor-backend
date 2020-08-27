@@ -20,6 +20,8 @@ function init (scope: cdk.Construct) {
             effect: Effect.ALLOW,
             actions: [
                 'dynamodb:ListTables',
+                // For `waitFor` operation
+                'dynamodb:DescribeTable',
                 'dynamodb:CreateTable',
                 'dynamodb:BatchWriteItem',
             ],
