@@ -26,7 +26,7 @@ function init (scope: cdk.Construct) {
         handler: 'index.handler',
         timeout: cdk.Duration.seconds(300),
         runtime: lambda.Runtime.NODEJS_12_X,
-        memorySize: 610,
+        memorySize: 650,
         role: cronRole,
         environment: {
             AGGREGATION_HANDLER_ARN: aggregationHandler.functionArn,
