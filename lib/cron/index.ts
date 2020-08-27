@@ -10,8 +10,17 @@ function init (scope: cdk.Construct) {
     });
     // Grant db access permissions for handler by assigning role
     cronRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess'));
+
+    // Handler for aggregating top-level items of records
+    const aggregationHandler = new lambda.Function(scope, 'cron.aggregate', {
+        code: lambda.Code.fromAsset('bundles/cron/handlers'),
+        handler: 'aggregate.handler',
+        timeout: cdk.Duration.seconds(300),
+        runtime: lambda.Runtime.NODEJS_12_X,
+        role: cronRole,
+    });
     
-    // Handler scraping data and related cron job
+    // Handler for scraping data, creating latest table and saving data and other related cron jobs
     const mainHandler = new lambda.Function(scope, 'cron.index', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
         handler: 'index.handler',
@@ -19,6 +28,9 @@ function init (scope: cdk.Construct) {
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 610,
         role: cronRole,
+        environment: {
+            AGGREGATION_HANDLER_ARN: aggregationHandler.functionArn,
+        },
     });
 
     // Run every day at 6PM UTC

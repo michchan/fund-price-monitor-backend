@@ -1,5 +1,6 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB, Lambda } from 'aws-sdk';
 import { NonKeyAttributeNameList } from 'aws-sdk/clients/dynamodb';
+import { StartingPosition } from '@aws-cdk/aws-lambda';
 
 import AWS from 'lib/AWS'
 import getTableName from './getTableName';
@@ -102,20 +103,21 @@ const createTable = async (
     /** In YYYY format */
     year: string | number,
     quarter: Quarter,
+    streamHandlerArn: Lambda.CreateEventSourceMappingRequest['FunctionName'],
 ): Promise<Result> => {
     // Get based table name
     const tableName = getTableName(year, quarter)
     // Send create table request
     const createTableResult = await dynamodb.createTable(getTableParams(tableName)).promise()
 
-    if (createTableResult.TableDescription) {
-        // Create event source mapping for stream
-        // lambda.createEventSourceMapping({
-        //     // Assign function name passed
-        //     FunctionName: '',
-        //     EventSourceArn: createTableResult.TableDescription.LatestStreamArn,
-        //     StartingPosition: '',
-        // })
+    if (createTableResult?.TableDescription?.LatestStreamArn) {
+        // Create event source mapping for dynamodb stream and the handler
+        lambda.createEventSourceMapping({
+            // Assign function name passed
+            FunctionName: streamHandlerArn,
+            EventSourceArn: createTableResult.TableDescription.LatestStreamArn,
+            StartingPosition: StartingPosition.LATEST,
+        })
     }
     return createTableResult
 }
