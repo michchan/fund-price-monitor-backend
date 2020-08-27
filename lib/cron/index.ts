@@ -40,6 +40,23 @@ function init (scope: cdk.Construct) {
             ],
         })
     )
+    // Grant lambda-stream mapping policy
+    cronRole.addToPolicy(
+        new iam.PolicyStatement({
+            sid: 'LambdaStreamMapping',
+            resources: ['*'],
+            effect: Effect.ALLOW,
+            actions: [
+                'lambda:CreateEventSourceMapping',
+                // For `waitFor` operation
+                'lambda:GetFunctionConfiguration',
+                'dynamodb:DescribeStream',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator', 
+                'dynamodb:ListStreams',
+            ],
+        })
+    )
 
     /** ------------------ Lambda Handlers Definition ------------------ */
 
