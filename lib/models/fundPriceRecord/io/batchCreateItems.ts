@@ -3,7 +3,7 @@ import chunk from 'lodash/chunk'
 
 import AWS from 'lib/AWS'
 import { FundPriceRecord } from '../FundPriceRecord.type';
-import serialize from './utils/serialize';
+import serialize from '../utils/serialize';
 
 
 // Initialize
