@@ -17,6 +17,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                 ...record.dynamodb.NewImage,
                 ...record.dynamodb.Keys,            
             })
+            console.log('Parsed item: ', JSON.stringify(item, null, 2));
 
             // 1. Aggregation for latest price
             // 2. Aggregation for price change rate per week
