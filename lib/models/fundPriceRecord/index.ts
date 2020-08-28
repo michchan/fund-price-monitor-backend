@@ -7,10 +7,13 @@ import attributeNames from "./constants/attributeNames"
 import indexNames from "./constants/indexNames"
 import batchCreateItems from "./io/batchCreateItems"
 import serialize from "./utils/serialize"
+import parse from "./utils/parse"
+
 
 
 const fundPriceRecord = {
     serialize,
+    parse,
     batchCreateItems,
     attributeNames,
     indexNames,
