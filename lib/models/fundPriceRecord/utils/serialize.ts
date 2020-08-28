@@ -2,7 +2,7 @@ import { DynamoDB } from 'aws-sdk';
 
 import { FundPriceRecord } from "../FundPriceRecord.type"
 import attributeNames from '../constants/attributeNames';
-import attributePrefixes from '../constants/attributePrefixes';
+import attributeConstants from '../constants/attributeConstants';
 
 
 
@@ -23,7 +23,7 @@ const serialize = ({
 }: FundPriceRecord): DynamoDB.DocumentClient.PutRequest => ({
     Item: {
         [attributeNames.COMPANY_CODE]: `${company}_${code}`,
-        [attributeNames.TIME_SK]: `${attributePrefixes.RECORD}_${company}_${time}`,
+        [attributeNames.TIME_SK]: `${attributeConstants.RECORD}_${company}_${time}`,
         [attributeNames.COMPANY]: company,
         [attributeNames.NAME]: name,
         [attributeNames.PRICE]: price,

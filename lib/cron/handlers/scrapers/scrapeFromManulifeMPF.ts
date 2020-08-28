@@ -27,6 +27,8 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
 
         // Query table rows nodes
         const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr');
+        // Create a timestamp for current scrape
+        const time = new Date().toISOString();
 
         // Map table rows data to FundPriceRecord[]
         return Array.from(tableRows).map((row): FundPriceRecord => {
@@ -69,7 +71,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
                         .find(name => riskIndicatorImg?.src.includes(name)) as keyof typeof riskLevelIndicatorImageNameMap;
                     return riskLevelIndicatorImageNameMap[key]
                 })(),
-                time: new Date().toISOString(),
+                time,
                 fundType,
             }
         })
