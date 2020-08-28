@@ -7,7 +7,7 @@ import attributeConstants from '../constants/attributeConstants';
 
 
 /**
- * Serilize FundPriceRecord to dynamodb item
+ * Serilize a FundPriceRecord to dynamodb item
  */
 const serialize = ({
     company,

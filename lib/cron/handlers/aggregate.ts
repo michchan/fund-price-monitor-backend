@@ -13,4 +13,8 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
             // 4. Aggregation for price change rate per quarter
         }
     })
+
+    // Batch remove "latest" items
+
+    // Batch create all aggregation items
 }
