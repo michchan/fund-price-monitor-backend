@@ -3,10 +3,10 @@ import { NonKeyAttributeNameList } from 'aws-sdk/clients/dynamodb';
 import { StartingPosition } from '@aws-cdk/aws-lambda';
 
 import AWS from 'lib/AWS'
-import getTableName from './getTableName';
+import getTableName from '../utils/getTableName';
 import { Quarter } from 'lib/helpers/getCurrentQuarter';
-import attributeNames from './attributeNames';
-import indexNames from './indexNames';
+import attributeNames from '../constants/attributeNames';
+import indexNames from '../constants/indexNames';
 
 
 // Initialize

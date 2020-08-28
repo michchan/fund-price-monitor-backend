@@ -3,10 +3,8 @@ import puppeteer = require("puppeteer");
 
 import { FundPriceRecord } from "../../models/fundPriceRecord/FundPriceRecord.type";
 import fundPriceRecord from "lib/models/fundPriceRecord";
-import isTableOfCurrentQuarter from "lib/models/fundPriceRecord/isTableOfCurrentQuarter";
 import scrapeFromManulifeMPF from "./scrapers/scrapeFromManulifeMPF";
 import getCurrentQuarter from "lib/helpers/getCurrentQuarter";
-import getTableName from "lib/models/fundPriceRecord/getTableName";
 
 
 
@@ -33,14 +31,14 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         // Get current year
         const year = new Date().getFullYear()
         const quarter = getCurrentQuarter()
-        const TableName = getTableName(year, quarter)
+        const TableName = fundPriceRecord.getTableName(year, quarter)
         // Passed from the environment variables defined in CDK construct of cron
         const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
 
         // List tables upon the current quarter
         const tableNames = await fundPriceRecord.listLatestTables();
         // Check if table of the current quarter exists
-        if (!tableNames.some(isTableOfCurrentQuarter)) {
+        if (!tableNames.some(fundPriceRecord.isTableOfCurrentQuarter)) {
             // Create one if it doesn't exist
             await fundPriceRecord.createTable(year, quarter, aggregationHandlerArn)
         }

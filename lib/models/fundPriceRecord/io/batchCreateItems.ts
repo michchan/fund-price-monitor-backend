@@ -2,8 +2,8 @@ import { DynamoDB } from 'aws-sdk';
 import chunk from 'lodash/chunk'
 
 import AWS from 'lib/AWS'
-import { FundPriceRecord } from './FundPriceRecord.type';
-import serialize from './serialize';
+import { FundPriceRecord } from '../FundPriceRecord.type';
+import serialize from './utils/serialize';
 
 
 // Initialize

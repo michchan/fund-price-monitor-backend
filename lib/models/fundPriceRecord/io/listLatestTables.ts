@@ -2,7 +2,7 @@ import { DynamoDB } from 'aws-sdk';
 
 import AWS from 'lib/AWS'
 import getCurrentQuarter, { Quarter } from 'lib/helpers/getCurrentQuarter';
-import getTableName from './getTableName'
+import getTableName from './utils/getTableName'
 import { PROJECT_NAMESPACE } from 'lib/constants';
 
 

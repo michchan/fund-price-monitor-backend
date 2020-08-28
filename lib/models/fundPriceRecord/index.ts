@@ -1,12 +1,12 @@
-import getTableName from "./getTableName"
+import getTableName from "./utils/getTableName"
 import getCurrentQuarter from "lib/helpers/getCurrentQuarter"
-import createTable from "./createTable"
-import listLatestTables from "./listLatestTables"
-import isTableOfCurrentQuarter from "./isTableOfCurrentQuarter"
-import attributeNames from "./attributeNames"
-import indexNames from "./indexNames"
-import batchCreateItems from "./batchCreateItems"
-import serialize from "./serialize"
+import createTable from "./io/createTable"
+import listLatestTables from "./io/listLatestTables"
+import isTableOfCurrentQuarter from "./utils/isTableOfCurrentQuarter"
+import attributeNames from "./constants/attributeNames"
+import indexNames from "./constants/indexNames"
+import batchCreateItems from "./io/batchCreateItems"
+import serialize from "./utils/serialize"
 
 
 const fundPriceRecord = {
