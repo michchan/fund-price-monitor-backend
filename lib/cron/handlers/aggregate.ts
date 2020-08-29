@@ -44,6 +44,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                     ProjectionExpression: attrs.PRICE,
                     FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT),
                 }
+                console.log('Params: ', JSON.stringify({ item, itemDate, params }, null, 2))
                 // Send query with year and quarter of `item`
                 const quarterRecords = await fundPriceRecord.queryQuarterRecords(params, {
                     year: itemDate.getFullYear(),
