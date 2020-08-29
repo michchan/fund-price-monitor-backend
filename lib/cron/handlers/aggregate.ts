@@ -40,10 +40,13 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                     KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_CC} AND ${
                         db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT)
                     }`,
-                    // We need `price` only for non-key attributes
-                    ProjectionExpression: attrs.PRICE,
+                    // To calculate the following aggregated items, we only need `price` for non-key attributes.
+                    ProjectionExpression: [
+                        attrs.COMPANY_CODE,
+                        attrs.TIME_SK,
+                        attrs.PRICE,
+                    ].join(','),
                 }
-                console.log('Query Input: ', JSON.stringify({ item, itemDate, queryInput }, null, 2));
                 // Send query with year and quarter of `item`
                 const quarterRecords = await fundPriceRecord.queryQuarterRecords(queryInput, {
                     year: itemDate.getFullYear(),
