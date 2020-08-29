@@ -20,50 +20,50 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     // Loop through event records
     for (const record of event.Records) {        
         // Only process when it is a "INSERT" event
-        if (!(
+        if (
             record.eventName === 'INSERT'
             // Make sure the necessary properties are defined
             && record.dynamodb?.NewImage
-        )) continue;
+        ) {
+            // Parse new item from record for manipulation
+            const item = fundPriceRecord.parse(record.dynamodb.NewImage)
+            // Only process when its `recordType` equals `record`
+            if (item.recordType === 'record') {
+                // Get item's date
+                const itemDate = new Date(item.time);
+                // Create queryInput for querying list of items with the same code of `item`, in a quarter
+                const queryInput: Omit<DynamoDB.DocumentClient.QueryInput, 'TableName'> = {
+                    ExpressionAttributeValues: {
+                        [EXP_CC]: `${item.company}_${item.code}`,
+                        [EXP_RT]: item.recordType,
+                    },
+                    KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_CC} AND ${
+                        db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT)
+                    }`,
+                    // We need `price` only for non-key attributes
+                    ProjectionExpression: attrs.PRICE,
+                }
+                console.log('Query Input: ', JSON.stringify({ item, itemDate, queryInput }, null, 2));
+                // Send query with year and quarter of `item`
+                const quarterRecords = await fundPriceRecord.queryQuarterRecords(queryInput, {
+                    year: itemDate.getFullYear(),
+                    quarter: getQuarter(itemDate)
+                });
+                
+                // 1. Aggregation for latest price
+                const latest = fundPriceRecord.toLatestPriceRecord(item);
+                // // 2. Aggregation for price change rate per week
+                // const weekRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'week');
+                // // 3. Aggregation for price change rate per month
+                // const monthRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'month');
+                // // 4. Aggregation for price change rate per quarter   
+                // const quarterRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'quarter');
 
-        // Parse new item from record for manipulation
-        const item = fundPriceRecord.parse(record.dynamodb.NewImage)
-        // Only process when its `recordType` equals `record`
-        if (item.recordType !== 'record') continue;
+                console.log('Aggregation Results: ', JSON.stringify({ item, itemDate, queryInput, quarterRecords, latest }, null, 2));
 
-        // Get item's date
-        const itemDate = new Date(item.time);
-        // Create queryInput for querying list of items with the same code of `item`, in a quarter
-        const queryInput: Omit<DynamoDB.DocumentClient.QueryInput, 'TableName'> = {
-            ExpressionAttributeValues: {
-                [EXP_CC]: `${item.company}_${item.code}`,
-                [EXP_RT]: item.recordType,
-            },
-            KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_CC} AND ${
-                db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT)
-            }`,
-            // We need `price` only for non-key attributes
-            ProjectionExpression: attrs.PRICE,
+                // Assign aggregated records to buffer  
+            } 
         }
-        console.log('Query Input: ', JSON.stringify({ item, itemDate, queryInput }, null, 2));
-        // Send query with year and quarter of `item`
-        const quarterRecords = await fundPriceRecord.queryQuarterRecords(queryInput, {
-            year: itemDate.getFullYear(),
-            quarter: getQuarter(itemDate)
-        });
-        
-        // 1. Aggregation for latest price
-        const latest = fundPriceRecord.toLatestPriceRecord(item);
-        // // 2. Aggregation for price change rate per week
-        // const weekRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'week');
-        // // 3. Aggregation for price change rate per month
-        // const monthRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'month');
-        // // 4. Aggregation for price change rate per quarter   
-        // const quarterRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'quarter');
-
-        console.log('Aggregation Results: ', JSON.stringify({ item, itemDate, queryInput, quarterRecords, latest }, null, 2));
-
-        // Assign aggregated records to buffer
     }
 
     // Batch remove previous "latest" items
