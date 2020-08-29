@@ -7,6 +7,7 @@ import getTableName from '../utils/getTableName';
 import { Quarter } from 'lib/helpers/getQuarter';
 import attrs from '../constants/attributeNames';
 import indexNames from '../constants/indexNames';
+import db from 'lib/db';
 
 
 // Initialize
@@ -27,14 +28,18 @@ const createTable = async (
     const createTableResult = await dynamodb.createTable(getTableParams(TableName)).promise()
     // Wait for the table to be active
     await dynamodb.waitFor('tableExists', { TableName }).promise();
+    // Get stream ARN
+    const StreamArn = createTableResult?.TableDescription?.LatestStreamArn;
 
     // Create event source mapping for dynamodb stream and the handler
-    if (createTableResult?.TableDescription?.LatestStreamArn) {
+    if (StreamArn) {
+        // Wait for the table's streams to be active
+        await db.waitForStream({ StreamArn });
         // Create event source mapping request
         await lambda.createEventSourceMapping({
             // Assign function name passed
             FunctionName: streamHandlerArn,
-            EventSourceArn: createTableResult.TableDescription.LatestStreamArn,
+            EventSourceArn: StreamArn,
             StartingPosition: StartingPosition.LATEST,
             MaximumRetryAttempts: 10,
         }).promise()
@@ -42,7 +47,8 @@ const createTable = async (
         await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
     }
 
-    // @TODO: Add these dynamic resources to the cloudformation stack
+    // @TODO: Add these resources to the cloudformation stack
+    
 
     // Return the create table result
     return createTableResult
