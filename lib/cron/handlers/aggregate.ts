@@ -40,9 +40,8 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                     KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_CC} AND ${
                         db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT)
                     }`,
-                    // To calculate the following aggregated items, we only need `price` for non-key attributes.
+                    // To calculate the following aggregated items, we only need `timeSK` and `price`.
                     ProjectionExpression: [
-                        attrs.COMPANY_CODE,
                         attrs.TIME_SK,
                         attrs.PRICE,
                     ].join(','),
