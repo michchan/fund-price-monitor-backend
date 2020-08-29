@@ -1,4 +1,5 @@
 import { DynamoDBStreamHandler } from "aws-lambda";
+import { DynamoDB } from "aws-sdk";
 
 import fundPriceRecord from "lib/models/fundPriceRecord";
 import getQuarter from "lib/helpers/getQuarter";
@@ -32,9 +33,9 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
             // Only process when its `recordType` equqls `record`
             if (item.recordType === 'record') {
                 // Get item's date
-                const itemDate = new Date(item.time)
+                const itemDate = new Date(item.time);
                 // Create params for querying list of items with the same code of `item`, in a quarter
-                const params = {
+                const params: Omit<DynamoDB.QueryInput, 'TableName'> = {
                     ExpressionAttributeValues: {
                         [EXP_CC]: { S: `${item.company}_${item.code}` },
                         [EXP_RT]: { S: item.recordType },
@@ -44,7 +45,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                     ProjectionExpression: attrs.PRICE,
                     FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT),
                 }
-                console.log('Params: ', JSON.stringify({ item, itemDate, params }, null, 2))
+                console.log('Params: ', JSON.stringify({ item, itemDate, params }, null, 2));
                 // Send query with year and quarter of `item`
                 const quarterRecords = await fundPriceRecord.queryQuarterRecords(params, {
                     year: itemDate.getFullYear(),

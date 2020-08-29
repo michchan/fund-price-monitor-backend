@@ -1,6 +1,6 @@
 
 
-const beginsWith = (attributeName: string, value: string) => `begins_with(${attributeName}, ${attributeName})`
+const beginsWith = (attributeName: string, value: string) => `begins_with(${attributeName}, ${value})`
 
 
 const expressionFunctions = {
