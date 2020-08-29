@@ -24,6 +24,7 @@ function init (scope: cdk.Construct) {
                 'dynamodb:DescribeTable',
                 'dynamodb:CreateTable',
                 'dynamodb:BatchWriteItem',
+                'dynamodb:Query',
             ],
         })
     )
