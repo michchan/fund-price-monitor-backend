@@ -1,4 +1,4 @@
-import getCurrentQuarter from "lib/helpers/getCurrentQuarter"
+import getQuarter from "lib/helpers/getQuarter"
 import getTableName from "./getTableName"
 
 
@@ -8,7 +8,7 @@ import getTableName from "./getTableName"
  */
 const isTableOfCurrentQuarter = (tableName: string): boolean => {
     const year = new Date().getFullYear()
-    const quarter = getCurrentQuarter()
+    const quarter = getQuarter()
     
     return tableName === getTableName(year, quarter)
 }

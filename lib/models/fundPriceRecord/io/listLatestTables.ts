@@ -1,18 +1,13 @@
 import { DynamoDB } from 'aws-sdk';
 
-import getCurrentQuarter, { Quarter } from 'lib/helpers/getCurrentQuarter';
+import getQuarter, { Quarter } from 'lib/helpers/getQuarter';
 import getTableName from '../utils/getTableName'
 import { PROJECT_NAMESPACE } from 'lib/constants';
 import db from 'lib/db';
 import { Result } from 'lib/db/listAllTables';
+import TableRange from '../TableRange.type';
 
 
-
-export type TableRange = {
-    // YYYY
-    year: string;
-    quarter: Quarter;
-}
 
 /**
  * Return a list of properties of tables that have been created and match the criteria
@@ -23,7 +18,7 @@ const listLatestTables = async (
     limit?: DynamoDB.ListTablesInput['Limit']
 ): Promise<Result> => {
     // Normalize params
-    const _from = from || { year: new Date().getFullYear(), quarter: getCurrentQuarter() };
+    const _from = from || { year: new Date().getFullYear(), quarter: getQuarter() };
     // Offset a quarter before the `from.quarter` to make it inclusive
     const exclusiveStartTableName = getTableName(_from.year, _from.quarter, -1)
     // Send list tables request

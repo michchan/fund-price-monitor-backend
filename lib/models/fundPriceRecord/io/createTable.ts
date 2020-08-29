@@ -4,7 +4,7 @@ import { StartingPosition } from '@aws-cdk/aws-lambda';
 
 import AWS from 'lib/AWS'
 import getTableName from '../utils/getTableName';
-import { Quarter } from 'lib/helpers/getCurrentQuarter';
+import { Quarter } from 'lib/helpers/getQuarter';
 import attributeNames from '../constants/attributeNames';
 import indexNames from '../constants/indexNames';
 

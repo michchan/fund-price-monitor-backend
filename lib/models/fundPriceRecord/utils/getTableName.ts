@@ -1,5 +1,5 @@
 import { PROJECT_NAMESPACE } from "lib/constants"
-import { Quarter } from "lib/helpers/getCurrentQuarter"
+import { Quarter } from "lib/helpers/getQuarter"
 
 
 

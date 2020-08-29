@@ -4,7 +4,7 @@ import puppeteer = require("puppeteer");
 import { FundPriceRecord } from "../../models/fundPriceRecord/FundPriceRecord.type";
 import fundPriceRecord from "lib/models/fundPriceRecord";
 import scrapeFromManulifeMPF from "./scrapers/scrapeFromManulifeMPF";
-import getCurrentQuarter from "lib/helpers/getCurrentQuarter";
+import getQuarter from "lib/helpers/getQuarter";
 
 
 
@@ -30,7 +30,7 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         
         // Get current year
         const year = new Date().getFullYear()
-        const quarter = getCurrentQuarter()
+        const quarter = getQuarter()
         const TableName = fundPriceRecord.getTableName(year, quarter)
         // Passed from the environment variables defined in CDK construct of cron
         const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string

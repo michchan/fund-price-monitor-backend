@@ -1,5 +1,5 @@
 import getTableName from "./utils/getTableName"
-import getCurrentQuarter from "lib/helpers/getCurrentQuarter"
+import getQuarter from "lib/helpers/getQuarter"
 import createTable from "./io/createTable"
 import listLatestTables from "./io/listLatestTables"
 import isTableOfCurrentQuarter from "./utils/isTableOfCurrentQuarter"
@@ -10,10 +10,12 @@ import serialize from "./utils/serialize"
 import parse from "./utils/parse"
 import toLatestPriceRecord from "./utils/toLatestPriceRecord"
 import getQueryStartTimeByPeriodDifference from "./utils/getQueryStartTimeByPeriodDifference"
+import queryQuarterRecords from "./io/queryQuarterRecords"
 
 
 
 const fundPriceRecord = {
+    queryQuarterRecords,
     getQueryStartTimeByPeriodDifference,
     toLatestPriceRecord,
     serialize,
@@ -22,7 +24,7 @@ const fundPriceRecord = {
     attributeNames,
     indexNames,
     getTableName,
-    getCurrentQuarter,
+    getQuarter,
     createTable,
     listLatestTables,
     isTableOfCurrentQuarter,
