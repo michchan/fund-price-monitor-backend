@@ -17,6 +17,7 @@ const queryQuarterRecords = (
     const _from = from || { year: new Date().getFullYear(), quarter: getQuarter() };
 
     return db.queryAllItems({
+        ...input,
         TableName: getTableName(_from.year, _from.quarter),
     })
 }
