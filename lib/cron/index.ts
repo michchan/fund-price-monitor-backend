@@ -67,6 +67,7 @@ function init (scope: cdk.Construct) {
         handler: 'aggregate.handler',
         timeout: cdk.Duration.seconds(300),
         runtime: lambda.Runtime.NODEJS_12_X,
+        memorySize: 300,
         role: cronRole,
     });
     
