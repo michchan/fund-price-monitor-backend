@@ -73,6 +73,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
                 })(),
                 time,
                 fundType,
+                recordType: 'record',
             }
         })
     })

@@ -8,10 +8,12 @@ import indexNames from "./constants/indexNames"
 import batchCreateItems from "./io/batchCreateItems"
 import serialize from "./utils/serialize"
 import parse from "./utils/parse"
+import toLatestPriceRecord from "./utils/toLatestPriceRecord"
 
 
 
 const fundPriceRecord = {
+    toLatestPriceRecord,
     serialize,
     parse,
     batchCreateItems,

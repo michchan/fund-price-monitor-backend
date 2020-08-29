@@ -49,7 +49,7 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
         { AttributeName: attributeNames.QUARTER, AttributeType: 'S' },
         { AttributeName: attributeNames.PRICE_CHANGE_RATE, AttributeType: 'N' },
     ],
-    // Every created table are regarded as a table containing the latest time series data,
+    // Every created table are regarded as a table containing the latest timeSK series data,
     // So assign the best capacity units.
     ProvisionedThroughput: {
         ReadCapacityUnits: 5,

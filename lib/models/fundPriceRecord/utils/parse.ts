@@ -1,8 +1,7 @@
 import { DynamoDB } from 'aws-sdk';
 
-import { FundPriceRecord, CompanyType, RiskLevel, FundType } from "../FundPriceRecord.type"
+import { FundPriceRecord, CompanyType, RiskLevel, FundType, RecordType } from "../FundPriceRecord.type"
 import attributeNames from '../constants/attributeNames';
-import attributeConstants from '../constants/attributeConstants';
 
 
 
@@ -42,6 +41,7 @@ const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceRecord => {
         riskLevel: riskLevel.S as RiskLevel,
         time: timeSK.S.split('_').pop() ?? '',
         fundType: fundType.S as FundType,
+        recordType: timeSK.S.split('_').shift() as RecordType,
     }
 }
 
