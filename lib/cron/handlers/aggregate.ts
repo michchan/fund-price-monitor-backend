@@ -39,10 +39,11 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                 [EXP_CC]: `${item.company}_${item.code}`,
                 [EXP_RT]: item.recordType,
             },
-            KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_CC}`,
+            KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_CC} AND ${
+                db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT)
+            }`,
             // We need `price` only for non-key attributes
             ProjectionExpression: attrs.PRICE,
-            FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT),
         }
         console.log('Params: ', JSON.stringify({ item, itemDate, params }, null, 2));
         // Send query with year and quarter of `item`
