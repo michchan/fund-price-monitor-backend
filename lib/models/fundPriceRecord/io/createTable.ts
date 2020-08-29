@@ -13,6 +13,7 @@ import db from 'lib/db';
 // Initialize
 const dynamodb = new AWS.DynamoDB();
 const lambda = new AWS.Lambda();
+const cloudformation = new AWS.CloudFormation();
 
 export interface Result extends DynamoDB.CreateTableOutput {};
 
@@ -48,7 +49,9 @@ const createTable = async (
     }
 
     // @TODO: Add these resources to the cloudformation stack
-    
+    // await cloudformation.createChangeSet({
+        
+    // }).promise();
 
     // Return the create table result
     return createTableResult
