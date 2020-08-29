@@ -33,8 +33,8 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
 
         // Get item's date
         const itemDate = new Date(item.time);
-        // Create params for querying list of items with the same code of `item`, in a quarter
-        const params: Omit<DynamoDB.DocumentClient.QueryInput, 'TableName'> = {
+        // Create queryInput for querying list of items with the same code of `item`, in a quarter
+        const queryInput: Omit<DynamoDB.DocumentClient.QueryInput, 'TableName'> = {
             ExpressionAttributeValues: {
                 [EXP_CC]: `${item.company}_${item.code}`,
                 [EXP_RT]: item.recordType,
@@ -45,9 +45,9 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
             // We need `price` only for non-key attributes
             ProjectionExpression: attrs.PRICE,
         }
-        console.log('Params: ', JSON.stringify({ item, itemDate, params }, null, 2));
+        console.log('Query Input: ', JSON.stringify({ item, itemDate, queryInput }, null, 2));
         // Send query with year and quarter of `item`
-        const quarterRecords = await fundPriceRecord.queryQuarterRecords(params, {
+        const quarterRecords = await fundPriceRecord.queryQuarterRecords(queryInput, {
             year: itemDate.getFullYear(),
             quarter: getQuarter(itemDate)
         });
@@ -61,7 +61,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
         // // 4. Aggregation for price change rate per quarter   
         // const quarterRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'quarter');
 
-        console.log('Aggregation Results: ', JSON.stringify({ item, itemDate, params, quarterRecords, latest }, null, 2));
+        console.log('Aggregation Results: ', JSON.stringify({ item, itemDate, queryInput, quarterRecords, latest }, null, 2));
 
         // Assign aggregated records to buffer
     }
