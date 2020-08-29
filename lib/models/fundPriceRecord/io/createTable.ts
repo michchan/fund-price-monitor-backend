@@ -42,6 +42,8 @@ const createTable = async (
         await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
     }
 
+    // @TODO: Add these dynamic resources to the cloudformation stack
+
     // Return the create table result
     return createTableResult
 }
