@@ -12,24 +12,40 @@ export type Result = AWS.DynamoDBStreams.DescribeStreamOutput
 const waitForStream = (
     input: AWS.DynamoDBStreams.DescribeStreamInput,
     retryCounter: number = 0,
-    callback?: (result: Result) => unknown,
+    callback?: (err: null | AWS.AWSError, result?: Result) => unknown,
 ): Promise<null | Result> => new Promise((resolve, reject) => {
+    const handleErr = (err: null | AWS.AWSError) => {
+        if (callback) callback(err)
+        reject(new Error(`Unable to describe stream. Error JSON: ${err}`));
+    }
+    const handleResult = (data: Result) => {
+        if (callback) callback(null, data);
+        resolve(data);
+    }
+
     dynamodbStreams.describeStream(input, (err, data) => {
         if (err || !data?.StreamDescription) {
             // Abort if retry time reaches maximum
             if (retryCounter >= MAX_TRY_TIME) {
                 if (err) {
-                    reject(new Error(`Unable to describe stream. Error JSON: ${err}`));
+                    handleErr(err);
                 } else {
                     resolve(null);
                 }
             } else {
                 // Pass resolve as a callback and increment `retryCounter`
-                setTimeout(() => waitForStream(input, retryCounter + 1, resolve), INTERVAL)
+                setTimeout(() => {
+                    waitForStream(input, retryCounter + 1, (err, data) => {
+                        if (err || !data?.StreamDescription) {
+                            handleErr(err);
+                        } else {
+                            handleResult(data);
+                        }
+                    })
+                }, INTERVAL)
             }
         } else {
-            if (callback) callback(data)
-            resolve(data) 
+            handleResult(data);
         }
     })
 })
