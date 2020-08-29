@@ -36,6 +36,7 @@ const createTable = async (
             FunctionName: streamHandlerArn,
             EventSourceArn: createTableResult.TableDescription.LatestStreamArn,
             StartingPosition: StartingPosition.LATEST,
+            MaximumRetryAttempts: 10,
         }).promise()
         // Wait for function event-source mapping updated
         await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
