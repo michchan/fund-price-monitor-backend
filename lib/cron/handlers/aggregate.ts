@@ -3,6 +3,7 @@ import { DynamoDBStreamHandler } from "aws-lambda";
 import fundPriceRecord from "lib/models/fundPriceRecord";
 import getQuarter from "lib/helpers/getQuarter";
 import attrs from "lib/models/fundPriceRecord/constants/attributeNames";
+import db from "lib/db";
 
 
 
@@ -43,7 +44,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                     KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_CC}`,
                     // We need `price` only for non-key attributes
                     ProjectionExpression: attrs.PRICE,
-                    FilterExpression: `begins_with(${attrs.TIME_SK}, ${EXP_RT})`,
+                    FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT),
                 }, {
                     year: itemDate.getFullYear(),
                     quarter: getQuarter(itemDate)
