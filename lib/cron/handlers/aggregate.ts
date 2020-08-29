@@ -31,12 +31,10 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
 
             // Only process when its `recordType` equqls `record`
             if (item.recordType === 'record') {
-                // 1. Aggregation for latest price
-                const latest = fundPriceRecord.toLatestPriceRecord(item);
                 // Get item's date
                 const itemDate = new Date(item.time)
-                // Query list of items with the same code of `item`, in a quarter
-                const quarterRecords = await fundPriceRecord.queryQuarterRecords({
+                // Create params for querying list of items with the same code of `item`, in a quarter
+                const params = {
                     ExpressionAttributeValues: {
                         [EXP_CC]: { S: `${item.company}_${item.code}` },
                         [EXP_RT]: { S: item.recordType },
@@ -45,11 +43,15 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                     // We need `price` only for non-key attributes
                     ProjectionExpression: attrs.PRICE,
                     FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT),
-                }, {
+                }
+                // Send query with year and quarter of `item`
+                const quarterRecords = await fundPriceRecord.queryQuarterRecords(params, {
                     year: itemDate.getFullYear(),
                     quarter: getQuarter(itemDate)
                 });
                 
+                // 1. Aggregation for latest price
+                const latest = fundPriceRecord.toLatestPriceRecord(item);
                 // // 2. Aggregation for price change rate per week
                 // const weekRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'week');
                 // // 3. Aggregation for price change rate per month
@@ -57,7 +59,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                 // // 4. Aggregation for price change rate per quarter   
                 // const quarterRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'quarter');
 
-                console.log('Aggregated item: ', JSON.stringify({ item, itemDate, quarterRecords }, null, 2));
+                console.log('Aggregated item: ', JSON.stringify({ item, itemDate, params, quarterRecords }, null, 2));
 
                 // Assign aggregated records to buffer
             }
