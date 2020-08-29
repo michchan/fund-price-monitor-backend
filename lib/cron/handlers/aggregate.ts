@@ -61,7 +61,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                 // // 4. Aggregation for price change rate per quarter   
                 // const quarterRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'quarter');
 
-                console.log('Aggregated item: ', JSON.stringify({ item, itemDate, params, quarterRecords }, null, 2));
+                console.log('Aggregated item: ', JSON.stringify({ item, itemDate, params, quarterRecords, latest }, null, 2));
 
                 // Assign aggregated records to buffer
             }

@@ -18,24 +18,31 @@ const queryAllItems = (
         if (err) {
             reject(new Error(`Unable to query items. Error JSON: ${err}`));
         } else {
+            // Merge results
+            const mergedResults = mergeResults(previousResult, data)
+            
             if (data.LastEvaluatedKey) {
                 resolve(await queryAllItems({
                     ...input,
                     ExclusiveStartKey: data.LastEvaluatedKey,
-                }, data))
+                }, mergedResults))
             } else {
                 // Merge with previousResult
-                resolve(((nextResult: Result): Result => {
-                    if (!previousResult) return nextResult
-                    return {
-                        ...nextResult,
-                        Items: [...previousResult.Items ?? [], ...nextResult.Items ?? []],
-                        Count: (previousResult.Count ?? 0) + (nextResult.Count ?? 0),
-                        ScannedCount: (previousResult.ScannedCount) ?? 0 + (nextResult.ScannedCount ?? 0),
-                    }
-                })(data))
+                resolve(mergedResults)
             }
         }
     })
 })
 export default queryAllItems
+
+
+/** Merge previous and next results */
+const mergeResults = (previousResult: null | Result, nextResult: Result): Result => {
+    if (!previousResult) return nextResult
+    return {
+        ...nextResult,
+        Items: [...previousResult.Items ?? [], ...nextResult.Items ?? []],
+        Count: (previousResult.Count ?? 0) + (nextResult.Count ?? 0),
+        ScannedCount: (previousResult.ScannedCount) ?? 0 + (nextResult.ScannedCount ?? 0),
+    }
+}
