@@ -5,7 +5,7 @@ import { StartingPosition } from '@aws-cdk/aws-lambda';
 import AWS from 'lib/AWS'
 import getTableName from '../utils/getTableName';
 import { Quarter } from 'lib/helpers/getQuarter';
-import attributeNames from '../constants/attributeNames';
+import attrs from '../constants/attributeNames';
 import indexNames from '../constants/indexNames';
 
 
@@ -70,18 +70,18 @@ const createInclusiveCSI = (
 const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
     TableName: TableName,
     KeySchema: [
-        { AttributeName: attributeNames.COMPANY_CODE, KeyType: 'HASH' },
-        { AttributeName: attributeNames.TIME_SK, KeyType: 'RANGE' },
+        { AttributeName: attrs.COMPANY_CODE, KeyType: 'HASH' },
+        { AttributeName: attrs.TIME_SK, KeyType: 'RANGE' },
     ],
     AttributeDefinitions: [
-        { AttributeName: attributeNames.COMPANY_CODE, AttributeType: 'S' },
-        { AttributeName: attributeNames.TIME_SK, AttributeType: 'S' },
-        { AttributeName: attributeNames.COMPANY, AttributeType: 'S' },
-        { AttributeName: attributeNames.RISK_LEVEL, AttributeType: 'S' },
-        { AttributeName: attributeNames.WEEK, AttributeType: 'S' },
-        { AttributeName: attributeNames.MONTH, AttributeType: 'S' },
-        { AttributeName: attributeNames.QUARTER, AttributeType: 'S' },
-        { AttributeName: attributeNames.PRICE_CHANGE_RATE, AttributeType: 'N' },
+        { AttributeName: attrs.COMPANY_CODE, AttributeType: 'S' },
+        { AttributeName: attrs.TIME_SK, AttributeType: 'S' },
+        { AttributeName: attrs.COMPANY, AttributeType: 'S' },
+        { AttributeName: attrs.RISK_LEVEL, AttributeType: 'S' },
+        { AttributeName: attrs.WEEK, AttributeType: 'S' },
+        { AttributeName: attrs.MONTH, AttributeType: 'S' },
+        { AttributeName: attrs.QUARTER, AttributeType: 'S' },
+        { AttributeName: attrs.PRICE_CHANGE_RATE, AttributeType: 'N' },
     ],
     // Every created table are regarded as a table containing the latest timeSK series data,
     // So assign the best capacity units.
@@ -93,36 +93,36 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
         createInclusiveCSI({
             IndexName: indexNames.WEEK_PRICE_CHANGE_RATE,
             KeySchema: [
-                { AttributeName: attributeNames.WEEK, KeyType: 'HASH' },
-                { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+                { AttributeName: attrs.WEEK, KeyType: 'HASH' },
+                { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
         createInclusiveCSI({
             IndexName: indexNames.MONTH_PRICE_CHANGE_RATE,
             KeySchema: [
-                { AttributeName: attributeNames.MONTH, KeyType: 'HASH' },
-                { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+                { AttributeName: attrs.MONTH, KeyType: 'HASH' },
+                { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
         createInclusiveCSI({
             IndexName: indexNames.QUARTER_PRICE_CHANGE_RATE,
             KeySchema: [
-                { AttributeName: attributeNames.QUARTER, KeyType: 'HASH' },
-                { AttributeName: attributeNames.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+                { AttributeName: attrs.QUARTER, KeyType: 'HASH' },
+                { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
         createInclusiveCSI({
             IndexName: indexNames.RECORDS_BY_COMPANY,
             KeySchema: [
-                { AttributeName: attributeNames.COMPANY, KeyType: 'HASH' },
+                { AttributeName: attrs.COMPANY, KeyType: 'HASH' },
             ],
-        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
         createInclusiveCSI({
             IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
             KeySchema: [
-                { AttributeName: attributeNames.RISK_LEVEL, KeyType: 'HASH' },
+                { AttributeName: attrs.RISK_LEVEL, KeyType: 'HASH' },
             ],
-        }, [attributeNames.PRICE, attributeNames.NAME, attributeNames.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
     ],
     // Add stream for aggregation of top-level items
     StreamSpecification: {

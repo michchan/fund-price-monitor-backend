@@ -2,14 +2,12 @@ import { DynamoDBStreamHandler } from "aws-lambda";
 
 import fundPriceRecord from "lib/models/fundPriceRecord";
 import getQuarter from "lib/helpers/getQuarter";
-import attributeNames from "lib/models/fundPriceRecord/constants/attributeNames";
+import attrs from "lib/models/fundPriceRecord/constants/attributeNames";
 
 
 
-const expAttrNames = {
-    COMPANY_CODE: ':company_code',
-    RECORD_TYPE: ':record_type',
-} as const
+const EXP_CC = `:company_code`
+const EXP_RT = `:recordType`
 
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
     // Create buffer of each types of aggregated records
@@ -39,13 +37,13 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                 // Query list of items with the same code of `item`, in a quarter
                 const quarterRecords = await fundPriceRecord.queryQuarterRecords({
                     ExpressionAttributeValues: {
-                        [expAttrNames.COMPANY_CODE]: { S: `${item.company}_${item.code}` },
-                        [expAttrNames.RECORD_TYPE]: { S: item.recordType },
+                        [EXP_CC]: { S: `${item.company}_${item.code}` },
+                        [EXP_RT]: { S: item.recordType },
                     },
-                    KeyConditionExpression: `${attributeNames.COMPANY_CODE} = ${expAttrNames.COMPANY_CODE}`,
+                    KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_CC}`,
                     // We need `price` only for non-key attributes
-                    ProjectionExpression: attributeNames.PRICE,
-                    FilterExpression: `begins_with(${attributeNames.TIME_SK}, ${expAttrNames.RECORD_TYPE})`,
+                    ProjectionExpression: attrs.PRICE,
+                    FilterExpression: `begins_with(${attrs.TIME_SK}, ${EXP_RT})`,
                 }, {
                     year: itemDate.getFullYear(),
                     quarter: getQuarter(itemDate)

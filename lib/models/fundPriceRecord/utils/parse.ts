@@ -1,11 +1,11 @@
 import { DynamoDB } from 'aws-sdk';
 
 import { FundPriceRecord, CompanyType, RiskLevel, FundType, RecordType } from "../FundPriceRecord.type"
-import attributeNames from '../constants/attributeNames';
+import attr from '../constants/attributeNames';
 
 
 
-type AttrName = typeof attributeNames
+type AttrName = typeof attr
 
 export type Item = {
     [key in string]: {
@@ -19,16 +19,16 @@ export type Item = {
  */
 const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceRecord => {
     const {
-        [attributeNames.COMPANY_CODE]: company_code,
-        [attributeNames.TIME_SK]: timeSK,
-        [attributeNames.COMPANY]: company,
-        [attributeNames.NAME]: name,
-        [attributeNames.PRICE]: price,
-        [attributeNames.UPDATED_DATE]: updatedDate,
-        [attributeNames.RISK_LEVEL]: riskLevel,
-        [attributeNames.FUND_TYPE]: fundType,
-        [attributeNames.INITIAL_PRICE]: initialPrice,
-        [attributeNames.LAUNCHED_DATE]: launchedDate,
+        [attr.COMPANY_CODE]: company_code,
+        [attr.TIME_SK]: timeSK,
+        [attr.COMPANY]: company,
+        [attr.NAME]: name,
+        [attr.PRICE]: price,
+        [attr.UPDATED_DATE]: updatedDate,
+        [attr.RISK_LEVEL]: riskLevel,
+        [attr.FUND_TYPE]: fundType,
+        [attr.INITIAL_PRICE]: initialPrice,
+        [attr.LAUNCHED_DATE]: launchedDate,
     } = attributeMap as unknown as Item
     return {
         company: company.S as CompanyType,
