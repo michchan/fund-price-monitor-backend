@@ -13,6 +13,40 @@ import indexNames from '../constants/indexNames';
 const dynamodb = new AWS.DynamoDB();
 const lambda = new AWS.Lambda();
 
+export interface Result extends DynamoDB.CreateTableOutput {};
+
+const createTable = async (
+    /** In YYYY format */
+    year: string | number,
+    quarter: Quarter,
+    streamHandlerArn: Lambda.CreateEventSourceMappingRequest['FunctionName'],
+): Promise<Result> => {
+    // Get based table name
+    const TableName = getTableName(year, quarter)
+    // Send create table request
+    const createTableResult = await dynamodb.createTable(getTableParams(TableName)).promise()
+    // Wait for the table to be active
+    await dynamodb.waitFor('tableExists', { TableName }).promise();
+
+    // Create event source mapping for dynamodb stream and the handler
+    if (createTableResult?.TableDescription?.LatestStreamArn) {
+        // Create event source mapping request
+        await lambda.createEventSourceMapping({
+            // Assign function name passed
+            FunctionName: streamHandlerArn,
+            EventSourceArn: createTableResult.TableDescription.LatestStreamArn,
+            StartingPosition: StartingPosition.LATEST,
+        }).promise()
+        // Wait for function event-source mapping updated
+        await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
+    }
+
+    // Return the create table result
+    return createTableResult
+}
+export default createTable
+
+
 /** Common throughput for GSI */
 const GSI_COMMON_THROUGHPUT: DynamoDB.GlobalSecondaryIndex['ProvisionedThroughput'] = {
     ReadCapacityUnits: 1,
@@ -96,36 +130,3 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
         StreamViewType: 'NEW_AND_OLD_IMAGES',
     },
 })
-
-export interface Result extends DynamoDB.CreateTableOutput {};
-
-const createTable = async (
-    /** In YYYY format */
-    year: string | number,
-    quarter: Quarter,
-    streamHandlerArn: Lambda.CreateEventSourceMappingRequest['FunctionName'],
-): Promise<Result> => {
-    // Get based table name
-    const TableName = getTableName(year, quarter)
-    // Send create table request
-    const createTableResult = await dynamodb.createTable(getTableParams(TableName)).promise()
-    // Wait for the table to be active
-    await dynamodb.waitFor('tableExists', { TableName }).promise();
-
-    // Create event source mapping for dynamodb stream and the handler
-    if (createTableResult?.TableDescription?.LatestStreamArn) {
-        // Create event source mapping request
-        await lambda.createEventSourceMapping({
-            // Assign function name passed
-            FunctionName: streamHandlerArn,
-            EventSourceArn: createTableResult.TableDescription.LatestStreamArn,
-            StartingPosition: StartingPosition.LATEST,
-        }).promise()
-        // Wait for function event-source mapping updated
-        await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
-    }
-
-    // Return the create table result
-    return createTableResult
-}
-export default createTable

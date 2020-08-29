@@ -9,10 +9,12 @@ import batchCreateItems from "./io/batchCreateItems"
 import serialize from "./utils/serialize"
 import parse from "./utils/parse"
 import toLatestPriceRecord from "./utils/toLatestPriceRecord"
+import getQueryStartTimeByPeriodDifference from "./utils/getQueryStartTimeByPeriodDifference"
 
 
 
 const fundPriceRecord = {
+    getQueryStartTimeByPeriodDifference,
     toLatestPriceRecord,
     serialize,
     parse,

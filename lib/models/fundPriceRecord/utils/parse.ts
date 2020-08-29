@@ -32,6 +32,7 @@ const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceRecord => {
     } = attributeMap as unknown as Item
     return {
         company: company.S as CompanyType,
+        // Get the last composite segment of `company_code`
         code: company_code.S.split('_').pop() ?? '',
         name: name.S,
         updatedDate: updatedDate.S,
@@ -39,8 +40,10 @@ const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceRecord => {
         initialPrice: +initialPrice.N,
         launchedDate: launchedDate.S,
         riskLevel: riskLevel.S as RiskLevel,
+        // Get the last composite segment of `timeSK`
         time: timeSK.S.split('_').pop() ?? '',
         fundType: fundType.S as FundType,
+        // Get the first composite segment of `timeSK`
         recordType: timeSK.S.split('_').shift() as RecordType,
     }
 }
