@@ -8,8 +8,8 @@ import db from "lib/db";
 
 
 
-const EXP_CC = `:company_code`
-const EXP_RT = `:recordType`
+const EXP_CC = `:company_code` as string
+const EXP_RT = `:recordType` as string
 
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
     // Create buffer of each types of aggregated records
@@ -33,19 +33,17 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
 
         // Get item's date
         const itemDate = new Date(item.time);
-        
         // Create params for querying list of items with the same code of `item`, in a quarter
-        const params: Omit<DynamoDB.QueryInput, 'TableName'> = {
+        const params: Omit<DynamoDB.DocumentClient.QueryInput, 'TableName'> = {
             ExpressionAttributeValues: {
-                [EXP_CC]: { S: `${item.company}_${item.code}` },
-                [EXP_RT]: { S: item.recordType },
+                [EXP_CC]: `${item.company}_${item.code}`,
+                [EXP_RT]: item.recordType,
             },
             KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_CC}`,
             // We need `price` only for non-key attributes
             ProjectionExpression: attrs.PRICE,
             FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_RT),
         }
-        console.log('Params: ', JSON.stringify({ item, itemDate, params }, null, 2));
         // Send query with year and quarter of `item`
         const quarterRecords = await fundPriceRecord.queryQuarterRecords(params, {
             year: itemDate.getFullYear(),
@@ -60,6 +58,8 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
         // const monthRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'month');
         // // 4. Aggregation for price change rate per quarter   
         // const quarterRate = fundPriceRecord.aggregateLatestPriceChangeRate(item, 'quarter');
+
+        console.log('Aggregation Results: ', JSON.stringify({ item, itemDate, params, quarterRecords, latest }, null, 2));
 
         // Assign aggregated records to buffer
     }

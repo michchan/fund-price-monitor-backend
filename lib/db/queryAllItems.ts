@@ -6,12 +6,12 @@ import AWS from 'lib/AWS'
 // Initialize
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-export type Result = DynamoDB.QueryOutput
+export type Result = DynamoDB.DocumentClient.QueryOutput
 /**
  * Return a list of properties of tables that have been created and match the criteria
  */
 const queryAllItems = (
-    input: DynamoDB.QueryInput,
+    input: DynamoDB.DocumentClient.QueryInput,
     previousResult: null | Result = null,
 ): Promise<Result> => new Promise((resolve, reject) => {
     docClient.query(input, async (err, data) => {

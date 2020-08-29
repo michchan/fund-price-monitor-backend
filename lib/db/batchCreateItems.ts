@@ -7,7 +7,7 @@ import AWS from 'lib/AWS'
 // Initialize
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-export type ChunkResult = DynamoDB.BatchWriteItemOutput
+export type ChunkResult = DynamoDB.DocumentClient.BatchWriteItemOutput
 export type Result = ChunkResult[]
 
 /**
@@ -16,7 +16,7 @@ export type Result = ChunkResult[]
 function batchCreateItems <T> (
     records: T[],
     tableName: string,
-    serialize?: (item: T) => DynamoDB.PutRequest,
+    serialize?: (item: T) => DynamoDB.DocumentClient.PutRequest,
 ): Promise<Result> {
     // Chunk records by 25 which is the max number of items DynamoDB can batch write.
     const chunks = chunk(records, 25)
@@ -27,7 +27,7 @@ function batchCreateItems <T> (
             return docClient.batchWrite({
                 RequestItems: {
                     [tableName]: chunkedRecords.map(rec => ({
-                        PutRequest: (serialize ? serialize(rec) : serialize) as unknown as DynamoDB.PutRequest
+                        PutRequest: (serialize ? serialize(rec) : serialize) as unknown as DynamoDB.DocumentClient.PutRequest
                     }))
                 }
             }).promise()
