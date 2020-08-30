@@ -1,4 +1,5 @@
 import { ScheduledHandler } from "aws-lambda";
+import wait from 'simply-utils/dist/async/wait'
 
 import { FundPriceRecord } from "../../models/fundPriceRecord/FundPriceRecord.type";
 import fundPriceRecord from "lib/models/fundPriceRecord";
@@ -40,6 +41,8 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         if (!tableNames.some(fundPriceRecord.isTableOfCurrentQuarter)) {
             // Create one if it doesn't exist
             await fundPriceRecord.createTable(year, quarter, aggregationHandlerArn);
+            // A some delay to wait for the stream to work
+            await wait(20000); //20s
         }
         // Write batch data to the table
         await fundPriceRecord.batchCreateItems(records, TableName);
