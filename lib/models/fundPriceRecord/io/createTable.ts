@@ -36,7 +36,7 @@ const createTable = async (
     if (!StreamArn) throw new Error(`StreamArn undefined: ${JSON.stringify(createTableResult, null, 2)}`)
 
     // Wait for the table's streams to be active
-    await db.waitForStream({ StreamArn });
+    // await db.waitForStream({ StreamArn });
     // Create event source mapping request
     await lambda.createEventSourceMapping({
         // Assign function name passed
