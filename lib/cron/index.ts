@@ -65,6 +65,7 @@ function init (scope: cdk.Construct) {
     const aggregationHandler = new lambda.Function(scope, 'CronAggregator', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
         handler: 'aggregate.handler',
+        // Maximum timeout of lambda is 15 minutes
         timeout: cdk.Duration.seconds(60 * 15),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 300,
@@ -75,6 +76,7 @@ function init (scope: cdk.Construct) {
     const mainHandler = new lambda.Function(scope, 'CronHandlerMain', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
         handler: 'index.handler',
+        // Maximum timeout of lambda is 15 minutes
         timeout: cdk.Duration.seconds(60 * 15),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 700,
