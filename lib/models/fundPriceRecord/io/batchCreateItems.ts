@@ -1,7 +1,7 @@
 import { FundPriceRecord } from '../FundPriceRecord.type';
 import serialize from '../utils/serialize';
-import db from 'lib/db';
-import { Result } from 'lib/db/batchCreateItems';
+import db from 'lib/AWS/dynamodb';
+import { Result } from 'lib/AWS/dynamodb/batchCreateItems';
 
 
 /**

@@ -3,8 +3,8 @@ import { DynamoDB } from 'aws-sdk';
 import getQuarter, { Quarter } from 'lib/helpers/getQuarter';
 import getTableName from '../utils/getTableName'
 import { PROJECT_NAMESPACE } from 'lib/constants';
-import db from 'lib/db';
-import { Result } from 'lib/db/listAllTables';
+import db from 'lib/AWS/dynamodb';
+import { Result } from 'lib/AWS/dynamodb/listAllTables';
 import TableRange from '../TableRange.type';
 
 

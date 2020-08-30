@@ -4,7 +4,7 @@ import { DynamoDB } from "aws-sdk";
 import fundPriceRecord from "lib/models/fundPriceRecord";
 import getQuarter from "lib/helpers/getQuarter";
 import attrs from "lib/models/fundPriceRecord/constants/attributeNames";
-import db from "lib/db";
+import db from "lib/AWS/dynamodb";
 
 
 

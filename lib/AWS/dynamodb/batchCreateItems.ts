@@ -1,7 +1,7 @@
 import { DynamoDB } from 'aws-sdk';
 import chunk from 'lodash/chunk'
 
-import AWS from 'lib/AWS'
+import AWS from 'lib/AWS/AWS'
 
 
 // Initialize

@@ -2,17 +2,18 @@ import { DynamoDB, Lambda } from 'aws-sdk';
 import { NonKeyAttributeNameList } from 'aws-sdk/clients/dynamodb';
 import { StartingPosition } from '@aws-cdk/aws-lambda';
 
-import AWS from 'lib/AWS'
+import AWS from 'lib/AWS/AWS'
 import getTableName from '../utils/getTableName';
 import { Quarter } from 'lib/helpers/getQuarter';
 import attrs from '../constants/attributeNames';
 import indexNames from '../constants/indexNames';
-import db from 'lib/db';
+import db from 'lib/AWS/dynamodb';
 
 
 // Initialize
 const dynamodb = new AWS.DynamoDB();
 const lambda = new AWS.Lambda();
+const eventBridge = new AWS.EventBridge();
 const cloudformation = new AWS.CloudFormation();
 
 export interface Result extends DynamoDB.CreateTableOutput {};
@@ -31,22 +32,21 @@ const createTable = async (
     await dynamodb.waitFor('tableExists', { TableName }).promise();
     // Get stream ARN
     const StreamArn = createTableResult?.TableDescription?.LatestStreamArn;
+    // Throw an error if the stream ARN is undefined. As it supposed to be defined.
+    if (!StreamArn) throw new Error(`StreamArn undefined: ${JSON.stringify(createTableResult, null, 2)}`)
 
-    // Create event source mapping for dynamodb stream and the handler
-    if (StreamArn) {
-        // Wait for the table's streams to be active
-        await db.waitForStream({ StreamArn });
-        // Create event source mapping request
-        await lambda.createEventSourceMapping({
-            // Assign function name passed
-            FunctionName: streamHandlerArn,
-            EventSourceArn: StreamArn,
-            StartingPosition: StartingPosition.LATEST,
-            MaximumRetryAttempts: 10,
-        }).promise()
-        // Wait for function event-source mapping updated
-        await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
-    }
+    // Wait for the table's streams to be active
+    await db.waitForStream({ StreamArn });
+    // Create event source mapping request
+    await lambda.createEventSourceMapping({
+        // Assign function name passed
+        FunctionName: streamHandlerArn,
+        EventSourceArn: StreamArn,
+        StartingPosition: StartingPosition.LATEST,
+        MaximumRetryAttempts: 10,
+    }).promise();
+    // Wait for function event-source mapping updated
+    await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
 
     // @TODO: Add these resources to the cloudformation stack
     // await cloudformation.createChangeSet({

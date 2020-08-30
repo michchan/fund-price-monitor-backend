@@ -1,5 +1,4 @@
 import { ScheduledHandler } from "aws-lambda";
-import puppeteer = require("puppeteer");
 
 import { FundPriceRecord } from "../../models/fundPriceRecord/FundPriceRecord.type";
 import fundPriceRecord from "lib/models/fundPriceRecord";
@@ -40,7 +39,7 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         // Check if table of the current quarter exists
         if (!tableNames.some(fundPriceRecord.isTableOfCurrentQuarter)) {
             // Create one if it doesn't exist
-            await fundPriceRecord.createTable(year, quarter, aggregationHandlerArn)
+            await fundPriceRecord.createTable(year, quarter, aggregationHandlerArn);
         }
         // Write batch data to the table
         await fundPriceRecord.batchCreateItems(records, TableName);

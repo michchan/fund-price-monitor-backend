@@ -1,8 +1,8 @@
 import { DynamoDB } from 'aws-sdk';
 
-import { Result } from "lib/db/queryAllItems"
+import { Result } from "lib/AWS/dynamodb/queryAllItems"
 import TableRange from '../TableRange.type';
-import db from 'lib/db';
+import db from 'lib/AWS/dynamodb';
 import getTableName from '../utils/getTableName';
 import getQuarter from 'lib/helpers/getQuarter';
 
