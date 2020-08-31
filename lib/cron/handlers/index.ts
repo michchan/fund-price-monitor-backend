@@ -14,6 +14,27 @@ const scrapers: (() => Promise<FundPriceRecord[]>)[] = [
 
 export const handler: ScheduledHandler = async (event, context, callback) => {
     try {
+        /** ------------ Check table existence and create table ------------ */
+
+        // Get current year and quarter
+        const year = new Date().getFullYear()
+        const quarter = getQuarter()
+        // Get table name based on that year and quarter
+        const TableName = fundPriceRecord.getTableName(year, quarter)
+
+        // List tables upon the current quarter
+        const tableNames = await fundPriceRecord.listLatestTables();
+        // Create a table of the current quarter if it does NOT exist
+        if (!tableNames.some(fundPriceRecord.isTableOfCurrentQuarter)) {
+            // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
+            // to map as dynamodb stream target function
+            const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
+            // Create one if it doesn't exist
+            await fundPriceRecord.createTable(year, quarter, aggregationHandlerArn);
+        }
+
+        /** ------------ Scrape and Create records ------------ */
+
         // Scrape records from the site
         const results = await Promise.all(scrapers.map(scrape => scrape()))
         // Merge records
@@ -26,23 +47,7 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
                     throw new Error(`${key} undefined from scraped data`)
             }
         }
-        
-        // Get current year
-        const year = new Date().getFullYear()
-        const quarter = getQuarter()
-        const TableName = fundPriceRecord.getTableName(year, quarter)
-        // Passed from the environment variables defined in CDK construct of cron
-        const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
-
-        // List tables upon the current quarter
-        const tableNames = await fundPriceRecord.listLatestTables();
-        // Check if table of the current quarter exists
-        if (!tableNames.some(fundPriceRecord.isTableOfCurrentQuarter)) {
-            // Create one if it doesn't exist
-            await fundPriceRecord.createTable(year, quarter, aggregationHandlerArn);
-            // @TODO: Remove this, testing only
-            return
-        }
+    
         // Write batch data to the table
         await fundPriceRecord.batchCreateItems(records, TableName);
     } catch (error) {
