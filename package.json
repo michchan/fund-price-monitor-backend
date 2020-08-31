@@ -38,6 +38,8 @@
     "@aws-cdk/aws-events-targets": "1.61.1",
     "@aws-cdk/aws-iam": "1.61.1",
     "@aws-cdk/aws-lambda": "1.61.1",
+    "@aws-cdk/aws-stepfunctions": "^1.61.1",
+    "@aws-cdk/aws-stepfunctions-tasks": "^1.61.1",
     "@aws-cdk/core": "1.61.1",
     "aws-sdk": "2.739.0",
     "chrome-aws-lambda": "^5.2.1",

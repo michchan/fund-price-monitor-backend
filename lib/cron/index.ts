@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as iam from '@aws-cdk/aws-iam';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks';
 import { Effect } from '@aws-cdk/aws-iam';
 
 
@@ -65,8 +67,7 @@ function init (scope: cdk.Construct) {
     const aggregationHandler = new lambda.Function(scope, 'CronAggregator', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
         handler: 'aggregate.handler',
-        // Maximum timeout of lambda is 15 minutes
-        timeout: cdk.Duration.seconds(60 * 15),
+        timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 300,
         role: cronRole,
@@ -76,8 +77,7 @@ function init (scope: cdk.Construct) {
     const tableHandler = new lambda.Function(scope, 'CronTableHandler', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
         handler: 'handleTable.handler',
-        // Maximum timeout of lambda is 15 minutes
-        timeout: cdk.Duration.seconds(60 * 15),
+        timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 250,
         role: cronRole,
@@ -90,8 +90,7 @@ function init (scope: cdk.Construct) {
     const scrapeHandler = new lambda.Function(scope, 'CronScraper', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
         handler: 'scrape.handler',
-        // Maximum timeout of lambda is 15 minutes
-        timeout: cdk.Duration.seconds(60 * 15),
+        timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 700,
         role: cronRole,
@@ -99,6 +98,30 @@ function init (scope: cdk.Construct) {
 
     /** ------------------ Step functions state machine Definition ------------------ */
 
+    // Create table handling task
+    const handleTableTask = new sfn.Task(scope, 'Check/create table', {
+        task: new sfnTasks.InvokeFunction(tableHandler),
+    });   
+    // Create a wait state to wait for the dynamodb stream to warm up and work
+    const wait = new sfn.Wait(scope, 'Wait for dynamodb stream to warm-up', {
+        time: sfn.WaitTime.duration(cdk.Duration.minutes(5)),
+    });
+    // Create scraping task
+    const scrapeTask = new sfn.Task(scope, 'Scrap and save records', {
+        task: new sfnTasks.InvokeFunction(scrapeHandler),
+    });
+
+    // Create chain
+    const chain = sfn.Chain
+        .start(handleTableTask)
+        .next(wait)
+        .next(scrapeTask)
+
+    // Create state machine
+    const stateMachine = new sfn.StateMachine(scope, 'CronStateMachine', {
+        definition: chain,
+        timeout: cdk.Duration.minutes(15),
+    });
 
     /** ------------------ Events Rule Definition ------------------ */
 
