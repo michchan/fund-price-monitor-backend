@@ -62,27 +62,30 @@ const createTable = async (
 
     // Wait for function event-source mapping updated
     await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
+    // Create changeset resources to import
+    const ResourcesToImport: AWS.CloudFormation.ResourcesToImport = [
+        {
+            ResourceType: 'AWS::DynamoDB::Table',
+            LogicalResourceId: tableLogicalId,
+            ResourceIdentifier: { TableName },
+        },
+        {
+            ResourceType: 'AWS::Lambda::EventSourceMapping',
+            LogicalResourceId: eventSrcMapId,
+            ResourceIdentifier: {
+                FunctionName: streamHandlerArn,
+                EventSourceArn: StreamArn
+            }
+        }
+    ];
     // Add these resources to the cloudformation stack
     await cloudformation.createChangeSet({
         // TODO: Make it more dynamic
         StackName: 'FundPriceMonitorBackendStack',
         ChangeSetName: 'ImportTableAndEventMapping',
         ChangeSetType: 'IMPORT',
-        ResourcesToImport: [
-            {
-                ResourceType: 'AWS::DynamoDB::Table',
-                LogicalResourceId: tableLogicalId,
-                ResourceIdentifier: { TableName },
-            },
-            {
-                ResourceType: 'AWS::Lambda::EventSourceMapping',
-                LogicalResourceId: eventSrcMapId,
-                ResourceIdentifier: {
-                    FunctionName: streamHandlerArn,
-                    EventSourceArn: StreamArn
-                }
-            }
-        ],
+        ResourcesToImport,
+        TemplateBody: JSON.stringify(ResourcesToImport, null, 2),
     }).promise();
 
     // Return the create table result
