@@ -24,12 +24,16 @@ const createTable = async (
     quarter: Quarter,
     streamHandlerArn: Lambda.CreateEventSourceMappingRequest['FunctionName'],
 ): Promise<Result> => {
+    /** ------------- Create table ------------- */
+
     // Get based table name
     const TableName = getTableName(year, quarter)
     // Send create table request
     const createdTable = await dynamodb.createTable(getTableParams(TableName)).promise()
     // Wait for the table to be active
     await dynamodb.waitFor('tableExists', { TableName }).promise();
+
+    /** ------------- Check create table result ------------- */
 
     // Get stream ARN
     const StreamArn = createdTable?.TableDescription?.LatestStreamArn;
@@ -40,6 +44,8 @@ const createTable = async (
         // Throw an error if the stream ARN is undefined. As it supposed to be defined.
         throw new Error(`createdTable invalid: ${JSON.stringify(createdTable, null, 2)}`)
     }
+
+    /** ------------- Create stream and function event mapping ------------- */
 
     // Wait for the table's streams to be active
     await db.waitForStream({ StreamArn });
@@ -62,6 +68,9 @@ const createTable = async (
 
     // Wait for function event-source mapping updated
     await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
+
+    /** ------------- Create Cloudformation changeset ------------- */
+
     // Create changeset resources to import
     const ResourcesToImport: AWS.CloudFormation.ResourcesToImport = [
         {
