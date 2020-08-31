@@ -72,19 +72,33 @@ function init (scope: cdk.Construct) {
         role: cronRole,
     });
     
-    // Handler for scraping data, creating latest table and saving data and other related cron jobs
-    const mainHandler = new lambda.Function(scope, 'CronHandlerMain', {
+    // Handler for check and create tables
+    const tableHandler = new lambda.Function(scope, 'CronTableHandler', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
-        handler: 'index.handler',
+        handler: 'scrape.handler',
         // Maximum timeout of lambda is 15 minutes
         timeout: cdk.Duration.seconds(60 * 15),
         runtime: lambda.Runtime.NODEJS_12_X,
-        memorySize: 700,
+        memorySize: 300,
         role: cronRole,
         environment: {
             AGGREGATION_HANDLER_ARN: aggregationHandler.functionArn,
         },
+    })
+
+    // Handler for scraping data and saving data
+    const scrapeHandler = new lambda.Function(scope, 'CronScraper', {
+        code: lambda.Code.fromAsset('bundles/cron/handlers'),
+        handler: 'scrape.handler',
+        // Maximum timeout of lambda is 15 minutes
+        timeout: cdk.Duration.seconds(60 * 15),
+        runtime: lambda.Runtime.NODEJS_12_X,
+        memorySize: 600,
+        role: cronRole,
     });
+
+    /** ------------------ Step functions state machine Definition ------------------ */
+    
 
     /** ------------------ Events Rule Definition ------------------ */
 
