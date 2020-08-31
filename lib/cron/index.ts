@@ -66,7 +66,14 @@ function init (scope: cdk.Construct) {
             sid: 'CreateChangeSet',
             resources: ['*'],
             effect: Effect.ALLOW,
-            actions: ['cloudformation:CreateChangeSet']
+            actions: [
+                'cloudformation:DescribeStacks',
+                'cloudformation:CreateChangeSet',
+                'cloudformation:ExecuteChangeSet',
+                'cloudformation:DeleteChangeSet',
+                // For `waitFor` operation
+                'cloudformation:DescribeStackSetOperation',
+            ]
         })
     )
 
