@@ -125,7 +125,6 @@ function init (scope: cdk.Construct) {
 
     // Grant lambda execution roles
     tableHandler.grantInvoke(stateMachine.role);
-    // Grant lambda execution roles
     scrapeHandler.grantInvoke(stateMachine.role);
 
     /** ------------------ Events Rule Definition ------------------ */
