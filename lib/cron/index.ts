@@ -67,7 +67,7 @@ function init (scope: cdk.Construct) {
             resources: ['*'],
             effect: Effect.ALLOW,
             actions: [
-                'cloudformation:DescribeStacks',
+                'cloudformation:DescribeStackResources',
                 'cloudformation:CreateChangeSet',
                 'cloudformation:ExecuteChangeSet',
                 'cloudformation:DeleteChangeSet',

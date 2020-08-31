@@ -13,8 +13,6 @@ import db from 'lib/AWS/dynamodb';
 // Initialize
 const dynamodb = new AWS.DynamoDB();
 const lambda = new AWS.Lambda();
-const eventBridge = new AWS.EventBridge();
-const cloudformation = new AWS.CloudFormation();
 
 export interface Result extends DynamoDB.CreateTableOutput {};
 
@@ -68,57 +66,6 @@ const createTable = async (
 
     // Wait for function event-source mapping updated
     await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
-
-    /** ------------- Create Cloudformation changeset ------------- */
-
-    // Create changeset resources to import
-    const ResourcesToImport: AWS.CloudFormation.ResourcesToImport = [
-        {
-            ResourceType: 'AWS::DynamoDB::Table',
-            LogicalResourceId: tableLogicalId,
-            ResourceIdentifier: { TableName }
-        },
-        {
-            ResourceType: 'AWS::Lambda::EventSourceMapping',
-            LogicalResourceId: eventSrcMapId,
-            ResourceIdentifier: {
-                FunctionName: streamHandlerArn,
-                EventSourceArn: StreamArn
-            }
-        }
-    ];
-
-    // Get stack and changeset name
-    // TODO: Make it more dynamic
-    const StackName = 'FundPriceMonitorBackendStack'
-    const ChangeSetName = `ImportTableAndEventMapping-${new Date().getTime()}`
-
-    // Get previous template of the cloudformation stack
-    const stacksResult = await cloudformation.describeStacks({ StackName }).promise();
-    if (!stacksResult.Stacks || stacksResult.Stacks.length === 0) {
-        // Throw an error if the stream ARN is undefined. As it supposed to be defined.
-        throw new Error(`stacksResult invalid: ${JSON.stringify(stacksResult, null, 2)}`)
-    }
-    // Get stack's parameters
-    const { Parameters } = stacksResult.Stacks[0];
-    // Create changeset and Add these resources to the cloudformation stack
-    await cloudformation.createChangeSet({
-        StackName,
-        ChangeSetName: 'ImportTableAndEventMapping',
-        ChangeSetType: 'IMPORT',
-        ResourcesToImport,
-        TemplateBody: JSON.stringify(ResourcesToImport),
-        UsePreviousTemplate: true,
-        Parameters,
-    }).promise();
-    // Wait for changeset created
-    // @ts-expect-error: @TODO: Raise a PR
-    await cloudformation.waitFor('changeSetCreateComplete', { StackName }).promise();
-    // Execute changeset
-    await cloudformation.executeChangeSet({ ChangeSetName, StackName }).promise();
-    // Delete executed changeset
-    await cloudformation.deleteChangeSet({ ChangeSetName, StackName }).promise();
-
     // Return the create table result
     return createdTable
 }
