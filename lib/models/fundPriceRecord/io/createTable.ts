@@ -93,6 +93,14 @@ const createTable = async (
     const StackName = 'FundPriceMonitorBackendStack'
     const ChangeSetName = `ImportTableAndEventMapping-${new Date().getTime()}`
 
+    // Get previous template of the cloudformation stack
+    const stacksResult = await cloudformation.describeStacks({ StackName }).promise();
+    if (!stacksResult.Stacks || stacksResult.Stacks.length === 0) {
+        // Throw an error if the stream ARN is undefined. As it supposed to be defined.
+        throw new Error(`stacksResult invalid: ${JSON.stringify(stacksResult, null, 2)}`)
+    }
+    // Get stack's parameters
+    const { Parameters } = stacksResult.Stacks[0];
     // Create changeset and Add these resources to the cloudformation stack
     await cloudformation.createChangeSet({
         // TODO: Make it more dynamic
@@ -101,6 +109,7 @@ const createTable = async (
         ChangeSetType: 'IMPORT',
         ResourcesToImport,
         UsePreviousTemplate: true,
+        Parameters,
     }).promise();
     // Wait for changeset created
     // @ts-expect-error: @TODO: Raise a PR
