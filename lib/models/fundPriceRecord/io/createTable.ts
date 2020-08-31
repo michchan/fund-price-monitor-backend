@@ -87,14 +87,15 @@ const createTable = async (
             }
         }
     ];
-    // Add these resources to the cloudformation stack
-    await cloudformation.createChangeSet({
+
+    // Create changeset and Add these resources to the cloudformation stack
+    const changeset = await cloudformation.createChangeSet({
         // TODO: Make it more dynamic
         StackName: 'FundPriceMonitorBackendStack',
         ChangeSetName: 'ImportTableAndEventMapping',
         ChangeSetType: 'IMPORT',
         ResourcesToImport,
-        TemplateBody: JSON.stringify(ResourcesToImport, null, 2),
+        UsePreviousTemplate: true,
     }).promise();
 
     // Return the create table result
