@@ -108,7 +108,7 @@ const createTable = async (
     // Execute changeset
     await cloudformation.executeChangeSet({ ChangeSetName, StackName }).promise();
     // Delete executed changeset
-    await cloudformation.deleteChangeSet().promise();
+    await cloudformation.deleteChangeSet({ ChangeSetName, StackName }).promise();
 
     // Return the create table result
     return createdTable
