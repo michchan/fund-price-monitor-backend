@@ -10,12 +10,12 @@ import serialize from "./utils/serialize"
 import parse from "./utils/parse"
 import toLatestPriceRecord from "./utils/toLatestPriceRecord"
 import getQueryStartTimeByPeriodDifference from "./utils/getQueryStartTimeByPeriodDifference"
-import queryQuarterRecords from "./io/queryQuarterRecords"
+import scanQuarterRecords from "./io/scanQuarterRecords"
 
 
 
 const fundPriceRecord = {
-    queryQuarterRecords,
+    scanQuarterRecords,
     getQueryStartTimeByPeriodDifference,
     toLatestPriceRecord,
     serialize,

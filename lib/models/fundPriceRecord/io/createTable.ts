@@ -121,21 +121,21 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
                 { AttributeName: attrs.WEEK, KeyType: 'HASH' },
                 { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE, attrs.PRICE_LIST]),
         createInclusiveCSI({
             IndexName: indexNames.MONTH_PRICE_CHANGE_RATE,
             KeySchema: [
                 { AttributeName: attrs.MONTH, KeyType: 'HASH' },
                 { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE, attrs.PRICE_LIST]),
         createInclusiveCSI({
             IndexName: indexNames.QUARTER_PRICE_CHANGE_RATE,
             KeySchema: [
                 { AttributeName: attrs.QUARTER, KeyType: 'HASH' },
                 { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE, attrs.PRICE_LIST]),
         createInclusiveCSI({
             IndexName: indexNames.RECORDS_BY_COMPANY,
             KeySchema: [

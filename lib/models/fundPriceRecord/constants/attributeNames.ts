@@ -18,5 +18,6 @@ const attributeNames = {
     MONTH: 'month',
     QUARTER: 'quarter',
     PRICE_CHANGE_RATE: 'priceChangeRate',
+    PRICE_LIST: 'priceList',
 } as const
 export default attributeNames

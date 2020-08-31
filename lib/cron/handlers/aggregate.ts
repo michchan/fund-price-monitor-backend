@@ -47,7 +47,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                     ].join(','),
                 }
                 // Send query with year and quarter of `item`
-                const quarterRecords = await fundPriceRecord.queryQuarterRecords(queryInput, {
+                const quarterRecords = await fundPriceRecord.scanQuarterRecords(queryInput, {
                     year: itemDate.getFullYear(),
                     quarter: getQuarter(itemDate)
                 });
