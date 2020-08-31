@@ -27,34 +27,66 @@ const createTable = async (
     // Get based table name
     const TableName = getTableName(year, quarter)
     // Send create table request
-    const createTableResult = await dynamodb.createTable(getTableParams(TableName)).promise()
+    const createdTable = await dynamodb.createTable(getTableParams(TableName)).promise()
     // Wait for the table to be active
     await dynamodb.waitFor('tableExists', { TableName }).promise();
+
     // Get stream ARN
-    const StreamArn = createTableResult?.TableDescription?.LatestStreamArn;
-    // Throw an error if the stream ARN is undefined. As it supposed to be defined.
-    if (!StreamArn) throw new Error(`StreamArn undefined: ${JSON.stringify(createTableResult, null, 2)}`)
+    const StreamArn = createdTable?.TableDescription?.LatestStreamArn;
+    // Get table logicalID
+    const tableLogicalId = createdTable.TableDescription?.TableId
+    // Abort if the following are not defined
+    if (!(StreamArn && tableLogicalId)) {
+        // Throw an error if the stream ARN is undefined. As it supposed to be defined.
+        throw new Error(`createdTable invalid: ${JSON.stringify(createdTable, null, 2)}`)
+    }
 
     // Wait for the table's streams to be active
     await db.waitForStream({ StreamArn });
     // Create event source mapping request
-    await lambda.createEventSourceMapping({
+    const eventSourceMapping = await lambda.createEventSourceMapping({
         // Assign function name passed
         FunctionName: streamHandlerArn,
         EventSourceArn: StreamArn,
         StartingPosition: StartingPosition.LATEST,
         MaximumRetryAttempts: 10,
     }).promise();
+
+    // Get event source mapping logical ID
+    const eventSrcMapId = eventSourceMapping.UUID
+    // Abort if the following are not defined
+    if (!(eventSrcMapId)) {
+        // Throw an error if the stream ARN is undefined. As it supposed to be defined.
+        throw new Error(`eventSourceMapping invalid: ${JSON.stringify(eventSourceMapping, null, 2)}`)
+    }
+
     // Wait for function event-source mapping updated
     await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
-
-    // @TODO: Add these resources to the cloudformation stack
-    // await cloudformation.createChangeSet({
-        
-    // }).promise();
+    // Add these resources to the cloudformation stack
+    await cloudformation.createChangeSet({
+        // TODO: Make it more dynamic
+        StackName: 'FundPriceMonitorBackendStack',
+        ChangeSetName: 'ImportTableAndEventMapping',
+        ChangeSetType: 'IMPORT',
+        ResourcesToImport: [
+            {
+                ResourceType: 'AWS::DynamoDB::Table',
+                LogicalResourceId: tableLogicalId,
+                ResourceIdentifier: { TableName },
+            },
+            {
+                ResourceType: 'AWS::Lambda::EventSourceMapping',
+                LogicalResourceId: eventSrcMapId,
+                ResourceIdentifier: {
+                    FunctionName: streamHandlerArn,
+                    EventSourceArn: StreamArn
+                }
+            }
+        ],
+    }).promise();
 
     // Return the create table result
-    return createTableResult
+    return createdTable
 }
 export default createTable
 

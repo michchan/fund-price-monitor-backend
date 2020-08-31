@@ -29,7 +29,7 @@ function init (scope: cdk.Construct) {
                 'dynamodb:Query',
             ],
         })
-    )
+    );
     // Grant cloudwatch log group access
     cronRole.addToPolicy(
         new iam.PolicyStatement({
@@ -42,7 +42,7 @@ function init (scope: cdk.Construct) {
                 'logs:PutLogEvents',
             ],
         })
-    )
+    );
     // Grant lambda-stream mapping policy
     cronRole.addToPolicy(
         new iam.PolicyStatement({
@@ -59,7 +59,7 @@ function init (scope: cdk.Construct) {
                 'dynamodb:ListStreams',
             ],
         })
-    )
+    );
 
     /** ------------------ Lambda Handlers Definition ------------------ */
 
