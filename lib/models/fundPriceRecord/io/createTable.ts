@@ -76,7 +76,7 @@ const createTable = async (
         {
             ResourceType: 'AWS::DynamoDB::Table',
             LogicalResourceId: tableLogicalId,
-            ResourceIdentifier: { TableName },
+            ResourceIdentifier: { TableName }
         },
         {
             ResourceType: 'AWS::Lambda::EventSourceMapping',
@@ -103,11 +103,11 @@ const createTable = async (
     const { Parameters } = stacksResult.Stacks[0];
     // Create changeset and Add these resources to the cloudformation stack
     await cloudformation.createChangeSet({
-        // TODO: Make it more dynamic
         StackName,
         ChangeSetName: 'ImportTableAndEventMapping',
         ChangeSetType: 'IMPORT',
         ResourcesToImport,
+        TemplateBody: JSON.stringify(ResourcesToImport),
         UsePreviousTemplate: true,
         Parameters,
     }).promise();
