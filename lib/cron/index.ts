@@ -60,23 +60,7 @@ function init (scope: cdk.Construct) {
             ],
         })
     );
-    // Grant cloud formation change set creation policy
-    cronRole.addToPolicy(
-        new iam.PolicyStatement({
-            sid: 'CreateChangeSet',
-            resources: ['*'],
-            effect: Effect.ALLOW,
-            actions: [
-                'cloudformation:DescribeStackResources',
-                'cloudformation:CreateChangeSet',
-                'cloudformation:ExecuteChangeSet',
-                'cloudformation:DeleteChangeSet',
-                // For `waitFor` operation
-                'cloudformation:DescribeStackSetOperation',
-            ]
-        })
-    )
-
+    
     /** ------------------ Lambda Handlers Definition ------------------ */
 
     // Handler for aggregating top-level items of records
