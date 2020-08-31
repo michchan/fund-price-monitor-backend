@@ -123,6 +123,11 @@ function init (scope: cdk.Construct) {
         timeout: cdk.Duration.minutes(15),
     });
 
+    // Grant lambda execution roles
+    tableHandler.grantInvoke(stateMachine.role);
+    // Grant lambda execution roles
+    scrapeHandler.grantInvoke(stateMachine.role);
+
     /** ------------------ Events Rule Definition ------------------ */
 
     // Run every day at 6PM UTC
@@ -131,7 +136,8 @@ function init (scope: cdk.Construct) {
     //   schedule: events.Schedule.expression('cron(0 18 ? * MON-FRI *)')
     // });
 
-    // rule.addTarget(new targets.LambdaFunction(handler));
+    // rule.addTarget(new targets.LambdaFunction(stateMachine));
+    // stateMachine.grantStartExecution(rule);
 }
 
 const cron = { init } as const
