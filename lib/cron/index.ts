@@ -93,7 +93,7 @@ function init (scope: cdk.Construct) {
         // Maximum timeout of lambda is 15 minutes
         timeout: cdk.Duration.seconds(60 * 15),
         runtime: lambda.Runtime.NODEJS_12_X,
-        memorySize: 600,
+        memorySize: 700,
         role: cronRole,
     });
 
