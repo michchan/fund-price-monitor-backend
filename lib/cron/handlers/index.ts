@@ -40,6 +40,8 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         if (!tableNames.some(fundPriceRecord.isTableOfCurrentQuarter)) {
             // Create one if it doesn't exist
             await fundPriceRecord.createTable(year, quarter, aggregationHandlerArn);
+            // @TODO: Remove this, testing only
+            return
         }
         // Write batch data to the table
         await fundPriceRecord.batchCreateItems(records, TableName);
