@@ -1,4 +1,5 @@
 import { ScheduledHandler } from "aws-lambda";
+import wait from 'simply-utils/dist/async/wait'
 
 import { FundPriceRecord } from "../../models/fundPriceRecord/FundPriceRecord.type";
 import fundPriceRecord from "lib/models/fundPriceRecord";
@@ -31,6 +32,8 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
             const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
             // Create one if it doesn't exist
             await fundPriceRecord.createTable(year, quarter, aggregationHandlerArn);
+            // A some delay to wait for the stream to work
+            await wait(60 * 1000); //60s
         }
 
         /** ------------ Scrape and Create records ------------ */
