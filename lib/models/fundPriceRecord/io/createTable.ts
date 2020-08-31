@@ -88,15 +88,27 @@ const createTable = async (
         }
     ];
 
+    // Get stack and changeset name
+    // TODO: Make it more dynamic
+    const StackName = 'FundPriceMonitorBackendStack'
+    const ChangeSetName = `ImportTableAndEventMapping-${new Date().getTime()}`
+
     // Create changeset and Add these resources to the cloudformation stack
-    const changeset = await cloudformation.createChangeSet({
+    await cloudformation.createChangeSet({
         // TODO: Make it more dynamic
-        StackName: 'FundPriceMonitorBackendStack',
+        StackName,
         ChangeSetName: 'ImportTableAndEventMapping',
         ChangeSetType: 'IMPORT',
         ResourcesToImport,
         UsePreviousTemplate: true,
     }).promise();
+    // Wait for changeset created
+    // @ts-expect-error: @TODO: Raise a PR
+    await cloudformation.waitFor('changeSetCreateComplete', { StackName }).promise();
+    // Execute changeset
+    await cloudformation.executeChangeSet({ ChangeSetName, StackName }).promise();
+    // Delete executed changeset
+    await cloudformation.deleteChangeSet().promise();
 
     // Return the create table result
     return createdTable
