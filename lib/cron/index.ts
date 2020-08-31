@@ -104,6 +104,9 @@ function init (scope: cdk.Construct) {
     });   
     // Create a wait state to wait for the dynamodb stream to warm up and work
     const wait = new sfn.Wait(scope, 'Wait for dynamodb stream to warm-up', {
+        // By experience, the dynamodb stream need more than 1 minute in order to work, 
+        // after table is just created.
+        // So it should be made safe here by setting 3 minutes wait time.
         time: sfn.WaitTime.duration(cdk.Duration.minutes(3)),
     });
     // Create scraping task
