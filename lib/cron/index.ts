@@ -99,7 +99,7 @@ function init (scope: cdk.Construct) {
     /** ------------------ Step functions state machine Definition ------------------ */
 
     // Create table handling task
-    const handleTableTask = new sfn.Task(scope, 'Check/create table', {
+    const handleTableTask = new sfn.Task(scope, 'Check existing or create table', {
         task: new sfnTasks.InvokeFunction(tableHandler),
     });   
     // Create a wait state to wait for the dynamodb stream to warm up and work
