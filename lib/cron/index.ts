@@ -75,7 +75,7 @@ function init (scope: cdk.Construct) {
     // Handler for check and create tables
     const tableHandler = new lambda.Function(scope, 'CronTableHandler', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
-        handler: 'scrape.handler',
+        handler: 'handleTable.handler',
         // Maximum timeout of lambda is 15 minutes
         timeout: cdk.Duration.seconds(60 * 15),
         runtime: lambda.Runtime.NODEJS_12_X,
@@ -98,7 +98,7 @@ function init (scope: cdk.Construct) {
     });
 
     /** ------------------ Step functions state machine Definition ------------------ */
-    
+
 
     /** ------------------ Events Rule Definition ------------------ */
 
