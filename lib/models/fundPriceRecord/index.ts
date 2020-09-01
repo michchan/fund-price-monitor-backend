@@ -16,10 +16,14 @@ import parseChangeRate from './utils/parseChangeRate'
 import serializeChangeRate from './utils/serializeChangeRate'
 import getChangeRate from "./utils/getChangeRate"
 import batchDeleteItems from "./io/batchDeleteItems"
+import getCompositeSK from "./utils/getCompositeSK"
+import getCompositeSKFromChangeRate from "./utils/getCompositeSKFromChangeRate"
 
 
 
 const fundPriceRecord = {
+    getCompositeSK,
+    getCompositeSKFromChangeRate,
     queryAllItems,
     scanQuarterRecords,
     getQueryStartTimeByPeriodDifference,

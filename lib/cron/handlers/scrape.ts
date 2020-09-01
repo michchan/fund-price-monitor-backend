@@ -20,9 +20,7 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         // Get current year and quarter
         const year = new Date().getFullYear()
         const quarter = getQuarter()
-        // Get table name based on that year and quarter
-        const TableName = fundPriceRecord.getTableName(year, quarter)
-
+        
         /** ------------ Scrape and Create records ------------ */
 
         // Scrape records from the site
@@ -39,7 +37,7 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         }
     
         // Write batch data to the table
-        await fundPriceRecord.batchCreateItems(records, TableName);
+        await fundPriceRecord.batchCreateItems(records, year, quarter, fundPriceRecord.serialize);
     } catch (error) {
         callback(error)
     }
