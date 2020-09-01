@@ -7,7 +7,7 @@ import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames';
 /**
  * Parse a dynamodb item to FundPriceRecord
  */
-const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceRecord => {
+const parse = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundPriceRecord => {
     const {
         [attr.COMPANY_CODE]: company_code,
         [attr.TIME_SK]: timeSK,

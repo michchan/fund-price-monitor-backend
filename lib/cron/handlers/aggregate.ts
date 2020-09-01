@@ -15,7 +15,6 @@ import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord
 import db from "lib/AWS/dynamodb";
 
 
-
 type PrevNextRates = [
     FundPriceChangeRate[],
     FundPriceChangeRate[]
