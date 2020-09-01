@@ -40,7 +40,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
             }
         }, {}) as Groups;
 
-    console.log({ groups });
+    console.log('GROUPS: ', JSON.stringify(groups, null, 2));
 
     // Process each group
     // for (const [company, items] of Object.entries(groups)) {
