@@ -1,4 +1,5 @@
 import { DynamoDB } from 'aws-sdk';
+import { ListAttributeValue } from 'aws-sdk/clients/dynamodbstreams';
 
 import { CompanyType, FundPriceChangeRate, AggregatedRecordType } from "../FundPriceRecord.type"
 import attr from '../constants/attributeNames';
@@ -11,7 +12,7 @@ export type Item = {
     [key in string]: {
         S: string;
         N: string;
-        NS: string[];
+        L: { N: string }[];
     }
 }
 
@@ -40,7 +41,7 @@ const parseChangeRate = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRa
             name: name.S,
             price: +price.N,
             priceChangeRate: +priceChangeRate.N,
-            priceList: priceList.NS.map(v => +v),
+            priceList: priceList.L.map(li => +li.N),
             // Get the last composite segment of `timeSK`
             time: timeSK.S.split('@').pop() ?? '',
             updatedDate: updatedDate.S,

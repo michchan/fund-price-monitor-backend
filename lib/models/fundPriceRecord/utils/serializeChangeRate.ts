@@ -3,10 +3,8 @@ import { DynamoDB } from 'aws-sdk';
 import { FundPriceChangeRate } from "../FundPriceRecord.type"
 import attr from '../constants/attributeNames';
 import getCompositeSKFromChangeRate from './getCompositeSKFromChangeRate';
-import AWS from 'lib/AWS/AWS'
 
 
-const docClient = new AWS.DynamoDB.DocumentClient()
 
 /**
  * Serilize a FundPriceChangeRate to dynamodb item
@@ -34,7 +32,7 @@ const serializeChangeRate = (record: FundPriceChangeRate): DynamoDB.DocumentClie
             [attr.UPDATED_DATE]: updatedDate,
             [attr.PRICE]: price,
             [attr.PRICE_CHANGE_RATE]: priceChangeRate,
-            [attr.PRICE_LIST]: docClient.createSet(priceList),
+            [attr.PRICE_LIST]: priceList,
         }
     }
 }
