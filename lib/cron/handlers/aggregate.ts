@@ -27,7 +27,12 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     // Group items by company
     const groups = event.Records
         // Filter inserted records and records with `NewImage` defined
-        .filter(record => record.eventName === 'INSERT' && record.dynamodb?.NewImage)
+        .filter(record => (
+            // if it is an insert event
+            record.eventName === 'INSERT'
+            // and it is a "record"
+            && /^record/i.test((record.dynamodb?.NewImage || {})[attrs.TIME_SK]?.S ?? '')
+        ))
         // @ts-expect-error
         .map(record => fundPriceRecord.parse(record.dynamodb.NewImage))
         .reduce((_acc, record) => {
