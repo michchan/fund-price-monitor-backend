@@ -11,10 +11,12 @@ import parse from "./utils/parse"
 import toLatestPriceRecord from "./utils/toLatestPriceRecord"
 import getQueryStartTimeByPeriodDifference from "./utils/getQueryStartTimeByPeriodDifference"
 import scanQuarterRecords from "./io/scanQuarterRecords"
+import queryAllItems from "./io/queryAllItems"
 
 
 
 const fundPriceRecord = {
+    queryAllItems,
     scanQuarterRecords,
     getQueryStartTimeByPeriodDifference,
     toLatestPriceRecord,
