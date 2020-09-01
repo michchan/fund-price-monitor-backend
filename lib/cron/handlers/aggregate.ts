@@ -66,10 +66,6 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
 
     // ggregation for latest price
     const latestItems = prevItems.map(item => fundPriceRecord.toLatestPriceRecord(item, date));
-    console.log(JSON.stringify({
-        prevItems,
-        latestItems,
-    }, null, 2))
 
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
@@ -127,26 +123,22 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
     /** -------- Send batch requests  -------- */
 
     // Batch create all aggregation items
-    await Promise.all([
-        // Create records
-        fundPriceRecord.batchCreateItems(latestItems, year, quarter, fundPriceRecord.serialize),
-        // Create change rates
-        fundPriceRecord.batchCreateItems([
-            ...weekRateItems, 
-            ...monthRateItems, 
-            ...quarterRateItems
-        ], year, quarter, fundPriceRecord.serializeChangeRate)
-    ]);
+    // Create records
+    await fundPriceRecord.batchCreateItems(latestItems, year, quarter, fundPriceRecord.serialize);
+    // Create change rates
+    await fundPriceRecord.batchCreateItems([
+        ...weekRateItems, 
+        ...monthRateItems, 
+        ...quarterRateItems
+    ], year, quarter, fundPriceRecord.serializeChangeRate);
 
     // Batch remove previous items
-    await Promise.all([
-        // Remove records
-        fundPriceRecord.batchDeleteItems(prevItems, year, quarter, fundPriceRecord.getCompositeSK),
-        // Remove change rates
-        fundPriceRecord.batchDeleteItems([
-            ...prevWeekRateItems, 
-            ...prevMonthRateItems, 
-            ...prevQuarterRateItems
-        ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate)
-    ])
+    // Remove records
+    await fundPriceRecord.batchDeleteItems(prevItems, year, quarter, fundPriceRecord.getCompositeSK);
+    // Remove change rates
+    await fundPriceRecord.batchDeleteItems([
+        ...prevWeekRateItems, 
+        ...prevMonthRateItems, 
+        ...prevQuarterRateItems
+    ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate);
 }
