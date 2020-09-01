@@ -63,13 +63,6 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
         queryTimePriceChangeRateIndex(`quarter_${year}.${quarter}`),
     ]);
 
-    // Throw errors and abort
-    if (!prevWeekRateRecords.Items || !prevMonthRateRecords.Items || prevQuarterRateRecords.Items) throw new Error(`Results Items undefined. ${JSON.stringify({
-        prevWeekRateRecords,
-        prevMonthRateRecords,
-        prevQuarterRateRecords
-    })}`)
-
     /** Helper to get latest records */
     const calculateNextChangeRates = (items: DocumentClient.QueryOutput['Items'], type: AggregatedRecordType) => (
         (items ?? []).length > 0 
