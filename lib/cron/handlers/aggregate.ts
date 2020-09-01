@@ -146,27 +146,22 @@ const processCompanyRecords = async (company: CompanyType, insertedItems: FundPr
     /** -------- Send batch requests  -------- */
 
     // Batch create all aggregation items
-    await Promise.all([
-        // Create latest records
-        fundPriceRecord.batchCreateItems(latestItems, year, quarter, fundPriceRecord.serialize),
-        // Create change rates
-        fundPriceRecord.batchCreateItems([
-            ...weekRateItems, 
-            ...monthRateItems, 
-            ...quarterRateItems
-        ], year, quarter, fundPriceRecord.serializeChangeRate),
-    ]);
+    // Create latest records
+    await fundPriceRecord.batchCreateItems(latestItems, year, quarter, fundPriceRecord.serialize);
+    // Create change rates
+    await fundPriceRecord.batchCreateItems([
+        ...weekRateItems, 
+        ...monthRateItems, 
+        ...quarterRateItems
+    ], year, quarter, fundPriceRecord.serializeChangeRate);
 
     // Batch remove previous items
     // Remove previous latest records
-    await Promise.all([
-        // Remove previous latest records
-        fundPriceRecord.batchDeleteItems(prevLatestItems, year, quarter, fundPriceRecord.getCompositeSK),
-        // Remove previous change rates
-        fundPriceRecord.batchDeleteItems([
-            ...prevWeekRateItems, 
-            ...prevMonthRateItems, 
-            ...prevQuarterRateItems
-        ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate)
-    ]);
+    await fundPriceRecord.batchDeleteItems(prevLatestItems, year, quarter, fundPriceRecord.getCompositeSK);
+    // Remove previous change rates
+    await fundPriceRecord.batchDeleteItems([
+        ...prevWeekRateItems, 
+        ...prevMonthRateItems, 
+        ...prevQuarterRateItems
+    ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate);
 }
