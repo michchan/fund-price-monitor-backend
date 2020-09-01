@@ -14,8 +14,8 @@ const attributeNames = {
     INITIAL_PRICE: 'initialPrice',
     FUND_TYPE: 'fundType',
     /** Top-level fields (aggregate items) */
-    WEEK: 'week',
-    MONTH: 'month',
+    WEEK: 'week_index',
+    MONTH: 'month_index',
     QUARTER: 'quarter',
     PRICE_CHANGE_RATE: 'priceChangeRate',
     PRICE_LIST: 'priceList',
