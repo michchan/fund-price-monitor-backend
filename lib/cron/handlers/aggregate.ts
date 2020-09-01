@@ -32,10 +32,12 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
             // if it is an insert event
             record.eventName === 'INSERT'
             // and it is a "record"
-            && /^record/i.test((record.dynamodb?.NewImage || {})[attrs.TIME_SK]?.S ?? '')
+            && /^record/i.test(
+                db.mapRawAttributes(record.dynamodb?.NewImage || {})[attrs.TIME_SK] ?? ''
+            )
         ))
         // @ts-expect-error
-        .map(record => fundPriceRecord.parse(record.dynamodb.NewImage))
+        .map(record => fundPriceRecord.parse(db.mapRawAttributes(record.dynamodb.NewImage)))
         .reduce((_acc, record) => {
             const acc = _acc as Groups;
             const {company } = record
