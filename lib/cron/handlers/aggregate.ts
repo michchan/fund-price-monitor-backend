@@ -143,15 +143,6 @@ const processCompanyRecords = async (company: CompanyType, insertedItems: FundPr
     const [prevMonthRateItems, monthRateItems] = calculateNextChangeRates(prevMonthRateRecords.Items, 'month');
     const [prevQuarterRateItems, quarterRateItems] = calculateNextChangeRates(prevQuarterRateRecords.Items, 'quarter');
     
-    console.log('PREVVVV', JSON.stringify({ 
-        prevWeekRateRecords,
-        prevMonthRateRecords,
-        prevQuarterRateRecords,
-        prevWeekRateItems, 
-        prevMonthRateItems,
-        prevQuarterRateItems 
-    }, null, 2));
-    
     /** -------- Send batch requests  -------- */
 
     // Batch create all aggregation items
