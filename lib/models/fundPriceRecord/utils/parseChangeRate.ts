@@ -10,8 +10,8 @@ type AttrName = typeof attr
 export type Item = {
     [key in string]: {
         S: string;
-        N: number;
-        NS: number[];
+        N: string;
+        NS: string[];
     }
 }
 
@@ -40,7 +40,7 @@ const parseChangeRate = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRa
             name: name.S,
             price: +price.N,
             priceChangeRate: +priceChangeRate.N,
-            priceList: priceList.NS,
+            priceList: priceList.NS.map(v => +v),
             // Get the last composite segment of `timeSK`
             time: timeSK.S.split('@').pop() ?? '',
             updatedDate: updatedDate.S,

@@ -26,11 +26,11 @@ const getChangeRate = (
 
     // Get next price list
     const priceList = priceListMode === 'prepend' 
-        ? [...prevPriceList, record.price]
-        : [record.price, ...prevPriceList]
+        ? [...prevPriceList, +record.price]
+        : [+record.price, ...prevPriceList]
 
     // Calculate change rate
-    const priceChangeRate = priceList[priceList.length - 1] -priceList[0]
+    const priceChangeRate = priceList[priceList.length - 1] - priceList[0]
     
     return {
         recordType,

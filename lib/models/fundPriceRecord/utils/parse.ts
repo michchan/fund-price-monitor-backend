@@ -31,6 +31,8 @@ const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceRecord => {
             [attr.INITIAL_PRICE]: initialPrice,
             [attr.LAUNCHED_DATE]: launchedDate,
         } = attributeMap as unknown as Item
+
+        const timeSKSegments = timeSK.S.split('_')
     
         return {
             company: company.S as CompanyType,
@@ -43,10 +45,10 @@ const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceRecord => {
             launchedDate: launchedDate.S,
             riskLevel: riskLevel.S as RiskLevel,
             // Get the last composite segment of `timeSK`
-            time: timeSK.S.split('_').pop() ?? '',
+            time: timeSKSegments.pop() ?? '',
             fundType: fundType.S as FundType,
             // Get the first composite segment of `timeSK`
-            recordType: timeSK.S.split('_').shift() as RecordType,
+            recordType: timeSKSegments.shift() as RecordType,
         }   
     } catch (error) {
         console.log('ERROR ITEM: ', JSON.stringify(attributeMap, null, 2))
