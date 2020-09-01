@@ -112,7 +112,7 @@ const processCompanyRecords = async (company: CompanyType, insertedItems: FundPr
         prevQuarterRateRecords
     ] = await Promise.all([
         // Week query
-        queryTimePriceChangeRateIndex(`week`, `${year}.${week}`),
+        queryTimePriceChangeRateIndex(`week`, `${year}-${month}.${week}`),
         // Month query
         queryTimePriceChangeRateIndex(`month`, `${year}-${month}`),
         // Quarter query
