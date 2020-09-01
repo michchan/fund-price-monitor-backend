@@ -19,7 +19,7 @@ function batchCreateItems <Rec extends T, Req extends R> (
     year: string | number,
     quarter: Quarter,
     serializer: (record: Rec) => Req,
-): Promise<Result> {
+): Promise<Result | null> {
     return db.batchWriteItems(records, getTableName(year, quarter), 'put', serializer)
 }
 export default batchCreateItems
