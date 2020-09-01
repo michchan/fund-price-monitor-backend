@@ -10,6 +10,7 @@ import TableRange from "lib/models/fundPriceRecord/TableRange.type";
 import indexNames from "lib/models/fundPriceRecord/constants/indexNames";
 import attrs from "lib/models/fundPriceRecord/constants/attributeNames";
 import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "lib/models/fundPriceRecord/FundPriceRecord.type";
+import db from "lib/AWS/dynamodb";
 
 
 
@@ -19,7 +20,8 @@ type PrevNextRates = [
 ]
 type Groups = { [company in CompanyType]: FundPriceRecord[] }
 
-const EXP_SK = `:timeSK` as string
+const EXP_COM_PK = `:company` as string
+const EXP_TIME_SK = `:timeSK` as string
 
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
     // Group items by company
@@ -50,7 +52,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
 /**
  * Handler to process each group of FundPriceRecord list
  */
-const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceRecord[]) => {
+const processCompanyRecords = async (company: CompanyType, insertedItems: FundPriceRecord[]) => {
     // Create date of latest item
     const date = new Date();
     // Get year
@@ -65,9 +67,23 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
     const tableRange: TableRange = { year, quarter };
 
     // ggregation for latest price
-    const latestItems = prevItems.map(item => fundPriceRecord.toLatestPriceRecord(item, date));
+    const latestItems = insertedItems.map(item => fundPriceRecord.toLatestPriceRecord(item, date));
 
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
+
+    /** Query previous latest records */
+    const prevLatestRecords = await fundPriceRecord.queryAllItems({
+        IndexName: indexNames.RECORDS_BY_COMPANY,
+        ExpressionAttributeValues: {
+            [EXP_COM_PK]: company,
+            [EXP_TIME_SK]: 'latest'
+        },
+        KeyConditionExpression: [
+            `${attrs.COMPANY} = ${EXP_COM_PK}`,
+            db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_TIME_SK)
+        ].join(' AND ')
+    }, tableRange)
+    const prevLatestItems = (prevLatestRecords.Items || []).map(rec => fundPriceRecord.parse(rec))
 
     /** Helper to query PERIOD_PRICE_CHANGE_RATE index */
     const queryTimePriceChangeRateIndex = (
@@ -76,9 +92,9 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
     ) => fundPriceRecord.queryAllItems({
         IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
         ExpressionAttributeValues: {
-            [EXP_SK]: `${recordType}_${company}_${period}`
+            [EXP_TIME_SK]: `${recordType}_${company}_${period}`
         },
-        KeyConditionExpression: `${attrs.PERIOD} = (${EXP_SK})`
+        KeyConditionExpression: `${attrs.PERIOD} = ${EXP_TIME_SK}`
     }, tableRange)
 
     // Query week price change rate
@@ -123,7 +139,7 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
     /** -------- Send batch requests  -------- */
 
     // Batch create all aggregation items
-    // Create records
+    // Create latest records
     await fundPriceRecord.batchCreateItems(latestItems, year, quarter, fundPriceRecord.serialize);
     // Create change rates
     await fundPriceRecord.batchCreateItems([
@@ -133,8 +149,8 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
     ], year, quarter, fundPriceRecord.serializeChangeRate);
 
     // Batch remove previous items
-    // Remove records
-    await fundPriceRecord.batchDeleteItems(prevItems, year, quarter, fundPriceRecord.getCompositeSK);
+    // Remove previous latest records
+    await fundPriceRecord.batchDeleteItems(prevLatestItems, year, quarter, fundPriceRecord.getCompositeSK);
     // Remove change rates
     await fundPriceRecord.batchDeleteItems([
         ...prevWeekRateItems, 
