@@ -41,10 +41,13 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
     /** Helper to query PERIOD_PRICE_CHANGE_RATE index */
-    const queryTimePriceChangeRateIndex = (timeSKValue: string) => fundPriceRecord.queryAllItems({
+    const queryTimePriceChangeRateIndex = (
+        recordType: AggregatedRecordType, 
+        period: string
+    ) => fundPriceRecord.queryAllItems({
         IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
         ExpressionAttributeValues: {
-            [EXP_SK]: timeSKValue
+            [EXP_SK]: `${recordType}_${period}`
         },
         KeyConditionExpression: `${attrs.TIME_SK} = ${EXP_SK}`
     }, tableRange)
@@ -56,11 +59,11 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
         prevQuarterRateRecords
     ] = await Promise.all([
         // Week query
-        queryTimePriceChangeRateIndex(`week_${year}.${week}`),
+        queryTimePriceChangeRateIndex(`week`, `${year}.${week}`),
         // Month query
-        queryTimePriceChangeRateIndex(`month_${year}-${month}`),
+        queryTimePriceChangeRateIndex(`month`, `${year}-${month}`),
         // Quarter query
-        queryTimePriceChangeRateIndex(`quarter_${year}.${quarter}`),
+        queryTimePriceChangeRateIndex(`quarter`,`${year}.${quarter}`),
     ]);
 
     /** -------- Calculate records of price change rate of week, month and quarter -------- */

@@ -49,6 +49,7 @@ export interface FundPriceChangeRate extends Pick<FundPriceRecord,
     | 'name'
     | 'price'
     | 'time'
+    | 'updatedDate'
 > {
     /** In `YYYY-MM_[nth week]` , `YYYY-MM` or `YYYY.[nth quarter]` */
     period: string;

@@ -14,7 +14,7 @@ const attributeNames = {
     INITIAL_PRICE: 'initialPrice',
     FUND_TYPE: 'fundType',
     /** Top-level fields (aggregate items) */
-    PERIOD: 'period',
+    AGGREGATE_TIME: 'aggregatedTime',
     PRICE_CHANGE_RATE: 'priceChangeRate',
     PRICE_LIST: 'priceList',
 } as const

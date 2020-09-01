@@ -118,7 +118,13 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
                 { AttributeName: attrs.TIME_SK, KeyType: 'HASH' },
                 { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
-        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE, attrs.PRICE_LIST]),
+        }, [
+            attrs.PRICE, 
+            attrs.NAME, 
+            attrs.UPDATED_DATE, 
+            attrs.PRICE_LIST, 
+            attrs.AGGREGATE_TIME
+        ]),
         createInclusiveCSI({
             IndexName: indexNames.RECORDS_BY_COMPANY,
             KeySchema: [
