@@ -105,18 +105,12 @@ const processCompanyRecords = async (company: CompanyType, insertedItems: FundPr
     }, tableRange)
 
     // Query week price change rate
-    const [
-        prevWeekRateRecords, 
-        prevMonthRateRecords, 
-        prevQuarterRateRecords
-    ] = await Promise.all([
-        // Week query
-        queryTimePriceChangeRateIndex(`week`, `${year}.${week}`),
-        // Month query
-        queryTimePriceChangeRateIndex(`month`, `${year}-${month}`),
-        // Quarter query
-        queryTimePriceChangeRateIndex(`quarter`,`${year}.${quarter}`),
-    ]);
+    // Week query
+    const prevWeekRateRecords = await queryTimePriceChangeRateIndex(`week`, `${year}.${week}`);
+    // Month query
+    const prevMonthRateRecords = await queryTimePriceChangeRateIndex(`month`, `${year}-${month}`);
+    // Quarter query
+    const prevQuarterRateRecords = await queryTimePriceChangeRateIndex(`quarter`,`${year}.${quarter}`);
 
     /** -------- Calculate records of price change rate of week, month and quarter -------- */
 
@@ -142,6 +136,15 @@ const processCompanyRecords = async (company: CompanyType, insertedItems: FundPr
     const [prevWeekRateItems, weekRateItems] = calculateNextChangeRates(prevWeekRateRecords.Items, 'week');
     const [prevMonthRateItems, monthRateItems] = calculateNextChangeRates(prevMonthRateRecords.Items, 'month');
     const [prevQuarterRateItems, quarterRateItems] = calculateNextChangeRates(prevQuarterRateRecords.Items, 'quarter');
+    
+    console.log('PREVVVV', JSON.stringify({ 
+        prevWeekRateRecords,
+        prevMonthRateRecords,
+        prevQuarterRateRecords,
+        prevWeekRateItems, 
+        prevMonthRateItems,
+        prevQuarterRateItems 
+    }, null, 2));
     
     /** -------- Send batch requests  -------- */
 
