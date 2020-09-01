@@ -1,4 +1,4 @@
-import batchCreateItems from "./batchCreateItems"
+import batchWriteItems from "./batchWriteItems"
 import listAllTables from "./listAllTables"
 import queryAllItems from "./queryAllItems"
 import expressionFunctions from "./expressionFunctions"
@@ -9,7 +9,7 @@ import scanAllItems from "./scanAllItems"
 
 const db = {
     expressionFunctions,
-    batchCreateItems,
+    batchWriteItems,
     listAllTables,
     queryAllItems,
     scanAllItems,

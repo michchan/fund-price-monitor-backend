@@ -10,13 +10,17 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 export type ChunkResult = DynamoDB.DocumentClient.BatchWriteItemOutput
 export type Result = ChunkResult[]
 
+type PT = DynamoDB.DocumentClient.PutRequest
+type DT = DynamoDB.DocumentClient.DeleteRequest
+
 /**
  * Return a list of properties of tables that have been created and match the criteria
  */
-function batchCreateItems <T> (
+function batchWriteItems <T, RT extends PT | DT> (
     records: T[],
     tableName: string,
-    serialize?: (item: T) => DynamoDB.DocumentClient.PutRequest,
+    mode: 'put' | 'delete',
+    serialize?: (item: T) => RT,
 ): Promise<Result> {
     // Chunk records by 25 which is the max number of items DynamoDB can batch write.
     const chunks = chunk(records, 25)
@@ -27,11 +31,13 @@ function batchCreateItems <T> (
             return docClient.batchWrite({
                 RequestItems: {
                     [tableName]: chunkedRecords.map(rec => ({
-                        PutRequest: (serialize ? serialize(rec) : serialize) as unknown as DynamoDB.DocumentClient.PutRequest
+                        [mode === 'put' ? 'PutRequest' : 'DeleteRequest']: (
+                            serialize ? serialize(rec) : serialize
+                        ) as unknown as RT,
                     }))
                 }
             }).promise()
         }) 
     )
 }
-export default batchCreateItems
+export default batchWriteItems

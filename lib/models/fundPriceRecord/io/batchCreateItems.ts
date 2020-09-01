@@ -1,7 +1,7 @@
 import { FundPriceRecord } from '../FundPriceRecord.type';
 import serialize from '../utils/serialize';
 import db from 'lib/AWS/dynamodb';
-import { Result } from 'lib/AWS/dynamodb/batchCreateItems';
+import { Result } from 'lib/AWS/dynamodb/batchWriteItems';
 
 
 /**
@@ -11,6 +11,6 @@ const batchCreateItems = (
     records: FundPriceRecord[],
     tableName: string,
 ): Promise<Result> => {
-    return db.batchCreateItems(records, tableName, serialize)
+    return db.batchWriteItems(records, tableName, 'put', serialize)
 }
 export default batchCreateItems
