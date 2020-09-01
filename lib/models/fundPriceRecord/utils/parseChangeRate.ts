@@ -22,7 +22,6 @@ const parseChangeRate = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRa
     const {
         [attr.COMPANY_CODE]: company_code,
         [attr.TIME_SK]: timeSK,
-        [attr.COMPANY]: company,
         [attr.NAME]: name,
         [attr.PRICE]: price,
         [attr.PRICE_LIST]: priceList,
@@ -30,12 +29,13 @@ const parseChangeRate = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRa
         [attr.PERIOD]: period,
         [attr.UPDATED_DATE]: updatedDate,
     } = attributeMap as unknown as Item
-    console.log('parseChangeRate attributeMap: ', JSON.stringify(attributeMap, null, 2))
+
+    const [company, code] = company_code.S.split('_') as [CompanyType, string]
 
     return {
-        company: company.S as CompanyType,
+        company,
         // Get the last composite segment of `company_code`
-        code: company_code.S.split('_').pop() ?? '',
+        code,
         name: name.S,
         price: +price.N,
         priceChangeRate: +priceChangeRate.N,
