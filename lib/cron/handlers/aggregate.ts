@@ -63,9 +63,6 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
     const quarter = getQuarter(date);
     // Create table range
     const tableRange: TableRange = { year, quarter };
-        
-    // Get companies
-    const companies = uniq(prevItems.map(item => item.company)) as CompanyType[];
 
     // ggregation for latest price
     const latestItems = prevItems.map(item => fundPriceRecord.toLatestPriceRecord(item, date));
@@ -79,9 +76,9 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
     ) => fundPriceRecord.queryAllItems({
         IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
         ExpressionAttributeValues: {
-            [EXP_SK]: companies.map(com => `${recordType}_${com}_${period}`)
+            [EXP_SK]: `${recordType}_${company}_${period}`
         },
-        KeyConditionExpression: `${attrs.TIME_SK} IN (${EXP_SK})`
+        KeyConditionExpression: `${attrs.TIME_SK} = (${EXP_SK})`
     }, tableRange)
 
     // Query week price change rate
@@ -137,15 +134,15 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
         ], year, quarter, fundPriceRecord.serializeChangeRate)
     ]);
 
-    // // Batch remove previous items
-    // await Promise.all([
-    //     // Remove records
-    //     fundPriceRecord.batchDeleteItems(prevItems, year, quarter, fundPriceRecord.getCompositeSK),
-    //     // Remove change rates
-    //     fundPriceRecord.batchDeleteItems([
-    //         ...prevWeekRateItems, 
-    //         ...prevMonthRateItems, 
-    //         ...prevQuarterRateItems
-    //     ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate)
-    // ])
+    // Batch remove previous items
+    await Promise.all([
+        // Remove records
+        fundPriceRecord.batchDeleteItems(prevItems, year, quarter, fundPriceRecord.getCompositeSK),
+        // Remove change rates
+        // fundPriceRecord.batchDeleteItems([
+        //     ...prevWeekRateItems, 
+        //     ...prevMonthRateItems, 
+        //     ...prevQuarterRateItems
+        // ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate)
+    ])
 }
