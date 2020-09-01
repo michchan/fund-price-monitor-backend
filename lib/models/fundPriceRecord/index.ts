@@ -14,6 +14,7 @@ import scanQuarterRecords from "./io/scanQuarterRecords"
 import queryAllItems from "./io/queryAllItems"
 import parseChangeRate from './utils/parseChangeRate'
 import serializeChangeRate from './utils/serializeChangeRate'
+import getChangeRate from "./utils/getChangeRate"
 
 
 
@@ -33,6 +34,7 @@ const fundPriceRecord = {
     getQuarter,
     createTable,
     listLatestTables,
+    getChangeRate,
     isTableOfCurrentQuarter,
 } as const
 export default fundPriceRecord

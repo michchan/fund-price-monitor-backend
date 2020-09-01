@@ -1,12 +1,14 @@
 import { DynamoDBStreamHandler } from "aws-lambda";
 import zeroPadding from 'simply-utils/dist/number/zeroPadding'
 import getWeekOfYear from 'simply-utils/dist/dateTime/getWeekOfYear'
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import fundPriceRecord from "lib/models/fundPriceRecord";
 import getQuarter from "lib/helpers/getQuarter";
 import TableRange from "lib/models/fundPriceRecord/TableRange.type";
 import indexNames from "lib/models/fundPriceRecord/constants/indexNames";
 import attrs from "lib/models/fundPriceRecord/constants/attributeNames";
+import { FundPriceChangeRate, AggregatedRecordType } from "lib/models/fundPriceRecord/FundPriceRecord.type";
 
 
 
@@ -48,7 +50,11 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     }, tableRange)
 
     // Query week price change rate
-    const [weekRateRecords, monthRateRecords, quarterRateRecords] = await Promise.all([
+    const [
+        prevWeekRateRecords, 
+        prevMonthRateRecords, 
+        prevQuarterRateRecords
+    ] = await Promise.all([
         // Week query
         queryTimePriceChangeRateIndex(`week_${year}.${week}`),
         // Month query
@@ -57,13 +63,35 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
         queryTimePriceChangeRateIndex(`quarter_${year}.${quarter}`),
     ]);
 
+    // Throw errors and abort
+    if (!prevWeekRateRecords.Items || !prevMonthRateRecords.Items || prevQuarterRateRecords.Items) throw new Error(`Results Items undefined.`)
+
+    /** Helper to get latest records */
+    const calculateNextChangeRates = (items: DocumentClient.QueryOutput['Items'], type: AggregatedRecordType) => (
+        (items ?? []).length > 0 
+            ? (items ?? []).map(item => {
+                const prevChangeRate = fundPriceRecord.parseChangeRate(item);
+                return fundPriceRecord.getChangeRate(prevChangeRate, type, prevChangeRate.priceList ?? [])
+            })
+            : latestItems.map(item => fundPriceRecord.getChangeRate(item, type))
+    );
+
+    // Derive records to save
+    const weekRateItems: FundPriceChangeRate[] = calculateNextChangeRates(prevWeekRateRecords.Items, 'week');
+    const monthRateItems: FundPriceChangeRate[] = calculateNextChangeRates(prevMonthRateRecords.Items, 'month');
+    const quarterRateItems: FundPriceChangeRate[] = calculateNextChangeRates(prevQuarterRateRecords.Items, 'quarter');
+
     console.log(`TEST: `, JSON.stringify({
-        latestItems,
-        weekRateRecords,
-        monthRateRecords,
-        quarterRateRecords,
         year, month, week, quarter,
+        latestItems,
+        prevWeekRateRecords, 
+        prevMonthRateRecords, 
+        prevQuarterRateRecords,
+        weekRateItems,
+        monthRateItems,
+        quarterRateItems,
     }, null, 2));
+
 
     // // Loop through event records
     // for (const record of event.Records) {        
