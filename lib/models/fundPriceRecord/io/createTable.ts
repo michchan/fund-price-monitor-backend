@@ -113,7 +113,7 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
     },
     GlobalSecondaryIndexes: [
         createInclusiveCSI({
-            IndexName: indexNames.TIME_PRICE_CHANGE_RATE,
+            IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
             KeySchema: [
                 { AttributeName: attrs.TIME_SK, KeyType: 'HASH' },
                 { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },

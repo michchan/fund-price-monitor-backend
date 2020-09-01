@@ -40,9 +40,9 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
 
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
-    /** Helper to query TIME_PRICE_CHANGE_RATE index */
+    /** Helper to query PERIOD_PRICE_CHANGE_RATE index */
     const queryTimePriceChangeRateIndex = (timeSKValue: string) => fundPriceRecord.queryAllItems({
-        IndexName: indexNames.TIME_PRICE_CHANGE_RATE,
+        IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
         ExpressionAttributeValues: {
             [EXP_SK]: timeSKValue
         },
@@ -85,5 +85,5 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     // Batch create all aggregation items
     
 
-    // Batch remove previous "latest" items
+    // Batch remove previous items
 }

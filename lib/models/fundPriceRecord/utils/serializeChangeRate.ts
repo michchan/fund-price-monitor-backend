@@ -16,11 +16,12 @@ const serialize = ({
     priceList,
     priceChangeRate,
     time,
+    period,
     recordType,
 }: FundPriceChangeRate): DynamoDB.DocumentClient.PutRequest => ({
     Item: {
         [attr.COMPANY_CODE]: `${company}_${code}`,
-        [attr.TIME_SK]: `${recordType}_${company}_${time}`,
+        [attr.TIME_SK]: `${recordType}_${company}_${period}@${time}`,
         [attr.COMPANY]: company,
         [attr.NAME]: name,
         [attr.PRICE]: price,
