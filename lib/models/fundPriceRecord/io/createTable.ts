@@ -109,8 +109,8 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
     // Every created table are regarded as a table containing the latest timeSK series data,
     // So assign the best capacity units.
     ProvisionedThroughput: {
-        ReadCapacityUnits: 5,
-        WriteCapacityUnits: 1,
+        ReadCapacityUnits: 10,
+        WriteCapacityUnits: 5,
     },
     GlobalSecondaryIndexes: [
         createInclusiveCSI({

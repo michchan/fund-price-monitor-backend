@@ -30,6 +30,8 @@ const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceRecord => {
         [attr.INITIAL_PRICE]: initialPrice,
         [attr.LAUNCHED_DATE]: launchedDate,
     } = attributeMap as unknown as Item
+    console.log('parse attributeMap: ', JSON.stringify(attributeMap, null, 2))
+
     return {
         company: company.S as CompanyType,
         // Get the last composite segment of `company_code`

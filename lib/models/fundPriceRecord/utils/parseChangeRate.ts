@@ -30,6 +30,7 @@ const parseChangeRate = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRa
         [attr.PERIOD]: period,
         [attr.UPDATED_DATE]: updatedDate,
     } = attributeMap as unknown as Item
+    console.log('parseChangeRate attributeMap: ', JSON.stringify(attributeMap, null, 2))
 
     return {
         company: company.S as CompanyType,
