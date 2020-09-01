@@ -3,6 +3,8 @@ import zeroPadding from 'simply-utils/dist/number/zeroPadding'
 import getWeekOfYear from 'simply-utils/dist/dateTime/getWeekOfYear'
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import uniq from "lodash/uniq";
+import omitBy from "lodash/omitBy";
+import isEmpty from "lodash/isEmpty";
 
 import fundPriceRecord from "lib/models/fundPriceRecord";
 import getQuarter from "lib/helpers/getQuarter";
@@ -46,9 +48,11 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                 ]
             }
         }, {}) as Groups;
+    // Filter empty groups
+    const groupsToProcess = omitBy(groups, isEmpty)
 
     // Process each group
-    for (const [company, items] of Object.entries(groups)) {
+    for (const [company, items] of Object.entries(groupsToProcess)) {
         await processCompanyRecords(company as CompanyType, items)
     }
 }
