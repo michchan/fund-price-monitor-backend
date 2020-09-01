@@ -52,8 +52,6 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     // Filter empty groups
     const groupsToProcess = omitBy(groups, isEmpty)
 
-    console.log('GROUP: ', JSON.stringify({ RECORDS: event.Records, groups, groupsToProcess }, null, 2))
-
     // Process each group
     for (const [company, items] of Object.entries(groupsToProcess)) {
         await processCompanyRecords(company as CompanyType, items)
