@@ -12,6 +12,8 @@ import toLatestPriceRecord from "./utils/toLatestPriceRecord"
 import getQueryStartTimeByPeriodDifference from "./utils/getQueryStartTimeByPeriodDifference"
 import scanQuarterRecords from "./io/scanQuarterRecords"
 import queryAllItems from "./io/queryAllItems"
+import parseChangeRate from './utils/parseChangeRate'
+import serializeChangeRate from './utils/serializeChangeRate'
 
 
 
@@ -22,6 +24,8 @@ const fundPriceRecord = {
     toLatestPriceRecord,
     serialize,
     parse,
+    parseChangeRate,
+    serializeChangeRate,
     batchCreateItems,
     attributeNames,
     indexNames,

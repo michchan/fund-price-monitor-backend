@@ -50,11 +50,11 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     // Query week price change rate
     const [weekRateRecords, monthRateRecords, quarterRateRecords] = await Promise.all([
         // Week query
-        queryTimePriceChangeRateIndex(`week_${year}_${week}`),
+        queryTimePriceChangeRateIndex(`week_${year}.${week}`),
         // Month query
         queryTimePriceChangeRateIndex(`month_${year}-${month}`),
         // Quarter query
-        queryTimePriceChangeRateIndex(`quarter_${year}_${quarter}`),
+        queryTimePriceChangeRateIndex(`quarter_${year}.${quarter}`),
     ]);
 
     console.log(`TEST: `, JSON.stringify({

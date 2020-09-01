@@ -10,12 +10,15 @@ export type RiskLevel =
     | 'high' 
     | 'veryHigh'
 
-export type RecordType = 
-    | 'latest'
-    | 'record'
+
+export type AggregatedRecordType = 
     | 'week'
     | 'month'
     | 'quarter'
+
+export type RecordType = 
+    | 'latest'
+    | 'record'
 
 /**
  * A scrape recrod of the fundprice
@@ -38,4 +41,18 @@ export interface FundPriceRecord {
     time: string;
     fundType: FundType;
     recordType: RecordType;
+}
+
+export interface FundPriceChangeRate extends Pick<FundPriceRecord, 
+    | 'company'
+    | 'code'
+    | 'name'
+    | 'price'
+> {
+    /** In `YYYY-MM_[nth week]` , `YYYY-MM` or `YYYY.[nth quarter]` */
+    time: string;
+    recordType: AggregatedRecordType;
+    /** --------- Aggregated fields --------- */
+    priceChangeRate?: number;
+    priceList: number[];
 }
