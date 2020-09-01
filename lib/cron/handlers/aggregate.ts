@@ -78,7 +78,7 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
         ExpressionAttributeValues: {
             [EXP_SK]: `${recordType}_${company}_${period}`
         },
-        KeyConditionExpression: `${attrs.TIME_SK} = (${EXP_SK})`
+        KeyConditionExpression: `${attrs.PERIOD} = (${EXP_SK})`
     }, tableRange)
 
     // Query week price change rate
