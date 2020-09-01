@@ -16,15 +16,15 @@ const EXP_SK = `:timeSK` as string
 
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
     // Create date of latest item
-    const latestDate = new Date();
+    const date = new Date();
     // Get year
-    const year = latestDate.getFullYear();
+    const year = date.getFullYear();
     // Get month
-    const month = zeroPadding(latestDate.getMonth() + 1, 2);
+    const month = zeroPadding(date.getMonth() + 1, 2);
     // Get week
-    const week = getWeekOfYear(latestDate);
+    const week = getWeekOfYear(date);
     // Get quarter
-    const quarter = getQuarter(latestDate);
+    const quarter = getQuarter(date);
     // Create table range
     const tableRange: TableRange = { year, quarter };
 
@@ -36,7 +36,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
         .map(record => fundPriceRecord.parse(record.dynamodb.NewImage));
 
     // ggregation for latest price
-    const latestItems = items.map(item => fundPriceRecord.toLatestPriceRecord(item, latestDate));
+    const latestItems = items.map(item => fundPriceRecord.toLatestPriceRecord(item, date));
 
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
@@ -73,9 +73,9 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
         (items ?? []).length > 0 
             ? (items ?? []).map(item => {
                 const prevChangeRate = fundPriceRecord.parseChangeRate(item);
-                return fundPriceRecord.getChangeRate(prevChangeRate, type, prevChangeRate.priceList ?? [])
+                return fundPriceRecord.getChangeRate(prevChangeRate, type, prevChangeRate.priceList ?? [], 'prepend', date)
             })
-            : latestItems.map(item => fundPriceRecord.getChangeRate(item, type))
+            : latestItems.map(item => fundPriceRecord.getChangeRate(item, type, [], 'prepend', date))
     );
 
     // Derive records to save

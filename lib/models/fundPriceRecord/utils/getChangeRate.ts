@@ -10,7 +10,8 @@ const getChangeRate = (
     record: FundPriceRecord | FundPriceChangeRate, 
     recordType: AggregatedRecordType,
     prevPriceList: number[] = [],
-    priceListMode: 'append' | 'prepend' = 'prepend'
+    priceListMode: 'append' | 'prepend' = 'prepend',
+    aggregateDate?: Date,
 ): FundPriceChangeRate => {
     // Get date from record time
     const date = new Date(record.time);
@@ -33,7 +34,7 @@ const getChangeRate = (
     
     return {
         recordType,
-        time: (() => {
+        period: (() => {
             switch (recordType) {
                 case 'week': return `${year}-${month}.${week}`
                 case 'month': return `${year}-${month}`
@@ -46,9 +47,11 @@ const getChangeRate = (
         company: record.company,
         code: record.code,
         name: record.name,
+        updatedDate: record.updatedDate,
         price: record.price,
         priceChangeRate,
         priceList,
+        time: (aggregateDate ?? new Date()).toISOString(),
     }
 }
 
