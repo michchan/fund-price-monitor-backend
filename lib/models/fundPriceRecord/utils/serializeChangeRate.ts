@@ -17,19 +17,21 @@ const serializeChangeRate = (record: FundPriceChangeRate): DynamoDB.DocumentClie
         price,
         priceList,
         priceChangeRate,
-        time,
         updatedDate,
+        period,
+        recordType,
     } = record;
 
     return {
         Item: {
             [attr.COMPANY_CODE]: `${company}_${code}`,
             [attr.TIME_SK]: getCompositeSKFromChangeRate(record),
+            [attr.PERIOD]: `${recordType}_${company}_${period}`,
             [attr.COMPANY]: company,
             [attr.NAME]: name,
             [attr.UPDATED_DATE]: updatedDate,
             [attr.PRICE]: price,
-            [attr.PRICE_CHANGE_RATE_SK]: `${priceChangeRate}@${time}`,
+            [attr.PRICE_CHANGE_RATE]: priceChangeRate,
             [attr.PRICE_LIST]: priceList,
         }
     }

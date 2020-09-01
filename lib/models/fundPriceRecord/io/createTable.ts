@@ -103,7 +103,8 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
         { AttributeName: attrs.TIME_SK, AttributeType: 'S' },
         { AttributeName: attrs.COMPANY, AttributeType: 'S' },
         { AttributeName: attrs.RISK_LEVEL, AttributeType: 'S' },
-        { AttributeName: attrs.PRICE_CHANGE_RATE_SK, AttributeType: 'N' },
+        { AttributeName: attrs.PERIOD, AttributeType: 'S' },
+        { AttributeName: attrs.PRICE_CHANGE_RATE, AttributeType: 'N' },
     ],
     // Every created table are regarded as a table containing the latest timeSK series data,
     // So assign the best capacity units.
@@ -115,8 +116,8 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
         createInclusiveCSI({
             IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
             KeySchema: [
-                { AttributeName: attrs.TIME_SK, KeyType: 'HASH' },
-                { AttributeName: attrs.PRICE_CHANGE_RATE_SK, KeyType: 'RANGE' },
+                { AttributeName: attrs.PERIOD, KeyType: 'HASH' },
+                { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
         }, [
             attrs.PRICE, 

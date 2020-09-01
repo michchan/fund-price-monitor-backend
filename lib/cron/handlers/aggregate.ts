@@ -139,10 +139,10 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
         // Remove records
         fundPriceRecord.batchDeleteItems(prevItems, year, quarter, fundPriceRecord.getCompositeSK),
         // Remove change rates
-        // fundPriceRecord.batchDeleteItems([
-        //     ...prevWeekRateItems, 
-        //     ...prevMonthRateItems, 
-        //     ...prevQuarterRateItems
-        // ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate)
+        fundPriceRecord.batchDeleteItems([
+            ...prevWeekRateItems, 
+            ...prevMonthRateItems, 
+            ...prevQuarterRateItems
+        ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate)
     ])
 }

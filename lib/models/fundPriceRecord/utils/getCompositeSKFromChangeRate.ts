@@ -6,5 +6,6 @@ const getCompositeSKFromChangeRate = ({
     recordType,
     company,
     period,
-}: FundPriceChangeRate): string => `${recordType}_${company}_${period}`
+    time,
+}: FundPriceChangeRate): string => `${recordType}_${company}_${period}@${time}`
 export default getCompositeSKFromChangeRate

@@ -26,11 +26,10 @@ const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRate => {
         [attr.NAME]: name,
         [attr.PRICE]: price,
         [attr.PRICE_LIST]: priceList,
-        [attr.PRICE_CHANGE_RATE_SK]: priceChangeRateSK,
+        [attr.PRICE_CHANGE_RATE]: priceChangeRate,
+        [attr.PERIOD]: period,
         [attr.UPDATED_DATE]: updatedDate,
     } = attributeMap as unknown as Item
-
-    const [priceChangeRate, time] = priceChangeRateSK.S.split('@')
 
     return {
         company: company.S as CompanyType,
@@ -38,12 +37,12 @@ const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRate => {
         code: company_code.S.split('_').pop() ?? '',
         name: name.S,
         price: +price.N,
-        priceChangeRate: +priceChangeRate,
+        priceChangeRate: +priceChangeRate.N,
         priceList: priceList.NS,
         // Get the last composite segment of `timeSK`
-        time,
+        time: timeSK.S.split('@').pop() ?? '',
         updatedDate: updatedDate.S,
-        period: timeSK.S.split('_').pop() ?? '',
+        period: period.S.split('_').pop() ?? '',
         // Get the first composite segment of `timeSK`
         recordType: timeSK.S.split('_').shift() as AggregatedRecordType,
     }
