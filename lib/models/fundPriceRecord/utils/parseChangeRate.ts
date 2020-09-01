@@ -18,7 +18,7 @@ export type Item = {
 /**
  * Parse a dynamodb item to FundPriceChangeRate
  */
-const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRate => {
+const parseChangeRate = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRate => {
     const {
         [attr.COMPANY_CODE]: company_code,
         [attr.TIME_SK]: timeSK,
@@ -48,4 +48,4 @@ const parse = (attributeMap: DynamoDB.AttributeMap): FundPriceChangeRate => {
     }
 }
 
-export default parse
+export default parseChangeRate

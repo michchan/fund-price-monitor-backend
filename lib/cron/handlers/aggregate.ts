@@ -66,6 +66,10 @@ const processCompanyRecords = async (company: CompanyType, prevItems: FundPriceR
 
     // ggregation for latest price
     const latestItems = prevItems.map(item => fundPriceRecord.toLatestPriceRecord(item, date));
+    console.log(JSON.stringify({
+        prevItems,
+        latestItems,
+    }, null, 2))
 
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
