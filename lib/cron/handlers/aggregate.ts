@@ -64,7 +64,11 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     ]);
 
     // Throw errors and abort
-    if (!prevWeekRateRecords.Items || !prevMonthRateRecords.Items || prevQuarterRateRecords.Items) throw new Error(`Results Items undefined.`)
+    if (!prevWeekRateRecords.Items || !prevMonthRateRecords.Items || prevQuarterRateRecords.Items) throw new Error(`Results Items undefined. ${JSON.stringify({
+        prevWeekRateRecords,
+        prevMonthRateRecords,
+        prevQuarterRateRecords
+    })}`)
 
     /** Helper to get latest records */
     const calculateNextChangeRates = (items: DocumentClient.QueryOutput['Items'], type: AggregatedRecordType) => (
