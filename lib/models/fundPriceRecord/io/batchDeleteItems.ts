@@ -19,7 +19,7 @@ function batchDeleteItems <Rec extends T> (
     year: string | number,
     quarter: Quarter,
     getTimeSK: (record: Rec) => string,
-): Promise<Result> {
+): Promise<Result | null> {
     return db.batchWriteItems<Rec, DocumentClient.DeleteRequest>(records, getTableName(year, quarter), 'delete', rec => ({ 
         Key: {
             [attributeNames.COMPANY_CODE]: `${rec.company}_${rec.code}`,
