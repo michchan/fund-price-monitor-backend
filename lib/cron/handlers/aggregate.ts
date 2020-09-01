@@ -10,7 +10,7 @@ import attrs from "lib/models/fundPriceRecord/constants/attributeNames";
 
 
 
-const EXP_SK = `:sk` as string
+const EXP_SK = `:timeSK` as string
 
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
     // Create date of latest item
@@ -38,32 +38,23 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
 
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
+    /** Helper to query TIME_PRICE_CHANGE_RATE index */
+    const queryTimePriceChangeRateIndex = (timeSKValue: string) => fundPriceRecord.queryAllItems({
+        IndexName: indexNames.TIME_PRICE_CHANGE_RATE,
+        ExpressionAttributeValues: {
+            [EXP_SK]: timeSKValue
+        },
+        KeyConditionExpression: `${attrs.TIME_SK} = ${EXP_SK}`
+    }, tableRange)
+
     // Query week price change rate
     const [weekRateRecords, monthRateRecords, quarterRateRecords] = await Promise.all([
         // Week query
-        fundPriceRecord.queryAllItems({
-            IndexName: indexNames.WEEK_PRICE_CHANGE_RATE,
-            ExpressionAttributeValues: {
-                [EXP_SK]: `week_${year}_${week}`
-            },
-            KeyConditionExpression: `${attrs.WEEK} = ${EXP_SK}`
-        }, tableRange),
+        queryTimePriceChangeRateIndex(`week_${year}_${week}`),
         // Month query
-        fundPriceRecord.queryAllItems({
-            IndexName: indexNames.MONTH_PRICE_CHANGE_RATE,
-            ExpressionAttributeValues: {
-                [EXP_SK]: `month_${year}-${month}`
-            },
-            KeyConditionExpression: `${attrs.MONTH} = ${EXP_SK}`
-        }, tableRange),
+        queryTimePriceChangeRateIndex(`month_${year}-${month}`),
         // Quarter query
-        fundPriceRecord.queryAllItems({
-            IndexName: indexNames.QUARTER_PRICE_CHANGE_RATE,
-            ExpressionAttributeValues: {
-                [EXP_SK]: `quarter_${year}_${quarter}`
-            },
-            KeyConditionExpression: `${attrs.QUARTER} = ${EXP_SK}`
-        }, tableRange),
+        queryTimePriceChangeRateIndex(`quarter_${year}_${quarter}`),
     ]);
 
     console.log(`TEST: `, JSON.stringify({

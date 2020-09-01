@@ -103,9 +103,6 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
         { AttributeName: attrs.TIME_SK, AttributeType: 'S' },
         { AttributeName: attrs.COMPANY, AttributeType: 'S' },
         { AttributeName: attrs.RISK_LEVEL, AttributeType: 'S' },
-        { AttributeName: attrs.WEEK, AttributeType: 'S' },
-        { AttributeName: attrs.MONTH, AttributeType: 'S' },
-        { AttributeName: attrs.QUARTER, AttributeType: 'S' },
         { AttributeName: attrs.PRICE_CHANGE_RATE, AttributeType: 'N' },
     ],
     // Every created table are regarded as a table containing the latest timeSK series data,
@@ -116,23 +113,9 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
     },
     GlobalSecondaryIndexes: [
         createInclusiveCSI({
-            IndexName: indexNames.WEEK_PRICE_CHANGE_RATE,
+            IndexName: indexNames.TIME_PRICE_CHANGE_RATE,
             KeySchema: [
-                { AttributeName: attrs.WEEK, KeyType: 'HASH' },
-                { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
-            ],
-        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE, attrs.PRICE_LIST]),
-        createInclusiveCSI({
-            IndexName: indexNames.MONTH_PRICE_CHANGE_RATE,
-            KeySchema: [
-                { AttributeName: attrs.MONTH, KeyType: 'HASH' },
-                { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
-            ],
-        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE, attrs.PRICE_LIST]),
-        createInclusiveCSI({
-            IndexName: indexNames.QUARTER_PRICE_CHANGE_RATE,
-            KeySchema: [
-                { AttributeName: attrs.QUARTER, KeyType: 'HASH' },
+                { AttributeName: attrs.TIME_SK, KeyType: 'HASH' },
                 { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
             ],
         }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE, attrs.PRICE_LIST]),
