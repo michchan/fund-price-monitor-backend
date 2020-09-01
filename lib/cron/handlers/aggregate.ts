@@ -78,10 +78,8 @@ const processCompanyRecords = async (company: CompanyType, insertedItems: FundPr
             [EXP_COM_PK]: company,
             [EXP_TIME_SK]: 'latest'
         },
-        KeyConditionExpression: [
-            `${attrs.COMPANY} = ${EXP_COM_PK}`,
-            db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_TIME_SK)
-        ].join(' AND ')
+        KeyConditionExpression: `${attrs.COMPANY} = ${EXP_COM_PK}`,
+        FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_TIME_SK)
     }, tableRange)
     const prevLatestItems = (prevLatestRecords.Items || []).map(rec => fundPriceRecord.parse(rec))
 
