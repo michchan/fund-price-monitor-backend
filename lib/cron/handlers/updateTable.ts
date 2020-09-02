@@ -4,7 +4,11 @@ import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter";
 
 import TableRange from "lib/models/fundPriceRecord/TableRange.type";
 import fundPriceRecord from "lib/models/fundPriceRecord";
+import AWS from 'lib/AWS/AWS'
 
+
+
+const lambda = new AWS.Lambda();
 
 export type EventDetail = Partial<TableRange & {
     ProvisionedThroughput: Partial<DynamoDB.UpdateTableInput['ProvisionedThroughput']>;
@@ -41,13 +45,47 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
         const tableNames = await fundPriceRecord.listLatestTables({ year, quarter });
         // Do update if the table exists
         if (tableNames.some(name => name === tableName)) {
+            /** ------------------ Delete stream-lambda event source mapping ------------------ */
+        
+            // Describe table and get the stream arn
+            const describeTableOutput = await fundPriceRecord.describeTable(year, quarter);
+            // Get streaam ARN
+            const streamArn = describeTableOutput.Table?.LatestStreamArn
+            // Remove event source mapping for aggregation handler
+            if (streamArn) {
+                // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
+                // to map as dynamodb stream target function
+                const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string;
+
+                // List event source mapping
+                const eventSourceMappings = await lambda.listEventSourceMappings({ 
+                    FunctionName: aggregationHandlerArn,
+                    EventSourceArn: streamArn,
+                }).promise();
+                // Delete all event source mappings found related to this table
+                await Promise.all(
+                    (eventSourceMappings.EventSourceMappings ?? []).map(mapping => {
+                        if (!mapping.UUID) return
+                        return lambda.deleteEventSourceMapping({
+                            UUID: mapping.UUID
+                        }).promise();
+                    })
+                );
+            }
+
+            /** ------------------ Update table throughput configs ------------------ */
+
             // Send update table request
             await fundPriceRecord.updateTable(year, quarter, {
                 // Update the throughput of the table
                 ProvisionedThroughput: {
                     ReadCapacityUnits,
                     WriteCapacityUnits,
-                }
+                },
+                // Disable stream for that table
+                StreamSpecification: {
+                    StreamEnabled: false
+                },
             });
         }
     } catch (error) {

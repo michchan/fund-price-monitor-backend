@@ -54,6 +54,8 @@ function init (scope: cdk.Construct) {
             effect: Effect.ALLOW,
             actions: [
                 'lambda:CreateEventSourceMapping',
+                'lambda:DeleteEventSourceMapping',
+                'lambda:ListEventSourceMappings',
                 // For `waitFor` operation
                 'lambda:GetFunctionConfiguration',
                 'dynamodb:DescribeStream',
@@ -97,6 +99,9 @@ function init (scope: cdk.Construct) {
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 250,
         role: cronRole,
+        environment: {
+            AGGREGATION_HANDLER_ARN: aggregationHandler.functionArn,
+        },
     });
 
     // Handler for scraping data and saving data
