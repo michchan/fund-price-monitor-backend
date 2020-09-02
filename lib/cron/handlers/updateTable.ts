@@ -77,6 +77,7 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
 
             const throughput = describeTableOutput?.Table?.ProvisionedThroughput;
             // Update only when some of the throughput changed
+            // Since AWS don't allow an "unchanged update".
             if (
                 throughput?.ReadCapacityUnits !== ReadCapacityUnits 
                 || throughput?.WriteCapacityUnits !== WriteCapacityUnits
