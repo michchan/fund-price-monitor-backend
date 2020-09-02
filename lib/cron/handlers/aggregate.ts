@@ -2,12 +2,11 @@ import { DynamoDBStreamHandler } from "aws-lambda";
 import zeroPadding from 'simply-utils/dist/number/zeroPadding'
 import getWeekOfYear from 'simply-utils/dist/dateTime/getWeekOfYear'
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import uniq from "lodash/uniq";
 import omitBy from "lodash/omitBy";
 import isEmpty from "lodash/isEmpty";
+import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
 import fundPriceRecord from "lib/models/fundPriceRecord";
-import getQuarter from "lib/helpers/getQuarter";
 import TableRange from "lib/models/fundPriceRecord/TableRange.type";
 import indexNames from "lib/models/fundPriceRecord/constants/indexNames";
 import attrs from "lib/models/fundPriceRecord/constants/attributeNames";

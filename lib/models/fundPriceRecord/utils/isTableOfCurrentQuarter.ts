@@ -1,4 +1,5 @@
-import getQuarter from "lib/helpers/getQuarter"
+import getQuarter from "simply-utils/dist/dateTime/getQuarter";
+
 import getTableName from "./getTableName"
 
 

@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
+import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter";
 
-import getQuarter, { Quarter } from 'lib/helpers/getQuarter';
 import getTableName from '../utils/getTableName'
 import { PROJECT_NAMESPACE } from 'lib/constants';
 import db from 'lib/AWS/dynamodb';

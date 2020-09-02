@@ -1,9 +1,9 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { Quarter } from "simply-utils/dist/dateTime/getQuarter";
 
 import { FundPriceRecord, FundPriceChangeRate } from '../FundPriceRecord.type';
 import db from 'lib/AWS/dynamodb';
 import { Result } from 'lib/AWS/dynamodb/batchWriteItems';
-import { Quarter } from 'lib/helpers/getQuarter';
 import getTableName from '../utils/getTableName';
 
 

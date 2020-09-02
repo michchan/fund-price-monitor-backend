@@ -1,5 +1,4 @@
 import getTableName from "./utils/getTableName"
-import getQuarter from "lib/helpers/getQuarter"
 import createTable from "./io/createTable"
 import listLatestTables from "./io/listLatestTables"
 import isTableOfCurrentQuarter from "./utils/isTableOfCurrentQuarter"
@@ -37,7 +36,6 @@ const fundPriceRecord = {
     attributeNames,
     indexNames,
     getTableName,
-    getQuarter,
     createTable,
     listLatestTables,
     getChangeRate,
