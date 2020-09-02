@@ -137,11 +137,10 @@ function init (scope: cdk.Construct) {
     // Run every day at 8:00PM UTC
     // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
     const rule = new events.Rule(scope, 'Rule', {
-      schedule: events.Schedule.expression('cron(0 20 * * ? *)')
+      schedule: events.Schedule.expression('cron(35 7 * * ? *)') 
     });
 
     rule.addTarget(new targets.SfnStateMachine(stateMachine));
-    stateMachine.grantStartExecution(rule);
 }
 
 const cron = { init } as const
