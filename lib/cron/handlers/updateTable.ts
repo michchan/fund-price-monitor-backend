@@ -48,7 +48,7 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
                     ReadCapacityUnits,
                     WriteCapacityUnits,
                 }
-            })
+            });
         }
     } catch (error) {
         callback(error)

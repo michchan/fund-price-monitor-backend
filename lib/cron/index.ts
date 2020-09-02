@@ -27,6 +27,7 @@ function init (scope: cdk.Construct) {
                 // For `waitFor` operation
                 'dynamodb:DescribeTable',
                 'dynamodb:CreateTable',
+                'dynamodb:UpdateTable',
                 'dynamodb:BatchWriteItem',
                 'dynamodb:Query',
             ],
