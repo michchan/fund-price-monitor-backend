@@ -39,8 +39,8 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
 
         // Check table existence
         const tableNames = await fundPriceRecord.listLatestTables({ year, quarter });
-        // Create a table of the specified quarter if it does NOT exist
-        if (!tableNames.some(name => name === tableName)) {
+        // Do update if the table exists
+        if (tableNames.some(name => name === tableName)) {
             // Send update table request
             await fundPriceRecord.updateTable(year, quarter, {
                 // Update the throughput of the table
