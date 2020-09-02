@@ -73,7 +73,7 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
                 );
             }
 
-            /** ------------------ Update table throughput configs ------------------ */
+            /** ------------------ Update table throughput/stream configs ------------------ */
 
             const throughput = describeTableOutput?.Table?.ProvisionedThroughput;
             // Update only when some of the throughput changed
@@ -91,13 +91,15 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
                     },
                 }, true);
             }
-
-            // Disable table stream, AWS requires the update to be separate:
-            // "You cannot modify stream status while updating table IOPS"
-            await fundPriceRecord.updateTable(year, quarter, {
-                // Disable stream
-                StreamSpecification: { StreamEnabled: false }
-            });
+            // Disable stream if it is enabled
+            if (describeTableOutput.Table?.StreamSpecification?.StreamEnabled) {
+                // Disable table stream, AWS requires the update to be separate:
+                // "You cannot modify stream status while updating table IOPS"
+                await fundPriceRecord.updateTable(year, quarter, {
+                    // Disable stream
+                    StreamSpecification: { StreamEnabled: false }
+                });
+            }
         }
     } catch (error) {
         callback(error)
