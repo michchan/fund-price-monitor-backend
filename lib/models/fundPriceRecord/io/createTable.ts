@@ -25,7 +25,7 @@ const createTable = async (
     /** ------------- Create table ------------- */
 
     // Get based table name
-    const TableName = getTableName(year, quarter)
+    const TableName = getTableName(year, quarter);
     // Send create table request
     const createdTable = await dynamodb.createTable(getTableParams(TableName)).promise()
     // Wait for the table to be active

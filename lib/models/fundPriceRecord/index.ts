@@ -17,10 +17,12 @@ import getChangeRate from "./utils/getChangeRate"
 import batchDeleteItems from "./io/batchDeleteItems"
 import getCompositeSK from "./utils/getCompositeSK"
 import getCompositeSKFromChangeRate from "./utils/getCompositeSKFromChangeRate"
+import updateTable from "./io/updateTable"
 
 
 
 const fundPriceRecord = {
+    updateTable,
     getCompositeSK,
     getCompositeSKFromChangeRate,
     queryAllItems,

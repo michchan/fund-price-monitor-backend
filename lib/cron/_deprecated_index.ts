@@ -75,10 +75,10 @@ function init (scope: cdk.Construct) {
         role: cronRole,
     });
     
-    // Handler for create table for next coming quarter
-    const createTableHandler = new lambda.Function(scope, 'CronCreateTableHandler', {
+    // Handler for check and create tables
+    const tableHandler = new lambda.Function(scope, 'CronTableHandler', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
-        handler: 'createTable.handler',
+        handler: '_deprecated_handleTable.handler',
         timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 250,
@@ -86,17 +86,7 @@ function init (scope: cdk.Construct) {
         environment: {
             AGGREGATION_HANDLER_ARN: aggregationHandler.functionArn,
         },
-    });
-
-    // Handler for adjust the provisioned throughput of table for previous quarter
-    const updateTableHandler = new lambda.Function(scope, 'CronUpdateTableHandler', {
-        code: lambda.Code.fromAsset('bundles/cron/handlers'),
-        handler: 'updateTable.handler',
-        timeout: cdk.Duration.minutes(5),
-        runtime: lambda.Runtime.NODEJS_12_X,
-        memorySize: 250,
-        role: cronRole,
-    });
+    })
 
     // Handler for scraping data and saving data
     const scrapeHandler = new lambda.Function(scope, 'CronScraper', {
@@ -108,28 +98,49 @@ function init (scope: cdk.Construct) {
         role: cronRole,
     });
 
+    /** ------------------ Step functions state machine Definition ------------------ */
+
+    // Create table handling task
+    const handleTableTask = new sfn.Task(scope, 'Check existing or create table', {
+        task: new sfnTasks.InvokeFunction(tableHandler),
+    });   
+    // Create a wait state to wait for the dynamodb stream to warm up and work
+    const wait = new sfn.Wait(scope, 'Wait for dynamodb stream to warm-up', {
+        // By experience, the dynamodb stream need more than 1 minute in order to work, 
+        // after table is just created.
+        // So it should be made safe here by setting 3 minutes wait time.
+        time: sfn.WaitTime.duration(cdk.Duration.minutes(3)),
+    });
+    // Create scraping task
+    const scrapeTask = new sfn.Task(scope, 'Scrap and save records', {
+        task: new sfnTasks.InvokeFunction(scrapeHandler),
+    });
+
+    // Create chain
+    const chain = sfn.Chain
+        .start(handleTableTask)
+        .next(wait)
+        .next(scrapeTask)
+
+    // Create state machine
+    const stateMachine = new sfn.StateMachine(scope, 'CronStateMachine', {
+        definition: chain,
+        timeout: cdk.Duration.minutes(15),
+    });
+
+    // Grant lambda execution roles
+    tableHandler.grantInvoke(stateMachine.role);
+    scrapeHandler.grantInvoke(stateMachine.role);
+
     /** ------------------ Events Rule Definition ------------------ */
 
     // Run every day at 8:00PM UTC
     // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
-    const scraperRule = new events.Rule(scope, 'ScraperRule', {
+    const rule = new events.Rule(scope, 'Rule', {
       schedule: events.Schedule.expression('cron(0 20 * * ? *)')
     });
-    scraperRule.addTarget(new targets.LambdaFunction(scrapeHandler));
 
-    // Run every END of a quarter
-    // At 00:00AM UTC, on the 28th day, in March, June, September and December
-    const createTableRule = new events.Rule(scope, 'CreateTableRule', {
-        schedule: events.Schedule.expression('cron(0 0 28 3,6,9,12 ? *)')
-    });
-    createTableRule.addTarget(new targets.LambdaFunction(createTableHandler));
-
-    // Run every START of a quarter
-    // At 00:00AM UTC, on the 1st day, in January, April, July and October
-    const updateTableRule = new events.Rule(scope, 'UpdateTableRule', {
-        schedule: events.Schedule.expression('cron(0 0 1 1,4,7,10 ? *)')
-    });
-    updateTableRule.addTarget(new targets.LambdaFunction(updateTableHandler));
+    rule.addTarget(new targets.SfnStateMachine(stateMachine));
 }
 
 const cron = { init } as const
