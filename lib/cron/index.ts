@@ -3,6 +3,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks';
+import * as events from '@aws-cdk/aws-events';
+import * as targets from '@aws-cdk/aws-events-targets';
 import { Effect } from '@aws-cdk/aws-iam';
 
 
@@ -132,14 +134,14 @@ function init (scope: cdk.Construct) {
 
     /** ------------------ Events Rule Definition ------------------ */
 
-    // Run every day at 6PM UTC
+    // Run every day at 8:00PM UTC
     // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
-    // const rule = new events.Rule(this, 'Rule', {
-    //   schedule: events.Schedule.expression('cron(0 18 ? * MON-FRI *)')
-    // });
+    const rule = new events.Rule(scope, 'Rule', {
+      schedule: events.Schedule.expression('cron(0 20 * * ? *)')
+    });
 
-    // rule.addTarget(new targets.LambdaFunction(stateMachine));
-    // stateMachine.grantStartExecution(rule);
+    rule.addTarget(new targets.SfnStateMachine(stateMachine));
+    stateMachine.grantStartExecution(rule);
 }
 
 const cron = { init } as const
