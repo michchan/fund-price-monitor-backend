@@ -1,5 +1,6 @@
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter';
+
 import { PROJECT_NAMESPACE } from "lib/constants"
-import { Quarter } from "lib/helpers/getQuarter"
 
 
 

@@ -1,10 +1,10 @@
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter';
+
 import { FundPriceRecord, FundPriceChangeRate } from '../FundPriceRecord.type';
-import serialize from '../utils/serialize';
 import db from 'lib/AWS/dynamodb';
 import { Result } from 'lib/AWS/dynamodb/batchWriteItems';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import attributeNames from '../constants/attributeNames';
-import { Quarter } from 'lib/helpers/getQuarter';
 import getTableName from '../utils/getTableName';
 
 

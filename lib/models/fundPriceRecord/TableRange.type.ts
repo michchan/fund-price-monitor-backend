@@ -1,4 +1,4 @@
-import { Quarter } from "lib/helpers/getQuarter";
+import { Quarter } from "simply-utils/dist/dateTime/getQuarter";
 
 
 interface TableRange {
