@@ -75,14 +75,22 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
 
             /** ------------------ Update table throughput configs ------------------ */
 
-            // Send update table request
-            await fundPriceRecord.updateTable(year, quarter, {
-                // Update the throughput of the table
-                ProvisionedThroughput: {
-                    ReadCapacityUnits,
-                    WriteCapacityUnits,
-                },
-            }, true);
+            const throughput = describeTableOutput?.Table?.ProvisionedThroughput;
+            // Update only when some of the throughput changed
+            if (
+                throughput?.ReadCapacityUnits !== ReadCapacityUnits 
+                || throughput?.WriteCapacityUnits !== WriteCapacityUnits
+            ) {
+                // Send update table request
+                await fundPriceRecord.updateTable(year, quarter, {
+                    // Update the throughput of the table
+                    ProvisionedThroughput: {
+                        ReadCapacityUnits,
+                        WriteCapacityUnits,
+                    },
+                }, true);
+            }
+
             // Disable table stream, AWS requires the update to be separate:
             // "You cannot modify stream status while updating table IOPS"
             await fundPriceRecord.updateTable(year, quarter, {
