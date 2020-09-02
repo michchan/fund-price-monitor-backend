@@ -76,6 +76,8 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
             /** ------------------ Update table throughput/stream configs ------------------ */
 
             const throughput = describeTableOutput?.Table?.ProvisionedThroughput;
+            const streamEnabled = describeTableOutput.Table?.StreamSpecification?.StreamEnabled
+
             // Update only when some of the throughput changed
             // Since AWS don't allow an "unchanged update".
             if (
@@ -89,10 +91,12 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
                         ReadCapacityUnits,
                         WriteCapacityUnits,
                     },
-                }, true);
+                // Wait for the service to be updated complete, 
+                // if there is another update, i.e. disabling table's stream
+                }, streamEnabled);
             }
             // Disable stream if it is enabled
-            if (describeTableOutput.Table?.StreamSpecification?.StreamEnabled) {
+            if (streamEnabled) {
                 // Disable table stream, AWS requires the update to be separate:
                 // "You cannot modify stream status while updating table IOPS"
                 await fundPriceRecord.updateTable(year, quarter, {
