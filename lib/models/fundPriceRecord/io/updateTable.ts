@@ -29,9 +29,14 @@ const updateTable = async (
 
     if (shouldWaitForUpdateComplete) {
         // Wait for status to be finished as "ACTIVE" (changing from "UPDATING")
-        await waitForService<I, O, E>(dynamodb.describeTable, { TableName }, result => {
-            return /^ACTIVE$/i.test(result?.Table?.TableStatus ?? '');
-        });
+        await waitForService<I, O, E>(
+            // Prevent `this` context problem
+            (...args) => dynamodb.describeTable(...args), 
+            // Input
+            { TableName }, 
+            // Predicate of whether the table has been changed to ACTIVE (update completed)
+            result => /^ACTIVE$/i.test(result?.Table?.TableStatus ?? '')
+        );
     }
 
     return output
