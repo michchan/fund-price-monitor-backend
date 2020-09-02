@@ -20,15 +20,19 @@ const updateTable = async (
     year: string | number,
     quarter: Quarter,
     input: Omit<DynamoDB.UpdateTableInput, 'TableName'>,
+    shouldWaitForUpdateComplete?: boolean,
 ): Promise<Result> => {
     // Get based table name
     const TableName = getTableName(year, quarter);
     // Update table
     const output = await dynamodb.updateTable({ ...input, TableName }).promise();
-    // Wait for status to be finished as "ACTIVE" (changing from "UPDATING")
-    await waitForService<I, O, E>(dynamodb.describeTable, { TableName }, result => {
-        return /^ACTIVE$/i.test(result?.Table?.TableStatus ?? '');
-    });
+
+    if (shouldWaitForUpdateComplete) {
+        // Wait for status to be finished as "ACTIVE" (changing from "UPDATING")
+        await waitForService<I, O, E>(dynamodb.describeTable, { TableName }, result => {
+            return /^ACTIVE$/i.test(result?.Table?.TableStatus ?? '');
+        });
+    }
 
     return output
 }

@@ -82,7 +82,7 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
                     ReadCapacityUnits,
                     WriteCapacityUnits,
                 },
-            });
+            }, true);
             // Disable table stream, AWS requires the update to be separate:
             // "You cannot modify stream status while updating table IOPS"
             await fundPriceRecord.updateTable(year, quarter, {
