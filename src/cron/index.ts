@@ -128,7 +128,7 @@ function init (scope: cdk.Construct) {
     /**
      * Handler for create table for next coming quarter
      */
-    const createTableHandler = new lambda.Function(scope, 'CronCreateTableHandler', {
+    const createTableHandler = new lambda.Function(scope, 'CronTableCreateHandler', {
         ...commonLambdaInput,
         handler: 'createTable.handler',
         environment: commonTableHandlingEnv,
@@ -137,7 +137,7 @@ function init (scope: cdk.Construct) {
     /**
      * Handler for adjust the provisioned throughput of table for previous quarter
      */
-    const updateTableHandler = new lambda.Function(scope, 'CronUpdateTableHandler', {
+    const updateTableHandler = new lambda.Function(scope, 'CronTableUpdateHandler', {
         ...commonLambdaInput,
         handler: 'updateTable.handler',
         environment: commonTableHandlingEnv,
@@ -148,7 +148,7 @@ function init (scope: cdk.Construct) {
     /**
      * Handler for sending daily notifications upon updates
      */
-    const notifyDailyHandler = new lambda.Function(scope, 'CronDailyNotifier', {
+    const notifyDailyHandler = new lambda.Function(scope, 'CronNotifierDaily', {
         ...commonLambdaInput,
         handler: 'notifyDaily.handler',
         environment: commonNotifyEnv
@@ -156,7 +156,7 @@ function init (scope: cdk.Construct) {
     /**
      * Handler for sending weekly notifications upon updates
      */
-    const notifyWeeklyHandler = new lambda.Function(scope, 'CronWeeklyNotifier', {
+    const notifyWeeklyHandler = new lambda.Function(scope, 'CronNotifierWeekly', {
         ...commonLambdaInput,
         handler: 'notifyWeekly.handler',
         environment: commonNotifyEnv
@@ -164,7 +164,7 @@ function init (scope: cdk.Construct) {
     /**
      * Handler for sending monthly notifications upon updates
      */
-    const notifyMonthlyHandler = new lambda.Function(scope, 'CronMonthlyNotifier', {
+    const notifyMonthlyHandler = new lambda.Function(scope, 'CronNotifierMonthly', {
         ...commonLambdaInput,
         handler: 'notifyMonthly.handler',
         environment: commonNotifyEnv
@@ -172,7 +172,7 @@ function init (scope: cdk.Construct) {
     /**
      * Handler for sending quarterly notifications upon updates
      */
-    const notifyQuarterlyHandler = new lambda.Function(scope, 'CronQuarterlyNotifier', {
+    const notifyQuarterlyHandler = new lambda.Function(scope, 'CronNotifierQuarterly', {
         ...commonLambdaInput,
         handler: 'notifyQuarterly.handler',
         environment: commonNotifyEnv
