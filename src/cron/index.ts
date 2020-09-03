@@ -9,8 +9,6 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import env from 'src/lib/env';
 
 
-const envValues = env.getValues();
-
 function init (scope: cdk.Construct) {
 
     /** ------------------ IAM Role Definition ------------------ */
@@ -73,14 +71,14 @@ function init (scope: cdk.Construct) {
 
     // Retrieve the telegram notification channel's chat ID
     const telegramChatId = ssm.StringParameter.fromStringParameterAttributes(scope, 'TelegramChatID', {
-        parameterName: envValues.TELEGRAM_CHAT_ID_PARAMETER_NAME,
+        parameterName: env.values.TELEGRAM_CHAT_ID_PARAMETER_NAME,
         // 'version' can be specified but is optional.
     }).stringValue;
   
     // Retrieve the API key of the telegram bot to send notification messages
     const telegramBotApiKey = ssm.StringParameter.fromSecureStringParameterAttributes(scope, 'TelegramBotAPIKey', {
-        parameterName: envValues.TELEGRAM_BOT_API_KEY_PARAMETER_NAME,
-        version: envValues.TELEGRAM_BOT_API_KEY_PARAMETER_VERSION,
+        parameterName: env.values.TELEGRAM_BOT_API_KEY_PARAMETER_NAME,
+        version: env.values.TELEGRAM_BOT_API_KEY_PARAMETER_VERSION,
     }).stringValue;
     
     /** ------------------ Lambda Handlers Definition ------------------ */
