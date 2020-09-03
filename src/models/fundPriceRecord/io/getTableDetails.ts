@@ -10,6 +10,7 @@ import topLevelKeysValues from "../constants/topLevelKeysValues";
 
 
 const EXP_PK = `:pk`
+const EXP_SK = `:sk`
 
 const getTableDetails = async (
     input?: Omit<Input, 'TableName' | 'ExpressionAttributeValues' | 'KeyConditionExpression'>,
@@ -24,9 +25,13 @@ const getTableDetails = async (
         ...input,
         TableName,
         ExpressionAttributeValues: {
-            [EXP_PK]: topLevelKeysValues.TABLE_DETAILS_PK
+            [EXP_PK]: topLevelKeysValues.DETAILS_PK,
+            [EXP_SK]: topLevelKeysValues.TABLE_DETAILS_SK,
         },
-        KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_PK}`
+        KeyConditionExpression: [
+            `${attrs.COMPANY_CODE} = ${EXP_PK}`,
+            `${attrs.TIME_SK} = ${EXP_SK}`
+        ].join(' AND ')
     });
     
     const item = (output.Items || [])[0];

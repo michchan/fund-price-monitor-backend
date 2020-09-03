@@ -17,7 +17,8 @@ function updateTableDetails (
         ...input,
         TableName: getTableName(year, quarter),
         Key: {
-            [attrs.COMPANY_CODE]: `${topLevelKeysValues.TABLE_DETAILS_PK}`,
+            [attrs.COMPANY_CODE]: `${topLevelKeysValues.DETAILS_PK}`,
+            [attrs.TIME_SK]: `${topLevelKeysValues.TABLE_DETAILS_SK}`
         } as DocumentClient.AttributeValue,
     });
 }
