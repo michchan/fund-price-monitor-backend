@@ -9,6 +9,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import env from 'src/lib/env';
 
 
+
 function init (scope: cdk.Construct) {
 
     /** ------------------ IAM Role Definition ------------------ */
@@ -68,6 +69,9 @@ function init (scope: cdk.Construct) {
     );
 
     /** ------------------ Get paramters from parameter store ------------------ */
+
+    // Validate env on deploying run time
+    env.validate();
 
     // Retrieve the telegram notification channel's chat ID
     const telegramChatId = ssm.StringParameter.fromStringParameterAttributes(scope, 'TelegramChatID', {
