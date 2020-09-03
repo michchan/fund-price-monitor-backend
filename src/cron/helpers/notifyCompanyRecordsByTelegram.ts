@@ -32,7 +32,19 @@ const notifyCompanyRecordsByTelegram = async (
         }
     })(scheduleType);
 
-    const items = queryOutput.Items || [];
+    // Parse items
+    const items = (queryOutput.Items || []).map(item => {
+        switch (scheduleType) {
+            case 'quarterly':
+            case 'monthly':
+            case 'weekly':
+                return fundPriceRecord.parseChangeRate(item);
+            case 'daily':
+            default:
+                return fundPriceRecord.parse(item);
+        }
+    });
+    
     // Abort if no items found
     if (items.length === 0) {
         console.log('No items found');
