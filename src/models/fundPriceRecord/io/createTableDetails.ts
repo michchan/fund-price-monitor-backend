@@ -16,13 +16,15 @@ function createTableDetails (
     year: string | number,
     quarter: Quarter,
 ) {
+    const { time, companies, fundTypes } = details;
+
     return db.putItem({
         TableName: getTableName(year, quarter),
         Item: {
             [attrs.COMPANY_CODE]: `${topLevelKeysValues.TABLE_DETAILS_PK}`,
-            [attrs.TIME_SK]: `${topLevelKeysValues.TABLE_DETAILS_PK}@${details.time}`,
-            [attrs.COMPANIES]: docClient.createSet(details.companies),
-            [attrs.FUND_TYPES]: docClient.createSet(details.fundTypes)
+            [attrs.TIME_SK]: `${topLevelKeysValues.TABLE_DETAILS_PK}@${time}`,
+            [attrs.COMPANIES]: companies.length > 0 ? docClient.createSet(companies) : undefined,
+            [attrs.FUND_TYPES]: fundTypes.length > 0 ? docClient.createSet(fundTypes) : undefined,
         } as DocumentClient.AttributeValue,
     });
 }
