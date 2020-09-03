@@ -38,6 +38,12 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
             const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
             // Create one if it doesn't exist
             await fundPriceRecord.createTable(year, quarter, aggregationHandlerArn);
+            // Create table detail row
+            await fundPriceRecord.createTableDetails({
+                time: date.toISOString(),
+                companies: [],
+                fundTypes: [],
+            }, year, quarter);
         }
     } catch (error) {
         callback(error)

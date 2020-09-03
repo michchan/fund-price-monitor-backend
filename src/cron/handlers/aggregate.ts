@@ -2,15 +2,19 @@ import { DynamoDBStreamHandler } from "aws-lambda";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import omitBy from "lodash/omitBy";
 import isEmpty from "lodash/isEmpty";
+import uniq from "lodash/uniq";
 
 import fundPriceRecord from "src/models/fundPriceRecord";
 import TableRange from "src/models/fundPriceRecord/TableRange.type";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
-import db from "src/lib/AWS/dynamodb";
 import getDateTimeDictionary from "src/helpers/getDateTimeDictionary";
 import AWS from 'src/lib/AWS'
 
+
+
+const EXP_COMS = ':companies'
+const EXP_FUND_TYPES = ':fundTYpes'
 
 type PrevNextRates = [
     FundPriceChangeRate[],
@@ -21,8 +25,8 @@ type Groups = { [company in CompanyType]: FundPriceRecord[] }
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
     /** -------- Process event records -------- */
 
-    // Group items by company
-    const groups = event.Records
+    // Map and normalize items
+    const records = event.Records
         // Filter inserted records and records with `NewImage` defined
         .filter(record => (
             // if it is an insert event
@@ -33,10 +37,13 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
             )
         ))
         // @ts-expect-error
-        .map(record => fundPriceRecord.parse(AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage)))
+        .map(record => fundPriceRecord.parse(AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage)));
+
+    // Group items by company
+    const groups = records
         .reduce((_acc, record) => {
             const acc = _acc as Groups;
-            const {company } = record
+            const { company } = record
             return {
                 ...acc,
                 [company]: [
@@ -45,18 +52,36 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
                 ]
             }
         }, {}) as Groups;
+
     // Filter empty groups
     const groupsToProcess = omitBy(groups, isEmpty);
+
+    // Create date of latest item
+    const date = new Date();
+    const { year, quarter } = getDateTimeDictionary(date);
 
     /** -------- Process reords by company  -------- */
 
     // Process each group
     for (const [company, items] of Object.entries(groupsToProcess)) {
-        await processCompanyRecords(company as CompanyType, items)
+        await processCompanyRecords(company as CompanyType, items, date)
     }
 
     /** -------- Update table-level details  -------- */
 
+    // Get fund types
+    const fundTypes = uniq(records.map(rec => rec.fundType))
+    // Update table details with companies and fund types
+    await fundPriceRecord.updateTableDetails({
+        UpdateExpression: [
+            `ADD ${attrs.COMPANIES} ${EXP_COMS}`,
+            `ADD ${attrs.FUND_TYPES} ${EXP_FUND_TYPES}`
+        ].join(' AND '),
+        ExpressionAttributeValues: {
+            [EXP_COMS]: Object.keys(groupsToProcess),
+            [EXP_FUND_TYPES]: fundTypes,
+        },
+    }, year, quarter);
 }
 
 
@@ -66,10 +91,10 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
 const processCompanyRecords = async (
     company: CompanyType, 
     insertedItems: FundPriceRecord[],
+    date: Date,
 ) => {
-    // Create date of latest item
-    const date = new Date();
-    const { week, month, year, quarter } = getDateTimeDictionary(date);
+    // Get year and quarter
+    const { year, quarter } = getDateTimeDictionary(date);
     // Create table range
     const tableRange: TableRange = { year, quarter };
 

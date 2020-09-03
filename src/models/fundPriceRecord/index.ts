@@ -25,10 +25,14 @@ import getPeriodByRecordType from "./utils/getPeriodByRecordType"
 import toTelegramMessages from "./utils/toTelegramMessages"
 import getTableDetails from "./io/getTableDetails"
 import topLevelKeysValues from "./constants/topLevelKeysValues"
+import createTableDetails from "./io/createTableDetails"
+import updateTableDetails from "./io/updateTableDetails"
 
 
 
 const fundPriceRecord = {
+    createTableDetails,
+    updateTableDetails,
     topLevelKeysValues,
     getTableDetails,
     toTelegramMessages,
