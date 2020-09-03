@@ -166,6 +166,10 @@ const processCompanyRecords = async (company: CompanyType, insertedItems: FundPr
     ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate);
 
     /** -------- Send notifications for latest records (daily)  -------- */
+    // Get the telegram notification channel chat ID passed from the environment variables defined in CDK construct of cron,
+    // to map as dynamodb stream target function
+    const telegramChatId = process.env.TELEGRAM_CHAT_ID as string;
 
+    // Get telegram bot API key (secure string) from the SSM parameter store in runtime
     
 }
