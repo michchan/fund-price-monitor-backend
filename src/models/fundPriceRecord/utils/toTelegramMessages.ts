@@ -1,4 +1,5 @@
 import zeroPadding from "simply-utils/dist/number/zeroPadding";
+import capitalize from "lodash/capitalize";
 
 import { FundPriceRecord, CompanyType, FundPriceChangeRate } from "../FundPriceRecord.type"
 import { ScheduleType } from "src/cron/helpers/notifyCompanyRecordsByTelegram"
@@ -19,7 +20,7 @@ const toTelegramMessages = (
     const dateOfMonth = zeroPadding(date.getDate(), 2);
 
     // Derive title line
-    const titleLine = `* ------ ${scheduleType.toUpperCase()} - ${company.toUpperCase()} - ${year}-${month}-${dateOfMonth} (week: ${week}, Q${quarter}) ------ *`
+    const titleLine = `* ------ ${capitalize(scheduleType)} - ${capitalize(company)} - ${year}-${month}-${dateOfMonth} (week: ${week}, Q${quarter}) ------ *`
     // Derive item lines
     const itemLines = items.map(({ code, name, price, priceChangeRate }, i) => {
         const order = `${i + 1}.`
