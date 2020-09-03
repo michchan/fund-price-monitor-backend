@@ -4,7 +4,7 @@ import { Input, Output } from "src/lib/AWS/dynamodb/queryAllItems"
 import TableRange from '../TableRange.type';
 import db from 'src/lib/AWS/dynamodb';
 import getTableName from '../utils/getTableName';
-import { FundPriceTableDetails } from "../FundPriceRecord.type"
+import { FundPriceTableDetails, FundType, CompanyType } from "../FundPriceRecord.type"
 import attrs from "../constants/attributeNames";
 import topLevelKeysValues from "../constants/topLevelKeysValues";
 
@@ -36,12 +36,15 @@ const getTableDetails = async (
     
     const item = (output.Items || [])[0];
     if (!item) throw new Error(`tableDetails row is not defined for table: ${TableName}`);
-    console.log(JSON.stringify(output, null, 4))
+
+    const companiesSet = item[attrs.COMPANIES] as Set<CompanyType> | undefined;
+    const fundTypesSet = item[attrs.FUND_TYPES] as Set<FundType> | undefined;
 
     return {
         time: item[attrs.TIME_SK].split('@').pop(),
-        companies: item[attrs.COMPANIES],
-        fundTypes: item[attrs.FUND_TYPES],
+        // Parse set to array
+        companies: companiesSet ? Array.from(companiesSet) : [],
+        fundTypes: fundTypesSet ? Array.from(fundTypesSet) : [],
     }
 }
 
