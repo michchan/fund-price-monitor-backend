@@ -183,26 +183,51 @@ function init (scope: cdk.Construct) {
 
     /** ------------------ Events Rule Definition ------------------ */
 
-    // Run every day at 8:00PM UTC
+    /** ------------ Daily ------------ */
+
+    // Run every day at 20:00 UTC
     // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
-    const scraperRule = new events.Rule(scope, 'ScraperRule', {
-      schedule: events.Schedule.expression('cron(0 20 * * ? *)')
+    const dailyScrapeRule = new events.Rule(scope, 'DailyScrapeRule', {
+        schedule: events.Schedule.expression('cron(0 20 * * ? *)')
     });
-    scraperRule.addTarget(new targets.LambdaFunction(scrapeHandler));
+    dailyScrapeRule.addTarget(new targets.LambdaFunction(scrapeHandler));
+
+    // Run every day at 00:00AM UTC
+    const dailyAlarmRule = new events.Rule(scope, 'DailyAlarmRule', {
+        schedule: events.Schedule.expression('cron(0 0 * * ? *)')
+    });
+    dailyAlarmRule.addTarget(new targets.LambdaFunction(notifyDailyHandler));
+
+    /** ------------ Weekly ------------ */
+    // Run on Saturday in every week at 15:00 UTC
+    const weeklyReviewRule = new events.Rule(scope, 'WeeklyReviewRule', {
+        schedule: events.Schedule.expression('cron(0 15 * * 6 *)')
+    });
+    weeklyReviewRule.addTarget(new targets.LambdaFunction(notifyWeeklyHandler));
+
+    /** ------------ Monthly ------------ */
+    // Run on the 28th day in every month at 15:00 UTC
+    const monthlyReviewRule = new events.Rule(scope, 'MonthlyReviewRule', {
+        schedule: events.Schedule.expression('cron(0 15 28 * ? *)')
+    });
+    monthlyReviewRule.addTarget(new targets.LambdaFunction(notifyMonthlyHandler));
+
+    /** ------------ Quarterly ------------ */
 
     // Run every END of a quarter
-    // At 00:00AM UTC, on the 28th day, in March, June, September and December
-    const createTableRule = new events.Rule(scope, 'CreateTableRule', {
-        schedule: events.Schedule.expression('cron(0 0 28 3,6,9,12 ? *)')
+    // At 15:00 UTC, on the 28th day, in March, June, September and December
+    const quarterNearEndRule = new events.Rule(scope, 'QuarterNearEndRule', {
+        schedule: events.Schedule.expression('cron(0 15 28 3,6,9,12 ? *)')
     });
-    createTableRule.addTarget(new targets.LambdaFunction(createTableHandler));
+    quarterNearEndRule.addTarget(new targets.LambdaFunction(createTableHandler));
+    quarterNearEndRule.addTarget(new targets.LambdaFunction(notifyQuarterlyHandler))
 
     // Run every START of a quarter
     // At 00:00AM UTC, on the 1st day, in January, April, July and October
-    const updateTableRule = new events.Rule(scope, 'UpdateTableRule', {
+    const quarterStartRule = new events.Rule(scope, 'QuarterStartRule', {
         schedule: events.Schedule.expression('cron(0 0 1 1,4,7,10 ? *)')
     });
-    updateTableRule.addTarget(new targets.LambdaFunction(updateTableHandler));
+    quarterStartRule.addTarget(new targets.LambdaFunction(updateTableHandler));
 }
 
 const cron = { init } as const
