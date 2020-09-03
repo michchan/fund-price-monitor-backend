@@ -34,7 +34,8 @@ const toTelegramMessages = (
                 return `${order}  ${codeTag}  -  ${name}  -  ${priceTag} ${priceRateTag}`
             case 'daily':
             default:
-                return `${order}  ${codeTag}  -  ${name}  -  ${priceTag}`        }
+                return `${order}  ${codeTag}  -  ${name}  -  ${priceTag}`        
+        }
     });
 
     return parseLinesToChunks([titleLine, '', ...itemLines])
