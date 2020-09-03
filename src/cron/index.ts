@@ -92,6 +92,10 @@ function init (scope: cdk.Construct) {
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 250,
         role: cronRole,
+        environment: {
+            TELEGRAM_BOT_API_KEY: telegramBotApiKey,
+            TELEGRAM_CHAT_ID: telegramChatId
+        }
     });
     
     // Handler for create table for next coming quarter
