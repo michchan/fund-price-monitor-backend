@@ -23,6 +23,10 @@ type PrevNextRates = [
 type Groups = { [company in CompanyType]: FundPriceRecord[] }
 
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
+    // Create date of latest item
+    const date = new Date();
+    const { year, quarter } = getDateTimeDictionary(date);
+
     /** -------- Process event records -------- */
 
     // Map and normalize items
@@ -56,19 +60,13 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     // Filter empty groups
     const groupsToProcess = omitBy(groups, isEmpty);
 
-    // Create date of latest item
-    const date = new Date();
-    const { year, quarter } = getDateTimeDictionary(date);
-
     /** -------- Process reords by company  -------- */
-
     // Process each group
     for (const [company, items] of Object.entries(groupsToProcess)) {
         await processCompanyRecords(company as CompanyType, items, date)
     }
 
     /** -------- Update table-level details  -------- */
-
     // Get fund types
     const fundTypes = uniq(records.map(rec => rec.fundType))
     // Update table details with companies and fund types
