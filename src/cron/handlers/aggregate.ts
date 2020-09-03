@@ -63,9 +63,12 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     const telegramApiKeyParamName = process.env.TELEGRAM_BOT_API_KEY_PARAMETER_NAME as string;
 
     // Get telegram bot API key (secure string) from the SSM parameter store in runtime
-    const parameterOutput = await parameterStore.getParameter({ Name: telegramApiKeyParamName });
+    const parameterOutput = await parameterStore.getParameter({ 
+        Name: telegramApiKeyParamName,
+        WithDecryption: true,
+    });
     // The API Key retrieved
-    const telegramApiKey = parameterOutput.Parameter?.Value;
+    const telegramApiKey = parameterOutput.Parameter?.;
     if (!telegramApiKey) throw new Error(`telegramApiKey is undefined: ${telegramApiKey}`);
 
     console.log({ telegramChatId, telegramApiKey });
