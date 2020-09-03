@@ -1,4 +1,3 @@
-import { DynamoDB } from 'aws-sdk';
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
 import { Input, Output } from "src/lib/AWS/dynamodb/queryAllItems"
@@ -19,7 +18,7 @@ const queryAllItems = (
     return db.queryAllItems({
         ...input,
         TableName: getTableName(_from.year, _from.quarter),
-    })
+    });
 }
 
 export default queryAllItems

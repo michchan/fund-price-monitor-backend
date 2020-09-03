@@ -18,6 +18,9 @@ const attributeNames = {
     PERIOD: 'period',
     PRICE_CHANGE_RATE: 'priceChangeRate',
     PRICE_LIST: 'priceList',
+    /** table-level fields (table details items) */
+    COMPANIES: 'companies',
+    FUND_TYPES: 'fundTypes',
 } as const
 export default attributeNames
 

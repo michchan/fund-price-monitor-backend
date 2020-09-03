@@ -58,3 +58,12 @@ export interface FundPriceChangeRate extends Pick<FundPriceRecord,
     priceChangeRate?: number;
     priceList: number[];
 }
+
+export interface FundPriceTableDetails {
+    /** ISO timestamp */
+    time: string;
+    /** Order not preserved */
+    companies: CompanyType[];
+    /** Order not preserved */
+    fundTypes: FundType[];
+}

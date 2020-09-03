@@ -20,7 +20,7 @@ const toTelegramMessages = (
     const dateOfMonth = zeroPadding(date.getDate(), 2);
 
     // Derive title line
-    const titleLine = `* ------ ${capitalize(scheduleType)} - ${capitalize(company)} - ${year}-${month}-${dateOfMonth} (week: ${week}, Q${quarter}) ------ *`
+    const titleLine = `* ------ ${capitalize(scheduleType)} - ${capitalize(company)} - ${year}-${month}-${dateOfMonth} (week: ${week}, Q${quarter}) ------ *`;
     // Derive item lines
     const itemLines = items.map(({ code, name, price, priceChangeRate }, i) => {
         const order = `${i + 1}.`

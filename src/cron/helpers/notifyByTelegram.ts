@@ -1,6 +1,7 @@
 import notifyCompanyRecordsByTelegram, { ScheduleType } from "./notifyCompanyRecordsByTelegram";
 import getTelegramApiCredentials from "src/helpers/getTelegramApiCredentials";
 import { CompanyType } from "src/models/fundPriceRecord/FundPriceRecord.type";
+import fundPriceRecord from "src/models/fundPriceRecord";
 
 
 
@@ -12,8 +13,8 @@ const notifyByTelegram = async (
 
     /** -------- Get list of companies  -------- */
 
-    // @TODO: Get from table-level "detail" record
-    const companies: CompanyType[] = ['manulife'];
+    // Get from table-level "details" record
+    const { companies } = await fundPriceRecord.getTableDetails();
 
     /** -------- Notify for each company  -------- */
     for (const company of companies) {
