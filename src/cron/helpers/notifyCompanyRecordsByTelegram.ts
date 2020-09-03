@@ -1,4 +1,4 @@
-import pipeAsync from 'simply-utils/dist/async/pipeAsync'
+import callPromiseWithDelay from 'simply-utils/dist/async/callPromiseWithDelay'
 
 import fundPriceRecord from "src/models/fundPriceRecord";
 import { CompanyType } from "src/models/fundPriceRecord/FundPriceRecord.type";
@@ -61,11 +61,13 @@ const notifyCompanyRecordsByTelegram = async (
     console.log('MESSAGES: ', JSON.stringify(messages, null, 2));
 
     // Send each chunk of messages
-    pipeAsync(...messages.map(msg => () => new Promise(async (resolve) => {
+    for (let i = 0; i < messages.length; i++) {
+        const msg = messages[i];
         await telegram.sendMessage(chatId, apiKey, msg);
-        // Add a bit delay to make sure the sequence retained
-        setTimeout(() => resolve(), 5000);
-    })))
+
+        if (i < messages.length)
+            await callPromiseWithDelay((async () => null), 5000);
+    }
 }
 
 export default notifyCompanyRecordsByTelegram
