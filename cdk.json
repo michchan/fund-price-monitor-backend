@@ -1,5 +1,5 @@
 {
-  "app": "npx node build/fund-price-monitor-backend.js",
+  "app": "npx node bin/fund-price-monitor-backend.js",
   "context": {
     "@aws-cdk/core:enableStackNameDuplicates": "true",
     "aws-cdk:enableDiffNoFail": "true",
