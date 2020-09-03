@@ -10,9 +10,11 @@ import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
 import getDateTimeDictionary from "src/helpers/getDateTimeDictionary";
 import AWS from 'src/lib/AWS'
+import topLevelKeysValues from "src/models/fundPriceRecord/constants/topLevelKeysValues";
 
 
 
+const EXP_SK = ':timeSK'
 const EXP_COMS = ':companies'
 const EXP_FUND_TYPES = ':fundTYpes'
 
@@ -71,11 +73,17 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     const fundTypes = uniq(records.map(rec => rec.fundType))
     // Update table details with companies and fund types
     await fundPriceRecord.updateTableDetails({
-        UpdateExpression: `ADD ${[
-            `${attrs.COMPANIES} ${EXP_COMS}`,
-            `${attrs.FUND_TYPES} ${EXP_FUND_TYPES}`
-        ].join(',')}`,
+        UpdateExpression: [
+            // Set time
+            `SET ${attrs.TIME_SK} = ${EXP_SK}`,
+            // Append values to sets
+            `ADD ${[
+                `${attrs.COMPANIES} ${EXP_COMS}`,
+                `${attrs.FUND_TYPES} ${EXP_FUND_TYPES}`
+            ].join(',')}`
+        ].join(' '),
         ExpressionAttributeValues: {
+            [EXP_SK]: `${topLevelKeysValues.TABLE_DETAILS_PK}@${date.toISOString()}`,
             [EXP_COMS]: Object.keys(groupsToProcess),
             [EXP_FUND_TYPES]: fundTypes,
         },
