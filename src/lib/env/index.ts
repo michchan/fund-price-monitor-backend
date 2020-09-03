@@ -21,7 +21,7 @@ const values: EnvValues = pick(process.env, keys) as unknown as EnvValues;
     for (const [key, value] of Object.entries(values)) {
         if (value === undefined) {
             const message = `${key} is undefined but required in .env file`;
-            console.error(message);
+            process.stdout.write(message);
             process.abort();
         }
     }
