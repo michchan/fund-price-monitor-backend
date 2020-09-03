@@ -2,7 +2,7 @@
   "name": "fund-price-monitor-backend",
   "version": "0.1.0",
   "bin": {
-    "fund-price-monitor-backend": "bin/fund-price-monitor-backend.js"
+    "fund-price-monitor-backend": "build/fund-price-monitor-backend.js"
   },
   "scripts": {
     "build": "tsc && ./node_modules/.bin/webpack",
