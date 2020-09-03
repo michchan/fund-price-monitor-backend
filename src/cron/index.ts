@@ -6,7 +6,7 @@ import * as targets from '@aws-cdk/aws-events-targets';
 import { Effect } from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
 
-import env from '../lib/env';
+import env from 'src/lib/env';
 
 
 function init (scope: cdk.Construct) {
