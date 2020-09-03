@@ -37,6 +37,8 @@ function init (scope: cdk.Construct) {
             'dynamodb:UpdateTable',
             'dynamodb:BatchWriteItem',
             'dynamodb:Query',
+            'dynamodb:PutItem',
+            'dynamodb:UpdateItem',
         ],
     }));
     // Grant cloudwatch log group access
