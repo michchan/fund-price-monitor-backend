@@ -71,10 +71,10 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     const fundTypes = uniq(records.map(rec => rec.fundType))
     // Update table details with companies and fund types
     await fundPriceRecord.updateTableDetails({
-        UpdateExpression: [
-            `ADD ${attrs.COMPANIES} ${EXP_COMS}`,
-            `ADD ${attrs.FUND_TYPES} ${EXP_FUND_TYPES}`
-        ].join(' AND '),
+        UpdateExpression: `ADD ${[
+            `${attrs.COMPANIES} ${EXP_COMS}`,
+            `${attrs.FUND_TYPES} ${EXP_FUND_TYPES}`
+        ].join(',')}`,
         ExpressionAttributeValues: {
             [EXP_COMS]: Object.keys(groupsToProcess),
             [EXP_FUND_TYPES]: fundTypes,
