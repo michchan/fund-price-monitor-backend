@@ -53,6 +53,9 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     for (const [company, items] of Object.entries(groupsToProcess)) {
         await processCompanyRecords(company as CompanyType, items)
     }
+
+    /** -------- Update table-level details  -------- */
+    
 }
 
 

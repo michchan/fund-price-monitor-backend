@@ -6,10 +6,8 @@ import db from 'src/lib/AWS/dynamodb';
 import getTableName from '../utils/getTableName';
 import { FundPriceTableDetails } from "../FundPriceRecord.type"
 import attrs from "../constants/attributeNames";
+import topLevelKeysValues from "../constants/topLevelKeysValues";
 
-
-
-const TABLE_DETAILS_PK = 'tableDetails'
 
 const EXP_PK = `:pk`
 
@@ -26,7 +24,7 @@ const getTableDetails = async (
         ...input,
         TableName,
         ExpressionAttributeValues: {
-            [EXP_PK]: TABLE_DETAILS_PK
+            [EXP_PK]: topLevelKeysValues.TABLE_DETAILS_PK
         },
         KeyConditionExpression: `${attrs.COMPANY_CODE} = ${EXP_PK}`
     });

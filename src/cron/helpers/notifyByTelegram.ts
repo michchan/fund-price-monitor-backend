@@ -14,7 +14,9 @@ const notifyByTelegram = async (
     /** -------- Get list of companies  -------- */
 
     // Get from table-level "details" record
-    const { companies } = await fundPriceRecord.getTableDetails();
+    const details = await fundPriceRecord.getTableDetails();
+    const { companies } = details
+    console.log(JSON.stringify(details, null, 2))
 
     /** -------- Notify for each company  -------- */
     for (const company of companies) {

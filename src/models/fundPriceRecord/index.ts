@@ -24,10 +24,12 @@ import queryPeriodPriceChangeRate from "./io/queryPeriodPriceChangeRate"
 import getPeriodByRecordType from "./utils/getPeriodByRecordType"
 import toTelegramMessages from "./utils/toTelegramMessages"
 import getTableDetails from "./io/getTableDetails"
+import topLevelKeysValues from "./constants/topLevelKeysValues"
 
 
 
 const fundPriceRecord = {
+    topLevelKeysValues,
     getTableDetails,
     toTelegramMessages,
     getPeriodByRecordType,
