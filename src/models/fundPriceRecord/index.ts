@@ -21,10 +21,12 @@ import updateTable from "./io/updateTable"
 import describeTable from "./io/describeTable"
 import queryLatestItemsByCompany from "./io/queryLatestItemsByCompany"
 import queryPeriodPriceChangeRate from "./io/queryPeriodPriceChangeRate"
+import getPeriodByRecordType from "./utils/getPeriodByRecordType"
 
 
 
 const fundPriceRecord = {
+    getPeriodByRecordType,
     queryLatestItemsByCompany,
     queryPeriodPriceChangeRate,
     updateTable,

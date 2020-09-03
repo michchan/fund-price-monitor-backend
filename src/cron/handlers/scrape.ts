@@ -3,7 +3,7 @@ import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
 import { FundPriceRecord } from "../../models/fundPriceRecord/FundPriceRecord.type";
 import fundPriceRecord from "src/models/fundPriceRecord";
-import scrapeFromManulifeMPF from "./scrapers/scrapeFromManulifeMPF";
+import scrapeFromManulifeMPF from "../scrapers/scrapeFromManulifeMPF";
 
 
 

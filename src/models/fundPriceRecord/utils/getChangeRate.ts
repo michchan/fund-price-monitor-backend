@@ -3,6 +3,7 @@ import getWeekOfYear from "simply-utils/dist/dateTime/getWeekOfYear";
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
 import { FundPriceRecord, FundPriceChangeRate, AggregatedRecordType } from "../FundPriceRecord.type";
+import getPeriodByRecordType from "./getPeriodByRecordType";
 
 
 const getChangeRate = (
@@ -14,14 +15,6 @@ const getChangeRate = (
 ): FundPriceChangeRate => {
     // Get date from record time
     const date = new Date(record.time);
-    // Get year
-    const year = date.getFullYear();
-    // Get month
-    const month = zeroPadding(date.getMonth() + 1, 2);
-    // Get week
-    const week = getWeekOfYear(date);
-    // Get quarter
-    const quarter = getQuarter(date);
 
     // Get next price list
     const priceList = priceListMode === 'prepend' 
@@ -33,16 +26,7 @@ const getChangeRate = (
     
     return {
         recordType,
-        period: (() => {
-            switch (recordType) {
-                case 'week': return `${year}-${month}.${week}`
-                case 'month': return `${year}-${month}`
-                case 'quarter': return `${year}.${quarter}`
-                default:
-                    throw new Error(`recordType invalid: "${recordType}"`)
-                    return ''
-            }
-        })(),
+        period: getPeriodByRecordType(recordType, date),
         company: record.company,
         code: record.code,
         name: record.name,

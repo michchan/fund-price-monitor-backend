@@ -1,18 +1,14 @@
 import { DynamoDBStreamHandler } from "aws-lambda";
-import zeroPadding from 'simply-utils/dist/number/zeroPadding'
-import getWeekOfYear from 'simply-utils/dist/dateTime/getWeekOfYear'
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import omitBy from "lodash/omitBy";
 import isEmpty from "lodash/isEmpty";
-import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
 import fundPriceRecord from "src/models/fundPriceRecord";
 import TableRange from "src/models/fundPriceRecord/TableRange.type";
-import indexNames from "src/models/fundPriceRecord/constants/indexNames";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
 import db from "src/lib/AWS/dynamodb";
-import getTelegramApiCredentials from "src/helpers/getTelegramApiCredentials";
+import getDateTimeDictionary from "src/helpers/getDateTimeDictionary";
 
 
 type PrevNextRates = [
@@ -20,9 +16,6 @@ type PrevNextRates = [
     FundPriceChangeRate[]
 ]
 type Groups = { [company in CompanyType]: FundPriceRecord[] }
-
-const EXP_COM_PK = `:company` as string
-const EXP_TIME_SK = `:timeSK` as string
 
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
     /** -------- Process event records -------- */
@@ -54,12 +47,6 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     // Filter empty groups
     const groupsToProcess = omitBy(groups, isEmpty);
 
-    /** -------- Get credentials for sending notifications  -------- */
-    const {
-        chatId: telegramChatId,
-        apiKey: telegramApiKey,
-    } = await getTelegramApiCredentials();
-
     /** -------- Process reords by company  -------- */
 
     // Process each group
@@ -78,14 +65,7 @@ const processCompanyRecords = async (
 ) => {
     // Create date of latest item
     const date = new Date();
-    // Get year
-    const year = date.getFullYear();
-    // Get month
-    const month = zeroPadding(date.getMonth() + 1, 2);
-    // Get week
-    const week = getWeekOfYear(date);
-    // Get quarter
-    const quarter = getQuarter(date);
+    const { week, month, year, quarter } = getDateTimeDictionary(date);
     // Create table range
     const tableRange: TableRange = { year, quarter };
 
@@ -105,11 +85,11 @@ const processCompanyRecords = async (
         prevQuarterRateRecords
     ] = await Promise.all([
         // Week query
-        fundPriceRecord.queryPeriodPriceChangeRate(company, `week`, `${year}-${month}.${week}`),
+        fundPriceRecord.queryPeriodPriceChangeRate(company, `week`, fundPriceRecord.getPeriodByRecordType('week', date)),
         // Month query
-        fundPriceRecord.queryPeriodPriceChangeRate(company, `month`, `${year}-${month}`),
+        fundPriceRecord.queryPeriodPriceChangeRate(company, `month`, fundPriceRecord.getPeriodByRecordType('month', date)),
         // Quarter query
-        fundPriceRecord.queryPeriodPriceChangeRate(company, `quarter`,`${year}.${quarter}`),
+        fundPriceRecord.queryPeriodPriceChangeRate(company, `quarter`, fundPriceRecord.getPeriodByRecordType('quarter', date)),
     ]);
 
     /** -------- Calculate records of price change rate of week, month and quarter -------- */
@@ -158,7 +138,4 @@ const processCompanyRecords = async (
         ...prevMonthRateItems, 
         ...prevQuarterRateItems
     ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate);
-
-    /** -------- Send notifications for latest records (daily)  -------- */
-
 }
