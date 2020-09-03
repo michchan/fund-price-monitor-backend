@@ -67,6 +67,17 @@ function init (scope: cdk.Construct) {
             ],
         })
     );
+    // Grant SSM parameter store permissions
+    cronRole.addToPolicy(
+        new iam.PolicyStatement({
+            sid: 'SSMParameterStore',
+            resources: ['*'],
+            effect: Effect.ALLOW,
+            actions: [
+                'ssm:GetParameter',
+            ]
+        })
+    );
 
     /** ------------------ Get non-secure string paramters from parameter store ------------------ */
 

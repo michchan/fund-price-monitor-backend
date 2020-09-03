@@ -68,7 +68,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     const telegramApiKey = parameterOutput.Parameter?.Value;
     if (!telegramApiKey) throw new Error(`telegramApiKey is undefined: ${telegramApiKey}`);
 
-    console.log({ telegramChatId, telegramApiKey })
+    console.log({ telegramChatId, telegramApiKey });
     return 
 
     /** -------- Process reords by company  -------- */
