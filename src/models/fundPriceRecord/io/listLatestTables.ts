@@ -3,8 +3,8 @@ import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter";
 
 import getTableName from '../utils/getTableName'
 import { PROJECT_NAMESPACE } from 'src/constants';
-import db from 'src/AWS/dynamodb';
-import { Result } from 'src/AWS/dynamodb/listAllTables';
+import db from 'src/lib/AWS/dynamodb';
+import { Result } from 'src/lib/AWS/dynamodb/listAllTables';
 import TableRange from '../TableRange.type';
 
 

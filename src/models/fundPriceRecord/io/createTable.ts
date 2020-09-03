@@ -3,11 +3,11 @@ import { NonKeyAttributeNameList } from 'aws-sdk/clients/dynamodb';
 import { StartingPosition } from '@aws-cdk/aws-lambda';
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter';
 
-import AWS from 'src/AWS'
+import AWS from 'src/lib/AWS'
 import getTableName from '../utils/getTableName';
 import attrs from '../constants/attributeNames';
 import indexNames from '../constants/indexNames';
-import db from 'src/AWS/dynamodb';
+import db from 'src/lib/AWS/dynamodb';
 
 
 // Initialize

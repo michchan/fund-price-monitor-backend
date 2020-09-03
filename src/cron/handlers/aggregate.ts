@@ -11,7 +11,7 @@ import TableRange from "src/models/fundPriceRecord/TableRange.type";
 import indexNames from "src/models/fundPriceRecord/constants/indexNames";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
-import db from "src/AWS/dynamodb";
+import db from "src/lib/AWS/dynamodb";
 
 
 type PrevNextRates = [
