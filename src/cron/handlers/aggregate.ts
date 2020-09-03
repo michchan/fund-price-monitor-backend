@@ -12,7 +12,7 @@ import indexNames from "src/models/fundPriceRecord/constants/indexNames";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
 import db from "src/lib/AWS/dynamodb";
-import parameterStore from "src/lib/AWS/parameterStore";
+import getTelegramApiCredentials from "src/helpers/getTelegramApiCredentials";
 
 
 type PrevNextRates = [
@@ -55,24 +55,10 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     const groupsToProcess = omitBy(groups, isEmpty);
 
     /** -------- Get credentials for sending notifications  -------- */
-
-    // Get the telegram notification channel chat ID passed from the environment variables defined in CDK construct of cron,
-    // to map as dynamodb stream target function
-    const telegramChatId = process.env.TELEGRAM_CHAT_ID as string;
-    // Get the parameter name (in AWS parameter store) of telegram bot API key
-    const telegramApiKeyParamName = process.env.TELEGRAM_BOT_API_KEY_PARAMETER_NAME as string;
-
-    // Get telegram bot API key (secure string) from the SSM parameter store in runtime
-    const parameterOutput = await parameterStore.getParameter({ 
-        Name: telegramApiKeyParamName,
-        WithDecryption: true,
-    });
-    // The API Key retrieved
-    const telegramApiKey = parameterOutput.Parameter?.Value;
-    if (!telegramApiKey) throw new Error(`telegramApiKey is undefined: ${telegramApiKey}`);
-
-    console.log({ telegramChatId, telegramApiKey });
-    return 
+    const {
+        chatId: telegramChatId,
+        apiKey: telegramApiKey,
+    } = await getTelegramApiCredentials();
 
     /** -------- Process reords by company  -------- */
 

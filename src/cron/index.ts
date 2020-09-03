@@ -140,6 +140,20 @@ function init (scope: cdk.Construct) {
         role: cronRole,
     });
 
+    // Handler for sending notifications upon updates
+    const notifyHandler = new lambda.Function(scope, 'Notifier', {
+        code: lambda.Code.fromAsset('bundles/cron/handlers'),
+        handler: 'notify.handler',
+        timeout: cdk.Duration.minutes(5),
+        runtime: lambda.Runtime.NODEJS_12_X,
+        memorySize: 250,
+        role: cronRole,
+        environment: {
+            TELEGRAM_CHAT_ID: telegramChatId,
+            TELEGRAM_BOT_API_KEY_PARAMETER_NAME,
+        }
+    });
+
     /** ------------------ Events Rule Definition ------------------ */
 
     // Run every day at 8:00PM UTC
