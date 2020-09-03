@@ -19,12 +19,13 @@ const values: EnvValues = pick(process.env, keys) as unknown as EnvValues;
 /**
  * Throw an error if any of the environment variables is not defined
  */
-const validate = () => {
+const validate = (): string | null => {
     for (const [key, value] of Object.entries(values)) {
         if (value === undefined) {
-            throw new Error(`${key} is undefined but required in .env file`)
+            return `${key} is undefined but required in .env file`
         }
     }
+    return null
 }
 
 export default {
