@@ -51,9 +51,12 @@ const notifyCompanyRecordsByTelegram = async (
         return 
     }
     
-    console.log(`CREDENTIALS: ${JSON.stringify({ chatId, apiKey }, null, 2)}`);
-    console.log(JSON.stringify(queryOutput, null, 2));
-       
+    console.log('CREDENTIALS: ', JSON.stringify({ chatId, apiKey }, null, 2));
+    console.log('OUTPUT: ', JSON.stringify(queryOutput, null, 2));
+    
+    // Parse items as telegram messages
+    const messages = fundPriceRecord.toTelegramMessages(company, scheduleType, items);
+    console.log('MESSAGES: ', JSON.stringify(messages, null, 2));
 }
 
 export default notifyCompanyRecordsByTelegram
