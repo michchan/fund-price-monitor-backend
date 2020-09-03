@@ -34,8 +34,8 @@ const getTableDetails = async (
 
     return {
         time: item[attrs.TIME_SK].split('@').pop(),
-        companies: Array.from(item[attrs.COMPANIES]),
-        fundTypes: Array.from(item[attrs.FUND_TYPES]),
+        companies: item[attrs.COMPANIES],
+        fundTypes: item[attrs.FUND_TYPES],
     }
 }
 

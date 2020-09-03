@@ -9,6 +9,7 @@ import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
 import db from "src/lib/AWS/dynamodb";
 import getDateTimeDictionary from "src/helpers/getDateTimeDictionary";
+import AWS from 'src/lib/AWS'
 
 
 type PrevNextRates = [
@@ -28,11 +29,11 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
             record.eventName === 'INSERT'
             // and it is a "record"
             && /^record/i.test(
-                db.mapRawAttributes(record.dynamodb?.NewImage || {})[attrs.TIME_SK] ?? ''
+                AWS.DynamoDB.Converter.unmarshall(record.dynamodb?.NewImage || {})[attrs.TIME_SK] ?? ''
             )
         ))
         // @ts-expect-error
-        .map(record => fundPriceRecord.parse(db.mapRawAttributes(record.dynamodb.NewImage)))
+        .map(record => fundPriceRecord.parse(AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage)))
         .reduce((_acc, record) => {
             const acc = _acc as Groups;
             const {company } = record
@@ -55,7 +56,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     }
 
     /** -------- Update table-level details  -------- */
-    
+
 }
 
 
