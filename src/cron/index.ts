@@ -141,7 +141,7 @@ function init (scope: cdk.Construct) {
     });
 
     // Handler for sending notifications upon updates
-    const notifyHandler = new lambda.Function(scope, 'Notifier', {
+    const notifyHandler = new lambda.Function(scope, 'CronNotifier', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
         handler: 'notify.handler',
         timeout: cdk.Duration.minutes(5),
