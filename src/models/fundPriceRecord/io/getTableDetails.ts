@@ -7,6 +7,7 @@ import getTableName from '../utils/getTableName';
 import { FundPriceTableDetails, FundType, CompanyType } from "../FundPriceRecord.type"
 import attrs from "../constants/attributeNames";
 import topLevelKeysValues from "../constants/topLevelKeysValues";
+import { DynamoDB } from "aws-sdk";
 
 
 const EXP_PK = `:pk`
@@ -37,14 +38,14 @@ const getTableDetails = async (
     const item = (output.Items || [])[0];
     if (!item) throw new Error(`tableDetails row is not defined for table: ${TableName}`);
 
-    const companiesSet = item[attrs.COMPANIES] as Set<CompanyType> | undefined;
-    const fundTypesSet = item[attrs.FUND_TYPES] as Set<FundType> | undefined;
+    const companiesSet = item[attrs.COMPANIES] as DynamoDB.DocumentClient.StringSet | undefined;
+    const fundTypesSet = item[attrs.FUND_TYPES] as DynamoDB.DocumentClient.StringSet | undefined;
 
     return {
         time: item[attrs.TIME_SK].split('@').pop(),
-        // Parse set to array
-        companies: companiesSet ? Array.from(companiesSet) : [],
-        fundTypes: fundTypesSet ? Array.from(fundTypesSet) : [],
+        // Parse sets to array
+        companies: companiesSet ? companiesSet.values as CompanyType[] : [],
+        fundTypes: fundTypesSet ? fundTypesSet.values as FundType[] : [],
     }
 }
 
