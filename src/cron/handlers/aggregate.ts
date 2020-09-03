@@ -95,28 +95,8 @@ const processCompanyRecords = async (
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
     /** Query previous latest records */
-    const prevLatestRecords = await fundPriceRecord.queryAllItems({
-        IndexName: indexNames.RECORDS_BY_COMPANY,
-        ExpressionAttributeValues: {
-            [EXP_COM_PK]: company,
-            [EXP_TIME_SK]: 'latest'
-        },
-        KeyConditionExpression: `${attrs.COMPANY} = ${EXP_COM_PK}`,
-        FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_TIME_SK)
-    }, tableRange)
+    const prevLatestRecords = await fundPriceRecord.queryLatestItemsByCompany(company, tableRange);
     const prevLatestItems = (prevLatestRecords.Items || []).map(rec => fundPriceRecord.parse(rec))
-
-    /** Helper to query PERIOD_PRICE_CHANGE_RATE index */
-    const queryTimePriceChangeRateIndex = (
-        recordType: AggregatedRecordType, 
-        period: string
-    ) => fundPriceRecord.queryAllItems({
-        IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
-        ExpressionAttributeValues: {
-            [EXP_TIME_SK]: `${recordType}_${company}_${period}`
-        },
-        KeyConditionExpression: `${attrs.PERIOD} = ${EXP_TIME_SK}`
-    }, tableRange)
 
     // Query week price change rate
     const [
@@ -125,11 +105,11 @@ const processCompanyRecords = async (
         prevQuarterRateRecords
     ] = await Promise.all([
         // Week query
-        queryTimePriceChangeRateIndex(`week`, `${year}-${month}.${week}`),
+        fundPriceRecord.queryPeriodPriceChangeRate(company, `week`, `${year}-${month}.${week}`),
         // Month query
-        queryTimePriceChangeRateIndex(`month`, `${year}-${month}`),
+        fundPriceRecord.queryPeriodPriceChangeRate(company, `month`, `${year}-${month}`),
         // Quarter query
-        queryTimePriceChangeRateIndex(`quarter`,`${year}.${quarter}`),
+        fundPriceRecord.queryPeriodPriceChangeRate(company, `quarter`,`${year}.${quarter}`),
     ]);
 
     /** -------- Calculate records of price change rate of week, month and quarter -------- */

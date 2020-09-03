@@ -19,10 +19,14 @@ import getCompositeSK from "./utils/getCompositeSK"
 import getCompositeSKFromChangeRate from "./utils/getCompositeSKFromChangeRate"
 import updateTable from "./io/updateTable"
 import describeTable from "./io/describeTable"
+import queryLatestItemsByCompany from "./io/queryLatestItemsByCompany"
+import queryPeriodPriceChangeRate from "./io/queryPeriodPriceChangeRate"
 
 
 
 const fundPriceRecord = {
+    queryLatestItemsByCompany,
+    queryPeriodPriceChangeRate,
     updateTable,
     describeTable,
     getCompositeSK,
