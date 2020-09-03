@@ -67,7 +67,18 @@ function init (scope: cdk.Construct) {
     );
 
     /** ------------------ Get paramters from parameter store ------------------ */
-    
+
+    // Retrieve the telegram notification channel's chat ID
+    const telegramChatId = ssm.StringParameter.fromStringParameterAttributes(scope, 'TelegramChatID', {
+        parameterName: env.values.TELEGRAM_CHAT_ID_PARAMETER_NAME,
+        // 'version' can be specified but is optional.
+    }).stringValue;
+  
+    // Retrieve the API key of the telegram bot to send notification messages
+    const telegramBotApiKey = ssm.StringParameter.fromSecureStringParameterAttributes(scope, 'TelegramBotAPIKey', {
+        parameterName: env.values.TELEGRAM_BOT_API_KEY_PARAMETER_NAME,
+        version: env.values.TELEGRAM_BOT_API_KEY_PARAMETER_VERSION,
+    }).stringValue;
     
     /** ------------------ Lambda Handlers Definition ------------------ */
 
