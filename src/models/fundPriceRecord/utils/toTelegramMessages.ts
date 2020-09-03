@@ -26,7 +26,11 @@ const toTelegramMessages = (
         const order = `${i + 1}.`
         const codeTag = `__${code}__`
         const priceTag = `*$${Number(price).toFixed(2)}*`
-        const priceRateTag = `(${Number(priceChangeRate) > 0 ? `+` : `-`}${Number(priceChangeRate).toFixed(2)}%)`
+
+        const rate = Number(priceChangeRate)
+        const rateTag = rate.toFixed(2)
+        const sign = +rate === 0 ? '' : +rate > 0 ? `+` : `-`
+        const priceRateTag = `(${sign}${rateTag}%)`
         
         switch (scheduleType) {
             case 'quarterly':
