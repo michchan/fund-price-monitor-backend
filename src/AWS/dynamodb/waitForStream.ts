@@ -1,4 +1,4 @@
-import AWS from 'src/AWS/AWS'
+import AWS from 'src/AWS'
 import waitForService from 'src/helpers/waitForService';
 
 

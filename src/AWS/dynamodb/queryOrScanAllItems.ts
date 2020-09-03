@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 
-import AWS from '../AWS'
+import AWS from '..'
 
 
 // Initialize

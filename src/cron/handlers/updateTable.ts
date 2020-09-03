@@ -4,7 +4,7 @@ import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter";
 
 import TableRange from "src/models/fundPriceRecord/TableRange.type";
 import fundPriceRecord from "src/models/fundPriceRecord";
-import AWS from 'src/AWS/AWS'
+import AWS from 'src/AWS'
 
 
 

@@ -2,7 +2,7 @@ import { DynamoDB } from "aws-sdk"
 import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
 
 import getTableName from "../utils/getTableName";
-import AWS from 'src/AWS/AWS'
+import AWS from 'src/AWS'
 import waitForService from "src/helpers/waitForService";
 
 
