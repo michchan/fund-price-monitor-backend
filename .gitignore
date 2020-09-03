@@ -16,3 +16,6 @@ __*__sample.json
 
 # Ignore template.yaml
 template.yaml
+
+#Ignore DotEnv
+*.env

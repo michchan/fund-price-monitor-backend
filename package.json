@@ -43,6 +43,7 @@
     "@aws-cdk/core": "1.61.1",
     "aws-sdk": "2.739.0",
     "chrome-aws-lambda": "^5.2.1",
+    "dotenv": "^8.2.0",
     "lodash": "^4.17.20",
     "puppeteer": "^5.2.1",
     "puppeteer-core": "^5.2.1",

@@ -1,11 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as iam from '@aws-cdk/aws-iam';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks';
 import * as events from '@aws-cdk/aws-events';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { Effect } from '@aws-cdk/aws-iam';
+import * as ssm from '@aws-cdk/aws-ssm';
 
 
 function init (scope: cdk.Construct) {
@@ -65,6 +64,9 @@ function init (scope: cdk.Construct) {
             ],
         })
     );
+
+    /** ------------------ Get paramters from parameter store ------------------ */
+    
     
     /** ------------------ Lambda Handlers Definition ------------------ */
 
