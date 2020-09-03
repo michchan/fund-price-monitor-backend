@@ -12,6 +12,7 @@ import indexNames from "src/models/fundPriceRecord/constants/indexNames";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
 import db from "src/lib/AWS/dynamodb";
+import parameterStore from "src/lib/AWS/parameterStore";
 
 
 type PrevNextRates = [
@@ -24,6 +25,8 @@ const EXP_COM_PK = `:company` as string
 const EXP_TIME_SK = `:timeSK` as string
 
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
+    /** -------- Process event records -------- */
+
     // Group items by company
     const groups = event.Records
         // Filter inserted records and records with `NewImage` defined
@@ -49,7 +52,26 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
             }
         }, {}) as Groups;
     // Filter empty groups
-    const groupsToProcess = omitBy(groups, isEmpty)
+    const groupsToProcess = omitBy(groups, isEmpty);
+
+    /** -------- Get credentials for sending notifications  -------- */
+
+    // Get the telegram notification channel chat ID passed from the environment variables defined in CDK construct of cron,
+    // to map as dynamodb stream target function
+    const telegramChatId = process.env.TELEGRAM_CHAT_ID as string;
+    // Get the parameter name (in AWS parameter store) of telegram bot API key
+    const telegramApiKeyParamName = process.env.TELEGRAM_BOT_API_KEY_PARAMETER_NAME as string;
+
+    // Get telegram bot API key (secure string) from the SSM parameter store in runtime
+    const parameterOutput = await parameterStore.getParameter({ Name: telegramApiKeyParamName });
+    // The API Key retrieved
+    const telegramApiKey = parameterOutput.Parameter?.Value;
+    if (!telegramApiKey) throw new Error(`telegramApiKey is undefined: ${telegramApiKey}`);
+
+    console.log({ telegramChatId, telegramApiKey })
+    return 
+
+    /** -------- Process reords by company  -------- */
 
     // Process each group
     for (const [company, items] of Object.entries(groupsToProcess)) {
@@ -61,7 +83,10 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
 /**
  * Handler to process each group of FundPriceRecord list
  */
-const processCompanyRecords = async (company: CompanyType, insertedItems: FundPriceRecord[]) => {
+const processCompanyRecords = async (
+    company: CompanyType, 
+    insertedItems: FundPriceRecord[],
+) => {
     // Create date of latest item
     const date = new Date();
     // Get year
@@ -166,10 +191,5 @@ const processCompanyRecords = async (company: CompanyType, insertedItems: FundPr
     ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate);
 
     /** -------- Send notifications for latest records (daily)  -------- */
-    // Get the telegram notification channel chat ID passed from the environment variables defined in CDK construct of cron,
-    // to map as dynamodb stream target function
-    const telegramChatId = process.env.TELEGRAM_CHAT_ID as string;
 
-    // Get telegram bot API key (secure string) from the SSM parameter store in runtime
-    
 }

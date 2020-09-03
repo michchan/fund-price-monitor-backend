@@ -78,6 +78,7 @@ function init (scope: cdk.Construct) {
 
     /** ------------------ Lambda Handlers Definition ------------------ */
 
+    const { TELEGRAM_BOT_API_KEY_PARAMETER_NAME } = env.values
     // Handler for aggregating top-level items of records
     const aggregationHandler = new lambda.Function(scope, 'CronAggregator', {
         code: lambda.Code.fromAsset('bundles/cron/handlers'),
@@ -88,6 +89,7 @@ function init (scope: cdk.Construct) {
         role: cronRole,
         environment: {
             TELEGRAM_CHAT_ID: telegramChatId,
+            TELEGRAM_BOT_API_KEY_PARAMETER_NAME,
         }
     });
     
