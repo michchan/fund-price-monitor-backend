@@ -115,6 +115,7 @@ function init (scope: cdk.Construct) {
     const scrapeHandler = new lambda.Function(scope, 'CronScraper', {
         ...commonLambdaInput,
         handler: 'scrape.handler',
+        // Extra memory is needed for running the headless browser instance
         memorySize: 700,
     });
 
