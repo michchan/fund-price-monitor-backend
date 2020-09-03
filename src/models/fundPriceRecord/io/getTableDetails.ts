@@ -36,6 +36,7 @@ const getTableDetails = async (
     
     const item = (output.Items || [])[0];
     if (!item) throw new Error(`tableDetails row is not defined for table: ${TableName}`);
+    console.log(JSON.stringify(output, null, 4))
 
     return {
         time: item[attrs.TIME_SK].split('@').pop(),
