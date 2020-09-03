@@ -17,7 +17,7 @@ const notifyCompanyRecordsByTelegram = async (
     // Create date of latest item
     const date = new Date();
     
-    /** -------- Query records  -------- */
+    /** -------- Query and parse records  -------- */
     
     // query records to be sent in notification
     const queryOutput = await ((scheduleType: ScheduleType) => {
@@ -53,12 +53,10 @@ const notifyCompanyRecordsByTelegram = async (
         return 
     }
     
-    console.log('CREDENTIALS: ', JSON.stringify({ chatId, apiKey }, null, 2));
-    console.log('OUTPUT: ', JSON.stringify(queryOutput, null, 2));
-    
+    /** -------- Transform records to messages and send messages -------- */
+
     // Parse items as telegram messages
     const messages = fundPriceRecord.toTelegramMessages(company, scheduleType, items);
-    console.log('MESSAGES: ', JSON.stringify(messages, null, 2));
 
     // Send each chunk of messages
     for (let i = 0; i < messages.length; i++) {
