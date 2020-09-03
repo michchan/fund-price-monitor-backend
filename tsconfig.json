@@ -23,6 +23,6 @@
     "outDir": "build",
     "baseUrl": "./"
   },
-  "exclude": ["cdk.out"],
+  "exclude": ["node_modules", "cdk.out"],
   "include": ["src"]
 }
