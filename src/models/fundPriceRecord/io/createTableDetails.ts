@@ -9,7 +9,7 @@ import topLevelKeysValues from "../constants/topLevelKeysValues";
 import AWS from 'src/lib/AWS'
 
 
-const docClient = new AWS.DynamoDB.DocumentClient()
+const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
 function createTableDetails (
     details: FundPriceTableDetails,

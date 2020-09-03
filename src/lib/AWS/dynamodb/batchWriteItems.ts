@@ -5,7 +5,7 @@ import AWS from 'src/lib/AWS'
 
 
 // Initialize
-const docClient = new AWS.DynamoDB.DocumentClient();
+const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true });
 
 export type ChunkResult = DynamoDB.DocumentClient.BatchWriteItemOutput
 export type Result = ChunkResult[]

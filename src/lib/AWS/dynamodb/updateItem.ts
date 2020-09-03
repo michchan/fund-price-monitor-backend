@@ -4,7 +4,7 @@ import AWS from 'src/lib/AWS'
 
 
 // Initialize
-const docClient = new AWS.DynamoDB.DocumentClient();
+const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true });
 
 export type Input = AWS.DynamoDB.DocumentClient.UpdateItemInput
 export type Output = AWS.DynamoDB.DocumentClient.UpdateItemOutput
