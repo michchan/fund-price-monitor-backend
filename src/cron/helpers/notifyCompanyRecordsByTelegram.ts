@@ -14,12 +14,11 @@ const notifyCompanyRecordsByTelegram = async (
 ) => {
     // Create date of latest item
     const date = new Date();
-    const { week, month, year, quarter } = getDateTimeDictionary(date);
     
     /** -------- Query records  -------- */
     
     // query records to be sent in notification
-    const queryOutput = await (async () => {
+    const queryOutput = await ((scheduleType: ScheduleType) => {
         switch (scheduleType) {
             case 'quarterly':
                 return fundPriceRecord.queryPeriodPriceChangeRate(company, 'quarter', fundPriceRecord.getPeriodByRecordType('quarter', date));
@@ -31,7 +30,7 @@ const notifyCompanyRecordsByTelegram = async (
             default:
                 return fundPriceRecord.queryLatestItemsByCompany(company);
         }
-    })();
+    })(scheduleType);
 
     const items = queryOutput.Items || [];
     // Abort if no items found
