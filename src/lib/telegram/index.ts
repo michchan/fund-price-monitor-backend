@@ -1,11 +1,12 @@
 /**
  * The library of telegram helpers
  */
+import { MAX_LENGTH } from "./constants";
+import sendMessage from "./sendMessage";
 
 
-
-const MAX_LENGTH = 4096 // character
 
 export default {
     MAX_LENGTH,
+    sendMessage,
 } as const; 

@@ -1,6 +1,8 @@
+import pipeAsync from 'simply-utils/dist/async/pipeAsync'
+
 import fundPriceRecord from "src/models/fundPriceRecord";
 import { CompanyType } from "src/models/fundPriceRecord/FundPriceRecord.type";
-import getDateTimeDictionary from "src/helpers/getDateTimeDictionary";
+import telegram from 'src/lib/telegram';
 
 
 
@@ -57,6 +59,13 @@ const notifyCompanyRecordsByTelegram = async (
     // Parse items as telegram messages
     const messages = fundPriceRecord.toTelegramMessages(company, scheduleType, items);
     console.log('MESSAGES: ', JSON.stringify(messages, null, 2));
+
+    // Send each chunk of messages
+    pipeAsync(...messages.map(msg => () => new Promise(async (resolve) => {
+        await telegram.sendMessage(chatId, apiKey, msg);
+        // Add a bit delay to make sure the sequence retained
+        setTimeout(() => resolve(), 5000);
+    })))
 }
 
 export default notifyCompanyRecordsByTelegram
