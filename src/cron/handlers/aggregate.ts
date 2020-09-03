@@ -13,6 +13,7 @@ import AWS from 'src/lib/AWS'
 import topLevelKeysValues from "src/models/fundPriceRecord/constants/topLevelKeysValues";
 
 
+const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true });
 
 const EXP_SK = ':timeSK'
 const EXP_COMS = ':companies'
@@ -45,6 +46,9 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
         // @ts-expect-error
         .map(record => fundPriceRecord.parse(AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage)));
 
+    // * Abort if there is no items to process
+    if (records.length === 0) return
+
     // Group items by company
     const groups = records
         .reduce((_acc, record) => {
@@ -70,7 +74,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
 
     /** -------- Update table-level details  -------- */
     // Get fund types
-    const fundTypes = uniq(records.map(rec => rec.fundType))
+    const fundTypes = uniq(records.map(rec => rec.fundType));
     // Update table details with companies and fund types
     await fundPriceRecord.updateTableDetails({
         UpdateExpression: [
@@ -84,8 +88,8 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
         ].join(' '),
         ExpressionAttributeValues: {
             [EXP_SK]: `${topLevelKeysValues.TABLE_DETAILS_PK}@${date.toISOString()}`,
-            [EXP_COMS]: Object.keys(groupsToProcess),
-            [EXP_FUND_TYPES]: fundTypes,
+            [EXP_COMS]: docClient.createSet(Object.keys(groupsToProcess)),
+            [EXP_FUND_TYPES]: docClient.createSet(fundTypes),
         },
     }, year, quarter);
 }
