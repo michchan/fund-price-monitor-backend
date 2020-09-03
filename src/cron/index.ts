@@ -70,10 +70,6 @@ function init (scope: cdk.Construct) {
 
     /** ------------------ Get paramters from parameter store ------------------ */
 
-    // Validate env on deploying run time
-    const envErr = env.validate();
-    if (envErr) throw new Error(envErr);
-
     // Retrieve the telegram notification channel's chat ID
     const telegramChatId = ssm.StringParameter.fromStringParameterAttributes(scope, 'TelegramChatID', {
         parameterName: env.values.TELEGRAM_CHAT_ID_PARAMETER_NAME,
