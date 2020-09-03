@@ -1,6 +1,6 @@
 import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import * as FundPriceMonitorBackend from '../lib/fund-price-monitor-backend-stack';
+import * as FundPriceMonitorBackend from '../src/fund-price-monitor-backend-stack';
 
 test('Empty Stack', () => {
     const app = new cdk.App();

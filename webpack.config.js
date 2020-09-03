@@ -46,7 +46,7 @@ const createConfig = (handlersPath) => ({
     },
     resolve: {
         alias: {
-            lib: path.resolve(__dirname, 'build')
+            src: path.resolve(__dirname, 'build')
         }
     }
 })

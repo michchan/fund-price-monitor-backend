@@ -2,9 +2,9 @@ import { ScheduledHandler } from "aws-lambda";
 import { DynamoDB } from "aws-sdk";
 import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter";
 
-import TableRange from "lib/models/fundPriceRecord/TableRange.type";
-import fundPriceRecord from "lib/models/fundPriceRecord";
-import AWS from 'lib/AWS/AWS'
+import TableRange from "src/models/fundPriceRecord/TableRange.type";
+import fundPriceRecord from "src/models/fundPriceRecord";
+import AWS from 'src/AWS/AWS'
 
 
 

@@ -19,10 +19,10 @@
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
     "typeRoots": ["./node_modules/@types"],
-    "rootDir": "lib",
+    "rootDir": "src",
     "outDir": "build",
     "baseUrl": "./"
   },
   "exclude": ["cdk.out"],
-  "include": ["lib"]
+  "include": ["src"]
 }

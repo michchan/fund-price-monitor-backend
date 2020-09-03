@@ -6,12 +6,12 @@ import omitBy from "lodash/omitBy";
 import isEmpty from "lodash/isEmpty";
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
-import fundPriceRecord from "lib/models/fundPriceRecord";
-import TableRange from "lib/models/fundPriceRecord/TableRange.type";
-import indexNames from "lib/models/fundPriceRecord/constants/indexNames";
-import attrs from "lib/models/fundPriceRecord/constants/attributeNames";
-import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "lib/models/fundPriceRecord/FundPriceRecord.type";
-import db from "lib/AWS/dynamodb";
+import fundPriceRecord from "src/models/fundPriceRecord";
+import TableRange from "src/models/fundPriceRecord/TableRange.type";
+import indexNames from "src/models/fundPriceRecord/constants/indexNames";
+import attrs from "src/models/fundPriceRecord/constants/attributeNames";
+import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
+import db from "src/AWS/dynamodb";
 
 
 type PrevNextRates = [
@@ -164,4 +164,8 @@ const processCompanyRecords = async (company: CompanyType, insertedItems: FundPr
         ...prevMonthRateItems, 
         ...prevQuarterRateItems
     ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate);
+
+    /** -------- Send notifications for latest records (daily)  -------- */
+
+    
 }

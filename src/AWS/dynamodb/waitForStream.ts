@@ -1,5 +1,5 @@
-import AWS from 'lib/AWS/AWS'
-import waitForService from 'lib/helpers/waitForService';
+import AWS from 'src/AWS/AWS'
+import waitForService from 'src/helpers/waitForService';
 
 
 // Initialize
