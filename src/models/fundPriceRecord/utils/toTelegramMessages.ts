@@ -31,10 +31,10 @@ const toTelegramMessages = (
             case 'quarterly':
             case 'monthly':
             case 'weekly':
-                return `${order}  ${codeTag}  -  ${name}  -  ${priceTag} ${priceRateTag}`
+                return `${order}  ${codeTag}  -  ${priceTag} ${priceRateTag}  -  ${name}`
             case 'daily':
             default:
-                return `${order}  ${codeTag}  -  ${name}  -  ${priceTag}`        
+                return `${order}  ${codeTag}  -  ${priceTag}  -  ${name}`        
         }
     });
 
