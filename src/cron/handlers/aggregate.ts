@@ -134,7 +134,8 @@ const processCompanyRecords = async (
         (items ?? []).length > 0 
             ? (items ?? []).reduce((acc, item) => {
                 const prevChangeRate = fundPriceRecord.parseChangeRate(item);
-                const nextChangeRate =  fundPriceRecord.getChangeRate(prevChangeRate, type, prevChangeRate.priceList ?? [], 'prepend', date)
+                const latestItem = latestItems.find(item => item.code === prevChangeRate.code)
+                const nextChangeRate =  fundPriceRecord.getChangeRate(latestItem || prevChangeRate, type, prevChangeRate.priceList ?? [], 'prepend', date)
                 
                 return [
                     [...acc[0], prevChangeRate],

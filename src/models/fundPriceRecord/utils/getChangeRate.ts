@@ -1,7 +1,3 @@
-import zeroPadding from "simply-utils/dist/number/zeroPadding";
-import getWeekOfYear from "simply-utils/dist/dateTime/getWeekOfYear";
-import getQuarter from "simply-utils/dist/dateTime/getQuarter";
-
 import { FundPriceRecord, FundPriceChangeRate, AggregatedRecordType } from "../FundPriceRecord.type";
 import getPeriodByRecordType from "./getPeriodByRecordType";
 import calculatePriceChangeRate from "./calculatePriceChangeRate";
