@@ -27,10 +27,12 @@ import getTableDetails from "./io/getTableDetails"
 import topLevelKeysValues from "./constants/topLevelKeysValues"
 import createTableDetails from "./io/createTableDetails"
 import updateTableDetails from "./io/updateTableDetails"
+import getSorterByCode from "./utils/getSorterByCode"
 
 
 
 const fundPriceRecord = {
+    getSorterByCode,
     createTableDetails,
     updateTableDetails,
     topLevelKeysValues,

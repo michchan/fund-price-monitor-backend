@@ -45,7 +45,8 @@ const notifyCompanyRecordsByTelegram = async (
             default:
                 return fundPriceRecord.parse(item);
         }
-    });
+    // Sort by code in ascending order
+    }).sort(fundPriceRecord.getSorterByCode());
     
     // Abort if no items found
     if (items.length === 0) {
