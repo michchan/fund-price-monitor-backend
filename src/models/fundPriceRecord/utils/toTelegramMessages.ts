@@ -22,7 +22,7 @@ const toTelegramMessages = (
     // Derive title line
     const titleLine = `* ------ ${capitalize(scheduleType)} - ${capitalize(company)} - ${year}-${month}-${dateOfMonth} (week: ${week}, Q${quarter}) ------ *`;
     // Derive item lines
-    const itemLines = items.map(({ code, name, price, priceChangeRate }, i) => {
+    const itemLines = items.map(({ code, name, price, priceChangeRate = 0 }, i) => {
         const order = `${i + 1}.`
         const codeTag = `__${code}__`
         const priceTag = `*$${Number(price).toFixed(2)}*`
@@ -32,15 +32,7 @@ const toTelegramMessages = (
         const sign = +rate === 0 ? '' : +rate > 0 ? `+` : `-`
         const priceRateTag = `(${sign}${rateTag}%)`
         
-        switch (scheduleType) {
-            case 'quarterly':
-            case 'monthly':
-            case 'weekly':
-                return `${order}  ${codeTag}  -  ${priceTag} ${priceRateTag}  -  ${name}`
-            case 'daily':
-            default:
-                return `${order}  ${codeTag}  -  ${priceTag}  -  ${name}`        
-        }
+        return `${order}  ${codeTag}  -  ${priceTag} ${priceRateTag}  -  ${name}`
     });
 
     return parseLinesToChunks([titleLine, '', ...itemLines])

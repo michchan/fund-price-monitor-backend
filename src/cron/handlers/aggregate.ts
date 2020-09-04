@@ -101,14 +101,17 @@ const processCompanyRecords = async (
     // Create table range
     const tableRange: TableRange = { year, quarter };
 
-    // ggregation for latest price
-    const latestItems = insertedItems.map(item => fundPriceRecord.toLatestPriceRecord(item, date));
-
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
     /** Query previous latest records */
     const prevLatestRecords = await fundPriceRecord.queryLatestItemsByCompany(company, tableRange);
     const prevLatestItems = (prevLatestRecords.Items || []).map(rec => fundPriceRecord.parse(rec))
+
+    // Aggregation for latest price
+    const latestItems = insertedItems.map(item => {
+        const prevItem = prevLatestItems.find(eachItem => eachItem.code === item.code)
+        return fundPriceRecord.toLatestPriceRecord(item, date, prevItem)
+    });
 
     // Query week price change rate
     const [

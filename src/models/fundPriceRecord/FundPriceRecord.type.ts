@@ -32,6 +32,8 @@ export interface FundPriceRecord {
     updatedDate: string;
     /** Unit price in HKD */
     price: number;
+    /** Change rate compared to previous recorded time */
+    priceChangeRate?: number;
     /** Initial unit price */
     initialPrice: number;
     /** YYYY-MM-DD */
@@ -55,7 +57,7 @@ export interface FundPriceChangeRate extends Pick<FundPriceRecord,
     period: string;
     recordType: AggregatedRecordType;
     /** --------- Aggregated fields --------- */
-    priceChangeRate?: number;
+    priceChangeRate: number;
     priceList: number[];
 }
 

@@ -28,6 +28,7 @@ import topLevelKeysValues from "./constants/topLevelKeysValues"
 import createTableDetails from "./io/createTableDetails"
 import updateTableDetails from "./io/updateTableDetails"
 import getSorterByCode from "./utils/getSorterByCode"
+import calculatePriceChangeRate from "./utils/calculatePriceChangeRate"
 
 
 
@@ -62,5 +63,6 @@ const fundPriceRecord = {
     listLatestTables,
     getChangeRate,
     isTableOfCurrentQuarter,
+    calculatePriceChangeRate,
 } as const
 export default fundPriceRecord

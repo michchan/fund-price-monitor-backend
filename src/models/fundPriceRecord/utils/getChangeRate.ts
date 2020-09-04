@@ -4,6 +4,7 @@ import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
 import { FundPriceRecord, FundPriceChangeRate, AggregatedRecordType } from "../FundPriceRecord.type";
 import getPeriodByRecordType from "./getPeriodByRecordType";
+import calculatePriceChangeRate from "./calculatePriceChangeRate";
 
 
 const getChangeRate = (
@@ -21,8 +22,10 @@ const getChangeRate = (
         ? [...prevPriceList, +record.price]
         : [+record.price, ...prevPriceList]
 
+    const startPrice = priceList[0]
+    const endPrice = priceList[priceList.length - 1]
     // Calculate change rate
-    const priceChangeRate = priceList[priceList.length - 1] - priceList[0]
+    const priceChangeRate = calculatePriceChangeRate(startPrice, endPrice)
     
     return {
         recordType,

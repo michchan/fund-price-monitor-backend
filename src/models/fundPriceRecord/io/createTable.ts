@@ -130,13 +130,13 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
             KeySchema: [
                 { AttributeName: attrs.COMPANY, KeyType: 'HASH' },
             ],
-        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.PRICE_CHANGE_RATE, attrs.NAME, attrs.UPDATED_DATE]),
         createInclusiveCSI({
             IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
             KeySchema: [
                 { AttributeName: attrs.RISK_LEVEL, KeyType: 'HASH' },
             ],
-        }, [attrs.PRICE, attrs.NAME, attrs.UPDATED_DATE]),
+        }, [attrs.PRICE, attrs.PRICE_CHANGE_RATE, attrs.NAME, attrs.UPDATED_DATE]),
     ],
     // Add stream for aggregation of top-level items
     StreamSpecification: {
