@@ -15,8 +15,8 @@ const getChangeRate = (
 
     // Get next price list
     const priceList = priceListMode === 'prepend' 
-        ? [...prevPriceList.slice(0, 2), +record.price]
-        : [+record.price, ...prevPriceList.slice(0, 2)]
+        ? [...prevPriceList, +record.price]
+        : [+record.price, ...prevPriceList]
 
     const startPrice = priceList[0]
     const endPrice = priceList[priceList.length - 1]
