@@ -201,7 +201,7 @@ function init (scope: cdk.Construct) {
     /** ------------ Weekly ------------ */
     // Run on Saturday in every week at 15:00 UTC
     const weeklyReviewRule = new events.Rule(scope, 'WeeklyReviewRule', {
-        schedule: events.Schedule.expression('cron(0 15 ? * 6 *)')
+        schedule: events.Schedule.expression('cron(0 15 ? * 7 *)')
     });
     weeklyReviewRule.addTarget(new targets.LambdaFunction(notifyWeeklyHandler));
 
