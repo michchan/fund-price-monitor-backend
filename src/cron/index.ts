@@ -101,6 +101,11 @@ function init (scope: cdk.Construct) {
         TELEGRAM_CHAT_ID: telegramChatId,
         TELEGRAM_BOT_API_KEY_PARAMETER_NAME,
     }
+    // Common lambda configs for scrape handlers
+    const commonScrapersInput = {
+        // Extra memory is needed for running the headless browser instance
+        memorySize: 700,
+    }
 
     /** ---------- Data Processing Handlers ---------- */
 
@@ -111,14 +116,21 @@ function init (scope: cdk.Construct) {
         ...commonLambdaInput,
         handler: 'aggregate.handler',
     });
+    
     /**
      * Handler for scraping data and saving data
      */
     const scrapeHandler = new lambda.Function(scope, 'CronScraper', {
         ...commonLambdaInput,
+        ...commonScrapersInput,
         handler: 'scrape.handler',
-        // Extra memory is needed for running the headless browser instance
-        memorySize: 700,
+    });
+
+    /** @DEBUG Testing handler for scrapers */
+    const testScraperHandler = new lambda.Function(scope, 'CronScraperTester', {
+        ...commonLambdaInput,
+        ...commonScrapersInput,
+        handler: 'testScrapers.handler',
     });
 
     /** ---------- Table Handlers ---------- */
