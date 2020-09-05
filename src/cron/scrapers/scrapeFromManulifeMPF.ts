@@ -1,4 +1,3 @@
-import { ScheduledHandler } from "aws-lambda";
 import puppeteer = require("puppeteer");
 
 import { FundPriceRecord, CompanyType, FundType } from "src/models/fundPriceRecord/FundPriceRecord.type";
