@@ -29,8 +29,10 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
                     throw new Error(`${key} undefined from scraped data`)
             }
         }
-    
-        console.log(`RESULTS: `, JSON.stringify(results, null, 2))
+        
+        results.forEach((result, i) => {
+            console.log(`RESULTS-${i}: `, JSON.stringify(result, null, 2))
+        })
         console.log(`RECORDS: `, JSON.stringify(records, null, 2))
     } catch (error) {
         callback(error)
