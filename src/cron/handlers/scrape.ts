@@ -35,10 +35,9 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
                     throw new Error(`${key} undefined from scraped data`)
             }
         }
-        console.log({ records })
     
         // Write batch data to the table
-        // await fundPriceRecord.batchCreateItems(records, year, quarter, fundPriceRecord.serialize);
+        await fundPriceRecord.batchCreateItems(records, year, quarter, fundPriceRecord.serialize);
     } catch (error) {
         callback(error)
     }
