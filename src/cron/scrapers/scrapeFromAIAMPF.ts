@@ -1,5 +1,4 @@
 import puppeteer = require("puppeteer");
-import zeroPadding from "simply-utils/dist/number/zeroPadding";
 
 import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/fundPriceRecord/FundPriceRecord.type"
 import { scrapeFromLink } from "../helpers/scrapeFromLink";
@@ -42,14 +41,16 @@ export interface PriceDataRecord extends Pick<FundPriceRecord,
 const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRecord[]> => {
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
-    return page.evaluate((function (): PriceDataRecord[] {
+    return page.evaluate((): PriceDataRecord[] => {
         // Query table rows nodes
         const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)');
 
         // Get page-level updatedDate
         const updatedDateEl = document.querySelector('#main-block > table > tbody > tr > td > font') as HTMLFontElement;
         const [all, year, month, date] = (updatedDateEl?.innerText ?? '').match(/(\d{4})年(\d{1,2})月(\d{1,2})/i) ?? ''
-        const updatedDate = `${year}-${zeroPadding(+month, 2)}=${zeroPadding(+date, 2)}`
+        const MM = +month < 10 ? `0${month}` : month
+        const DD = +date < 10 ? `0${date}` : date
+        const updatedDate = `${year}-${MM}=${DD}`
 
         // Map table rows data to PriceDataRecord[]
         return Array.from(tableRows)
@@ -69,5 +70,5 @@ const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRec
                     updatedDate,
                 }
             })
-    }).bind({ zeroPadding }))
+    })
 }
