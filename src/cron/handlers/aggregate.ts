@@ -158,10 +158,10 @@ const processCompanyRecords = async (
     console.log('MONTH ITEMS TO INSERT ', JSON.stringify(monthRateItems, null, 2))
     console.log('QUARTER ITEMS TO INSERT ', JSON.stringify(quarterRateItems, null, 2))
 
-    console.log('LATEST ITEMS TO INSERT ', JSON.stringify(prevLatestItems, null, 2))
-    console.log('WEEK ITEMS TO INSERT ', JSON.stringify(prevWeekRateItems, null, 2))
-    console.log('MONTH ITEMS TO INSERT ', JSON.stringify(prevMonthRateItems, null, 2))
-    console.log('QUARTER ITEMS TO INSERT ', JSON.stringify(prevQuarterRateItems, null, 2))
+    console.log('LATEST ITEMS TO DELETE ', JSON.stringify(prevLatestItems, null, 2))
+    console.log('WEEK ITEMS TO DELETE ', JSON.stringify(prevWeekRateItems, null, 2))
+    console.log('MONTH ITEMS TO DELETE ', JSON.stringify(prevMonthRateItems, null, 2))
+    console.log('QUARTER ITEMS TO DELETE ', JSON.stringify(prevQuarterRateItems, null, 2))
 
     return
     /** -------- Send batch requests  -------- */
