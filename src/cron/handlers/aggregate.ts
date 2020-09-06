@@ -153,15 +153,15 @@ const processCompanyRecords = async (
     const [prevMonthRateItems, monthRateItems] = calculateNextChangeRates(prevMonthRateRecords.Items, 'month');
     const [prevQuarterRateItems, quarterRateItems] = calculateNextChangeRates(prevQuarterRateRecords.Items, 'quarter');
     
-    console.log('LATEST ITEMS TO INSERT ', JSON.stringify(latestItems.map(i => `${i.code}_${i.recordType}`), null, 2))
-    console.log('WEEK ITEMS TO INSERT ', JSON.stringify(weekRateItems.map(i => `${i.code}_${i.recordType}`), null, 2))
-    console.log('MONTH ITEMS TO INSERT ', JSON.stringify(monthRateItems.map(i => `${i.code}_${i.recordType}`), null, 2))
-    console.log('QUARTER ITEMS TO INSERT ', JSON.stringify(quarterRateItems.map(i => `${i.code}_${i.recordType}`), null, 2))
+    console.log('LATEST ITEMS TO INSERT ', JSON.stringify(latestItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
+    console.log('WEEK ITEMS TO INSERT ', JSON.stringify(weekRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
+    console.log('MONTH ITEMS TO INSERT ', JSON.stringify(monthRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
+    console.log('QUARTER ITEMS TO INSERT ', JSON.stringify(quarterRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
 
-    console.log('LATEST ITEMS TO DELETE ', JSON.stringify(prevLatestItems.map(i => `${i.code}_${i.recordType}`), null, 2))
-    console.log('WEEK ITEMS TO DELETE ', JSON.stringify(prevWeekRateItems.map(i => `${i.code}_${i.recordType}`), null, 2))
-    console.log('MONTH ITEMS TO DELETE ', JSON.stringify(prevMonthRateItems.map(i => `${i.code}_${i.recordType}`), null, 2))
-    console.log('QUARTER ITEMS TO DELETE ', JSON.stringify(prevQuarterRateItems.map(i => `${i.code}_${i.recordType}`), null, 2))
+    console.log('LATEST ITEMS TO DELETE ', JSON.stringify(prevLatestItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
+    console.log('WEEK ITEMS TO DELETE ', JSON.stringify(prevWeekRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
+    console.log('MONTH ITEMS TO DELETE ', JSON.stringify(prevMonthRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
+    console.log('QUARTER ITEMS TO DELETE ', JSON.stringify(prevQuarterRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
 
     return
     /** -------- Send batch requests  -------- */
