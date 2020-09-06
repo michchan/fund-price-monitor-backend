@@ -8,7 +8,7 @@ import scrapeFromAIAMPF from "../scrapers/scrapeFromAIAMPF";
 
 // Create list of scrapers
 const scrapers: (() => Promise<FundPriceRecord[]>)[] = [
-    scrapeFromManulifeMPF,
+    // scrapeFromManulifeMPF,
     scrapeFromAIAMPF,
 ]
 
