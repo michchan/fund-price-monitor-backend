@@ -162,6 +162,7 @@ const processCompanyRecords = async (
     console.log('WEEK ITEMS TO DELETE ', JSON.stringify(prevWeekRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
     console.log('MONTH ITEMS TO DELETE ', JSON.stringify(prevMonthRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
     console.log('QUARTER ITEMS TO DELETE ', JSON.stringify(prevQuarterRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
+    return
 
     /** -------- Send batch requests  -------- */
 
