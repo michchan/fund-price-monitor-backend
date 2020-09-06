@@ -144,7 +144,7 @@ const processCompanyRecords = async (
             }, [[], []]) as PrevNextRates
             : [
                 [],
-                latestItems.map(item => fundPriceRecord.getChangeRate(item, type, [], 'prepend', date))
+                latestItems.map(item => fundPriceRecord.getChangeRate(item, type, item.price, [], 'prepend', date))
             ]
     );
 
