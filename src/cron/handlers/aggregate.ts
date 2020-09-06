@@ -153,6 +153,9 @@ const processCompanyRecords = async (
     const [prevMonthRateItems, monthRateItems] = calculateNextChangeRates(prevMonthRateRecords.Items, 'month');
     const [prevQuarterRateItems, quarterRateItems] = calculateNextChangeRates(prevQuarterRateRecords.Items, 'quarter');
     
+    console.log({ latestItems, weekRateItems, monthRateItems, quarterRateItems })
+    console.log({ prevLatestItems, prevWeekRateItems, prevMonthRateItems, prevQuarterRateItems })
+    return
     /** -------- Send batch requests  -------- */
 
     // Batch create all aggregation items

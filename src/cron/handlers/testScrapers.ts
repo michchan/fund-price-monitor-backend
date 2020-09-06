@@ -2,12 +2,14 @@ import { ScheduledHandler } from "aws-lambda";
 
 import { FundPriceRecord } from "../../models/fundPriceRecord/FundPriceRecord.type";
 import scrapeFromManulifeMPF from "../scrapers/scrapeFromManulifeMPF";
+import scrapeFromAIAMPF from "../scrapers/scrapeFromAIAMPF";
 
 
 
 // Create list of scrapers
 const scrapers: (() => Promise<FundPriceRecord[]>)[] = [
     scrapeFromManulifeMPF,
+    scrapeFromAIAMPF,
 ]
 
 /** 
