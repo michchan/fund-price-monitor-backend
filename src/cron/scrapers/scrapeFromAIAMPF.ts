@@ -42,7 +42,7 @@ export interface PriceDataRecord extends Pick<FundPriceRecord,
 const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRecord[]> => {
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
-    return page.evaluate((): PriceDataRecord[] => {
+    return page.evaluate((function (): PriceDataRecord[] {
         // Query table rows nodes
         const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)');
 
@@ -69,5 +69,5 @@ const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRec
                     updatedDate,
                 }
             })
-    })
+    }).bind({ zeroPadding }))
 }
