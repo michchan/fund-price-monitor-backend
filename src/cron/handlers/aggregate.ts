@@ -135,7 +135,7 @@ const processCompanyRecords = async (
             ? (items ?? []).reduce((acc, item) => {
                 const prevChangeRate = fundPriceRecord.parseChangeRate(item);
                 const latestItem = latestItems.find(item => item.code === prevChangeRate.code)
-                const nextChangeRate =  fundPriceRecord.getChangeRate(latestItem || prevChangeRate, type, prevChangeRate.priceList ?? [], 'prepend', date)
+                const nextChangeRate =  fundPriceRecord.getChangeRate(prevChangeRate, type, latestItem?.price ?? 0, prevChangeRate.priceList ?? [], 'prepend', date)
                 
                 return [
                     [...acc[0], prevChangeRate],
@@ -162,7 +162,6 @@ const processCompanyRecords = async (
     console.log('WEEK ITEMS TO DELETE ', JSON.stringify(prevWeekRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
     console.log('MONTH ITEMS TO DELETE ', JSON.stringify(prevMonthRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
     console.log('QUARTER ITEMS TO DELETE ', JSON.stringify(prevQuarterRateItems.map(i => `${i.code}_${i.recordType}_${i.time}`).sort(), null, 2))
-    return
 
     /** -------- Send batch requests  -------- */
 
