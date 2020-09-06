@@ -5,6 +5,10 @@ import { scrapeFromLink } from "src/cron/helpers/scrapeFromLink";
 
 
 const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
+
+const scrapeFromManulifeMPF = () => scrapeFromLink(PAGE_URL, getDataFromHTML)
+export default scrapeFromManulifeMPF
+
 /**
  * Helpers to query data from html
  */
@@ -79,7 +83,3 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
 
     return data
 }
-
-const scrapeFromManulifeMPF = () => scrapeFromLink(PAGE_URL, getDataFromHTML)
-
-export default scrapeFromManulifeMPF
