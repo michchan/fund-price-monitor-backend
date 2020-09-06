@@ -1,6 +1,6 @@
 import puppeteer = require("puppeteer");
 
-import { FundPriceRecord, CompanyType, FundType } from "src/models/fundPriceRecord/FundPriceRecord.type";
+import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/fundPriceRecord/FundPriceRecord.type";
 import { scrapeFromLink } from "src/cron/helpers/scrapeFromLink";
 
 
@@ -18,7 +18,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
-    const data = await page.evaluate((): FundPriceRecord[] => {
+    return page.evaluate((): FundPriceRecord[] => {
         // Map gif name to risk level
         const riskLevelIndicatorImageNameMap: { [key: string]: FundPriceRecord['riskLevel'] } = {
             'v.gif': 'veryLow',
@@ -37,10 +37,13 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
         return Array.from(tableRows).map((row): FundPriceRecord => {
             // Get table cells list
             const dataCells = row.children as HTMLCollectionOf<HTMLTableDataCellElement>
+
             // Define company type
             const company: CompanyType = 'manulife'
-            // Defined fundType
+            // Define fundType
             const fundType: FundType = 'mpf'
+            // Define record type
+            const recordType: RecordType = 'record'
             // Get code
             const code = dataCells[0].innerText.trim().replace(/\s|\_/g, '')
 
@@ -76,10 +79,8 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
                 })(),
                 time,
                 fundType,
-                recordType: 'record',
+                recordType,
             }
         })
     })
-
-    return data
 }
