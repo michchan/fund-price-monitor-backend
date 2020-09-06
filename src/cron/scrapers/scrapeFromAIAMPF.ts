@@ -50,7 +50,7 @@ const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRec
         const [all, year, month, date] = (updatedDateEl?.innerText ?? '').match(/(\d{4})年(\d{1,2})月(\d{1,2})/i) ?? ''
         const MM = +month < 10 ? `0${month}` : month
         const DD = +date < 10 ? `0${date}` : date
-        const updatedDate = `${year}-${MM}=${DD}`
+        const updatedDate = `${year}-${MM}-${DD}`
 
         // Map table rows data to PriceDataRecord[]
         return Array.from(tableRows)
