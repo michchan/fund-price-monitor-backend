@@ -41,7 +41,7 @@ export interface PriceDataRecord extends Pick<FundPriceRecord,
  */
 const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRecord[]> => {
     // Wait for the elements we want
-    await page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header) > td');
+    await page.waitForSelector('#fundpriceslist > table > tbody > tr > td');
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
