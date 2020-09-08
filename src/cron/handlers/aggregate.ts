@@ -105,7 +105,11 @@ const processCompanyRecords = async (
 
     /** Query previous latest records */
     const prevLatestRecords = await fundPriceRecord.queryLatestItemsByCompany(company, tableRange);
-    const prevLatestItems = (prevLatestRecords.Items || []).map(rec => fundPriceRecord.parse(rec))
+    const prevLatestItems = (prevLatestRecords.Items || [])
+        // Parse records
+        .map(rec => fundPriceRecord.parse(rec))
+        // Filters by insertedItems
+        .filter(rec => insertedItems.some(inserted => inserted.code === rec.code))
 
     // Aggregation for latest price
     const latestItems = insertedItems.map(item => {
