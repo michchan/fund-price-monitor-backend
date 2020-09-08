@@ -1,5 +1,4 @@
 import { DynamoDBStreamHandler } from "aws-lambda";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import omitBy from "lodash/omitBy";
 import isEmpty from "lodash/isEmpty";
 import uniq from "lodash/uniq";
@@ -101,6 +100,11 @@ const processCompanyRecords = async (
     // Create table range
     const tableRange: TableRange = { year, quarter };
 
+    /**
+     * ! IMPORTANT: All the records retrieved process must be filtered by `insertedItems`
+     */
+    const matchInserted = (rec: FundPriceRecord | FundPriceChangeRate) => insertedItems.some(inserted => inserted.code === rec.code)
+
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
     /** Query previous latest records */
@@ -109,7 +113,7 @@ const processCompanyRecords = async (
         // Parse records
         .map(rec => fundPriceRecord.parse(rec))
         // Filters by insertedItems
-        .filter(rec => insertedItems.some(inserted => inserted.code === rec.code))
+        .filter(matchInserted)
 
     // Aggregation for latest price
     const latestItems = insertedItems.map(item => {
@@ -131,31 +135,36 @@ const processCompanyRecords = async (
         fundPriceRecord.queryPeriodPriceChangeRate(company, `quarter`, fundPriceRecord.getPeriodByRecordType('quarter', date)),
     ]);
 
+    // Parse previous records
+    const prevWeekRateItems = (prevWeekRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
+    const prevMonthRateItems = (prevMonthRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
+    const prevQuarterRateItems = (prevMonthRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
+
     /** -------- Calculate records of price change rate of week, month and quarter -------- */
 
-    /** Helper to get latest records */
-    const calculateNextChangeRates = (items: DocumentClient.QueryOutput['Items'], type: AggregatedRecordType): PrevNextRates => (
-        (items ?? []).length > 0 
-            ? (items ?? []).reduce((acc, item) => {
-                const prevChangeRate = fundPriceRecord.parseChangeRate(item);
-                const latestItem = latestItems.find(item => item.code === prevChangeRate.code)
-                const nextChangeRate =  fundPriceRecord.getChangeRate(prevChangeRate, type, latestItem?.price ?? 0, prevChangeRate.priceList ?? [], 'prepend', date)
-                
-                return [
-                    [...acc[0], prevChangeRate],
-                    [...acc[1], nextChangeRate]
-                ]
-            }, [[], []]) as PrevNextRates
-            : [
-                [],
-                latestItems.map(item => fundPriceRecord.getChangeRate(item, type, item.price, [], 'prepend', date))
-            ]
-    );
+    /**
+     * Derive next change rate records
+     */
+    const deriveChangeRateRecords = (
+        type: AggregatedRecordType,
+        prevItems: FundPriceChangeRate[],
+    ) => latestItems.map(item => {
+        const prevChangeRate = prevItems.find(chRate => chRate.code === item.code)
+        const nextChangeRate = fundPriceRecord.getChangeRate(
+            prevChangeRate ?? item, 
+            type, 
+            item.price, 
+            prevChangeRate?.priceList ?? [],
+            'prepend',
+            date
+        );
+        return nextChangeRate
+    });
 
     // Derive records to save
-    const [prevWeekRateItems, weekRateItems] = calculateNextChangeRates(prevWeekRateRecords.Items, 'week');
-    const [prevMonthRateItems, monthRateItems] = calculateNextChangeRates(prevMonthRateRecords.Items, 'month');
-    const [prevQuarterRateItems, quarterRateItems] = calculateNextChangeRates(prevQuarterRateRecords.Items, 'quarter');
+    const weekRateItems = deriveChangeRateRecords('week', prevWeekRateItems);
+    const monthRateItems = deriveChangeRateRecords('month', prevMonthRateItems);
+    const quarterRateItems = deriveChangeRateRecords('quarter', prevQuarterRateItems);
 
     /** -------- Send batch requests  -------- */
 
