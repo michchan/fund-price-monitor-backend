@@ -36,6 +36,8 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
             }
         }
     
+        // Log records to insert
+        console.log(`Records to insert (${records.length}): `, JSON.stringify(records, null, 2));
         // Write batch data to the table
         await fundPriceRecord.batchCreateItems(records, year, quarter, fundPriceRecord.serialize);
     } catch (error) {

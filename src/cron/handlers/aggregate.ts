@@ -155,9 +155,18 @@ const processCompanyRecords = async (
 
     /** -------- Send batch requests  -------- */
 
+    // Log records to insert
+    console.log(`latestItems to insert (${latestItems.length}): `, JSON.stringify(latestItems, null, 2));
+
     // Batch create all aggregation items
     // Create latest records
     await fundPriceRecord.batchCreateItems(latestItems, year, quarter, fundPriceRecord.serialize);
+
+    // Log records to insert
+    console.log(`weekRateItems to insert (${weekRateItems.length}): `, JSON.stringify(weekRateItems, null, 2));
+    console.log(`monthRateItems to insert (${weekRateItems.length}): `, JSON.stringify(monthRateItems, null, 2));
+    console.log(`quarterRateItems to insert (${weekRateItems.length}): `, JSON.stringify(quarterRateItems, null, 2));
+
     // Create change rates
     await fundPriceRecord.batchCreateItems([
         ...weekRateItems, 
@@ -165,9 +174,18 @@ const processCompanyRecords = async (
         ...quarterRateItems
     ], year, quarter, fundPriceRecord.serializeChangeRate);
 
+    // Log records to remove
+    console.log(`prevLatestItems to remove (${prevLatestItems.length}): `, JSON.stringify(prevLatestItems, null, 2));
+
     // Batch remove previous items
     // Remove previous latest records
     await fundPriceRecord.batchDeleteItems(prevLatestItems, year, quarter, fundPriceRecord.getCompositeSK);
+
+    // Log records to insert
+    console.log(`weekRateItems to remove (${prevWeekRateItems.length}): `, JSON.stringify(prevWeekRateItems, null, 2));
+    console.log(`monthRateItems to remove (${prevMonthRateItems.length}): `, JSON.stringify(prevMonthRateItems, null, 2));
+    console.log(`quarterRateItems to remove (${prevQuarterRateItems.length}): `, JSON.stringify(prevQuarterRateItems, null, 2));
+
     // Remove previous change rates
     await fundPriceRecord.batchDeleteItems([
         ...prevWeekRateItems, 

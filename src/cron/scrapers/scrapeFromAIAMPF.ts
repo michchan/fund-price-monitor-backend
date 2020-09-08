@@ -44,6 +44,8 @@ const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRec
     return page.evaluate((): PriceDataRecord[] => {
         // Query table rows nodes
         const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)');
+        
+        console.log({ tableRows })
 
         // Get page-level updatedDate
         const updatedDateEl = document.querySelector('#main-block > table > tbody > tr > td > font') as HTMLFontElement;
