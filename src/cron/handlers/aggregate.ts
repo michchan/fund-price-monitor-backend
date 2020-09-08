@@ -182,9 +182,9 @@ const processCompanyRecords = async (
     await fundPriceRecord.batchDeleteItems(prevLatestItems, year, quarter, fundPriceRecord.getCompositeSK);
 
     // Log records to insert
-    console.log(`weekRateItems to remove (${prevWeekRateItems.length}): `, JSON.stringify(prevWeekRateItems, null, 2));
-    console.log(`monthRateItems to remove (${prevMonthRateItems.length}): `, JSON.stringify(prevMonthRateItems, null, 2));
-    console.log(`quarterRateItems to remove (${prevQuarterRateItems.length}): `, JSON.stringify(prevQuarterRateItems, null, 2));
+    console.log(`prevWeekRateItems to remove (${prevWeekRateItems.length}): `, JSON.stringify(prevWeekRateItems, null, 2));
+    console.log(`prevMonthRateItems to remove (${prevMonthRateItems.length}): `, JSON.stringify(prevMonthRateItems, null, 2));
+    console.log(`prevQuarterRateItems to remove (${prevQuarterRateItems.length}): `, JSON.stringify(prevQuarterRateItems, null, 2));
 
     // Remove previous change rates
     await fundPriceRecord.batchDeleteItems([
