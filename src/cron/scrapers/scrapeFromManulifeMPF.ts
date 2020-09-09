@@ -16,7 +16,7 @@ export default scrapeFromManulifeMPF
  */
 const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
     // Wait for the elements we want
-    await page.waitForSelector('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr > td > img');
+    await page.waitForSelector('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr:last-child > td > img');
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function

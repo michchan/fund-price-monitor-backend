@@ -30,9 +30,9 @@ const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]
     await page.goto(DETAILS_PAGE_URL)
     const detailsData = await getDetailsDataFromHTML(page);
     
-    console.log('pricesData: ', JSON.stringify(pricesData, null, 2));
-    console.log('perfData: ', JSON.stringify(perfData, null, 2));
-    console.log('detailsData: ', JSON.stringify(detailsData, null, 2));
+    console.log(`pricesData (${pricesData.length}): `, JSON.stringify(pricesData, null, 2));
+    console.log(`perfData (${perfData.length}): `, JSON.stringify(perfData, null, 2));
+    console.log(`detailsData (${detailsData.length}): `, JSON.stringify(detailsData, null, 2));
 
     return []
 }
@@ -50,15 +50,13 @@ export interface PriceDataRecord extends Pick<FundPriceRecord,
  */
 const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRecord[]> => {
     // Wait for the elements we want
-    await page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header)');
+    await page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header):last-child > td');
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
     return page.evaluate((): PriceDataRecord[] => {
         // Query table rows nodes
         const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)');
-
-        console.log('tableRows: ', JSON.stringify({ tableRows }, null, 2))
 
         // Get page-level updatedDate
         const updatedDateEl = document.querySelector('#main-block > table > tbody > tr > td > font') as HTMLFontElement;
@@ -99,7 +97,7 @@ export interface PerfDataRecord extends Pick<FundPriceRecord,
  */
 const getPerformanceDataFromHTML = async (page: puppeteer.Page): Promise<PerfDataRecord[]> => {
     // Wait for the elements we want
-    await page.waitForSelector('');
+    await page.waitForSelector('#fundpriceslist > table > tbody > tr:last-child > td');
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
@@ -117,8 +115,8 @@ export interface DetailsDataRecord extends Pick<FundPriceRecord,
  */
 const getDetailsDataFromHTML = async (page: puppeteer.Page): Promise<DetailsDataRecord[]> => {
     // Wait for the elements we want
-    await page.waitForSelector('');
-    
+    await page.waitForSelector(`#funddetails_list > table > tbody > tr:last-child > td`);
+
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
     return page.evaluate((): DetailsDataRecord[] => {
