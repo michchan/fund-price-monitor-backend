@@ -4,8 +4,8 @@ import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/f
 
 
 const PRICES_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundprices.jspa?mt=MT3&lang=zh_TW'
-const PERFORMANCE_PAGE_URL = 'https://www3.aia-pt.com.hk/MPF/ch/fund/performance/'
-const INFO_PAGE_URL = 'https://www3.aia-pt.com.hk/MPF/ch/fund/details/'
+const PERFORMANCE_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundperf.jspa?mt=MT3&lang=zh_TW'
+const DETAILS_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/funddetails.jspa?mt=MT3&lang=zh_TW'
 
 
 const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
@@ -21,6 +21,9 @@ const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]
     // Scrape prices data page
     await page.goto(PRICES_PAGE_URL);
     const pricesData = await getPricesDataFromHTML(page);
+
+    
+    
     console.log('pricesData: ', JSON.stringify(pricesData, null, 2));
 
     return []
