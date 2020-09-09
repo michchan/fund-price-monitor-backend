@@ -138,7 +138,7 @@ const processCompanyRecords = async (
     // Parse previous records
     const prevWeekRateItems = (prevWeekRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
     const prevMonthRateItems = (prevMonthRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
-    const prevQuarterRateItems = (prevMonthRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
+    const prevQuarterRateItems = (prevQuarterRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
 
     /** -------- Calculate records of price change rate of week, month and quarter -------- */
 

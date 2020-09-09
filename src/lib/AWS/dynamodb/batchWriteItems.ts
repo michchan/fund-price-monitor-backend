@@ -29,16 +29,19 @@ async function batchWriteItems <T, RT extends PT | DT> (
     // Send batch requests for each chunk
     return Promise.all(
         chunks.map((chunkedRecords, index): Promise<ChunkResult> => {
+            // Create request items
+            const RequestItems: DynamoDB.DocumentClient.BatchWriteItemInput['RequestItems'] = {
+                [tableName]: chunkedRecords.map(rec => ({
+                    [mode === 'put' ? 'PutRequest' : 'DeleteRequest']: (
+                        serialize ? serialize(rec) : serialize
+                    ) as unknown as RT,
+                }))
+            }
+            // Log to console 
+            console.log(`Batch Write Request Items (chunk: ${index}): `, JSON.stringify(RequestItems, null, 2))
+
             // Send batch create requests
-            return docClient.batchWrite({
-                RequestItems: {
-                    [tableName]: chunkedRecords.map(rec => ({
-                        [mode === 'put' ? 'PutRequest' : 'DeleteRequest']: (
-                            serialize ? serialize(rec) : serialize
-                        ) as unknown as RT,
-                    }))
-                }
-            }).promise()
+            return docClient.batchWrite({ RequestItems }).promise()
         }) 
     )
 }
