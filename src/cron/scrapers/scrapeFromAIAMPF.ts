@@ -4,7 +4,7 @@ import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/f
 import { scrapeFromLink } from "../helpers/scrapeFromLink";
 
 
-const PRICES_PAGE_URL = 'https://www3.aia-pt.com.hk/MPF/ch/fund/prices/'
+const PRICES_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundprices.jspa?mt=MT3&lang=zh_TW'
 const PERFORMANCE_PAGE_URL = 'https://www3.aia-pt.com.hk/MPF/ch/fund/performance/'
 const INFO_PAGE_URL = 'https://www3.aia-pt.com.hk/MPF/ch/fund/details/'
 
@@ -39,6 +39,9 @@ export interface PriceDataRecord extends Pick<FundPriceRecord,
  * Helpers to query the prices data from html
  */
 const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRecord[]> => {
+    // Wait for the elements we want
+    await page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header)');
+
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
     return page.evaluate((): PriceDataRecord[] => {
