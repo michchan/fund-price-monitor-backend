@@ -1,7 +1,6 @@
 import puppeteer = require("puppeteer");
 
 import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import { scrapeFromLink } from "../helpers/scrapeFromLink";
 
 
 const PRICES_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundprices.jspa?mt=MT3&lang=zh_TW'
@@ -9,7 +8,7 @@ const PERFORMANCE_PAGE_URL = 'https://www3.aia-pt.com.hk/MPF/ch/fund/performance
 const INFO_PAGE_URL = 'https://www3.aia-pt.com.hk/MPF/ch/fund/details/'
 
 
-const scrapeFromAIAMPF = async (): Promise<FundPriceRecord[]> => {
+const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
     // Define company type
     const company: CompanyType = 'manulife'
     // Define fundType
@@ -20,8 +19,9 @@ const scrapeFromAIAMPF = async (): Promise<FundPriceRecord[]> => {
     const time: FundPriceRecord['time'] = new Date().toISOString();
 
     // Scrape prices data page
-    const pricesData = await scrapeFromLink(PRICES_PAGE_URL, getPricesDataFromHTML);
-    console.log('pricesData: ', JSON.stringify(pricesData, null, 2))
+    await page.goto(PRICES_PAGE_URL);
+    const pricesData = await getPricesDataFromHTML(page);
+    console.log('pricesData: ', JSON.stringify(pricesData, null, 2));
 
     return []
 }

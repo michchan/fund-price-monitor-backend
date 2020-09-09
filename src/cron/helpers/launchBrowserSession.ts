@@ -6,13 +6,14 @@ import 'chrome-aws-lambda/bin/chromium.br';
 import 'chrome-aws-lambda/bin/swiftshader.tar.br';
 
 
+export type GetDataWithPage <T> = (page: puppeteer.Page) => Promise<T> | T
+
 /**
  * Helpers to scrape data from html
  */
-export async function scrapeFromLink <RT> (
-    link: string,
-    getData: (page: puppeteer.Page) => Promise<RT> | RT
-): Promise<RT> {
+export async function launchBrowserSession <T> (
+    getBatchData: GetDataWithPage<T>[],
+): Promise<T[]> {
     let browser: puppeteer.Browser | null = null;
 
     try {
@@ -27,10 +28,13 @@ export async function scrapeFromLink <RT> (
 
         // open a new page
         var page = await browser.newPage();
-        // enter url in page
-        await page.goto(link);
+
+        // Get batches of data
+        const data: T[] = []
+        for (const getEach of getBatchData) {
+            data.push(await getEach(page))
+        }
         // Run function to get data
-        const data = await getData(page);
         return data
     } catch (error) {
         throw error
