@@ -22,9 +22,17 @@ const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]
     await page.goto(PRICES_PAGE_URL);
     const pricesData = await getPricesDataFromHTML(page);
 
-    
+    // Scrape performance data page
+    await page.goto(PERFORMANCE_PAGE_URL)
+    const perfData = await getPerformanceDataFromHTML(page);
+
+    // Scrape details page
+    await page.goto(DETAILS_PAGE_URL)
+    const detailsData = await getDetailsDataFromHTML(page);
     
     console.log('pricesData: ', JSON.stringify(pricesData, null, 2));
+    console.log('perfData: ', JSON.stringify(perfData, null, 2));
+    console.log('detailsData: ', JSON.stringify(detailsData, null, 2));
 
     return []
 }
@@ -37,7 +45,6 @@ export interface PriceDataRecord extends Pick<FundPriceRecord,
     | 'price'
     | 'updatedDate'
 > {}
-
 /**
  * Helpers to query the prices data from html
  */
@@ -78,5 +85,37 @@ const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRec
                     updatedDate,
                 }
             })
+    })
+}
+
+export interface PerfDataRecord extends Pick<FundPriceRecord, 
+    | 'code'
+    | 'launchedDate'
+> {
+    priceChangeRateFromLaunch: number;
+}
+/**
+ * Helpers to query the performance data from html
+ */
+const getPerformanceDataFromHTML = async (page: puppeteer.Page): Promise<PerfDataRecord[]> => {
+    // Query DOM data
+    // * Constants/variables must be inside the scope of the callback function
+    return page.evaluate((): PerfDataRecord[] => {
+        return []
+    })
+}
+
+export interface DetailsDataRecord extends Pick<FundPriceRecord, 
+    | 'code'
+    | 'riskLevel'
+> {}
+/**
+ * Helpers to query the details data from html
+ */
+const getDetailsDataFromHTML = async (page: puppeteer.Page): Promise<DetailsDataRecord[]> => {
+    // Query DOM data
+    // * Constants/variables must be inside the scope of the callback function
+    return page.evaluate((): DetailsDataRecord[] => {
+        return []
     })
 }
