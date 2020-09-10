@@ -39,6 +39,11 @@ const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRec
                 const dataCells = row.children as HTMLCollectionOf<HTMLTableDataCellElement>
                 // Get ID from the url of the item
                 const anchor = dataCells[0].children[0] as HTMLAnchorElement
+                // ID Getter
+                const getIDFromAnchorTag = (anchor: HTMLAnchorElement): string => {
+                    const matches = (anchor?.href ?? '').match(/id=(.+)$/i) ?? []
+                    return (matches[1] ?? '').trim()
+                }
 
                 return {
                     code: getIDFromAnchorTag(anchor),
