@@ -1,7 +1,6 @@
 import puppeteer = require("puppeteer");
 
 import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import getIDFromAnchorTag from "./getIDFromAnchorTag";
 
 
 export interface PriceDataRecord extends Pick<FundPriceRecord, 
