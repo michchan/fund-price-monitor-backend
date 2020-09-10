@@ -1,6 +1,7 @@
 import puppeteer = require("puppeteer");
 
 import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
+import getIDFromAnchorTag from "./getIDFromAnchorTag";
 
 
 export interface PriceDataRecord extends Pick<FundPriceRecord, 
@@ -38,10 +39,9 @@ const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRec
                 const dataCells = row.children as HTMLCollectionOf<HTMLTableDataCellElement>
                 // Get ID from the url of the item
                 const anchor = dataCells[0].children[0] as HTMLAnchorElement
-                const matches = (anchor?.href ?? '').match(/id=(.+)$/i) ?? []
 
                 return {
-                    code: (matches[1] ?? '').trim(),
+                    code: getIDFromAnchorTag(anchor),
                     name: dataCells[0].innerText.trim(),
                     price: +dataCells[2].innerText.trim(),
                     updatedDate,

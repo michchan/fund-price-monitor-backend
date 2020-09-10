@@ -13,7 +13,7 @@ export interface DetailsDataRecord extends Pick<FundPriceRecord,
 */
 const getDetailsDataFromHTML = async (page: puppeteer.Page): Promise<DetailsDataRecord[]> => {
     // Wait for the elements we want
-    await page.waitForSelector(`#funddetails_list > table > tbody > tr:last-child > td`);
+    await page.waitForSelector(`#funddetails_list > table > tbody > tr:not(.header):last-child > td`);
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
