@@ -1,7 +1,5 @@
 import { ScheduledHandler } from "aws-lambda";
-import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
-import fundPriceRecord from "src/models/fundPriceRecord";
 import scrapeAll from "../scrapers";
 import scrapeFromManulifeMPF from "../scrapers/scrapeFromManulifeMPF";
 import scrapeFromAIAMPF from "../scrapers/scrapeFromAIAMPF";
