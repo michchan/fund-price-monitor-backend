@@ -18,7 +18,19 @@ const getDetailsDataFromHTML = async (page: puppeteer.Page): Promise<DetailsData
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
     return page.evaluate((): DetailsDataRecord[] => {
-        return []
+        // Query table rows nodes
+        const tables: NodeListOf<HTMLTableElement> = document.querySelectorAll('#funddetails_list > table');
+
+        // Map table rows data to PriceDataRecord[]
+        return Array.from(tables)
+            // Filter out that some funds might not have a unit price
+            .filter(table => true)
+            .map((table): DetailsDataRecord => {
+                return {
+                    code: '',
+                    riskLevel: 'high',
+                }
+            })
     })
 }
 export default getDetailsDataFromHTML
