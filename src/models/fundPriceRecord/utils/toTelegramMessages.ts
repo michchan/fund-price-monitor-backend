@@ -28,7 +28,7 @@ const toTelegramMessages = (
         const priceTag = `*$${Number(price).toFixed(2)}*`
 
         const rate = Number(priceChangeRate)
-        const rateTag = rate.toFixed(2)
+        const rateTag = Math.abs(rate).toFixed(2)
         const sign = +rate === 0 ? '' : +rate > 0 ? `+` : `-`
         const priceRateTag = `(${sign}${rateTag}%)`
         
