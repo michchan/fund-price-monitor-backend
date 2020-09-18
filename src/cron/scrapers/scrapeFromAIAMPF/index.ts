@@ -10,14 +10,14 @@ const PRICES_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundpric
 const PERFORMANCE_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundperf.jspa?mt=MT3&lang=zh_TW'
 const DETAILS_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/funddetails.jspa?mt=MT3&lang=zh_TW'
 
+// Define company type
+const company: CompanyType = 'aia'
+// Define fundType
+const fundType: FundType = 'mpf'
+// Define record type
+const recordType: RecordType = 'record'
 
 const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
-    // Define company type
-    const company: CompanyType = 'manulife'
-    // Define fundType
-    const fundType: FundType = 'mpf'
-    // Define record type
-    const recordType: RecordType = 'record'
     // Define time
     const time: FundPriceRecord['time'] = new Date().toISOString();
 
@@ -33,12 +33,25 @@ const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]
     await page.goto(DETAILS_PAGE_URL)
     const detailsData = await getDetailsDataFromHTML(page);
 
-    // Aggregate data
-    
-    console.log(`pricesData (length: ${pricesData.length}): `, JSON.stringify(pricesData, null, 2));
-    console.log(`perfData (length: ${perfData.length}): `, JSON.stringify(perfData, null, 2));
-    console.log(`detailsData (length: ${detailsData.length}): `, JSON.stringify(detailsData, null, 2));
+    // Aggregate data based on prices data
+    const records: FundPriceRecord[] = pricesData.map(({ code, name, price, updatedDate }) => {
+        const perfItem = perfData.find(eachItem => eachItem.code === code);
+        const detailsItem = detailsData.find(eachItem => eachItem.name.trim() === name.trim());
+        return {
+            company,
+            code,
+            price,
+            name,
+            updatedDate,
+            launchedDate: perfItem?.launchedDate ?? '0000-00-00',
+            initialPrice: Number(price) / (1 + (perfItem?.priceChangeRateSinceLaunch ?? 1)),
+            riskLevel: detailsItem?.riskLevel ?? 'neutral',
+            fundType,
+            recordType,
+            time,
+        }
+    });
 
-    return []
+    return records
 }
 export default scrapeFromAIAMPF

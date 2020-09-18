@@ -39,7 +39,7 @@ const getPerformanceDataFromHTML = async (page: puppeteer.Page): Promise<PerfDat
                 return {
                     code: getIDFromAnchorTag(anchor),
                     launchedDate: dataCells[1].innerText.trim(),
-                    priceChangeRateSinceLaunch: Number(dataCells[7].innerText.trim()),
+                    priceChangeRateSinceLaunch: Number(dataCells[7].innerText.trim()) / 100,
                 }
             })
     })

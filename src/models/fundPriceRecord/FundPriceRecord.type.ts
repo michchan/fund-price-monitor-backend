@@ -1,7 +1,9 @@
 
 export type FundType = 'mpf'
 
-export type CompanyType = 'manulife'
+export type CompanyType = 
+    | 'manulife'
+    | 'aia'
 
 export type RiskLevel = 
     | 'veryLow' 
