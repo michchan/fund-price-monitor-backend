@@ -29,7 +29,7 @@ const queryItemsByRiskLevel = (
             [EXP_RISK_LEVEL_PK]: riskLevel,
             [EXP_TIME_SK]: latest ? 'latest' : 'record'
         },
-        KeyConditionExpression: `${attrs.COMPANY} = ${EXP_RISK_LEVEL_PK}`,
+        KeyConditionExpression: `${attrs.RISK_LEVEL} = ${EXP_RISK_LEVEL_PK}`,
         FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_TIME_SK),
     }
     return queryItems({
