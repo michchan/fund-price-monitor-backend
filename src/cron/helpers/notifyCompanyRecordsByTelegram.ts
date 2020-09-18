@@ -23,14 +23,14 @@ const notifyCompanyRecordsByTelegram = async (
     const queryOutput = await ((scheduleType: ScheduleType) => {
         switch (scheduleType) {
             case 'quarterly':
-                return fundPriceRecord.queryPeriodPriceChangeRate(company, 'quarter', fundPriceRecord.getPeriodByRecordType('quarter', date));
+                return fundPriceRecord.queryPeriodPriceChangeRate(company, 'quarter', fundPriceRecord.getPeriodByRecordType('quarter', date), true);
             case 'monthly':
-                return fundPriceRecord.queryPeriodPriceChangeRate(company, 'month', fundPriceRecord.getPeriodByRecordType('month', date));
+                return fundPriceRecord.queryPeriodPriceChangeRate(company, 'month', fundPriceRecord.getPeriodByRecordType('month', date), true);
             case 'weekly':
-                return fundPriceRecord.queryPeriodPriceChangeRate(company, 'week', fundPriceRecord.getPeriodByRecordType('week', date));
+                return fundPriceRecord.queryPeriodPriceChangeRate(company, 'week', fundPriceRecord.getPeriodByRecordType('week', date), true);
             case 'daily':
             default:
-                return fundPriceRecord.queryItemsByCompany(company, true);
+                return fundPriceRecord.queryItemsByCompany(company, true, true);
         }
     })(scheduleType);
 

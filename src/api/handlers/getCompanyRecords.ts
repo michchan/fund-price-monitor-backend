@@ -5,7 +5,13 @@ import mapValues from "lodash/mapValues";
 import { ListResponse } from "../Responses.type";
 import { FundPriceRecord, CompanyType, RiskLevel } from '../../models/fundPriceRecord/FundPriceRecord.type'
 import fundPriceRecord from "src/models/fundPriceRecord";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import db from "src/lib/AWS/dynamodb";
+import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 
+
+
+const EXP_COM = ':com_code'
 
 export type Res = ListResponse<FundPriceRecord>;
 
@@ -15,6 +21,7 @@ export interface PathParams {
 export interface QueryParams {
     riskLevel?: RiskLevel;
     latest?: boolean;
+    exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
 }
 
 /** 
@@ -22,9 +29,6 @@ export interface QueryParams {
  */
 export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context) => {
     try {
-        console.log(`event `, JSON.stringify(event, null, 2))
-        console.log(`context `, JSON.stringify(context, null, 2))
-
         // Get path params
         const pathParams = (event.pathParameters ?? {}) as unknown as PathParams;
         const { company } = pathParams
@@ -35,21 +39,34 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
             }
             return value
         }) as unknown as QueryParams;
-        const { riskLevel, latest } = queryParams
-
-        console.log(`pathParams `, JSON.stringify(pathParams, null, 2))
-        console.log(`queryParams `, JSON.stringify(queryParams, null, 2))
+        const { 
+            riskLevel, 
+            latest,
+            exclusiveStartKey,
+        } = queryParams
 
         // @TODO: validations
 
         // Get query handler by conditions
         const result = await (() => {
             if (riskLevel) {
-                
+                return  fundPriceRecord.queryItemsByRiskLevel(riskLevel, latest, false, undefined, defaultInput => ({
+                    ExclusiveStartKey: exclusiveStartKey,
+                    ExpressionAttributeValues: {
+                        ...defaultInput.ExpressionAttributeValues,
+                        // Add company constraint
+                        [EXP_COM]: company
+                    },
+                    FilterExpression: [
+                        defaultInput.FilterExpression,
+                        db.expressionFunctions.beginsWith(attrs.COMPANY_CODE, EXP_COM),
+                    ].filter(v => v).join(' AND ')
+                }))
             }
-            return fundPriceRecord.queryItemsByCompany(company, latest)
+            return fundPriceRecord.queryItemsByCompany(company, latest, false, undefined, {
+                ExclusiveStartKey: exclusiveStartKey
+            })
         })(); 
-        console.log(`result `, JSON.stringify(result, null, 2))
 
         // Construct response body
         const res: Res = {

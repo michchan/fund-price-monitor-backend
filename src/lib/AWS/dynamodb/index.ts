@@ -6,10 +6,12 @@ import waitForStream from "./waitForStream"
 import scanAllItems from "./scanAllItems"
 import putItem from "./putItem"
 import updateItem from "./updateItem"
+import queryItems from "./queryItems"
 
 
 
 const db = {
+    queryItems,
     putItem,
     updateItem,
     expressionFunctions,

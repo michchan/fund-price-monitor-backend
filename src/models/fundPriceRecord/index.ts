@@ -10,7 +10,7 @@ import parse from "./utils/parse"
 import toLatestPriceRecord from "./utils/toLatestPriceRecord"
 import getQueryStartTimeByPeriodDifference from "./utils/getQueryStartTimeByPeriodDifference"
 import scanQuarterRecords from "./io/scanQuarterRecords"
-import queryAllItems from "./io/queryAllItems"
+import queryAllItems from "./io/queryItems"
 import parseChangeRate from './utils/parseChangeRate'
 import serializeChangeRate from './utils/serializeChangeRate'
 import getChangeRate from "./utils/getChangeRate"
@@ -29,10 +29,12 @@ import createTableDetails from "./io/createTableDetails"
 import updateTableDetails from "./io/updateTableDetails"
 import getSorterByCode from "./utils/getSorterByCode"
 import calculatePriceChangeRate from "./utils/calculatePriceChangeRate"
+import queryItemsByRiskLevel from "./io/queryItemsByRiskLevel"
 
 
 
 const fundPriceRecord = {
+    queryItemsByRiskLevel,
     getSorterByCode,
     createTableDetails,
     updateTableDetails,

@@ -108,7 +108,7 @@ const processCompanyRecords = async (
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
     /** Query previous latest records */
-    const prevLatestRecords = await fundPriceRecord.queryItemsByCompany(company, true, tableRange);
+    const prevLatestRecords = await fundPriceRecord.queryItemsByCompany(company, true, true, tableRange);
     const prevLatestItems = (prevLatestRecords.Items || [])
         // Parse records
         .map(rec => fundPriceRecord.parse(rec))
@@ -128,11 +128,11 @@ const processCompanyRecords = async (
         prevQuarterRateRecords
     ] = await Promise.all([
         // Week query
-        fundPriceRecord.queryPeriodPriceChangeRate(company, `week`, fundPriceRecord.getPeriodByRecordType('week', date)),
+        fundPriceRecord.queryPeriodPriceChangeRate(company, `week`, fundPriceRecord.getPeriodByRecordType('week', date), true),
         // Month query
-        fundPriceRecord.queryPeriodPriceChangeRate(company, `month`, fundPriceRecord.getPeriodByRecordType('month', date)),
+        fundPriceRecord.queryPeriodPriceChangeRate(company, `month`, fundPriceRecord.getPeriodByRecordType('month', date), true),
         // Quarter query
-        fundPriceRecord.queryPeriodPriceChangeRate(company, `quarter`, fundPriceRecord.getPeriodByRecordType('quarter', date)),
+        fundPriceRecord.queryPeriodPriceChangeRate(company, `quarter`, fundPriceRecord.getPeriodByRecordType('quarter', date), true),
     ]);
 
     // Parse previous records
