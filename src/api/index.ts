@@ -57,21 +57,21 @@ function init (scope: cdk.Construct) {
     /**
      * Handler for getting list of records of a single fund
      */
-    const getComFundRecordsHandler = new lambda.Function(scope, 'getCompanyFundRecords', {
+    const getComFundRecordsHandler = new lambda.Function(scope, 'GetCompanyFundRecords', {
         ...commonLambdaInput,
         handler: 'getCompanyFundRecords.handler',
     });
     /**
      * Handler for getting list of records
      */
-    const getComRecordsHandler = new lambda.Function(scope, 'getCompanyRecords', {
+    const getComRecordsHandler = new lambda.Function(scope, 'GetCompanyRecords', {
         ...commonLambdaInput,
         handler: 'getCompanyRecords.handler',
     });
     /**
      * Handler for getting list of rates
      */
-    const getComSinglePeriodRatesHandler = new lambda.Function(scope, 'getCompanySinglePeriodRates', {
+    const getComSinglePeriodRatesHandler = new lambda.Function(scope, 'GetCompanySinglePeriodRates', {
         ...commonLambdaInput,
         handler: 'getCompanySinglePeriodRates.handler',
     });
