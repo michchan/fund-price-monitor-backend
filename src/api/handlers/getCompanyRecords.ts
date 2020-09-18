@@ -37,6 +37,9 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
         }) as unknown as QueryParams;
         const { riskLevel, latest } = queryParams
 
+        console.log(`pathParams `, JSON.stringify(pathParams, null, 2))
+        console.log(`queryParams `, JSON.stringify(queryParams, null, 2))
+
         // @TODO: validations
 
         // Get query handler by conditions
@@ -46,6 +49,7 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
             }
             return fundPriceRecord.queryItemsByCompany(company, latest)
         })(); 
+        console.log(`result `, JSON.stringify(result, null, 2))
 
         // Construct response body
         const res: Res = {
