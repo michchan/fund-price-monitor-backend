@@ -1,6 +1,7 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { AWSError } from "aws-sdk";
 import mapValues from "lodash/mapValues";
+import pick from "lodash/pick";
 
 import { ListResponse } from "../Responses.type";
 import { FundPriceRecord, CompanyType, RiskLevel } from '../../models/fundPriceRecord/FundPriceRecord.type'
@@ -45,7 +46,17 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
             exclusiveStartKey,
         } = queryParams
 
-        // @TODO: validations
+        /** ----------- Validations ----------- */
+        
+        if (fundPriceRecord.isValidCompany(company))
+            throw new Error(`Path Parameter 'company' is invalid`);
+        if (riskLevel && fundPriceRecord.isValidRiskLevel(riskLevel))
+            throw new Error(`Query Parameter 'riskLevel' is invalid`);
+        // @TODO: Refractor this
+        if (exclusiveStartKey && /^[a-z0-9_-]$/i.test(`${exclusiveStartKey}`)) 
+            throw new Error(`Query parameter 'exclusiveStartKey' must be a valid string / number in AWS Dynamodb key definition.`);
+
+        /** ----------- Query ----------- */
 
         // Get query handler by conditions
         const result = await (() => {
@@ -79,11 +90,16 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
             body: JSON.stringify(res, null, 2),
         }
     } catch (error) {
-        console.log(`ERROR: `, JSON.stringify(error, null, 2));
-        const res: Res = { result: false, error }
+        const err = error as AWSError
+        console.log(`ERROR: `, JSON.stringify(err, null, 2));
+
+        const res: Res = { 
+            result: false, 
+            error: pick(err, ['message', 'code'])
+        }
         return {
-            statusCode: 502,
-            body: JSON.stringify(res, null, 2),
+            statusCode: err.statusCode,
+            body: JSON.stringify(res, null, 2)
         }
     }
 }

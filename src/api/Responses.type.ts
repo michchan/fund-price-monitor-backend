@@ -6,5 +6,5 @@ export interface ListResponse <T> {
     result: boolean;
     data?: T[];
     lastEvaluatedKey?: null | DocumentClient.QueryOutput['LastEvaluatedKey'];
-    error?: AWSError;
+    error?: Pick<AWSError, 'message' | 'code'>;
 }

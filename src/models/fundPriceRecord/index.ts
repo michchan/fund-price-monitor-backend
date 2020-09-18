@@ -30,10 +30,14 @@ import updateTableDetails from "./io/updateTableDetails"
 import getSorterByCode from "./utils/getSorterByCode"
 import calculatePriceChangeRate from "./utils/calculatePriceChangeRate"
 import queryItemsByRiskLevel from "./io/queryItemsByRiskLevel"
+import isValidCompany from "./utils/isValidCompany"
+import isValidRiskLevel from "./utils/isValidRiskLevel"
 
 
 
 const fundPriceRecord = {
+    isValidCompany,
+    isValidRiskLevel,
     queryItemsByRiskLevel,
     getSorterByCode,
     createTableDetails,
