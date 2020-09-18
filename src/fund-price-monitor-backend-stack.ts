@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import cron from './cron';
+import api from './api';
 
 
 export class FundPriceMonitorBackendStack extends cdk.Stack {
@@ -8,5 +9,7 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
 
     // Initialize cron jobs
     cron.init(this);
+    // Initilaize API handling
+    api.init(this);
   }
 }
