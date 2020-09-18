@@ -47,7 +47,6 @@ function init (scope: cdk.Construct) {
         code: lambda.Code.fromAsset('bundles/api/handlers'),
         timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
-        memorySize: 250,
         role: apiRole,
     };
 
