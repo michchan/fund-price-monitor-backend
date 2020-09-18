@@ -1,8 +1,7 @@
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
-import { Input, Output } from "src/lib/AWS/dynamodb/queryAllItems"
+import queryAllItems, { Input } from "src/lib/AWS/dynamodb/queryAllItems"
 import TableRange from '../TableRange.type';
-import db from 'src/lib/AWS/dynamodb';
 import getTableName from '../utils/getTableName';
 import { FundPriceTableDetails, FundType, CompanyType } from "../FundPriceRecord.type"
 import attrs from "../constants/attributeNames";
@@ -22,7 +21,7 @@ const getTableDetails = async (
     const _from = from || { year: new Date().getFullYear(), quarter: getQuarter() };
     const TableName = getTableName(_from.year, _from.quarter)
 
-    const output = await db.queryAllItems({
+    const output = await queryAllItems({
         ...input,
         TableName,
         ExpressionAttributeValues: {

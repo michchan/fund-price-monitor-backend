@@ -2,8 +2,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Quarter } from "simply-utils/dist/dateTime/getQuarter";
 
 import { FundPriceRecord, FundPriceChangeRate } from '../FundPriceRecord.type';
-import db from 'src/lib/AWS/dynamodb';
-import { Result } from 'src/lib/AWS/dynamodb/batchWriteItems';
+import batchWriteItems, { Result } from 'src/lib/AWS/dynamodb/batchWriteItems';
 import getTableName from '../utils/getTableName';
 
 
@@ -20,6 +19,6 @@ function batchCreateItems <Rec extends T, Req extends R> (
     quarter: Quarter,
     serializer: (record: Rec) => Req,
 ): Promise<Result | null> {
-    return db.batchWriteItems(records, getTableName(year, quarter), 'put', serializer)
+    return batchWriteItems(records, getTableName(year, quarter), 'put', serializer)
 }
 export default batchCreateItems

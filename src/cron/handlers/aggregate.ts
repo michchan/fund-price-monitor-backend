@@ -3,12 +3,25 @@ import omitBy from "lodash/omitBy";
 import isEmpty from "lodash/isEmpty";
 import uniq from "lodash/uniq";
 
-import fundPriceRecord from "src/models/fundPriceRecord";
 import TableRange from "src/models/fundPriceRecord/TableRange.type";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import { FundPriceChangeRate, AggregatedRecordType, CompanyType, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
 import getDateTimeDictionary from "src/helpers/getDateTimeDictionary";
 import AWS from 'src/lib/AWS'
+import batchDeleteItems from "src/models/fundPriceRecord/io/batchDeleteItems";
+import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems";
+import serializeChangeRate from "src/models/fundPriceRecord/utils/serializeChangeRate";
+import getCompositeSKFromChangeRate from "src/models/fundPriceRecord/utils/getCompositeSKFromChangeRate";
+import getCompositeSK from "src/models/fundPriceRecord/utils/getCompositeSK";
+import updateTableDetails from "src/models/fundPriceRecord/io/updateTableDetails";
+import queryItemsByCompany from "src/models/fundPriceRecord/io/queryItemsByCompany";
+import toLatestPriceRecord from "src/models/fundPriceRecord/utils/toLatestPriceRecord";
+import parse from "src/models/fundPriceRecord/utils/parse";
+import getPeriodByRecordType from "src/models/fundPriceRecord/utils/getPeriodByRecordType";
+import queryPeriodPriceChangeRate from "src/models/fundPriceRecord/io/queryPeriodPriceChangeRate";
+import parseChangeRate from "src/models/fundPriceRecord/utils/parseChangeRate";
+import getChangeRate from "src/models/fundPriceRecord/utils/getChangeRate";
+import serialize from "src/models/fundPriceRecord/utils/serialize";
 
 
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true });
@@ -16,10 +29,6 @@ const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true });
 const EXP_COMS = ':companies'
 const EXP_FUND_TYPES = ':fundTYpes'
 
-type PrevNextRates = [
-    FundPriceChangeRate[],
-    FundPriceChangeRate[]
-]
 type Groups = { [company in CompanyType]: FundPriceRecord[] }
 
 export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
@@ -41,7 +50,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
             )
         ))
         // @ts-expect-error
-        .map(record => fundPriceRecord.parse(AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage)));
+        .map(record => parse(AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage)));
 
     // * Abort if there is no items to process
     if (records.length === 0) return
@@ -73,7 +82,7 @@ export const handler: DynamoDBStreamHandler = async (event, context, callback) =
     // Get fund types
     const fundTypes = uniq(records.map(rec => rec.fundType));
     // Update table details with companies and fund types
-    await fundPriceRecord.updateTableDetails({
+    await updateTableDetails({
         // Append values to sets
         UpdateExpression: `ADD ${[
             `${attrs.COMPANIES} ${EXP_COMS}`,
@@ -108,17 +117,17 @@ const processCompanyRecords = async (
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
     /** Query previous latest records */
-    const prevLatestRecords = await fundPriceRecord.queryItemsByCompany(company, true, true, tableRange);
+    const prevLatestRecords = await queryItemsByCompany(company, true, true, tableRange);
     const prevLatestItems = (prevLatestRecords.Items || [])
         // Parse records
-        .map(rec => fundPriceRecord.parse(rec))
+        .map(rec => parse(rec))
         // Filters by insertedItems
         .filter(matchInserted)
 
     // Aggregation for latest price
     const latestItems = insertedItems.map(item => {
         const prevItem = prevLatestItems.find(eachItem => eachItem.code === item.code)
-        return fundPriceRecord.toLatestPriceRecord(item, date, prevItem)
+        return toLatestPriceRecord(item, date, prevItem)
     });
 
     // Query week price change rate
@@ -128,17 +137,17 @@ const processCompanyRecords = async (
         prevQuarterRateRecords
     ] = await Promise.all([
         // Week query
-        fundPriceRecord.queryPeriodPriceChangeRate(company, `week`, fundPriceRecord.getPeriodByRecordType('week', date), true),
+        queryPeriodPriceChangeRate(company, `week`, getPeriodByRecordType('week', date), true),
         // Month query
-        fundPriceRecord.queryPeriodPriceChangeRate(company, `month`, fundPriceRecord.getPeriodByRecordType('month', date), true),
+        queryPeriodPriceChangeRate(company, `month`, getPeriodByRecordType('month', date), true),
         // Quarter query
-        fundPriceRecord.queryPeriodPriceChangeRate(company, `quarter`, fundPriceRecord.getPeriodByRecordType('quarter', date), true),
+        queryPeriodPriceChangeRate(company, `quarter`, getPeriodByRecordType('quarter', date), true),
     ]);
 
     // Parse previous records
-    const prevWeekRateItems = (prevWeekRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
-    const prevMonthRateItems = (prevMonthRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
-    const prevQuarterRateItems = (prevQuarterRateRecords.Items ?? []).map(rec => fundPriceRecord.parseChangeRate(rec)).filter(matchInserted)
+    const prevWeekRateItems = (prevWeekRateRecords.Items ?? []).map(rec => parseChangeRate(rec)).filter(matchInserted)
+    const prevMonthRateItems = (prevMonthRateRecords.Items ?? []).map(rec => parseChangeRate(rec)).filter(matchInserted)
+    const prevQuarterRateItems = (prevQuarterRateRecords.Items ?? []).map(rec => parseChangeRate(rec)).filter(matchInserted)
 
     /** -------- Calculate records of price change rate of week, month and quarter -------- */
 
@@ -150,7 +159,7 @@ const processCompanyRecords = async (
         prevItems: FundPriceChangeRate[],
     ) => latestItems.map(item => {
         const prevChangeRate = prevItems.find(chRate => chRate.code === item.code)
-        const nextChangeRate = fundPriceRecord.getChangeRate(
+        const nextChangeRate = getChangeRate(
             prevChangeRate ?? item, 
             type, 
             item.price, 
@@ -173,7 +182,7 @@ const processCompanyRecords = async (
 
     // Batch create all aggregation items
     // Create latest records
-    await fundPriceRecord.batchCreateItems(latestItems, year, quarter, fundPriceRecord.serialize);
+    await batchCreateItems(latestItems, year, quarter, serialize);
 
     // Log records to insert
     console.log(`weekRateItems to insert (${weekRateItems.length}): `, JSON.stringify(weekRateItems, null, 2));
@@ -181,18 +190,18 @@ const processCompanyRecords = async (
     console.log(`quarterRateItems to insert (${weekRateItems.length}): `, JSON.stringify(quarterRateItems, null, 2));
 
     // Create change rates
-    await fundPriceRecord.batchCreateItems([
+    await batchCreateItems([
         ...weekRateItems, 
         ...monthRateItems, 
         ...quarterRateItems
-    ], year, quarter, fundPriceRecord.serializeChangeRate);
+    ], year, quarter, serializeChangeRate);
 
     // Log records to remove
     console.log(`prevLatestItems to remove (${prevLatestItems.length}): `, JSON.stringify(prevLatestItems, null, 2));
 
     // Batch remove previous items
     // Remove previous latest records
-    await fundPriceRecord.batchDeleteItems(prevLatestItems, year, quarter, fundPriceRecord.getCompositeSK);
+    await batchDeleteItems(prevLatestItems, year, quarter, getCompositeSK);
 
     // Log records to insert
     console.log(`prevWeekRateItems to remove (${prevWeekRateItems.length}): `, JSON.stringify(prevWeekRateItems, null, 2));
@@ -200,9 +209,9 @@ const processCompanyRecords = async (
     console.log(`prevQuarterRateItems to remove (${prevQuarterRateItems.length}): `, JSON.stringify(prevQuarterRateItems, null, 2));
 
     // Remove previous change rates
-    await fundPriceRecord.batchDeleteItems([
+    await batchDeleteItems([
         ...prevWeekRateItems, 
         ...prevMonthRateItems, 
         ...prevQuarterRateItems
-    ], year, quarter, fundPriceRecord.getCompositeSKFromChangeRate);
+    ], year, quarter, getCompositeSKFromChangeRate);
 }

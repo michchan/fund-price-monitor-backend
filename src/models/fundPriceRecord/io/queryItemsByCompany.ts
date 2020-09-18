@@ -4,10 +4,10 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import indexNames from "../constants/indexNames";
 import queryItems from "./queryItems";
-import db from "src/lib/AWS/dynamodb";
 import attrs from "../constants/attributeNames";
 import { CompanyType } from "../FundPriceRecord.type";
 import TableRange from "../TableRange.type";
+import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
 
 
 const EXP_COM_PK = `:company` as string
@@ -31,7 +31,7 @@ const queryItemsByCompany = (
             [EXP_TIME_SK]: latest ? 'latest' : 'record'
         },
         KeyConditionExpression: `${attrs.COMPANY} = ${EXP_COM_PK}`,
-        FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_TIME_SK),
+        FilterExpression: beginsWith(attrs.TIME_SK, EXP_TIME_SK),
     }
     return queryItems({
         ...defaultInput,

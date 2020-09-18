@@ -3,10 +3,10 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import indexNames from "../constants/indexNames";
 import queryItems from "./queryItems";
-import db from "src/lib/AWS/dynamodb";
 import attrs from "../constants/attributeNames";
 import { RiskLevel } from "../FundPriceRecord.type";
 import TableRange from "../TableRange.type";
+import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
 
 
 const EXP_RISK_LEVEL_PK = `:riskLevel` as string
@@ -30,7 +30,7 @@ const queryItemsByRiskLevel = (
             [EXP_TIME_SK]: latest ? 'latest' : 'record'
         },
         KeyConditionExpression: `${attrs.RISK_LEVEL} = ${EXP_RISK_LEVEL_PK}`,
-        FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_TIME_SK),
+        FilterExpression: beginsWith(attrs.TIME_SK, EXP_TIME_SK),
     }
     return queryItems({
         ...defaultInput,

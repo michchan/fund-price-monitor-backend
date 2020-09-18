@@ -2,13 +2,16 @@ import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { AWSError } from "aws-sdk";
 import mapValues from "lodash/mapValues";
 import pick from "lodash/pick";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { ListResponse } from "../Responses.type";
 import { FundPriceRecord, CompanyType, RiskLevel } from '../../models/fundPriceRecord/FundPriceRecord.type'
-import fundPriceRecord from "src/models/fundPriceRecord";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import db from "src/lib/AWS/dynamodb";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
+import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
+import isValidCompany from "src/models/fundPriceRecord/utils/isValidCompany";
+import isValidRiskLevel from "src/models/fundPriceRecord/utils/isValidRiskLevel";
+import queryItemsByRiskLevel from "src/models/fundPriceRecord/io/queryItemsByRiskLevel";
+import queryItemsByCompany from "src/models/fundPriceRecord/io/queryItemsByCompany";
 
 
 
@@ -48,9 +51,9 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
 
         /** ----------- Validations ----------- */
         
-        if (!fundPriceRecord.isValidCompany(company))
+        if (!isValidCompany(company))
             throw new Error(`Path Parameter 'company' is invalid`);
-        if (riskLevel && !fundPriceRecord.isValidRiskLevel(riskLevel))
+        if (riskLevel && !isValidRiskLevel(riskLevel))
             throw new Error(`Query Parameter 'riskLevel' is invalid`);
         // @TODO: Refractor this
         if (exclusiveStartKey && !/^[a-z0-9_-]$/i.test(`${exclusiveStartKey}`)) 
@@ -61,7 +64,7 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
         // Get query handler by conditions
         const result = await (() => {
             if (riskLevel) {
-                return  fundPriceRecord.queryItemsByRiskLevel(riskLevel, latest, false, undefined, defaultInput => ({
+                return queryItemsByRiskLevel(riskLevel, latest, false, undefined, defaultInput => ({
                     ExclusiveStartKey: exclusiveStartKey,
                     ExpressionAttributeValues: {
                         ...defaultInput.ExpressionAttributeValues,
@@ -70,11 +73,11 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
                     },
                     FilterExpression: [
                         defaultInput.FilterExpression,
-                        db.expressionFunctions.beginsWith(attrs.COMPANY_CODE, EXP_COM),
+                        beginsWith(attrs.COMPANY_CODE, EXP_COM),
                     ].filter(v => v).join(' AND ')
                 }))
             }
-            return fundPriceRecord.queryItemsByCompany(company, latest, false, undefined, {
+            return queryItemsByCompany(company, latest, false, undefined, {
                 ExclusiveStartKey: exclusiveStartKey
             })
         })(); 

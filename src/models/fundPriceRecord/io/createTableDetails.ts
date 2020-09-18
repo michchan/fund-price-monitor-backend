@@ -1,12 +1,12 @@
 import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-import db from "src/lib/AWS/dynamodb"
 import getTableName from "../utils/getTableName"
 import { FundPriceTableDetails } from "../FundPriceRecord.type";
 import attrs from "../constants/attributeNames";
 import topLevelKeysValues from "../constants/topLevelKeysValues";
 import AWS from 'src/lib/AWS'
+import putItem from "src/lib/AWS/dynamodb/putItem";
 
 
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
@@ -16,9 +16,9 @@ function createTableDetails (
     year: string | number,
     quarter: Quarter,
 ) {
-    const { time, companies, fundTypes } = details;
+    const { companies, fundTypes } = details;
 
-    return db.putItem({
+    return putItem({
         TableName: getTableName(year, quarter),
         Item: {
             [attrs.COMPANY_CODE]: topLevelKeysValues.DETAILS_PK,

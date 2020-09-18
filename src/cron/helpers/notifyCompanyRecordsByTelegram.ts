@@ -1,8 +1,14 @@
 import callPromiseWithDelay from 'simply-utils/dist/async/callPromiseWithDelay'
 
-import fundPriceRecord from "src/models/fundPriceRecord";
 import { CompanyType } from "src/models/fundPriceRecord/FundPriceRecord.type";
-import telegram from 'src/lib/telegram';
+import sendMessage from 'src/lib/telegram/sendMessage';
+import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate';
+import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType';
+import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany';
+import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate';
+import parse from 'src/models/fundPriceRecord/utils/parse';
+import getSorterByCode from 'src/models/fundPriceRecord/utils/getSorterByCode';
+import toTelegramMessages from 'src/models/fundPriceRecord/utils/toTelegramMessages';
 
 
 
@@ -23,14 +29,14 @@ const notifyCompanyRecordsByTelegram = async (
     const queryOutput = await ((scheduleType: ScheduleType) => {
         switch (scheduleType) {
             case 'quarterly':
-                return fundPriceRecord.queryPeriodPriceChangeRate(company, 'quarter', fundPriceRecord.getPeriodByRecordType('quarter', date), true);
+                return queryPeriodPriceChangeRate(company, 'quarter', getPeriodByRecordType('quarter', date), true);
             case 'monthly':
-                return fundPriceRecord.queryPeriodPriceChangeRate(company, 'month', fundPriceRecord.getPeriodByRecordType('month', date), true);
+                return queryPeriodPriceChangeRate(company, 'month', getPeriodByRecordType('month', date), true);
             case 'weekly':
-                return fundPriceRecord.queryPeriodPriceChangeRate(company, 'week', fundPriceRecord.getPeriodByRecordType('week', date), true);
+                return queryPeriodPriceChangeRate(company, 'week', getPeriodByRecordType('week', date), true);
             case 'daily':
             default:
-                return fundPriceRecord.queryItemsByCompany(company, true, true);
+                return queryItemsByCompany(company, true, true);
         }
     })(scheduleType);
 
@@ -40,13 +46,13 @@ const notifyCompanyRecordsByTelegram = async (
             case 'quarterly':
             case 'monthly':
             case 'weekly':
-                return fundPriceRecord.parseChangeRate(item);
+                return parseChangeRate(item);
             case 'daily':
             default:
-                return fundPriceRecord.parse(item);
+                return parse(item);
         }
     // Sort by code in ascending order
-    }).sort(fundPriceRecord.getSorterByCode());
+    }).sort(getSorterByCode());
     
     // Abort if no items found
     if (items.length === 0) {
@@ -57,14 +63,15 @@ const notifyCompanyRecordsByTelegram = async (
     /** -------- Transform records to messages and send messages -------- */
 
     // Parse items as telegram messages
-    const messages = fundPriceRecord.toTelegramMessages(company, scheduleType, items);
+    const messages = toTelegramMessages(company, scheduleType, items);
 
     // Send each chunk of messages
     for (let i = 0; i < messages.length; i++) {
         const msg = messages[i];
-        await telegram.sendMessage(chatId, apiKey, msg);
+        await sendMessage(chatId, apiKey, msg);
 
         if (i < messages.length)
+            // Delay to make sure the previous message has been sent and displayed to all user
             await callPromiseWithDelay((async () => null), 5000);
     }
 }

@@ -1,10 +1,10 @@
 import { ScheduledHandler } from "aws-lambda";
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
-import fundPriceRecord from "src/models/fundPriceRecord";
 import scrapeAll from "../scrapers";
 import scrapeFromManulifeMPF from "../scrapers/scrapeFromManulifeMPF";
 import scrapeFromAIAMPF from "../scrapers/scrapeFromAIAMPF";
+import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems";
 
 
 
@@ -28,7 +28,7 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         const records = await scrapeAll(scrapers)
 
         // Write batch data to the table
-        await fundPriceRecord.batchCreateItems(records, year, quarter, fundPriceRecord.serialize);
+        await batchCreateItems(records, year, quarter, serialize);
     } catch (error) {
         callback(error)
     }

@@ -1,8 +1,7 @@
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
-import { Input, Output } from "src/lib/AWS/dynamodb/scanAllItems"
+import scanAllItems, { Input, Output } from "src/lib/AWS/dynamodb/scanAllItems"
 import TableRange from '../TableRange.type';
-import db from 'src/lib/AWS/dynamodb';
 import getTableName from '../utils/getTableName';
 
 
@@ -15,7 +14,7 @@ const scanQuarterRecords = (
     // Normalize params
     const _from = from || { year: new Date().getFullYear(), quarter: getQuarter() };
 
-    return db.scanAllItems({
+    return scanAllItems({
         ...input,
         TableName: getTableName(_from.year, _from.quarter),
     })

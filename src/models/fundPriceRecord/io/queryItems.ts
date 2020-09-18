@@ -1,9 +1,9 @@
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
-import { Input, Output } from "src/lib/AWS/dynamodb/queryAllItems"
+import queryAllItems, { Input, Output } from "src/lib/AWS/dynamodb/queryAllItems"
 import TableRange from '../TableRange.type';
-import db from 'src/lib/AWS/dynamodb';
 import getTableName from '../utils/getTableName';
+import _queryItems from 'src/lib/AWS/dynamodb/queryItems'
 
 
 
@@ -15,7 +15,7 @@ const queryItems = (
 ): Promise<Output> => {
     // Normalize params
     const _from = from || { year: new Date().getFullYear(), quarter: getQuarter() };
-    const query = all ? db.queryAllItems : db.queryItems
+    const query = all ? queryAllItems : _queryItems
 
     return query({
         ...input,

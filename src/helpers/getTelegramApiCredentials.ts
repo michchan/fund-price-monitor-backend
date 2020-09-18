@@ -1,4 +1,4 @@
-import parameterStore from "src/lib/AWS/parameterStore";
+import getParameter from "src/lib/AWS/parameterStore/getParameter";
 
 
 
@@ -19,7 +19,7 @@ const getTelegramApiCredentials = async (): Promise<Result> => {
     if (!apiKeyParamName) throw new Error(`TELEGRAM_BOT_API_KEY_PARAMETER_NAME is required in environment but got undefined.`);
 
     // Get telegram bot API key (secure string) from the SSM parameter store in runtime
-    const parameterOutput = await parameterStore.getParameter({ 
+    const parameterOutput = await getParameter({ 
         Name: apiKeyParamName,
         WithDecryption: true,
     });

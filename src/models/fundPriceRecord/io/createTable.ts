@@ -7,7 +7,7 @@ import AWS from 'src/lib/AWS'
 import getTableName from '../utils/getTableName';
 import attrs from '../constants/attributeNames';
 import indexNames from '../constants/indexNames';
-import db from 'src/lib/AWS/dynamodb';
+import waitForStream from 'src/lib/AWS/dynamodb/waitForStream';
 
 
 // Initialize
@@ -46,7 +46,7 @@ const createTable = async (
     /** ------------- Create stream and function event mapping ------------- */
 
     // Wait for the table's streams to be active
-    await db.waitForStream({ StreamArn });
+    await waitForStream({ StreamArn });
     // Create event source mapping request
     const eventSourceMapping = await lambda.createEventSourceMapping({
         // Assign function name passed

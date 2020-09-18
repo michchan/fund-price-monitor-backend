@@ -3,8 +3,11 @@ import { DynamoDB } from "aws-sdk";
 import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter";
 
 import TableRange from "src/models/fundPriceRecord/TableRange.type";
-import fundPriceRecord from "src/models/fundPriceRecord";
 import AWS from 'src/lib/AWS'
+import getTableName from "src/models/fundPriceRecord/utils/getTableName";
+import listLatestTables from "src/models/fundPriceRecord/io/listLatestTables";
+import describeTable from "src/models/fundPriceRecord/io/describeTable";
+import updateTable from "src/models/fundPriceRecord/io/updateTable";
 
 
 
@@ -39,16 +42,16 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
         } = event.detail?.ProvisionedThroughput ?? {}
 
         // Get table name to update
-        const tableName = fundPriceRecord.getTableName(year, quarter);
+        const tableName = getTableName(year, quarter);
 
         // Check table existence
-        const tableNames = await fundPriceRecord.listLatestTables({ year, quarter });
+        const tableNames = await listLatestTables({ year, quarter });
         // Do update if the table exists
         if (tableNames.some(name => name === tableName)) {
             /** ------------------ Delete stream-lambda event source mapping ------------------ */
         
             // Describe table and get the stream arn
-            const describeTableOutput = await fundPriceRecord.describeTable(year, quarter);
+            const describeTableOutput = await describeTable(year, quarter);
             // Get streaam ARN
             const streamArn = describeTableOutput.Table?.LatestStreamArn
             // Remove event source mapping for aggregation handler
@@ -78,6 +81,9 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
             const throughput = describeTableOutput?.Table?.ProvisionedThroughput;
             const streamEnabled = describeTableOutput.Table?.StreamSpecification?.StreamEnabled
 
+            // * The following update-table requests must be separate,
+            // * since AWS DynamoDB only allow update either one per request.
+
             // Update only when some of the throughput changed
             // Since AWS don't allow an "unchanged update".
             if (
@@ -85,7 +91,7 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
                 || throughput?.WriteCapacityUnits !== WriteCapacityUnits
             ) {
                 // Send update table request
-                await fundPriceRecord.updateTable(year, quarter, {
+                await updateTable(year, quarter, {
                     // Update the throughput of the table
                     ProvisionedThroughput: {
                         ReadCapacityUnits,
@@ -99,7 +105,7 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
             if (streamEnabled) {
                 // Disable table stream, AWS requires the update to be separate:
                 // "You cannot modify stream status while updating table IOPS"
-                await fundPriceRecord.updateTable(year, quarter, {
+                await updateTable(year, quarter, {
                     // Disable stream
                     StreamSpecification: { StreamEnabled: false }
                 });
