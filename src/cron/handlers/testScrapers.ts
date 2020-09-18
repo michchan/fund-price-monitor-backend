@@ -9,7 +9,7 @@ import scrapeFromAIAMPF from "../scrapers/scrapeFromAIAMPF";
 // Create list of scrapers
 const scrapers = [
     scrapeFromManulifeMPF,
-    scrapeFromAIAMPF
+    scrapeFromAIAMPF,
 ]
 /** 
  * Scrape and Create records
