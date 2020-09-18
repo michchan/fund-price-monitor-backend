@@ -3,6 +3,7 @@ import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
 import listLatestTables from "src/models/fundPriceRecord/io/listLatestTables";
 import isTableOfCurrentQuarter from "src/models/fundPriceRecord/utils/isTableOfCurrentQuarter";
+import createTable from "src/models/fundPriceRecord/io/createTable";
 
 
 /** 

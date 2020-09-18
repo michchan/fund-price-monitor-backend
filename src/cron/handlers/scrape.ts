@@ -5,6 +5,7 @@ import scrapeAll from "../scrapers";
 import scrapeFromManulifeMPF from "../scrapers/scrapeFromManulifeMPF";
 import scrapeFromAIAMPF from "../scrapers/scrapeFromAIAMPF";
 import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems";
+import serialize from "src/models/fundPriceRecord/utils/serialize";
 
 
 
