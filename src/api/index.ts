@@ -47,7 +47,7 @@ function init (scope: cdk.Construct) {
 
     // Common input for lambda Definition
     const commonLambdaInput = {
-        code: lambda.Code.fromAsset('bundles/cron/handlers'),
+        code: lambda.Code.fromAsset('bundles/api/handlers'),
         timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 250,
