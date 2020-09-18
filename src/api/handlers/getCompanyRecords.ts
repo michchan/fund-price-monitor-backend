@@ -58,6 +58,7 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
             body: JSON.stringify(res, null, 2),
         }
     } catch (error) {
+        console.log(`ERROR: `, JSON.stringify(error, null, 2));
         const res: Res = { result: false, error }
         return {
             statusCode: 502,
