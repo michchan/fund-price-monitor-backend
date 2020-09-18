@@ -20,7 +20,7 @@ const queryItemsByCompany = (
     IndexName: indexNames.RECORDS_BY_COMPANY,
     ExpressionAttributeValues: {
         [EXP_COM_PK]: company,
-        [EXP_TIME_SK]: latest ? 'latest' : 'records'
+        [EXP_TIME_SK]: latest ? 'latest' : 'record'
     },
     KeyConditionExpression: `${attrs.COMPANY} = ${EXP_COM_PK}`,
     FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_TIME_SK)
