@@ -81,7 +81,7 @@ function init (scope: cdk.Construct) {
     });
 
     // Add records path
-    const funds = api.root.addResource('funds');
+    const funds = api.root.addResource('fundprices');
     const mpfFunds = funds.addResource('mpf');
     const comRecords = mpfFunds.addResource('{company}');
     const singleFundRecords = comRecords.addResource('{code}');
