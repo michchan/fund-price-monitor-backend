@@ -32,6 +32,16 @@ function init (scope: cdk.Construct) {
             'dynamodb:Scan',
         ],
     }));
+    // Grant cloudwatch log group access
+    apiRole.addToPolicy(new iam.PolicyStatement({
+        ...commonIamStatementInput,
+        sid: 'LogGroupWrite',
+        actions: [
+            'logs:CreateLogGroup',
+            'logs:CreateLogStream',
+            'logs:PutLogEvents',
+        ],
+    }));
 
     /** ------------------ Lambda Handlers Definition ------------------ */
 
@@ -41,6 +51,7 @@ function init (scope: cdk.Construct) {
         timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 250,
+        role: apiRole,
     };
 
     /**
@@ -80,8 +91,57 @@ function init (scope: cdk.Construct) {
     const monthRates = comRecords.addResource('month/{month}');
     const quarterRates = comRecords.addResource('quarter/{quarter}');
 
-    
+    // Integrations
+    const getSingleFundRecordsIntegration = new apigateway.LambdaIntegration(getSingleFundRecordsHandler);
+    const getComRecordsIntegration = new apigateway.LambdaIntegration(getComRecordsHandler);
+    const getComRatesIntegration = new apigateway.LambdaIntegration(getComRatesHandler);
+
+    // Add methods
+    singleFundRecords.addMethod('GET', getSingleFundRecordsIntegration);
+    comRecords.addMethod('GET', getComRecordsIntegration);
+    weekRates.addMethod('GET', getComRatesIntegration);
+    monthRates.addMethod('GET', getComRatesIntegration);
+    quarterRates.addMethod('GET', getComRatesIntegration);
+
+    // Add CORS options
+    addCorsOptions(comRecords);
+    addCorsOptions(singleFundRecords);
+    addCorsOptions(weekRates);
+    addCorsOptions(monthRates);
+    addCorsOptions(quarterRates);
 }
 
 const api = { init } as const
 export default api
+
+
+/**
+ * Helper to add CORS options to resources
+ */
+function addCorsOptions(apiResource: apigateway.IResource) {
+    apiResource.addMethod('OPTIONS', new apigateway.MockIntegration({
+        integrationResponses: [{
+            statusCode: '200',
+            responseParameters: {
+                'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                'method.response.header.Access-Control-Allow-Origin': "'*'",
+                'method.response.header.Access-Control-Allow-Credentials': "'false'",
+                'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET'",
+            },
+        }],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+            "application/json": "{\"statusCode\": 200}"
+        },
+    }), {
+        methodResponses: [{
+            statusCode: '200',
+            responseParameters: {
+                'method.response.header.Access-Control-Allow-Headers': true,
+                'method.response.header.Access-Control-Allow-Methods': true,
+                'method.response.header.Access-Control-Allow-Credentials': true,
+                'method.response.header.Access-Control-Allow-Origin': true,
+            },  
+        }]
+    })
+}
