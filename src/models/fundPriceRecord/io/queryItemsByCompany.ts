@@ -1,4 +1,3 @@
-
 import isFunction from "lodash/isFunction";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
