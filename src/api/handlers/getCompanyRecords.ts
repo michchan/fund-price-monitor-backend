@@ -20,7 +20,7 @@ export interface QueryParams {
 /** 
  * Get single records
  */
-export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context, callback) => {
+export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context) => {
     try {
         console.log(`event `, JSON.stringify(event, null, 2))
         console.log(`context `, JSON.stringify(context, null, 2))
@@ -58,7 +58,6 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
             body: JSON.stringify(res, null, 2),
         }
     } catch (error) {
-        callback(error)
         const res: Res = { result: false, error }
         return {
             statusCode: 502,
