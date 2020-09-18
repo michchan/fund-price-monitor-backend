@@ -50,26 +50,21 @@ function init (scope: cdk.Construct) {
         role: apiRole,
     };
 
-    /**
-     * Handler for getting list of records of a single fund
-     */
-    const getComFundRecordsHandler = new lambda.Function(scope, 'GetCompanyFundRecords', {
+    const listSingleFundRecordsHandler = new lambda.Function(scope, 'ListSingleFundRecords', {
         ...commonLambdaInput,
-        handler: 'getCompanyFundRecords.handler',
+        handler: 'listSingleFundRecords.handler',
     });
-    /**
-     * Handler for getting list of records
-     */
-    const getComRecordsHandler = new lambda.Function(scope, 'GetCompanyRecords', {
+    const listComRecordsHandler = new lambda.Function(scope, 'ListCompanyRecords', {
         ...commonLambdaInput,
-        handler: 'getCompanyRecords.handler',
+        handler: 'listCompanyRecords.handler',
     });
-    /**
-     * Handler for getting list of rates
-     */
-    const getComSinglePeriodRatesHandler = new lambda.Function(scope, 'GetCompanySinglePeriodRates', {
+    const listComSinglePeriodRatesHandler = new lambda.Function(scope, 'ListCompanySinglePeriodRates', {
         ...commonLambdaInput,
-        handler: 'getCompanySinglePeriodRates.handler',
+        handler: 'listCompanySinglePeriodRates.handler',
+    });
+    const searchComRecordsHandler = new lambda.Function(scope, 'SearchCompanyRecords', {
+        ...commonLambdaInput,
+        handler: 'searchCompanyRecords.handler',
     });
 
     /** ------------------ API Gateway Definition ------------------ */
@@ -83,6 +78,7 @@ function init (scope: cdk.Construct) {
     const funds = api.root.addResource('fundprices');
     const mpfFunds = funds.addResource('mpf');
     const comRecords = mpfFunds.addResource('{company}');
+    const searchedComRecords = comRecords.addResource('search');
     const singleFundRecords = comRecords.addResource('{code}');
 
     const weekRates = comRecords.addResource('weeks');
@@ -95,16 +91,18 @@ function init (scope: cdk.Construct) {
     const quarterRateSingle = quarterRates.addResource('{quarter}');
 
     // Integrations
-    const getComFundRecordsIntegration = new apigateway.LambdaIntegration(getComFundRecordsHandler);
-    const getComRecordsIntegration = new apigateway.LambdaIntegration(getComRecordsHandler);
-    const getComSinglePeriodRatesIntegration = new apigateway.LambdaIntegration(getComSinglePeriodRatesHandler);
+    const listSingleFundRecordsIntegration = new apigateway.LambdaIntegration(listSingleFundRecordsHandler);
+    const listComRecordsIntegration = new apigateway.LambdaIntegration(listComRecordsHandler);
+    const listComSinglePeriodRatesIntegration = new apigateway.LambdaIntegration(listComSinglePeriodRatesHandler);
+    const searchComRecordsIntegration = new apigateway.LambdaIntegration(searchComRecordsHandler);
 
     // Add methods
-    singleFundRecords.addMethod('GET', getComFundRecordsIntegration);
-    comRecords.addMethod('GET', getComRecordsIntegration);
-    weekRateSingle.addMethod('GET', getComSinglePeriodRatesIntegration);
-    monthRateSingle.addMethod('GET', getComSinglePeriodRatesIntegration);
-    quarterRateSingle.addMethod('GET', getComSinglePeriodRatesIntegration);
+    singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration);
+    searchedComRecords.addMethod('GET', searchComRecordsIntegration);
+    comRecords.addMethod('GET', listComRecordsIntegration);
+    weekRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
+    monthRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
+    quarterRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
 
     // Add CORS options
     addCorsOptions(comRecords);
