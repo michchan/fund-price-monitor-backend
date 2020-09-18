@@ -48,12 +48,12 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
 
         /** ----------- Validations ----------- */
         
-        if (fundPriceRecord.isValidCompany(company))
+        if (!fundPriceRecord.isValidCompany(company))
             throw new Error(`Path Parameter 'company' is invalid`);
-        if (riskLevel && fundPriceRecord.isValidRiskLevel(riskLevel))
+        if (riskLevel && !fundPriceRecord.isValidRiskLevel(riskLevel))
             throw new Error(`Query Parameter 'riskLevel' is invalid`);
         // @TODO: Refractor this
-        if (exclusiveStartKey && /^[a-z0-9_-]$/i.test(`${exclusiveStartKey}`)) 
+        if (exclusiveStartKey && !/^[a-z0-9_-]$/i.test(`${exclusiveStartKey}`)) 
             throw new Error(`Query parameter 'exclusiveStartKey' must be a valid string / number in AWS Dynamodb key definition.`);
 
         /** ----------- Query ----------- */
