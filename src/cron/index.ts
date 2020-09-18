@@ -23,7 +23,7 @@ function init (scope: cdk.Construct) {
     const commonIamStatementInput = {
         resources: ['*'],
         effect: Effect.ALLOW
-    }
+    };
 
     // Grant db access permissions for handler by assigning role
     cronRole.addToPolicy(new iam.PolicyStatement({
