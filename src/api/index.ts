@@ -71,9 +71,9 @@ function init (scope: cdk.Construct) {
     /**
      * Handler for getting list of rates
      */
-    const getComRatesHandler = new lambda.Function(scope, 'GetCompanyRates', {
+    const getComRatesSinglePeriodHandler = new lambda.Function(scope, 'GetCompanyRates', {
         ...commonLambdaInput,
-        handler: 'rates.list.handler',
+        handler: 'rates.single.list.handler',
     });
 
     /** ------------------ API Gateway Definition ------------------ */
@@ -84,24 +84,31 @@ function init (scope: cdk.Construct) {
     });
 
     // Add records path
-    const allRecords = api.root.addResource('mpf/funds');
-    const comRecords = allRecords.addResource('{company}');
+    const funds = api.root.addResource('funds');
+    const mpfFunds = funds.addResource('mpf');
+    const comRecords = mpfFunds.addResource('{company}');
     const singleFundRecords = comRecords.addResource('{code}');
-    const weekRates = comRecords.addResource('week/{week}');
-    const monthRates = comRecords.addResource('month/{month}');
-    const quarterRates = comRecords.addResource('quarter/{quarter}');
+
+    const weekRates = comRecords.addResource('weeks');
+    const weekRateSingle = weekRates.addResource('{week}');
+
+    const monthRates = comRecords.addResource('months');
+    const monthRateSingle = monthRates.addResource('{month}');
+
+    const quarterRates = comRecords.addResource('quarters');
+    const quarterRateSingle = quarterRates.addResource('{quarter}');
 
     // Integrations
     const getSingleFundRecordsIntegration = new apigateway.LambdaIntegration(getSingleFundRecordsHandler);
     const getComRecordsIntegration = new apigateway.LambdaIntegration(getComRecordsHandler);
-    const getComRatesIntegration = new apigateway.LambdaIntegration(getComRatesHandler);
+    const getComRatesSinglePeriodIntegration = new apigateway.LambdaIntegration(getComRatesSinglePeriodHandler);
 
     // Add methods
     singleFundRecords.addMethod('GET', getSingleFundRecordsIntegration);
     comRecords.addMethod('GET', getComRecordsIntegration);
-    weekRates.addMethod('GET', getComRatesIntegration);
-    monthRates.addMethod('GET', getComRatesIntegration);
-    quarterRates.addMethod('GET', getComRatesIntegration);
+    weekRateSingle.addMethod('GET', getComRatesSinglePeriodIntegration);
+    monthRateSingle.addMethod('GET', getComRatesSinglePeriodIntegration);
+    quarterRateSingle.addMethod('GET', getComRatesSinglePeriodIntegration);
 
     // Add CORS options
     addCorsOptions(comRecords);
