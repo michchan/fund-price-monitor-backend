@@ -23,11 +23,8 @@ function init (scope: cdk.Construct) {
     // Grant db access permissions for handler by assigning role
     apiRole.addToPolicy(new iam.PolicyStatement({
         ...commonIamStatementInput,
-        sid: 'ReadTable',
+        sid: 'ReadTableRows',
         actions: [
-            'dynamodb:ListTables',
-            // For `waitFor` operation
-            'dynamodb:DescribeTable',
             'dynamodb:Query',
             'dynamodb:Scan',
         ],
