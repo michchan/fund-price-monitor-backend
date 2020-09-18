@@ -108,7 +108,7 @@ const processCompanyRecords = async (
     /** -------- Fetch previous recrods for price change rate of week, month and quarter -------- */
 
     /** Query previous latest records */
-    const prevLatestRecords = await fundPriceRecord.queryLatestItemsByCompany(company, tableRange);
+    const prevLatestRecords = await fundPriceRecord.queryItemsByCompany(company, true, tableRange);
     const prevLatestItems = (prevLatestRecords.Items || [])
         // Parse records
         .map(rec => fundPriceRecord.parse(rec))

@@ -11,18 +11,19 @@ const EXP_COM_PK = `:company` as string
 const EXP_TIME_SK = `:timeSK` as string
 
 // @TODO: Handle paging mode
-const queryLatestItemsByCompany = (
+const queryItemsByCompany = (
     company: CompanyType,
+    latest?: boolean,
     /** Default to current quarter of the current year */
-    from?: TableRange
+    from?: TableRange,
 ) => queryAllItems({
     IndexName: indexNames.RECORDS_BY_COMPANY,
     ExpressionAttributeValues: {
         [EXP_COM_PK]: company,
-        [EXP_TIME_SK]: 'latest'
+        [EXP_TIME_SK]: latest ? 'latest' : 'records'
     },
     KeyConditionExpression: `${attrs.COMPANY} = ${EXP_COM_PK}`,
     FilterExpression: db.expressionFunctions.beginsWith(attrs.TIME_SK, EXP_TIME_SK)
 }, from);
 
-export default queryLatestItemsByCompany
+export default queryItemsByCompany

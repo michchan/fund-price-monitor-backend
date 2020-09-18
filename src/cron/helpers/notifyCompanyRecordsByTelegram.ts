@@ -30,7 +30,7 @@ const notifyCompanyRecordsByTelegram = async (
                 return fundPriceRecord.queryPeriodPriceChangeRate(company, 'week', fundPriceRecord.getPeriodByRecordType('week', date));
             case 'daily':
             default:
-                return fundPriceRecord.queryLatestItemsByCompany(company);
+                return fundPriceRecord.queryItemsByCompany(company, true);
         }
     })(scheduleType);
 

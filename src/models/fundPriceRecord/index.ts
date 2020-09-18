@@ -19,7 +19,7 @@ import getCompositeSK from "./utils/getCompositeSK"
 import getCompositeSKFromChangeRate from "./utils/getCompositeSKFromChangeRate"
 import updateTable from "./io/updateTable"
 import describeTable from "./io/describeTable"
-import queryLatestItemsByCompany from "./io/queryLatestItemsByCompany"
+import queryItemsByCompany from "./io/queryItemsByCompany"
 import queryPeriodPriceChangeRate from "./io/queryPeriodPriceChangeRate"
 import getPeriodByRecordType from "./utils/getPeriodByRecordType"
 import toTelegramMessages from "./utils/toTelegramMessages"
@@ -40,7 +40,7 @@ const fundPriceRecord = {
     getTableDetails,
     toTelegramMessages,
     getPeriodByRecordType,
-    queryLatestItemsByCompany,
+    queryItemsByCompany,
     queryPeriodPriceChangeRate,
     updateTable,
     describeTable,
