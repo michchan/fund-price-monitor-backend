@@ -40,7 +40,7 @@ async function batchWriteItems <T, RT extends PT | DT> (
                 [tableName]: items
             }
             // Log to console 
-            console.log(`Batch Write Request Items (chunk: ${index}, length: ${items}): `, JSON.stringify(RequestItems, null, 2))
+            console.log(`Batch Write Request Items (chunk: ${index}, length: ${items.length}): `, JSON.stringify(RequestItems, null, 2))
 
             // Send batch create requests
             return docClient.batchWrite({ RequestItems }).promise()
