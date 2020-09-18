@@ -12,7 +12,9 @@ export type Res = ListResponse<FundPriceRecord>;
  */
 export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context, callback) => {
     try {
-        
+        console.log(`event `, JSON.stringify(event, null, 2))
+        console.log(`context `, JSON.stringify(context, null, 2))
+
         const res: Res = {
             result: true,
             data: [],
