@@ -35,9 +35,9 @@ const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]
 
     // Aggregate data
     
-    console.log(`pricesData (${pricesData.length}): `, JSON.stringify(pricesData, null, 2));
-    console.log(`perfData (${perfData.length}): `, JSON.stringify(perfData, null, 2));
-    console.log(`detailsData (${detailsData.length}): `, JSON.stringify(detailsData, null, 2));
+    console.log(`pricesData (length: ${pricesData.length}): `, JSON.stringify(pricesData, null, 2));
+    console.log(`perfData (length: ${perfData.length}): `, JSON.stringify(perfData, null, 2));
+    console.log(`detailsData (length: ${detailsData.length}): `, JSON.stringify(detailsData, null, 2));
 
     return []
 }
