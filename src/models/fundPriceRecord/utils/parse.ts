@@ -19,6 +19,7 @@ const parse = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundPriceRec
         [attr.FUND_TYPE]: fundType,
         [attr.INITIAL_PRICE]: initialPrice,
         [attr.LAUNCHED_DATE]: launchedDate,
+        [attr.PRICE_CHANGE_RATE]: priceChangeRate,
     } = attributeMap as unknown as FundPriceRecordAttributeMap
 
     const timeSKSegments = timeSK.split('_')
@@ -38,6 +39,7 @@ const parse = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundPriceRec
         fundType,
         // Get the first composite segment of `timeSK`
         recordType: timeSKSegments.shift() as RecordType,
+        priceChangeRate,
     }   
 }
 
