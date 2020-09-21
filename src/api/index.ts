@@ -62,9 +62,9 @@ function init (scope: cdk.Construct) {
         ...commonLambdaInput,
         handler: 'listCompanySinglePeriodRates.handler',
     });
-    const searchComRecordsHandler = new lambda.Function(scope, 'SearchCompanyRecords', {
+    const searchRecordsHandler = new lambda.Function(scope, 'searchRecords', {
         ...commonLambdaInput,
-        handler: 'searchCompanyRecords.handler',
+        handler: 'searchRecords.handler',
     });
 
     /** ------------------ API Gateway Definition ------------------ */
@@ -77,8 +77,8 @@ function init (scope: cdk.Construct) {
     // Add records path
     const funds = api.root.addResource('fundprices');
     const mpfFunds = funds.addResource('mpf');
+    const searchedMpfRecords = mpfFunds.addResource('search');
     const comRecords = mpfFunds.addResource('{company}');
-    const searchedComRecords = comRecords.addResource('search');
     const singleFundRecords = comRecords.addResource('{code}');
 
     const weekRates = comRecords.addResource('weeks');
@@ -94,11 +94,11 @@ function init (scope: cdk.Construct) {
     const listSingleFundRecordsIntegration = new apigateway.LambdaIntegration(listSingleFundRecordsHandler);
     const listComRecordsIntegration = new apigateway.LambdaIntegration(listComRecordsHandler);
     const listComSinglePeriodRatesIntegration = new apigateway.LambdaIntegration(listComSinglePeriodRatesHandler);
-    const searchComRecordsIntegration = new apigateway.LambdaIntegration(searchComRecordsHandler);
+    const searchRecordsIntegration = new apigateway.LambdaIntegration(searchRecordsHandler);
 
     // Add methods
     singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration);
-    searchedComRecords.addMethod('GET', searchComRecordsIntegration);
+    searchedMpfRecords.addMethod('GET', searchRecordsIntegration);
     comRecords.addMethod('GET', listComRecordsIntegration);
     weekRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
     monthRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
