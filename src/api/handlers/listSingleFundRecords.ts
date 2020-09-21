@@ -1,33 +1,73 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import mapValues from "lodash/mapValues";
 
 import { ListResponse } from "../Responses.type";
-import { FundPriceRecord } from '../../models/fundPriceRecord/FundPriceRecord.type'
+import { FundPriceRecord, CompanyType } from '../../models/fundPriceRecord/FundPriceRecord.type'
+import createReadResponse from "../helpers/createReadResponse";
+import validateCompany from "../validators/validateCompany";
+import validateKey from "../validators/validateKey";
+import validateTimestamp from "../validators/validateTimestamp";
+import querySingleFundRecords from "src/models/fundPriceRecord/io/querySingleFundRecords";
 
 
 export type Res = ListResponse<FundPriceRecord>;
 
+export interface PathParams {
+    company: CompanyType;
+    code: FundPriceRecord['code'];
+}
+
+export interface QueryParams {
+    latest?: boolean;
+    exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
+    /** ISO timestamp */
+    startTime?: string;
+    /** ISO timestamp */
+    endTime?: string;
+}
+
 /** 
  * Get single records
  */
-export const handler: APIGatewayProxyHandler = async (event, context, callback) => {
+export const handler: APIGatewayProxyHandler = async (event) => {
     try {
-        console.log(`event `, JSON.stringify(event, null, 2))
-        console.log(`context `, JSON.stringify(context, null, 2))
-        // Construct response body
-        const res: Res = {
-            result: true,
-            data: [],
-        }
-        return {
-            statusCode: 200,
-            body: JSON.stringify(res, null, 2),
-        }
+        // Get path params
+        const pathParams = (event.pathParameters ?? {}) as unknown as PathParams;
+        const { company, code } = pathParams
+
+        // Get query params
+        const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
+            if (key === 'latest') {
+                return value === 'true'
+            }
+            return value
+        }) as unknown as QueryParams;
+        const { 
+            latest,
+            exclusiveStartKey,
+            startTime,
+            endTime,
+        } = queryParams
+
+        /** ----------- Validations ----------- */
+
+        validateCompany(company);
+        validateTimestamp(startTime, 'startTime');
+        validateTimestamp(endTime, 'endTime');
+        if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
+
+        /** ----------- Query ----------- */
+
+        // Query
+        const output = await querySingleFundRecords(company, code, latest, false, undefined, {
+            ExclusiveStartKey: exclusiveStartKey,
+        });
+
+        // Send back successful response
+        return createReadResponse(null, output)
     } catch (error) {
-        callback(error)
-        const res: Res = { result: false, error }
-        return {
-            statusCode: 502,
-            body: JSON.stringify(res, null, 2),
-        }
+        // Send back failed response
+        return createReadResponse(error)
     }
 }

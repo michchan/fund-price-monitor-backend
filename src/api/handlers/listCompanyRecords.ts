@@ -32,11 +32,12 @@ export interface QueryParams {
 /** 
  * Get single records
  */
-export const handler: APIGatewayProxyHandler = async (event, context) => {
+export const handler: APIGatewayProxyHandler = async (event) => {
     try {
         // Get path params
         const pathParams = (event.pathParameters ?? {}) as unknown as PathParams;
         const { company } = pathParams
+        
         // Get query params
         const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
             if (key === 'latest') {

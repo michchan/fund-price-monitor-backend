@@ -25,7 +25,7 @@ export interface QueryParams {
 /** 
  * Get single records
  */
-export const handler: APIGatewayProxyHandler = async (event, context, callback) => {
+export const handler: APIGatewayProxyHandler = async (event) => {
     try {
         // Get period type
         const periodType = ((path: string): PeriodType => {
