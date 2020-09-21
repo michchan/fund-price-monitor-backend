@@ -1,5 +1,5 @@
-import getQuarter from "simply-utils/dist/dateTime/getQuarter"
 import createParameterErrMsg from "../helpers/createParameterErrMsg"
+import getDateTimeDictionary from "src/helpers/getDateTimeDictionary"
 
 
 /**
@@ -12,10 +12,13 @@ const validateTimestampRange = (
     startTime: string,
     endTime: string,
 ) => {
-    const startQuarter = getQuarter(new Date(startTime))
-    const endQuarter = getQuarter(new Date(endTime))
+    const start = getDateTimeDictionary(new Date(startTime))
+    const end = getDateTimeDictionary(new Date(endTime))
 
-    if (startQuarter !== endQuarter) {
+    const startQuarterAbsolute = `${start.year}.${start.quarter}`
+    const endQuarterAbsolute = `${end.year}.${end.quarter}`
+
+    if (startQuarterAbsolute !== endQuarterAbsolute) {
         throw new Error(createParameterErrMsg(`startTime', 'endTime`, 'query', 'custom', `must be within a certain quarter`))
     }
 }
