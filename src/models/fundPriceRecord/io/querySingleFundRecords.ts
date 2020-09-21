@@ -27,8 +27,8 @@ const querySingleFundRecords = (
     endTime?: string,
     input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
 ) => {
-    const startDate = new Date(startTime ?? 0);
-    const endDate = new Date(endTime ?? 0);    
+    const startDate = startTime ? new Date(startTime) : new Date();
+    const endDate = endTime ? new Date(endTime) : new Date();
     // Get table from
     const from = getDateTimeDictionary(startDate);
 
@@ -64,13 +64,6 @@ const querySingleFundRecords = (
             timeSKExpression
         ].join(' AND '),
     }
-    console.log(`Input values: `, JSON.stringify({ 
-        from,
-        defaultInput,
-        startTime,
-        endTime,
-    }, null, 2))
-
     return queryItems({
         ...defaultInput,
         ...isFunction(input) ? input(defaultInput) : input,
