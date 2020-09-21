@@ -9,7 +9,6 @@ const validatePeriod = (
     type: PeriodType
 ) => {
     const throwErr = () => { throw new Error(createParameterErrMsg(type, 'path')) }
-    console.log('validatePeriod: ', JSON.stringify({ maybePeriod, type }, null, 2))
 
     switch (type) {
         case 'week':

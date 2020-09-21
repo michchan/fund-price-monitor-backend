@@ -12,10 +12,11 @@ import queryPeriodPriceChangeRate from "src/models/fundPriceRecord/io/queryPerio
 
 export type Res = ListResponse<FundPriceChangeRate>;
 
-export interface PathParams {
+export type PathParams = {
     company: CompanyType;
+} & {
     /** Either `week`, `month` or `quarter` */
-    period: string;
+    [key in PeriodType]: string;
 }
 export interface QueryParams {
     exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
@@ -26,11 +27,6 @@ export interface QueryParams {
  */
 export const handler: APIGatewayProxyHandler = async (event, context, callback) => {
     try {
-        // Get path params
-        const { company, period } = (event.pathParameters ?? {}) as unknown as PathParams;
-        // Get query params
-        const { exclusiveStartKey } = (event.queryStringParameters ?? {}) as unknown as QueryParams;
-
         // Get period type
         const periodType = ((path: string): PeriodType => {
             switch (true) {
@@ -43,6 +39,11 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
                     return 'week'
             }
         })(event.path);
+
+        // Get path params
+        const { company, [periodType]: period } = (event.pathParameters ?? {}) as unknown as PathParams;
+        // Get query params
+        const { exclusiveStartKey } = (event.queryStringParameters ?? {}) as unknown as QueryParams;
 
         /** ----------- Validations ----------- */
 
