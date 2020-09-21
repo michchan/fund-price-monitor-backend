@@ -52,6 +52,8 @@ const querySingleFundRecords = (
         return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
     })();
 
+    console.log(`TIME SK values: `, JSON.stringify({ timeSKValues, timeSKExpression }, null, 2))
+
     // Determine table(s) to query
 
     const defaultInput: Input = {
