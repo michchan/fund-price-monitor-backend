@@ -12,7 +12,7 @@ import { mapValues } from "lodash";
  * 
  * @param exclusiveStartKey 
  */
-const validateKey = (key: DocumentClient.Key | undefined, fieldName: string) => {
+const validateKey = (key: DocumentClient.Key, fieldName: string) => {
     if (typeof key !== 'object') 
         throw new Error(createParameterErrMsg(fieldName, 'query', 'invalid'));
 

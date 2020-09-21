@@ -11,6 +11,7 @@ const createParameterErrMsg = (
     paramType: ParamType = 'query',
     messageType: MessageType = 'invalid',
 ): string => {
+    const paramName = `${paramType.charAt(0).toUpperCase()}${paramType.slice(1)}`
     const msg = (() => {
         switch (messageType) {
             case 'invalidKeyFormat':
@@ -20,7 +21,7 @@ const createParameterErrMsg = (
                 return 'is invalid'
         }
     })()
-    return `${paramType.toUpperCase()} parameter '${fieldName}' ${msg}`
+    return `${paramName} parameter '${fieldName}' ${msg}`
 }
 
 export default createParameterErrMsg
