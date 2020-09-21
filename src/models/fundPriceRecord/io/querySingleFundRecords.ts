@@ -34,26 +34,34 @@ const querySingleFundRecords = (
 
     // Construct TIME SK query
     const timeSKPfx = latest ? 'latest' : 'record'
-    // Determine timeSK condition comparision mode
-    const timeSKMode = startTime || endTime ? 'between' : 'pfx'
+    // Derive timeSK expression values based on conditions
+    const timeSKValues = (() => {
+        if (startTime || endTime) {
+            const buf: Input['ExpressionAttributeValues'] = {}
+            if (startTime) buf[EXP_TIME_SK_START] = `${timeSKPfx}_${company}_${startDate.toISOString()}`
+            if (endTime) buf[EXP_TIME_SK_END] = `${timeSKPfx}_${company}_${endDate.toISOString()}`
+            return buf
+        }
+        return { [EXP_TIME_SK_PFX]: timeSKPfx }
+    })();
+    // Derive timeSK expression based on conditions
+    const timeSKExpression = (() => {
+        if (startTime && endTime) return between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END) 
+        if (startTime) return `${attrs.TIME_SK} >= ${EXP_TIME_SK_START}`
+        if (endTime) return `${attrs.TIME_SK} <= ${EXP_TIME_SK_END}`
+        return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
+    })();
+
+    // Determine table(s) to query
 
     const defaultInput: Input = {
         ExpressionAttributeValues: {
+            ...timeSKValues,
             [EXP_COM_CODE_PK]: `${company}_${code}`,
-            ...timeSKMode === 'between' 
-                ? {
-                    [EXP_TIME_SK_START]: `${timeSKPfx}_${company}_${startDate.toISOString()}`,
-                    [EXP_TIME_SK_END]: `${timeSKPfx}_${company}_${endDate.toISOString()}`
-                }
-                : {
-                    [EXP_TIME_SK_PFX]: timeSKPfx
-                } 
         },
         KeyConditionExpression: [
             `${attrs.COMPANY_CODE} = ${EXP_COM_CODE_PK}`,
-            timeSKMode === 'between' 
-                ? between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END) 
-                : beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
+            timeSKExpression
         ].join(' AND '),
     }
     return queryItems({
