@@ -34,17 +34,24 @@ const querySingleFundRecords = (
 
     // Construct TIME SK query
     const timeSKPfx = latest ? 'latest' : 'record'
+    // Determine timeSK condition comparision mode
+    const timeSKMode = startTime || endTime ? 'between' : 'pfx'
 
     const defaultInput: Input = {
         ExpressionAttributeValues: {
             [EXP_COM_CODE_PK]: `${company}_${code}`,
-            [EXP_TIME_SK_PFX]: timeSKPfx,
-            [EXP_TIME_SK_START]: `${timeSKPfx}_${company}_${startDate.toISOString()}`,
-            [EXP_TIME_SK_END]: `${timeSKPfx}_${company}_${endDate.toISOString()}`
+            ...timeSKMode === 'between' 
+                ? {
+                    [EXP_TIME_SK_START]: `${timeSKPfx}_${company}_${startDate.toISOString()}`,
+                    [EXP_TIME_SK_END]: `${timeSKPfx}_${company}_${endDate.toISOString()}`
+                }
+                : {
+                    [EXP_TIME_SK_PFX]: timeSKPfx
+                } 
         },
         KeyConditionExpression: [
             `${attrs.COMPANY_CODE} = ${EXP_COM_CODE_PK}`,
-            startTime 
+            timeSKMode === 'between' 
                 ? between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END) 
                 : beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
         ].join(' AND '),
