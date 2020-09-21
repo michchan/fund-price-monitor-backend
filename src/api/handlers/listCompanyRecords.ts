@@ -1,7 +1,6 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { AWSError } from "aws-sdk";
 import mapValues from "lodash/mapValues";
-import pick from "lodash/pick";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { ListResponse } from "../Responses.type";
@@ -12,6 +11,9 @@ import isValidCompany from "src/models/fundPriceRecord/utils/isValidCompany";
 import isValidRiskLevel from "src/models/fundPriceRecord/utils/isValidRiskLevel";
 import queryItemsByRiskLevel from "src/models/fundPriceRecord/io/queryItemsByRiskLevel";
 import queryItemsByCompany from "src/models/fundPriceRecord/io/queryItemsByCompany";
+import createReadResponse from "../helpers/createReadResponse";
+import createParameterErrMsg from "../helpers/createParameterErrMsg";
+import validateExclusiveStartKey from "../validators/validateExclusiveStartKey";
 
 
 
@@ -51,19 +53,16 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
 
         /** ----------- Validations ----------- */
         
-        if (!isValidCompany(company))
-            throw new Error(`Path Parameter 'company' is invalid`);
-        if (riskLevel && !isValidRiskLevel(riskLevel))
-            throw new Error(`Query Parameter 'riskLevel' is invalid`);
-        // @TODO: Refractor this
-        if (exclusiveStartKey && !/^[a-z0-9_-]$/i.test(`${exclusiveStartKey}`)) 
-            throw new Error(`Query parameter 'exclusiveStartKey' must be a valid string / number in AWS Dynamodb key definition.`);
+        if (!isValidCompany(company)) throw new Error(createParameterErrMsg('company', 'path'));
+        if (riskLevel && !isValidRiskLevel(riskLevel)) throw new Error(createParameterErrMsg('riskLevel'));
+        validateExclusiveStartKey(exclusiveStartKey);
 
         /** ----------- Query ----------- */
 
         // Get query handler by conditions
-        const result = await (() => {
+        const output = await (() => {
             if (riskLevel) {
+                // Query records with risk level and company constraint
                 return queryItemsByRiskLevel(riskLevel, latest, false, undefined, defaultInput => ({
                     ExclusiveStartKey: exclusiveStartKey,
                     ExpressionAttributeValues: {
@@ -77,32 +76,16 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
                     ].filter(v => v).join(' AND ')
                 }))
             }
+            // Query records with company constraint
             return queryItemsByCompany(company, latest, false, undefined, {
                 ExclusiveStartKey: exclusiveStartKey
             })
         })(); 
 
-        // Construct response body
-        const res: Res = {
-            result: true,
-            data: (result.Items ?? []) as FundPriceRecord[],
-            lastEvaluatedKey: result.LastEvaluatedKey ?? null,
-        }
-        return {
-            statusCode: 200,
-            body: JSON.stringify(res, null, 2),
-        }
+        // Send back successful response
+        return createReadResponse(null, output)
     } catch (error) {
-        const err = error as AWSError
-        console.log(`ERROR: `, JSON.stringify(err, null, 2));
-
-        const res: Res = { 
-            result: false, 
-            error: pick(err, ['message', 'code'])
-        }
-        return {
-            statusCode: err.statusCode,
-            body: JSON.stringify(res, null, 2)
-        }
+        // Send back failed response
+        return createReadResponse(error)
     }
 }
