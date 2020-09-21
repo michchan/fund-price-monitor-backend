@@ -9,6 +9,7 @@ import validateCompany from "../validators/validateCompany";
 import validateKey from "../validators/validateKey";
 import validateTimestamp from "../validators/validateTimestamp";
 import querySingleFundRecords from "src/models/fundPriceRecord/io/querySingleFundRecords";
+import validateCode from "../validators/validateCode";
 
 
 export type Res = ListResponse<FundPriceRecord>;
@@ -53,8 +54,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         /** ----------- Validations ----------- */
 
         validateCompany(company);
-        validateTimestamp(startTime, 'startTime');
-        validateTimestamp(endTime, 'endTime');
+        validateCode(code);
+        if (startTime) validateTimestamp(startTime, 'startTime');
+        if (endTime) validateTimestamp(endTime, 'endTime');
         if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
 
         /** ----------- Query ----------- */
