@@ -3,6 +3,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { ListResponse } from "../Responses.type";
 import { FundPriceRecord } from '../../models/fundPriceRecord/FundPriceRecord.type'
+import createReadResponse from "../helpers/createReadResponse";
 
 
 export type Res = ListResponse<FundPriceRecord>;
@@ -34,11 +35,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
             body: JSON.stringify(res, null, 2),
         }
     } catch (error) {
-        callback(error)
-        const res: Res = { result: false, error }
-        return {
-            statusCode: 502,
-            body: JSON.stringify(res, null, 2),
-        }
+        // Send back failed response
+        return createReadResponse(error)
     }
 }
