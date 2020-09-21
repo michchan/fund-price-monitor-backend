@@ -7,6 +7,7 @@ import createReadResponse from "../helpers/createReadResponse";
 import validateCompany from "../validators/validateCompany";
 import validateKey from "../validators/validateKey";
 import validatePeriod, { PeriodType } from "../validators/validatePeriod";
+import queryPeriodPriceChangeRate from "src/models/fundPriceRecord/io/queryPeriodPriceChangeRate";
 
 
 export type Res = ListResponse<FundPriceChangeRate>;
@@ -51,15 +52,13 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
 
         /** ----------- Query ----------- */
 
-        // Construct response body
-        const res: Res = {
-            result: true,
-            data: [],
-        }
-        return {
-            statusCode: 200,
-            body: JSON.stringify(res, null, 2),
-        }
+        // Query
+        const output = await queryPeriodPriceChangeRate(company, periodType, period, false, undefined, {
+            ExclusiveStartKey: exclusiveStartKey
+        })
+
+        // Send back successful response
+        return createReadResponse(null, output)
     } catch (error) {
         // Send back failed response
         return createReadResponse(error)
