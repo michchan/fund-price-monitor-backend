@@ -62,7 +62,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         /** ----------- Query ----------- */
 
         // Query
-        const output = await querySingleFundRecords(company, code, latest, false, undefined, {
+        const output = await querySingleFundRecords(company, code, latest, false, startTime, endTime, {
             ExclusiveStartKey: exclusiveStartKey,
         });
 
