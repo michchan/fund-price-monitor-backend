@@ -52,8 +52,6 @@ const querySingleFundRecords = (
         return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
     })();
 
-    // Determine table(s) to query
-
     const defaultInput: Input = {
         ExpressionAttributeValues: {
             ...timeSKValues,
