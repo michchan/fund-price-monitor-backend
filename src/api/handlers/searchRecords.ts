@@ -1,11 +1,21 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
-import { AWSError } from "aws-sdk";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { ListResponse } from "../Responses.type";
 import { FundPriceRecord } from '../../models/fundPriceRecord/FundPriceRecord.type'
 
 
 export type Res = ListResponse<FundPriceRecord>;
+
+export interface QueryParams {
+    latest?: boolean;
+    exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
+    /** Attributes to search */
+    companies?: string;
+    codes?: string;
+    names?: string;
+    riskLevels?: string;
+}
 
 /** 
  * Get single records

@@ -62,7 +62,7 @@ function init (scope: cdk.Construct) {
         ...commonLambdaInput,
         handler: 'listCompanySinglePeriodRates.handler',
     });
-    const searchRecordsHandler = new lambda.Function(scope, 'searchRecords', {
+    const searchRecordsHandler = new lambda.Function(scope, 'SearchRecords', {
         ...commonLambdaInput,
         handler: 'searchRecords.handler',
     });
