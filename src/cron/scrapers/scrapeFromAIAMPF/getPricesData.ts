@@ -1,4 +1,5 @@
 import puppeteer = require("puppeteer");
+import retry from 'simply-utils/dist/async/retry'
 
 import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
 
@@ -12,9 +13,10 @@ export interface PriceDataRecord extends Pick<FundPriceRecord,
 /**
  * Helpers to query the prices data from html
  */
-const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRecord[]> => {
+const getPricesData = async (page: puppeteer.Page): Promise<PriceDataRecord[]> => {
     // Wait for the elements we want
-    await page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header):last-child > td');
+    await retry(() => page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header):last-child > td'), 3)
+        .catch(err => console.log(`ERROR: `, JSON.stringify(err, null, 2)));
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
@@ -53,4 +55,4 @@ const getPricesDataFromHTML = async (page: puppeteer.Page): Promise<PriceDataRec
             })
     })
 }
-export default getPricesDataFromHTML
+export default getPricesData

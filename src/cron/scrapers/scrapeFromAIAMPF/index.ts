@@ -1,9 +1,9 @@
 import puppeteer = require("puppeteer");
 
 import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import getPricesDataFromHTML from "./getPricesDataFromHTML";
-import getPerformanceDataFromHTML from "./getPerformanceDataFromHTML";
-import getDetailsDataFromHTML from "./getDetailsDataFromHTML";
+import getPricesData from "./getPricesData";
+import getPerformanceData from "./getPerformanceData";
+import getDetailsData from "./getDetailsData";
 
 
 const PRICES_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundprices.jspa?mt=MT3&lang=zh_TW'
@@ -23,15 +23,15 @@ const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]
 
     // Scrape prices data page
     await page.goto(PRICES_PAGE_URL);
-    const pricesData = await getPricesDataFromHTML(page);
+    const pricesData = await getPricesData(page);
 
     // Scrape performance data page
     await page.goto(PERFORMANCE_PAGE_URL)
-    const perfData = await getPerformanceDataFromHTML(page);
+    const perfData = await getPerformanceData(page);
 
     // Scrape details page
     await page.goto(DETAILS_PAGE_URL)
-    const detailsData = await getDetailsDataFromHTML(page);
+    const detailsData = await getDetailsData(page);
 
     // Aggregate data based on prices data
     const records: FundPriceRecord[] = pricesData.map(({ code, name, price, updatedDate }) => {

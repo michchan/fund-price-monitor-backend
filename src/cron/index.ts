@@ -105,6 +105,8 @@ function init (scope: cdk.Construct) {
     const commonScrapersInput = {
         // Extra memory is needed for running the headless browser instance
         memorySize: 700,
+        // Extra timeout for scrapers
+        timeout: cdk.Duration.minutes(10),
     }
 
     /** ---------- Data Processing Handlers ---------- */

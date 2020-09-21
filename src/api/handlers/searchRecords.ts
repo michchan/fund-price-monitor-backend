@@ -10,11 +10,11 @@ export type Res = ListResponse<FundPriceRecord>;
 export interface QueryParams {
     latest?: boolean;
     exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
-    /** Attributes to search */
-    companies?: string;
-    codes?: string;
-    names?: string;
-    riskLevels?: string;
+    /**
+     * Structured query string
+     * 
+     */
+    q?: string;
 }
 
 /** 
