@@ -1,19 +1,56 @@
-import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { AWSError } from "aws-sdk";
+import { APIGatewayProxyHandler } from "aws-lambda";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { ListResponse } from "../Responses.type";
-import { FundPriceChangeRate } from '../../models/fundPriceRecord/FundPriceRecord.type'
+import { FundPriceChangeRate, CompanyType } from '../../models/fundPriceRecord/FundPriceRecord.type'
+import createReadResponse from "../helpers/createReadResponse";
+import validateCompany from "../validators/validateCompany";
+import validateKey from "../validators/validateKey";
+import validatePeriod, { PeriodType } from "../validators/validatePeriod";
 
 
 export type Res = ListResponse<FundPriceChangeRate>;
 
+export interface PathParams {
+    company: CompanyType;
+    /** Either `week`, `month` or `quarter` */
+    period: string;
+}
+export interface QueryParams {
+    exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
+}
+
 /** 
  * Get single records
  */
-export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context, callback) => {
+export const handler: APIGatewayProxyHandler = async (event, context, callback) => {
     try {
-        console.log(`event `, JSON.stringify(event, null, 2))
-        console.log(`context `, JSON.stringify(context, null, 2))
+        // Get path params
+        const { company, period } = (event.pathParameters ?? {}) as unknown as PathParams;
+        // Get query params
+        const { exclusiveStartKey } = (event.queryStringParameters ?? {}) as unknown as QueryParams;
+
+        // Get period type
+        const periodType = ((path: string): PeriodType => {
+            switch (true) {
+                case path.includes('quarter'):
+                    return 'quarter'
+                case path.includes('month'):
+                    return 'month'
+                case path.includes('week'):
+                default:
+                    return 'week'
+            }
+        })(event.path);
+
+        /** ----------- Validations ----------- */
+
+        validateCompany(company);
+        validatePeriod(period, periodType);
+        if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
+
+        /** ----------- Query ----------- */
+
         // Construct response body
         const res: Res = {
             result: true,
@@ -24,11 +61,7 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
             body: JSON.stringify(res, null, 2),
         }
     } catch (error) {
-        callback(error)
-        const res: Res = { result: false, error }
-        return {
-            statusCode: 502,
-            body: JSON.stringify(res, null, 2),
-        }
+        // Send back failed response
+        return createReadResponse(error)
     }
 }

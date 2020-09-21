@@ -1,7 +1,7 @@
 import { AWSError } from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import pick from "lodash/pick";
-import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
+import { APIGatewayProxyResult } from "aws-lambda";
 
 import { ListResponse } from "../Responses.type";
 
@@ -13,7 +13,7 @@ export type Output =
 function createReadResponse <T> (
     error: null | AWSError,
     output?: Output,
-): APIGatewayProxyStructuredResultV2 {
+): APIGatewayProxyResult {
     if (error) {
         console.log(`ERROR: `, JSON.stringify(error, null, 2));
         const body: ListResponse<T> = {

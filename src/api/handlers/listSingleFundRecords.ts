@@ -1,5 +1,4 @@
-import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { AWSError } from "aws-sdk";
+import { APIGatewayProxyHandler } from "aws-lambda";
 
 import { ListResponse } from "../Responses.type";
 import { FundPriceRecord } from '../../models/fundPriceRecord/FundPriceRecord.type'
@@ -10,7 +9,7 @@ export type Res = ListResponse<FundPriceRecord>;
 /** 
  * Get single records
  */
-export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context, callback) => {
+export const handler: APIGatewayProxyHandler = async (event, context, callback) => {
     try {
         console.log(`event `, JSON.stringify(event, null, 2))
         console.log(`context `, JSON.stringify(context, null, 2))

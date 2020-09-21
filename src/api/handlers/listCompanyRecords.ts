@@ -1,5 +1,4 @@
-import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { AWSError } from "aws-sdk";
+import { APIGatewayProxyHandler } from "aws-lambda";
 import mapValues from "lodash/mapValues";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
@@ -7,13 +6,13 @@ import { ListResponse } from "../Responses.type";
 import { FundPriceRecord, CompanyType, RiskLevel } from '../../models/fundPriceRecord/FundPriceRecord.type'
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
-import isValidCompany from "src/models/fundPriceRecord/utils/isValidCompany";
 import isValidRiskLevel from "src/models/fundPriceRecord/utils/isValidRiskLevel";
 import queryItemsByRiskLevel from "src/models/fundPriceRecord/io/queryItemsByRiskLevel";
 import queryItemsByCompany from "src/models/fundPriceRecord/io/queryItemsByCompany";
 import createReadResponse from "../helpers/createReadResponse";
 import createParameterErrMsg from "../helpers/createParameterErrMsg";
 import validateKey from "../validators/validateKey";
+import validateCompany from "../validators/validateCompany";
 
 
 
@@ -33,7 +32,7 @@ export interface QueryParams {
 /** 
  * Get single records
  */
-export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context) => {
+export const handler: APIGatewayProxyHandler = async (event, context) => {
     try {
         // Get path params
         const pathParams = (event.pathParameters ?? {}) as unknown as PathParams;
@@ -53,7 +52,7 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
 
         /** ----------- Validations ----------- */
         
-        if (!isValidCompany(company)) throw new Error(createParameterErrMsg('company', 'path'));
+        validateCompany(company);
         if (riskLevel && !isValidRiskLevel(riskLevel)) throw new Error(createParameterErrMsg('riskLevel'));
         if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
 
