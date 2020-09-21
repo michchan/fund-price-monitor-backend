@@ -14,7 +14,7 @@ const createParameterErrMsg = (
     const msg = (() => {
         switch (messageType) {
             case 'invalidKeyFormat':
-                return 'must be a valid string/number under AWS Dynamodb\'s key definition.'
+                return 'must be a valid string/number under AWS Dynamodb\'s key definition. See https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html.'
             case 'invalid':
             default:
                 return 'is invalid'
