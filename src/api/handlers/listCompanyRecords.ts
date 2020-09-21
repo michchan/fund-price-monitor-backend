@@ -13,7 +13,7 @@ import queryItemsByRiskLevel from "src/models/fundPriceRecord/io/queryItemsByRis
 import queryItemsByCompany from "src/models/fundPriceRecord/io/queryItemsByCompany";
 import createReadResponse from "../helpers/createReadResponse";
 import createParameterErrMsg from "../helpers/createParameterErrMsg";
-import validateExclusiveStartKey from "../validators/validateExclusiveStartKey";
+import validatorKey from "../validators/validatorKey";
 
 
 
@@ -55,7 +55,8 @@ export const handler: APIGatewayProxyHandlerV2<AWSError> = async (event, context
         
         if (!isValidCompany(company)) throw new Error(createParameterErrMsg('company', 'path'));
         if (riskLevel && !isValidRiskLevel(riskLevel)) throw new Error(createParameterErrMsg('riskLevel'));
-        validateExclusiveStartKey(exclusiveStartKey);
+        
+        validatorKey(exclusiveStartKey, 'exclusiveStartKey');
 
         /** ----------- Query ----------- */
 
