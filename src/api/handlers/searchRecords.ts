@@ -60,8 +60,8 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
             const filterExp: string[] = []
 
             Object.entries(q).forEach(([name, field]) => {
+                const { values } = field
                 const attrName = `#${name}`
-                const values = Array.isArray(field.value) ? field.value : [field.value]
                 const expValueKeys = values.map((v, i) => `:${name}${i}`)
 
                 // Assign attr name

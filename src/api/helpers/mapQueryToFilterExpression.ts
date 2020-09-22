@@ -10,7 +10,9 @@ const mapQueryToFilterExpression = (
     expValueKeys: string[], 
     field: StructuredQueryField,
 ): string => {
-    const { operator, mergeType } = field
+    const { operator, value, values } = field
+    // Clone an array for manipulation
+    const _expValueKeys = [...expValueKeys]
     
     const expressEach = (value: string, comparedValue: string = '') => {
         switch (operator) {
@@ -38,9 +40,15 @@ const mapQueryToFilterExpression = (
         }
     }
 
-    return `(${expValueKeys.map((expValKey, i) => {
-        return expressEach(expValKey, expValKey[i + 1] ?? expValKey)
-    }).join(` ${mergeType === 'intersect' ? 'AND' : 'OR'} `)})`
+    return `(${value.split(/(\W)+/i).map((str) => {
+        // Replace with expression value key
+        if (/^[a-z0-9_\-\.]+$/i.test(str)) {
+            return _expValueKeys.shift()
+        }
+        if (/^\#$/.test(str)) return `AND`
+        if (/^\,$/.test(str)) return `OR`
+        return str
+    }).join(' ')})`
 }
 
 export default mapQueryToFilterExpression

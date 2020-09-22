@@ -29,8 +29,9 @@
  *       e.g. name[inc]healthcare,growth,fund
  *    2. AND: separated by #:
  *       e.g. name[inc]healthcare#growth#fund
- * 
- *    Both OR and AND CANNOT be used together at this stage.
+ *    3. OR with AND: grouped by commas:
+ *       To match records includes either word "healthcare" or words with "fidelity" and "growth"
+ *       e.g. name[inc]healthcare,(fidelity#growth)
  */
 export type StructuredQueryString = string
 
@@ -50,8 +51,9 @@ export type MergeType = 'union' | 'intersect'
 
 export interface StructuredQueryField {
     operator: Operator;
-    value: string | string[];
-    mergeType: MergeType;
+    value: string;
+    /** Splitted values */
+    values: string[];
 }
 export type StructuredQuery = { 
     [fieldNameAndOperator: string]: StructuredQueryField; 
