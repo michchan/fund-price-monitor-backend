@@ -48,7 +48,7 @@ const mapQueryToFilterExpression = (
     }
 
     // Map expression
-    const expressions = value.split(/(\W+)/i).map((str) => {
+    const expressions = value.split(/([^a-z0-9_\-\.]+)/i).map((str) => {
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
             const values: string[] = []
