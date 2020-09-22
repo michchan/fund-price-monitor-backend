@@ -50,31 +50,38 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
         /** ----------- Query ----------- */
 
         // Derive filters
-        const [expValues, filterExp] = ((q: StructuredQuery): [
+        const [expNames, expValues, filterExp] = ((q: StructuredQuery): [
+            DocumentClient.QueryInput['ExpressionAttributeNames'],
             DocumentClient.QueryInput['ExpressionAttributeValues'],
             string[],
         ] => {
+            const expNames: DocumentClient.QueryInput['ExpressionAttributeNames'] = {}
             const expValues: DocumentClient.QueryInput['ExpressionAttributeValues'] = {}
             const filterExp: string[] = []
 
             Object.entries(q).forEach(([name, field]) => {
+                const attrName = `#${name}`
                 const values = Array.isArray(field.value) ? field.value : [field.value]
                 const expValueKeys = values.map((v, i) => `:${name}${i}`)
+
+                // Assign attr name
+                expNames[attrName] = name
                 // Map keys and values
                 expValueKeys.forEach((key, i) => {
                     expValues[key] = values[i]
                 })
                 // Create expression
-                filterExp.push(mapQueryToFilterExpression(name, expValueKeys, field))
+                filterExp.push(mapQueryToFilterExpression(attrName, expValueKeys, field))
             });
 
-            return [expValues, filterExp]
+            return [expNames, expValues, filterExp]
         })(q);
-        console.log('Filters: ', JSON.stringify({ expValues, filterExp }, null, 2))
+        console.log('Filters: ', JSON.stringify({ expNames, expValues, filterExp }, null, 2))
 
         // Query
         const output = await scanItems({
             ExclusiveStartKey: exclusiveStartKey,
+            ExpressionAttributeNames: expNames,
             ExpressionAttributeValues: {
                 ...expValues,
                 [EXP_TIME_SK_PFX]: latest ? 'latest' : 'record'
