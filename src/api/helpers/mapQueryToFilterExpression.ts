@@ -40,6 +40,12 @@ const mapQueryToFilterExpression = (
                 return `${attrName} = ${value}`
         }
     }
+    const getConnecter = () => {
+        switch (operator) {
+            case 'notinc': return 'AND'
+            default: return 'OR'
+        }
+    }
 
     return `(${value.split(/(\W+)/i).map((str) => {
         // Replace with expression value key
@@ -49,11 +55,11 @@ const mapQueryToFilterExpression = (
             const lowercaseValue = _expValueKeys.shift() ?? ''
             const uppercaseValue = _expValueKeys.shift() ?? ''
             // Handle casing
-            return [
+            return `(${[
                 expressEach(capValue),
                 expressEach(lowercaseValue),
                 expressEach(uppercaseValue),
-            ].join(' OR ')
+            ].join(` ${getConnecter()} `)})`
         }
         return str
             .replace(/\#/g, 'AND')
