@@ -11,6 +11,7 @@ import validateKey from "../validators/validateKey";
 import scanItems from "src/models/fundPriceRecord/io/scanItems";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
+import mapQueryToFilterExpression from "../helpers/mapQueryToFilterExpression";
 
 
 
@@ -38,7 +39,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
         const { 
             latest,
             exclusiveStartKey,
-            q,
+            q = {},
         } = queryParams
         console.log('Query: ', JSON.stringify(queryParams, null, 2))
 
@@ -48,13 +49,40 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
 
         /** ----------- Query ----------- */
 
+        // Derive filters
+        const [expValues, filterExp] = ((q: StructuredQuery): [
+            DocumentClient.QueryInput['ExpressionAttributeValues'],
+            string[],
+        ] => {
+            const expValues: DocumentClient.QueryInput['ExpressionAttributeValues'] = {}
+            const filterExp: string[] = []
+
+            Object.entries(q).forEach(([name, field]) => {
+                const values = Array.isArray(field.value) ? field.value : [field.value]
+                const expValueKeys = values.map((v, i) => `:${name}${i}`)
+                // Map keys and values
+                expValueKeys.forEach((key, i) => {
+                    expValues[key] = values[i]
+                })
+                // Create expression
+                filterExp.push(mapQueryToFilterExpression(name, expValueKeys, field))
+            });
+
+            return [expValues, filterExp]
+        })(q);
+        console.log('Filters: ', JSON.stringify({ expValues, filterExp }, null, 2))
+
         // Query
         const output = await scanItems({
             ExclusiveStartKey: exclusiveStartKey,
             ExpressionAttributeValues: {
+                ...expValues,
                 [EXP_TIME_SK_PFX]: latest ? 'latest' : 'record'
             },
-            FilterExpression: beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),
+            FilterExpression: [
+                beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),
+                ...filterExp,
+            ].join(' AND '),
         }, false);
 
         // Send back successful response

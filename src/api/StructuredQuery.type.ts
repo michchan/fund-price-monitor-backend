@@ -18,12 +18,12 @@
  *      the expression will be: updatedDate[between]2020-09-10,2020-09-20
  * 
  *   For string only
- *    - `inc` : includes the word(s)
+ *    - `inc` : includes the word(s), in which order matters
  *      e.g. name[inc]healthcare,growth,fund
  *    - `notinc` : does not include the word(s)
  *    - `beginswith` : begins with word(s)
  * 
- * 3. List values: separated by commas
+ * 3. List of words: separated by commas, in which order matters
  *    e.g. name[inc]healthcare,growth,fund
  */
 export type StructuredQueryString = string
@@ -37,7 +37,7 @@ export type Operator =
     | 'lte'
     | 'between'
     | 'inc'
-    | 'not'
+    | 'notinc'
     | 'beginswith'
 
 export interface StructuredQueryField {
