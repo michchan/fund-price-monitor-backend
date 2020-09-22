@@ -67,6 +67,7 @@ const mapQueryToFilterExpression = (
             .replace(/\,/g, 'OR')
     });
     const expStr = expressions.join(' ');
+    console.log('expressions', JSON.stringify(expressions, null, 2))
 
     return `${expressions.length <= 1 ? expStr : `(${expStr})`}`
 }
