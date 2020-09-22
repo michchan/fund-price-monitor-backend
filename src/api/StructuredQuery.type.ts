@@ -51,11 +51,10 @@ export type Operator =
 export type MergeType = 'union' | 'intersect'
 
 export interface StructuredQueryField {
+    name: string;
     operator: Operator;
     value: string;
     /** Splitted values */
     values: string[];
 }
-export type StructuredQuery = { 
-    [fieldNameAndOperator: string]: StructuredQueryField; 
-}
+export type StructuredQuery = StructuredQueryField[];

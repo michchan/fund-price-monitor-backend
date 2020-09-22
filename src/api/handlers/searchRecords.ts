@@ -39,7 +39,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
         const { 
             latest,
             exclusiveStartKey,
-            q = {},
+            q = [],
         } = queryParams
         console.log('Query: ', JSON.stringify(queryParams, null, 2))
 
@@ -59,8 +59,8 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
             const expValues: DocumentClient.QueryInput['ExpressionAttributeValues'] = {}
             const filterExp: string[] = []
 
-            Object.entries(q).forEach(([name, field]) => {
-                const { values } = field
+            q.forEach(field => {
+                const { name, values } = field
                 const attrName = `#${name}`
                 const expValueKeys = values.map((v, i) => `:${name}${i}`)
 

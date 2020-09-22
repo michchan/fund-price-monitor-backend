@@ -1,4 +1,4 @@
-import { StructuredQuery, StructuredQueryString, MergeType } from "../StructuredQuery.type"
+import { StructuredQuery, StructuredQueryString, StructuredQueryField, Operator } from "../StructuredQuery.type"
 
 
 
@@ -9,15 +9,15 @@ const parseQuery = (q: StructuredQueryString): StructuredQuery => {
         const [name, operator] = nameAndOpt.split('[');
         const values = value.replace(/\(|\)/g, '').split(/,|#/)
 
-        return {
-            ...acc, 
-            [name]: {
-                operator,
-                value,
-                values,
-            }
+        const field: StructuredQueryField = {
+            name,
+            operator: operator as Operator,
+            value,
+            values,
         }
-    }, {})
+
+        return [...acc, field]
+    }, [] as StructuredQuery)
 }
 
 export default parseQuery
