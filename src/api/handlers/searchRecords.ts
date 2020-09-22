@@ -12,6 +12,7 @@ import scanItems from "src/models/fundPriceRecord/io/scanItems";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
 import mapQueryToFilterExpression from "../helpers/mapQueryToFilterExpression";
+import createParameterErrMsg from "../helpers/createParameterErrMsg";
 
 
 
@@ -39,12 +40,13 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
         const { 
             latest,
             exclusiveStartKey,
-            q = [],
+            q,
         } = queryParams
         console.log('Query: ', JSON.stringify(queryParams, null, 2))
 
         /** ----------- Validations ----------- */
 
+        if (!q) throw new Error(createParameterErrMsg('q', 'query'));
         if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
 
         /** ----------- Query ----------- */
