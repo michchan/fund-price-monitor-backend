@@ -37,12 +37,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         // Get path params
         const pathParams = (event.pathParameters ?? {}) as unknown as PathParams;
         const { company } = pathParams
-        
+
         // Get query params
         const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
-            if (key === 'latest') {
-                return value === 'true'
-            }
+            if (key === 'latest') return value === 'true'
             return value
         }) as unknown as QueryParams;
         const { 

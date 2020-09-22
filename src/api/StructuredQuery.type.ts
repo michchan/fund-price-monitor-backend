@@ -28,4 +28,22 @@
  */
 export type StructuredQueryString = string
 
-export type StructuredQuery = { [fieldNameAndOperator: string]: string }
+export type Operator = 
+    | 'e'
+    | 'ie'
+    | 'gt'
+    | 'lt'
+    | 'gte'
+    | 'lte'
+    | 'between'
+    | 'inc'
+    | 'not'
+    | 'beginswith'
+
+export interface StructuredQueryField {
+    operator: Operator;
+    value: string | string[];
+}
+export type StructuredQuery = { 
+    [fieldNameAndOperator: string]: StructuredQueryField; 
+}
