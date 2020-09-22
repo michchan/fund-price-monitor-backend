@@ -48,11 +48,11 @@ const mapQueryToFilterExpression = (
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
             const value = _expValueKeys.shift() ?? ''
             // Handle casing
-            return `(${[
+            return [
                 expressEach(capitalize(value)),
                 expressEach(value.toLowerCase()),
                 expressEach(value.toUpperCase()),
-            ].join(' OR ')})`
+            ].join(' OR ')
         }
         return str
             .replace(/\#/g, 'AND')
