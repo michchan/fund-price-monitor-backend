@@ -38,9 +38,9 @@ const mapQueryToFilterExpression = (
         }
     }
 
-    return expValueKeys.map((expValKey, i) => {
+    return `(${expValueKeys.map((expValKey, i) => {
         return expressEach(expValKey, expValKey[i + 1] ?? expValKey)
-    }).join(` ${mergeType === 'intersect' ? 'AND' : 'OR'} `)
+    }).join(` ${mergeType === 'intersect' ? 'AND' : 'OR'} `)})`
 }
 
 export default mapQueryToFilterExpression
