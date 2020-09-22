@@ -44,6 +44,7 @@ const mapQueryToFilterExpression = (
     return `(${value.split(/(\W+)/i).map((str) => {
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
+            // There will be three casing variants for each value
             const capValue = _expValueKeys.shift() ?? ''
             const lowercaseValue = _expValueKeys.shift() ?? ''
             const uppercaseValue = _expValueKeys.shift() ?? ''
