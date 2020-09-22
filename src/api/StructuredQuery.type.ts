@@ -2,7 +2,7 @@
  * Structured query string:
  *
  * 1. Format: FIELD_NAME_1[OPERATOR]VALUE_1+FIELD_NAME_N[OPERATOR]VALUE_N
- *    e.g. company[e]aia+code[e]123+name[inc]healthcare+updatedDate[gte]2020-09-10
+ *    e.g. company[e]aia+code[e]123+name[inc]healthcare,growth,fund+updatedDate[gte]2020-09-10
  *
  * 2. Operators: 
  * 

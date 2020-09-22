@@ -7,12 +7,13 @@ const parseQuery = (q: StructuredQueryString): StructuredQuery => {
     return components.reduce((acc, curr) => {
         const [nameAndOpt, value] = curr.split(']');
         const [name, operator] = nameAndOpt.split('[');
+        const values = value.split(',')
 
         return {
             ...acc, 
             [name]: {
                 operator,
-                value: value.split(','),
+                value: values.length <= 1 ? values[0] : values,
             }
         }
     }, {})
