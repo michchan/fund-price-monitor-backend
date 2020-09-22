@@ -47,7 +47,8 @@ const mapQueryToFilterExpression = (
         }
     }
 
-    return `(${value.split(/(\W+)/i).map((str) => {
+    // Map expression
+    const expressions = value.split(/(\W+)/i).map((str) => {
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
             // There will be three casing variants for each value
@@ -64,7 +65,10 @@ const mapQueryToFilterExpression = (
         return str
             .replace(/\#/g, 'AND')
             .replace(/\,/g, 'OR')
-    }).join(' ')})`
+    });
+    const expStr = expressions.join(' ');
+
+    return `${expressions.length <= 1 ? expStr : `(${expStr})`}`
 }
 
 export default mapQueryToFilterExpression
