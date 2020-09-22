@@ -7,7 +7,14 @@ import { FundPriceRecord } from '../../models/fundPriceRecord/FundPriceRecord.ty
 import createReadResponse from "../helpers/createReadResponse";
 import { StructuredQuery } from "../StructuredQuery.type";
 import parseQuery from "../helpers/parseQuery";
+import validateKey from "../validators/validateKey";
+import scanItems from "src/models/fundPriceRecord/io/scanItems";
+import attrs from "src/models/fundPriceRecord/constants/attributeNames";
+import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
 
+
+
+const EXP_TIME_SK_PFX = `:timeSK_prefix` as string
 
 export type Res = ListResponse<FundPriceRecord>;
 
@@ -33,13 +40,25 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
             exclusiveStartKey,
             q,
         } = queryParams
-
         console.log('Query: ', JSON.stringify(queryParams, null, 2))
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({}, null, 2),
-        }
+        /** ----------- Validations ----------- */
+
+        if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
+
+        /** ----------- Query ----------- */
+
+        // Query
+        const output = await scanItems({
+            ExclusiveStartKey: exclusiveStartKey,
+            ExpressionAttributeValues: {
+                [EXP_TIME_SK_PFX]: latest ? 'latest' : 'record'
+            },
+            FilterExpression: beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),
+        }, false);
+
+        // Send back successful response
+        return createReadResponse(null, output)
     } catch (error) {
         // Send back failed response
         return createReadResponse(error)
