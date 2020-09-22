@@ -15,7 +15,8 @@
  *    - `lte` : is greater than or equal to.
  *    - `between` : is between A and B. 
  *      e.g. To query records of updated date in between 2020-09-10 (lower bound) and 2020-09-20 (upper bound),
- *      the expression will be: updatedDate[between]2020-09-10#2020-09-20
+ *      the expression will be: updatedDate[between]2020-09-10~2020-09-20
+ *      (separated by `~`)
  * 
  *   For string only
  *    - `inc` : includes the word(s)

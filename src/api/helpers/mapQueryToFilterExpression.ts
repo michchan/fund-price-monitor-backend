@@ -10,11 +10,11 @@ const mapQueryToFilterExpression = (
     expValueKeys: string[], 
     field: StructuredQueryField,
 ): string => {
-    const { operator, value, values } = field
+    const { operator, value } = field
     // Clone an array for manipulation
     const _expValueKeys = [...expValueKeys]
     
-    const expressEach = (value: string, comparedValue: string = '') => {
+    const expressEach = (value: string) => {
         switch (operator) {
             case 'notinc':
                 return `NOT ${contains(attrName, value)}`
@@ -23,7 +23,8 @@ const mapQueryToFilterExpression = (
             case 'beginswith':
                 return beginsWith(attrName, value)
             case 'between':
-                return between(attrName, value, comparedValue)
+                const [a, b] = value.split('~')
+                return between(attrName, a, b)
             case 'lte':
                 return `${attrName} <= ${value}`
             case 'gte':
@@ -40,14 +41,14 @@ const mapQueryToFilterExpression = (
         }
     }
 
-    return `(${value.split(/(\W)+/i).map((str) => {
+    return `(${value.split(/(\W+)/i).map((str) => {
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
-            return _expValueKeys.shift()
+            return expressEach(_expValueKeys.shift() ?? '')
         }
-        if (/^\#$/.test(str)) return `AND`
-        if (/^\,$/.test(str)) return `OR`
         return str
+            .replace(/\#/g, 'AND')
+            .replace(/\,/g, 'OR')
     }).join(' ')})`
 }
 
