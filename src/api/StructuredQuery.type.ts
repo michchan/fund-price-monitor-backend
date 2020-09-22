@@ -25,12 +25,12 @@
  *    - `beginswith` : begins with word(s)
  * 
  * 3. List of words: 
- *    1. OR: separated by commas:
+ *    1. OR: separated by `,` (commas):
  *       To match records by name of including either of the following keywords:
  *       e.g. name[inc]healthcare,growth,fund
- *    2. AND: separated by #:
+ *    2. AND: separated by `#` (sharp):
  *       e.g. name[inc]healthcare#growth#fund
- *    3. OR with AND: grouped by commas:
+ *    3. OR with AND: grouped by parenthesis:
  *       To match records includes either word "healthcare" or words with "fidelity" and "growth"
  *       e.g. name[inc]healthcare,(fidelity#growth)
  */
