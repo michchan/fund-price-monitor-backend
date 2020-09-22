@@ -41,7 +41,6 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
             exclusiveStartKey,
             q = [],
         } = queryParams
-        console.log('Query: ', JSON.stringify(queryParams, null, 2))
 
         /** ----------- Validations ----------- */
 
@@ -76,7 +75,6 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
 
             return [expNames, expValues, filterExp]
         })(q);
-        console.log('Filters: ', JSON.stringify({ expNames, expValues, filterExp }, null, 2))
 
         // Query
         const output = await scanItems({
