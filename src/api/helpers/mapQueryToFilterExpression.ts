@@ -51,16 +51,16 @@ const mapQueryToFilterExpression = (
     const expressions = value.split(/(\W+)/i).map((str) => {
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
+            const values: string[] = []
+            values.push(expressEach(_expValueKeys.shift() ?? ''))
+
             // There will be three casing variants for each value
-            const capValue = _expValueKeys.shift() ?? ''
-            const lowercaseValue = _expValueKeys.shift() ?? ''
-            const uppercaseValue = _expValueKeys.shift() ?? ''
+            if (['inc', 'notinc'].includes(operator)) {
+                values.push(expressEach(_expValueKeys.shift() ?? ''))
+                values.push(expressEach(_expValueKeys.shift() ?? ''))
+            }
             // Handle casing
-            return `(${[
-                expressEach(capValue),
-                expressEach(lowercaseValue),
-                expressEach(uppercaseValue),
-            ].join(` ${getConnecter()} `)})`
+            return `(${values.join(` ${getConnecter()} `)})`
         }
         return str
             .replace(/\#/g, 'AND')
