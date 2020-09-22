@@ -59,10 +59,10 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
             const expValues: DocumentClient.QueryInput['ExpressionAttributeValues'] = {}
             const filterExp: string[] = []
 
-            q.forEach(field => {
+            q.forEach((field, index) => {
                 const { name, values } = field
                 const attrName = `#${name}`
-                const expValueKeys = values.map((v, i) => `:${name}${i}`)
+                const expValueKeys = values.map((v, i) => `:${name}_${index}_${i}`)
 
                 // Assign attr name
                 expNames[attrName] = name
