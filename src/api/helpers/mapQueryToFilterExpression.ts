@@ -1,5 +1,3 @@
-import capitalize from "lodash/capitalize";
-
 import { StructuredQueryField } from "../StructuredQuery.type";
 import between from "src/lib/AWS/dynamodb/expressionFunctions/between";
 import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
@@ -46,12 +44,14 @@ const mapQueryToFilterExpression = (
     return `(${value.split(/(\W+)/i).map((str) => {
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
-            const value = _expValueKeys.shift() ?? ''
+            const capValue = _expValueKeys.shift() ?? ''
+            const lowercaseValue = _expValueKeys.shift() ?? ''
+            const uppercaseValue = _expValueKeys.shift() ?? ''
             // Handle casing
             return [
-                expressEach(capitalize(value)),
-                expressEach(value.toLowerCase()),
-                expressEach(value.toUpperCase()),
+                expressEach(capValue),
+                expressEach(lowercaseValue),
+                expressEach(uppercaseValue),
             ].join(' OR ')
         }
         return str
