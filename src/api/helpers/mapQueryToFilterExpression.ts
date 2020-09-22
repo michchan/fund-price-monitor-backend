@@ -10,30 +10,37 @@ const mapQueryToFilterExpression = (
     expValueKeys: string[], 
     field: StructuredQueryField,
 ): string => {
-    const { operator } = field
-    switch (operator) {
-        case 'notinc':
-            return `NOT ${contains(attrName, expValueKeys[0])}`
-        case 'inc':
-            return contains(attrName, expValueKeys[0])
-        case 'beginswith':
-            return beginsWith(attrName, expValueKeys[0])
-        case 'between':
-            return between(attrName, expValueKeys[0], expValueKeys[1])
-        case 'lte':
-            return `${attrName} <= ${expValueKeys[0]}`
-        case 'gte':
-            return `${attrName} >= ${expValueKeys[0]}`
-        case 'lt':
-            return `${attrName} < ${expValueKeys[0]}`
-        case 'gt':
-            return `${attrName} > ${expValueKeys[0]}`
-        case 'ie':
-            return `${attrName} <> ${expValueKeys[0]}`
-        case 'e':
-        default:
-            return `${attrName} = ${expValueKeys[0]}`
+    const { operator, mergeType } = field
+    
+    const expressEach = (value: string, comparedValue: string = '') => {
+        switch (operator) {
+            case 'notinc':
+                return `NOT ${contains(attrName, value)}`
+            case 'inc':
+                return contains(attrName, value)
+            case 'beginswith':
+                return beginsWith(attrName, value)
+            case 'between':
+                return between(attrName, value, comparedValue)
+            case 'lte':
+                return `${attrName} <= ${value}`
+            case 'gte':
+                return `${attrName} >= ${value}`
+            case 'lt':
+                return `${attrName} < ${value}`
+            case 'gt':
+                return `${attrName} > ${value}`
+            case 'ie':
+                return `${attrName} <> ${value}`
+            case 'e':
+            default:
+                return `${attrName} = ${value}`
+        }
     }
+
+    return expValueKeys.map((expValKey, i) => {
+        return expressEach(expValKey, expValKey[i + 1] ?? expValKey)
+    }).join(` ${mergeType === 'intersect' ? 'AND' : 'OR'} `)
 }
 
 export default mapQueryToFilterExpression

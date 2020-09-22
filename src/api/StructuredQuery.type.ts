@@ -15,16 +15,22 @@
  *    - `lte` : is greater than or equal to.
  *    - `between` : is between A and B. 
  *      e.g. To query records of updated date in between 2020-09-10 (lower bound) and 2020-09-20 (upper bound),
- *      the expression will be: updatedDate[between]2020-09-10,2020-09-20
+ *      the expression will be: updatedDate[between]2020-09-10#2020-09-20
  * 
  *   For string only
- *    - `inc` : includes the word(s), in which order matters
+ *    - `inc` : includes the word(s)
  *      e.g. name[inc]healthcare,growth,fund
  *    - `notinc` : does not include the word(s)
  *    - `beginswith` : begins with word(s)
  * 
- * 3. List of words: separated by commas, in which order matters
- *    e.g. name[inc]healthcare,growth,fund
+ * 3. List of words: 
+ *    1. OR: separated by commas:
+ *       To match records by name of including either of the following keywords:
+ *       e.g. name[inc]healthcare,growth,fund
+ *    2. AND: separated by #:
+ *       e.g. name[inc]healthcare#growth#fund
+ * 
+ *    Both OR and AND CANNOT be used together at this stage.
  */
 export type StructuredQueryString = string
 
@@ -40,9 +46,12 @@ export type Operator =
     | 'notinc'
     | 'beginswith'
 
+export type MergeType = 'union' | 'intersect'
+
 export interface StructuredQueryField {
     operator: Operator;
     value: string | string[];
+    mergeType: MergeType;
 }
 export type StructuredQuery = { 
     [fieldNameAndOperator: string]: StructuredQueryField; 
