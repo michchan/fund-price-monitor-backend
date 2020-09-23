@@ -65,10 +65,10 @@ const mapQueryToFilterExpression = (
                 if (['inc', 'notinc'].includes(operator)) {
                     values.push(expressEach(next()))
                     values.push(expressEach(next()))
-                    return `(${values.join(` ${getConnecter()} `)})`
                 }
             }
-            return `${values.join(` ${getConnecter()} `)}`
+            const valuesStr = values.join(` ${getConnecter()} `)
+            return values.length > 0 ? `(${valuesStr})` : valuesStr
         }
         return str
             .replace(/\#/g, 'AND')
@@ -76,7 +76,7 @@ const mapQueryToFilterExpression = (
     });
     const expStr = expressions.join(' ');
 
-    return `${expressions.length <= 1 ? expStr : `(${expStr})`}`
+    return `${expressions.length > 0 ? `(${expStr})` : expStr}`
 }
 
 export default mapQueryToFilterExpression
