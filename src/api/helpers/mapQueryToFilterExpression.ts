@@ -23,7 +23,7 @@ const mapQueryToFilterExpression = (
             case 'beginswith':
                 return beginsWith(attrName, value)
             case 'between':
-                const [a, b] = value.split('~')
+                const [a, b] = value.split(':')
                 return between(attrName, a, b)
             case 'lte':
                 return `${attrName} <= ${value}`
@@ -67,7 +67,6 @@ const mapQueryToFilterExpression = (
             .replace(/\,/g, 'OR')
     });
     const expStr = expressions.join(' ');
-    console.log('expressions', JSON.stringify(expressions, null, 2))
 
     return `${expressions.length <= 1 ? expStr : `(${expStr})`}`
 }
