@@ -65,19 +65,16 @@ const mapQueryToFilterExpression = (
                 if (['inc', 'notinc'].includes(operator)) {
                     values.push(expressEach(next()))
                     values.push(expressEach(next()))
+                    return `(${values.join(` ${getConnecter()} `)})`
                 }
             }
-            console.log('Exp ', JSON.stringify({ str, values }, null, 2))
-            // Handle casing
-            return `(${values.join(` ${getConnecter()} `)})`
+            return `${values.join(` ${getConnecter()} `)}`
         }
-        console.log('Exp separator', JSON.stringify({ str }, null, 2))
         return str
             .replace(/\#/g, 'AND')
             .replace(/\,/g, 'OR')
     });
     const expStr = expressions.join(' ');
-    console.log('Expression', JSON.stringify({ attrName, expressions, field, expValueKeys }, null, 2))
 
     return `${expressions.length <= 1 ? expStr : `(${expStr})`}`
 }
