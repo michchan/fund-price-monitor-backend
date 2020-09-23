@@ -52,7 +52,7 @@ const mapQueryToFilterExpression = (
         if (operator === 'between' && i > 0) return ''
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
-            const values: string[] = []
+            const values: string[] = [];
             const next = () => _expValueKeys.shift() ?? '';
 
             // There will be another value to compare for 'between' operation
