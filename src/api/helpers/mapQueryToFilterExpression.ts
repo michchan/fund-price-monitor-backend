@@ -65,15 +65,17 @@ const mapQueryToFilterExpression = (
                     values.push(expressEach(next()))
                 }
             }
+            console.log('Exp value', JSON.stringify({ str, values }, null, 2))
             // Handle casing
             return `(${values.join(` ${getConnecter()} `)})`
         }
+        console.log('Exp separator', JSON.stringify({ str }, null, 2))
         return str
             .replace(/\#/g, 'AND')
             .replace(/\,/g, 'OR')
     });
     const expStr = expressions.join(' ');
-    console.log('Expression', JSON.stringify(expressions, null, 2))
+    console.log('Expression', JSON.stringify({ attrName, expressions, field, expValueKeys }, null, 2))
 
     return `${expressions.length <= 1 ? expStr : `(${expStr})`}`
 }
