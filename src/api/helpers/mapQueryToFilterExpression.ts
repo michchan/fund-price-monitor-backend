@@ -47,7 +47,9 @@ const mapQueryToFilterExpression = (
     }
 
     // Map expression
-    const expressions = value.split(/(\W+)/i).map((str) => {
+    const expressions = value.split(/([#\,\(\)]+)/i).map((str, i) => {
+        // Only handle once for `between` operation
+        if (operator === 'between' && i > 0) return ''
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
             const values: string[] = []
@@ -65,7 +67,7 @@ const mapQueryToFilterExpression = (
                     values.push(expressEach(next()))
                 }
             }
-            console.log('Exp value', JSON.stringify({ str, values }, null, 2))
+            console.log('Exp ', JSON.stringify({ str, values }, null, 2))
             // Handle casing
             return `(${values.join(` ${getConnecter()} `)})`
         }
