@@ -5,7 +5,7 @@ import contains from "src/lib/AWS/dynamodb/expressionFunctions/contains";
 
 
 
-const mapQueryToFilterExpression = (
+const mapQueryFieldToFilterExpression = (
     attrName: string,
     expValueKeys: string[], 
     field: StructuredQueryField,
@@ -79,4 +79,4 @@ const mapQueryToFilterExpression = (
     return `${expressions.length > 1 ? `(${expStr})` : expStr}`
 }
 
-export default mapQueryToFilterExpression
+export default mapQueryFieldToFilterExpression

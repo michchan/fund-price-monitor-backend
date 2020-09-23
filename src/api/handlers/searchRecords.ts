@@ -11,8 +11,9 @@ import validateKey from "../validators/validateKey";
 import scanItems from "src/models/fundPriceRecord/io/scanItems";
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
-import mapQueryToFilterExpression from "../helpers/mapQueryToFilterExpression";
+import mapQueryFieldToFilterExpression from "../helpers/mapQueryFieldToFilterExpression";
 import createParameterErrMsg from "../helpers/createParameterErrMsg";
+import mapQueryToFilterExpressions from "../helpers/mapQueryToFilterExpressions";
 
 
 
@@ -51,32 +52,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
         /** ----------- Query ----------- */
 
         // Derive filters
-        const [expNames, expValues, filterExp] = ((q: StructuredQuery): [
-            DocumentClient.QueryInput['ExpressionAttributeNames'],
-            DocumentClient.QueryInput['ExpressionAttributeValues'],
-            string[],
-        ] => {
-            const expNames: DocumentClient.QueryInput['ExpressionAttributeNames'] = {}
-            const expValues: DocumentClient.QueryInput['ExpressionAttributeValues'] = {}
-            const filterExp: string[] = []
-
-            q.forEach((field, index) => {
-                const { name, values } = field
-                const attrName = `#${name}`
-                const expValueKeys = values.map((v, i) => `:${name}_${index}_${i}`)
-
-                // Assign attr name
-                expNames[attrName] = name
-                // Map keys and values
-                expValueKeys.forEach((key, i) => {
-                    expValues[key] = values[i]
-                })
-                // Create expression
-                filterExp.push(mapQueryToFilterExpression(attrName, expValueKeys, field))
-            });
-
-            return [expNames, expValues, filterExp]
-        })(q);
+        const [expNames, expValues, filterExp] = mapQueryToFilterExpressions(q);
 
         // Query
         const output = await scanItems({
