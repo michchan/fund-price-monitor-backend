@@ -7,7 +7,25 @@ export const DEFAULT_MAX_TRY_TIME = 25 // 25 times
 export const DEFAULT_INTERVAL = 20000 // every 20 seconds
 
 /**
- * Wait for some service to be active
+ * Wait for some service to be active. 
+ * This is a supplemental help for some services which does not natively have a `waitFor` helper.
+ * 
+ * Example:
+ * 
+ * ```
+ * const dynamodbStreams = new AWS.DynamoDBStreams();
+
+   type I = AWS.DynamoDBStreams.DescribeStreamInput
+   type O = AWS.DynamoDBStreams.DescribeStreamOutput
+   export type Result = O
+
+   const waitForStream = (input: I): Promise<null | Result> => waitForService<I, O, AWS.AWSError>(
+    // Prevent `this` context problem
+    (...args) => dynamodbStreams.describeStream(...args), 
+    input, 
+    data => !!data?.StreamDescription
+   )
+ * ```
  * 
  * @param describe 
  * @param input 
