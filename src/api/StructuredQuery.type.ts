@@ -58,4 +58,3 @@ export interface StructuredQueryField {
     values: string[];
 }
 export type StructuredQuery = StructuredQueryField[];
-// q=company_code[beginswith]manulife+name[inc]healthcare,fidelity+name[notinc]stable+updatedDate[between]2020-09-15#2020-09-21
