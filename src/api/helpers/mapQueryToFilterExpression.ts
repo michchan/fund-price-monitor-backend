@@ -14,7 +14,7 @@ const mapQueryToFilterExpression = (
     // Clone an array for manipulation
     const _expValueKeys = [...expValueKeys]
     
-    const expressEach = (value: string) => {
+    const expressEach = (value: string, comparedValue: string = '') => {
         switch (operator) {
             case 'notinc':
                 return `NOT ${contains(attrName, value)}`
@@ -23,8 +23,7 @@ const mapQueryToFilterExpression = (
             case 'beginswith':
                 return beginsWith(attrName, value)
             case 'between':
-                const [a, b] = value.split(':')
-                return between(attrName, a, b)
+                return between(attrName, value, comparedValue)
             case 'lte':
                 return `${attrName} <= ${value}`
             case 'gte':
@@ -48,13 +47,18 @@ const mapQueryToFilterExpression = (
     }
 
     // Map expression
-    const expressions = value.split(/([^a-z0-9_\-\.]+)/i).map((str) => {
+    const expressions = value.split(/(\W+)/i).map((str) => {
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
             const values: string[] = []
-            values.push(expressEach(_expValueKeys.shift() ?? ''))
 
-            // There will be three casing variants for each value
+            // There will be another value to compare for 'between' operation
+            if (operator === 'between') {
+                values.push(expressEach(_expValueKeys.shift() ?? '', _expValueKeys.shift() ?? ''))
+            } else {
+                values.push(expressEach(_expValueKeys.shift() ?? ''))
+            }
+            // There will be another two casing variants for 'inc' or 'notinc' operation
             if (['inc', 'notinc'].includes(operator)) {
                 values.push(expressEach(_expValueKeys.shift() ?? ''))
                 values.push(expressEach(_expValueKeys.shift() ?? ''))
