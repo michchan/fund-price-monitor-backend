@@ -1,9 +1,9 @@
 import { DynamoDB } from "aws-sdk"
 import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
+import waitForAWSService from 'simply-utils/dist/AWS/waitForAWSService'
 
 import getTableName from "../utils/getTableName";
 import AWS from 'src/lib/AWS'
-import waitForService from "src/helpers/waitForService";
 
 
 // Initialize
@@ -29,7 +29,7 @@ const updateTable = async (
 
     if (shouldWaitForUpdateComplete) {
         // Wait for status to be finished as "ACTIVE" (changing from "UPDATING")
-        await waitForService<I, O, E>(
+        await waitForAWSService<I, O, E>(
             // Prevent `this` context problem
             (...args) => dynamodb.describeTable(...args), 
             // Input

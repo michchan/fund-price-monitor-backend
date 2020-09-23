@@ -1,5 +1,5 @@
 import AWS from 'src/lib/AWS'
-import waitForService from 'src/helpers/waitForService';
+import waitForAWSService from 'simply-utils/dist/AWS/waitForAWSService'
 
 
 // Initialize
@@ -9,7 +9,7 @@ type I = AWS.DynamoDBStreams.DescribeStreamInput
 type O = AWS.DynamoDBStreams.DescribeStreamOutput
 export type Result = O
 
-const waitForStream = (input: I): Promise<null | Result> => waitForService<I, O, AWS.AWSError>(
+const waitForStream = (input: I): Promise<null | Result> => waitForAWSService<I, O, AWS.AWSError>(
     // Prevent `this` context problem
     (...args) => dynamodbStreams.describeStream(...args), 
     input, 
