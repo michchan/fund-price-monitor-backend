@@ -51,17 +51,19 @@ const mapQueryToFilterExpression = (
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
             const values: string[] = []
+            const next = () => _expValueKeys.shift() ?? '';
 
             // There will be another value to compare for 'between' operation
             if (operator === 'between') {
-                values.push(expressEach(_expValueKeys.shift() ?? '', _expValueKeys.shift() ?? ''))
+                values.push(expressEach(next(), next()))
             } else {
-                values.push(expressEach(_expValueKeys.shift() ?? ''))
-            }
-            // There will be another two casing variants for 'inc' or 'notinc' operation
-            if (['inc', 'notinc'].includes(operator)) {
-                values.push(expressEach(_expValueKeys.shift() ?? ''))
-                values.push(expressEach(_expValueKeys.shift() ?? ''))
+                values.push(expressEach(next()))
+
+                // There will be another two casing variants for 'inc' or 'notinc' operation
+                if (['inc', 'notinc'].includes(operator)) {
+                    values.push(expressEach(next()))
+                    values.push(expressEach(next()))
+                }
             }
             // Handle casing
             return `(${values.join(` ${getConnecter()} `)})`
@@ -71,6 +73,7 @@ const mapQueryToFilterExpression = (
             .replace(/\,/g, 'OR')
     });
     const expStr = expressions.join(' ');
+    console.log('Expression', JSON.stringify(expressions, null, 2))
 
     return `${expressions.length <= 1 ? expStr : `(${expStr})`}`
 }
