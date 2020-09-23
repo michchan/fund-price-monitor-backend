@@ -68,7 +68,7 @@ const mapQueryToFilterExpression = (
                 }
             }
             const valuesStr = values.join(` ${getConnecter()} `)
-            return values.length > 0 ? `(${valuesStr})` : valuesStr
+            return values.length > 1 ? `(${valuesStr})` : valuesStr
         }
         return str
             .replace(/\#/g, 'AND')
@@ -76,7 +76,7 @@ const mapQueryToFilterExpression = (
     });
     const expStr = expressions.join(' ');
 
-    return `${expressions.length > 0 ? `(${expStr})` : expStr}`
+    return `${expressions.length > 1 ? `(${expStr})` : expStr}`
 }
 
 export default mapQueryToFilterExpression
