@@ -6,6 +6,15 @@ export type Callback <Output, Err> = (err: Err, data: Output) => unknown;
 export const DEFAULT_MAX_TRY_TIME = 25 // 25 times
 export const DEFAULT_INTERVAL = 20000 // every 20 seconds
 
+/**
+ * Wait for some service to be active
+ * 
+ * @param describe 
+ * @param input 
+ * @param hasService 
+ * @param maxTryTime 
+ * @param interval 
+ */
 function waitForService <Input, Output, Err> (
     describe: Desciber<Input, Output, Err>,
     input: Input,
