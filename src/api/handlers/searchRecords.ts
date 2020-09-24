@@ -28,7 +28,7 @@ export interface QueryParams {
 }
 
 /** 
- * Get single records
+ * Search all fund records
  */
 export const handler: APIGatewayProxyHandler = async (event, context, callback) => {
     try {

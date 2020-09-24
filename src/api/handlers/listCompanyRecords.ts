@@ -30,7 +30,7 @@ export interface QueryParams {
 }
 
 /** 
- * Get single records
+ * Get fund records of a company
  */
 export const handler: APIGatewayProxyHandler = async (event) => {
     try {
