@@ -80,20 +80,32 @@ function init (scope: cdk.Construct) {
     });
 
     // Add records path
+    // /fundprices
     const funds = api.root.addResource('fundprices');
+    // /fundprices/mpf
     const mpfFunds = funds.addResource('mpf');
-    const quarters = mpfFunds.addResource('quarters');
+    // /fundprices/mpf/quarterrates
+    const quarterrates = mpfFunds.addResource('quarterrates');
+    // /fundprices/mpf/search
     const searchedMpfRecords = mpfFunds.addResource('search');
+    // /fundprices/mpf/{company}
     const comRecords = mpfFunds.addResource('{company}');
+    // /fundprices/mpf/{company}/{code}
     const singleFundRecords = comRecords.addResource('{code}');
 
-    const weekRates = comRecords.addResource('weeks');
+    // /fundprices/mpf/{company}/weekrates
+    const weekRates = comRecords.addResource('weekrates');
+    // /fundprices/mpf/{company}/weekrates/{week}
     const weekRateSingle = weekRates.addResource('{week}');
 
-    const monthRates = comRecords.addResource('months');
+    // /fundprices/mpf/{company}/monthrates
+    const monthRates = comRecords.addResource('monthrates');
+    // /fundprices/mpf/{company}/monthrates/{month}
     const monthRateSingle = monthRates.addResource('{month}');
 
-    const quarterRates = comRecords.addResource('quarters');
+    // /fundprices/mpf/{company}/quarterrates
+    const quarterRates = comRecords.addResource('quarterrates');
+        // /fundprices/mpf/{company}/quarterrates/{quarter}
     const quarterRateSingle = quarterRates.addResource('{quarter}');
 
     // Integrations
@@ -105,7 +117,7 @@ function init (scope: cdk.Construct) {
 
     // Add methods
     singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration);
-    quarters.addMethod('GET', listQuartersIntegration);
+    quarterrates.addMethod('GET', listQuartersIntegration);
     searchedMpfRecords.addMethod('GET', searchRecordsIntegration);
     comRecords.addMethod('GET', listComRecordsIntegration);
     weekRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
