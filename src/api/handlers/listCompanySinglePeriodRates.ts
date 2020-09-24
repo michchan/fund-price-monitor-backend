@@ -8,6 +8,8 @@ import validateCompany from "../validators/validateCompany";
 import validateKey from "../validators/validateKey";
 import validatePeriod, { PeriodType } from "../validators/validatePeriod";
 import queryPeriodPriceChangeRate from "src/models/fundPriceRecord/io/queryPeriodPriceChangeRate";
+import validateYearQuarter from "../validators/validateYearQuarter";
+import yearQuarterToTableRange from "../helpers/yearQuarterToTableRange";
 
 
 export type Res = ListResponse<FundPriceChangeRate>;
@@ -20,6 +22,8 @@ export type PathParams = {
 }
 export interface QueryParams {
     exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
+    /** Format: YYYY.(1|2|3|4) */
+    quarter?: string;
 }
 
 /** 
@@ -43,18 +47,25 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         // Get path params
         const { company, [periodType]: period } = (event.pathParameters ?? {}) as unknown as PathParams;
         // Get query params
-        const { exclusiveStartKey } = (event.queryStringParameters ?? {}) as unknown as QueryParams;
+        const { 
+            exclusiveStartKey,
+            quarter,
+        } = (event.queryStringParameters ?? {}) as unknown as QueryParams;
 
         /** ----------- Validations ----------- */
 
         validateCompany(company);
         validatePeriod(period, periodType);
         if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
+        if (quarter) validateYearQuarter(quarter, 'quarter'); 
 
         /** ----------- Query ----------- */
 
+        // Get table range
+        const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined;
+
         // Query
-        const output = await queryPeriodPriceChangeRate(company, periodType, period, false, undefined, {
+        const output = await queryPeriodPriceChangeRate(company, periodType, period, false, tableRange, {
             ExclusiveStartKey: exclusiveStartKey
         })
 

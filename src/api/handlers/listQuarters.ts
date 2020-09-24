@@ -5,6 +5,7 @@ import listAllTables from "src/lib/AWS/dynamodb/listAllTables";
 import { ListResponse } from "../Responses.type";
 import createParameterErrMsg from "../helpers/createParameterErrMsg";
 import { Quarter } from "simply-utils/dist/dateTime/getQuarter";
+import validateYearQuarter from "../validators/validateYearQuarter";
 
 
 export interface QueryParams {
@@ -17,12 +18,10 @@ export interface QueryParams {
  */
 export const handler: APIGatewayProxyHandler = async (event) => {
     try {
-        const queryParams = (event.queryStringParameters ?? {}) as QueryParams;
-        const { exclusiveStartQuarter } = queryParams
+        const { exclusiveStartQuarter } = (event.queryStringParameters ?? {}) as QueryParams;
         
         /** ----------- Validations ----------- */
-        if (exclusiveStartQuarter && !/^([0-9]{4})\.[1-4]$/.test(exclusiveStartQuarter)) 
-            throw new Error(createParameterErrMsg('exclusiveStartQuarter', 'query'))
+        if (exclusiveStartQuarter) validateYearQuarter(exclusiveStartQuarter, 'exclusiveStartQuarter'); 
 
         /** ----------- Query ----------- */
 
@@ -35,7 +34,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         const response: ListResponse<string> = {
             result: true,
             data: (tableNames ?? [])
-                .map(tableName => tableName.match((/[0-9]{4}_q[1-4]/))?.shift() ?? '')
+                .map(tableName => (tableName.match((/[0-9]{4}_q[1-4]/))?.shift() ?? '').replace(/_q/i, '.'))
                 .filter(v => !!v),
         }
         return {

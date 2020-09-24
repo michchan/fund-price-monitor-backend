@@ -13,6 +13,8 @@ import createReadResponse from "../helpers/createReadResponse";
 import createParameterErrMsg from "../helpers/createParameterErrMsg";
 import validateKey from "../validators/validateKey";
 import validateCompany from "../validators/validateCompany";
+import validateYearQuarter from "../validators/validateYearQuarter";
+import yearQuarterToTableRange from "../helpers/yearQuarterToTableRange";
 
 
 
@@ -27,6 +29,8 @@ export interface QueryParams {
     riskLevel?: RiskLevel;
     latest?: boolean;
     exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
+    /** Format: YYYY.(1|2|3|4) */
+    quarter?: string;
 }
 
 /** 
@@ -47,6 +51,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
             riskLevel, 
             latest,
             exclusiveStartKey,
+            quarter,
         } = queryParams
 
         /** ----------- Validations ----------- */
@@ -54,14 +59,18 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         validateCompany(company);
         if (riskLevel && !isValidRiskLevel(riskLevel)) throw new Error(createParameterErrMsg('riskLevel'));
         if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
+        if (quarter) validateYearQuarter(quarter, 'quarter'); 
 
         /** ----------- Query ----------- */
+
+        // Get table range
+        const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined;
 
         // Get query handler by conditions
         const output = await (() => {
             if (riskLevel) {
                 // Query records with risk level and company constraint
-                return queryItemsByRiskLevel(riskLevel, latest, false, undefined, defaultInput => ({
+                return queryItemsByRiskLevel(riskLevel, latest, false, tableRange, defaultInput => ({
                     ExclusiveStartKey: exclusiveStartKey,
                     ExpressionAttributeValues: {
                         ...defaultInput.ExpressionAttributeValues,
@@ -75,7 +84,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                 }))
             }
             // Query records with company constraint
-            return queryItemsByCompany(company, latest, false, undefined, {
+            return queryItemsByCompany(company, latest, false, tableRange, {
                 ExclusiveStartKey: exclusiveStartKey
             })
         })(); 

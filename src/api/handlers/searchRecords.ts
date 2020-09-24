@@ -14,6 +14,8 @@ import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
 import mapQueryFieldToFilterExpression from "../helpers/mapQueryFieldToFilterExpression";
 import createParameterErrMsg from "../helpers/createParameterErrMsg";
 import mapQueryToFilterExpressions from "../helpers/mapQueryToFilterExpressions";
+import validateYearQuarter from "../validators/validateYearQuarter";
+import yearQuarterToTableRange from "../helpers/yearQuarterToTableRange";
 
 
 
@@ -25,6 +27,8 @@ export interface QueryParams {
     latest?: boolean;
     exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
     q?: StructuredQuery;
+    /** Format: YYYY.(1|2|3|4) */
+    quarter?: string;
 }
 
 /** 
@@ -42,17 +46,21 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
             latest,
             exclusiveStartKey,
             q,
+            quarter,
         } = queryParams
 
         /** ----------- Validations ----------- */
 
         if (!q) throw new Error(createParameterErrMsg('q', 'query'));
         if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
+        if (quarter) validateYearQuarter(quarter, 'quarter'); 
 
         /** ----------- Query ----------- */
 
         // Derive filters
         const [expNames, expValues, filterExp] = mapQueryToFilterExpressions(q);
+        // Get table range
+        const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined;
 
         // Query
         const output = await scanItems({
@@ -66,7 +74,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
                 beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),
                 ...filterExp,
             ].join(' AND '),
-        }, false);
+        }, false, tableRange);
 
         // Send back successful response
         return createReadResponse(null, output)
