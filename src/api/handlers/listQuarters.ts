@@ -17,7 +17,7 @@ export interface QueryParams {
  */
 export const handler: APIGatewayProxyHandler = async (event) => {
     try {
-        const queryParams = event.queryStringParameters as QueryParams;
+        const queryParams = (event.queryStringParameters ?? {}) as QueryParams;
         const { exclusiveStartQuarter } = queryParams
         
         /** ----------- Validations ----------- */
