@@ -18,10 +18,8 @@ const listLatestTables = async (
 ): Promise<Result> => {
     // Normalize params
     const _from = from || { year: new Date().getFullYear(), quarter: getQuarter() };
-    // Offset a quarter before the `from.quarter` to make it inclusive
-    const exclusiveStartTableName = getTableName(_from.year, _from.quarter, -1)
     // Send list tables request
-    const results = await listAllTables(exclusiveStartTableName, limit)
+    const results = await listAllTables(_from.year, _from.quarter, limit)
     // Filter out non project-scope tables
     return results.filter(name => new RegExp(`^${PROJECT_NAMESPACE}`).test(name))
 }

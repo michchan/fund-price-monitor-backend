@@ -66,6 +66,10 @@ function init (scope: cdk.Construct) {
         ...commonLambdaInput,
         handler: 'searchRecords.handler',
     });
+    const listQuartersHandler = new lambda.Function(scope, 'ListQuarters', {
+        ...commonLambdaInput,
+        handler: 'listQuarters.handler',
+    });
 
     /** ------------------ API Gateway Definition ------------------ */
 
@@ -77,6 +81,7 @@ function init (scope: cdk.Construct) {
     // Add records path
     const funds = api.root.addResource('fundprices');
     const mpfFunds = funds.addResource('mpf');
+    const quarters = mpfFunds.addResource('quarters');
     const searchedMpfRecords = mpfFunds.addResource('search');
     const comRecords = mpfFunds.addResource('{company}');
     const singleFundRecords = comRecords.addResource('{code}');
@@ -95,9 +100,11 @@ function init (scope: cdk.Construct) {
     const listComRecordsIntegration = new apigateway.LambdaIntegration(listComRecordsHandler);
     const listComSinglePeriodRatesIntegration = new apigateway.LambdaIntegration(listComSinglePeriodRatesHandler);
     const searchRecordsIntegration = new apigateway.LambdaIntegration(searchRecordsHandler);
+    const listQuartersIntegration = new apigateway.LambdaIntegration(listQuartersHandler);
 
     // Add methods
     singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration);
+    quarters.addMethod('GET', listQuartersIntegration);
     searchedMpfRecords.addMethod('GET', searchRecordsIntegration);
     comRecords.addMethod('GET', listComRecordsIntegration);
     weekRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
