@@ -27,6 +27,7 @@ function init (scope: cdk.Construct) {
         actions: [
             'dynamodb:Query',
             'dynamodb:Scan',
+            'dynamodb:ListTables',
         ],
     }));
     // Grant cloudwatch log group access
