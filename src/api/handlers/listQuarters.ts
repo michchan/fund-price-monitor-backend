@@ -34,7 +34,9 @@ export const handler: APIGatewayProxyHandler = async (event) => {
         // Create response
         const response: ListResponse<string> = {
             result: true,
-            data: tableNames ?? [],
+            data: (tableNames ?? [])
+                .map(tableName => tableName.match((/[0-9]{4}_q[1-4]/))?.shift() ?? '')
+                .filter(v => !!v),
         }
         return {
             statusCode: 200,
