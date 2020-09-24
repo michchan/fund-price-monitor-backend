@@ -84,8 +84,8 @@ function init (scope: cdk.Construct) {
     const funds = api.root.addResource('fundprices');
     // /fundprices/mpf
     const mpfFunds = funds.addResource('mpf');
-    // /fundprices/mpf/quarterrates
-    const quarterrates = mpfFunds.addResource('quarterrates');
+    // /fundprices/mpf/quarters
+    const quarterrates = mpfFunds.addResource('quarters');
     // /fundprices/mpf/search
     const searchedMpfRecords = mpfFunds.addResource('search');
     // /fundprices/mpf/{company}
