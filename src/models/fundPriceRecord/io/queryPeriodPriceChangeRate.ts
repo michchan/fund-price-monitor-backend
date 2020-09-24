@@ -18,7 +18,7 @@ const queryPeriodPriceChangeRate = (
     period: string,
     all?: boolean,
     /** Default to current quarter of the current year */
-    from?: TableRange,
+    at?: TableRange,
     input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
 ) => {
     const defaultInput: Input = {
@@ -31,7 +31,7 @@ const queryPeriodPriceChangeRate = (
     return queryItems({
         ...defaultInput,
         ...isFunction(input) ? input(defaultInput) : input,
-    }, all, from)
+    }, all, at)
 }
 
 export default queryPeriodPriceChangeRate
