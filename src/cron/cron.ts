@@ -106,7 +106,7 @@ function init (scope: cdk.Construct) {
         // Extra memory is needed for running the headless browser instance
         memorySize: 700,
         // Extra timeout for scrapers
-        timeout: cdk.Duration.minutes(10),
+        timeout: cdk.Duration.minutes(15),
     }
 
     /** ---------- Data Processing Handlers ---------- */

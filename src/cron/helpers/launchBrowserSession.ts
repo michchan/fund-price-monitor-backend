@@ -24,6 +24,7 @@ export async function launchBrowserSession <T> (
             executablePath: await chromium.executablePath,
             headless: chromium.headless,
             ignoreHTTPSErrors: true,
+            timeout: 120000, // 120s
         });
 
         // open a new page
