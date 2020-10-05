@@ -1,7 +1,7 @@
 import puppeteer = require("puppeteer");
-import retry from 'simply-utils/dist/async/retry'
 
 import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/fundPriceRecord/FundPriceRecord.type";
+import retryWithDelay from "../helpers/retryWithDelay";
 
 
 const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
@@ -17,8 +17,7 @@ export default scrapeFromManulifeMPF
  */
 const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
     // Wait for the elements we want
-    await retry(() => page.waitForSelector('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr:last-child > td > img'), 3)
-        .catch(err => console.log(`ERROR: `, JSON.stringify(err, null, 2)));
+    await retryWithDelay(() => page.waitForSelector('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr:last-child > td > img'), 'scrapeFromManulifeMPF');
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function

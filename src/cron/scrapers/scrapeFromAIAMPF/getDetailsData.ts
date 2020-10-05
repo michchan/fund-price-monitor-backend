@@ -1,7 +1,7 @@
 import puppeteer = require("puppeteer");
-import retry from 'simply-utils/dist/async/retry'
 
 import { FundPriceRecord, RiskLevel } from "src/models/fundPriceRecord/FundPriceRecord.type"
+import retryWithDelay from "../../helpers/retryWithDelay";
 
 
 
@@ -15,8 +15,7 @@ export interface DetailsDataRecord extends Pick<FundPriceRecord,
 */
 const getDetailsData = async (page: puppeteer.Page): Promise<DetailsDataRecord[]> => {
     // Wait for the elements we want
-    await retry(() => page.waitForSelector(`#funddetails_list > table > tbody > tr:not(.header):last-child > td`), 3)
-        .catch(err => console.log(`ERROR: `, JSON.stringify(err, null, 2)));
+    await retryWithDelay(() => page.waitForSelector(`#funddetails_list > table > tbody > tr:not(.header):last-child > td`), 'scrapeFromAIAMPF.getDetailsData');
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
