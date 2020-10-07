@@ -46,6 +46,8 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
 
         // Check table existence
         const tableNames = await listLatestTables({ year, quarter });
+        console.log(JSON.stringify({ tableNames, tableName, ReadCapacityUnits, WriteCapacityUnits, year, quarter }, null, 2))
+
         // Do update if the table exists
         if (tableNames.some(name => name === tableName)) {
             /** ------------------ Delete stream-lambda event source mapping ------------------ */
@@ -80,7 +82,6 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
 
             const throughput = describeTableOutput?.Table?.ProvisionedThroughput;
             const streamEnabled = describeTableOutput.Table?.StreamSpecification?.StreamEnabled
-            console.log(JSON.stringify({ throughput, ReadCapacityUnits, WriteCapacityUnits, year, quarter }, null, 2))
 
             // * The following update-table requests must be separate,
             // * since AWS DynamoDB only allow update either one per request.
