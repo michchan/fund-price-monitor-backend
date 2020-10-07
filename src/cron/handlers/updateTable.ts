@@ -50,7 +50,6 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
             year: quarter === 1 ? +year - 1 : year, 
             quarter: quarter === 1 ? 4 : quarter - 1 as Quarter, 
         });
-        console.log(JSON.stringify({ tableNames, tableName, ReadCapacityUnits, WriteCapacityUnits, currentQuarter, currentYear, year, quarter }, null, 2))
 
         // Do update if the table exists
         if (tableNames.some(name => name === tableName)) {
