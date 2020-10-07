@@ -46,7 +46,7 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
 
         // Check table existence
         const tableNames = await listLatestTables({ year, quarter });
-        console.log(JSON.stringify({ tableNames, tableName, ReadCapacityUnits, WriteCapacityUnits, year, quarter }, null, 2))
+        console.log(JSON.stringify({ tableNames, tableName, ReadCapacityUnits, WriteCapacityUnits, currentQuarter, currentYear, year, quarter }, null, 2))
 
         // Do update if the table exists
         if (tableNames.some(name => name === tableName)) {
