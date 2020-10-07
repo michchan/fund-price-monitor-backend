@@ -45,7 +45,11 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
         const tableName = getTableName(year, quarter);
 
         // Check table existence
-        const tableNames = await listLatestTables({ year, quarter });
+        const tableNames = await listLatestTables({ 
+            // Need to get the previous of previous table name coz it is exclusive here
+            year: quarter === 1 ? +year - 1 : year, 
+            quarter: quarter === 1 ? 4 : quarter - 1 as Quarter, 
+        });
         console.log(JSON.stringify({ tableNames, tableName, ReadCapacityUnits, WriteCapacityUnits, currentQuarter, currentYear, year, quarter }, null, 2))
 
         // Do update if the table exists
