@@ -33,12 +33,7 @@ jobs:
 
       # CDK Deploy 
       - name: cdk deploy
-        uses: youyo/aws-cdk-github-actions@v1
-        with: 
-          cdk_subcommand: 'deploy'
-          cdk_stack: 'FundPriceMonitorBackendStack'
-          actions_comment: false
-          args: '--require-approval never'
+        run: npm run deploy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
