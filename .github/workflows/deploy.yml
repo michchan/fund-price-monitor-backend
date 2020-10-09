@@ -20,11 +20,29 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Check out from Git
         uses: actions/checkout@v2
+
       # Setup node
       - name: Setup Node with the right version
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
           registry-url: 'https://registry.npmjs.org'
+
+      # NPM install
       - run: npm install
+
+      # CDK Deploy 
+      - name: cdk deploy
+        uses: youyo/aws-cdk-github-actions@v1
+        with: 
+          cdk_subcommand: 'deploy'
+          cdk_stack: 'FundPriceMonitorBackendStack'
+          actions_comment: false
+          args: '--require-approval never'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'ap-east-1'
+          
+      
 
