@@ -11,7 +11,7 @@
     "cdk": "cdk",
     "template": "npm run build && cdk synth --no-staging > template.yaml",
     "invoke": "npm run template && sam local invoke",
-    "deploy": "npm run build && cdk deploy --profile root-programmatic-admin FundPriceMonitorBackendStack",
+    "deploy": "npm run build && cdk deploy FundPriceMonitorBackendStack",
     "pushDeploy": "git push && npm run deploy"
   },
   "devDependencies": {
