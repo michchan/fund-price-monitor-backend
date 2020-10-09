@@ -9,10 +9,11 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "template": "npm run build && cdk synth --no-staging > template.yaml",
+    "template": "npm run build && npm run cdk synth --no-staging > template.yaml",
     "invoke": "npm run template && sam local invoke",
-    "deploy": "npm run build && cdk deploy FundPriceMonitorBackendStack",
-    "pushDeploy": "git push && npm run deploy"
+    "deploy": "npm run cdk deploy FundPriceMonitorBackendStack",
+    "buildDeploy": "npm run build && npm run deploy",
+    "pushDeploy": "git push && npm run buildDeploy"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.66.0",
