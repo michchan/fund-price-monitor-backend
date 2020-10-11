@@ -60,8 +60,8 @@ const createConfig = (handlersPath) => ({
 // Services directory path
 const SERVICES_PATH = `build/services`
 
-// Create config for each service folder
-module.exports = fs.readdirSync(SERVICES_PATH).map(path => createConfig(`${SERVICES_PATH}/${path}`))
+// Create config for handlers folder of each service
+module.exports = fs.readdirSync(SERVICES_PATH).map(path => createConfig(`${SERVICES_PATH}/${path}/handlers`))
 
 /** Example output */
 // module.exports = [
