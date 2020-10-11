@@ -3,7 +3,7 @@ import mapValues from "lodash/mapValues";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { ListResponse } from "../Responses.type";
-import { FundPriceRecord, CompanyType, RiskLevel } from '../../models/fundPriceRecord/FundPriceRecord.type'
+import { FundPriceRecord, CompanyType, RiskLevel } from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import attrs from "src/models/fundPriceRecord/constants/attributeNames";
 import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
 import isValidRiskLevel from "src/models/fundPriceRecord/utils/isValidRiskLevel";

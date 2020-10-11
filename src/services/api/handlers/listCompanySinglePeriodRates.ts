@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler } from "aws-lambda";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { ListResponse } from "../Responses.type";
-import { FundPriceChangeRate, CompanyType } from '../../models/fundPriceRecord/FundPriceRecord.type'
+import { FundPriceChangeRate, CompanyType } from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import createReadResponse from "../helpers/createReadResponse";
 import validateCompany from "../validators/validateCompany";
 import validateKey from "../validators/validateKey";

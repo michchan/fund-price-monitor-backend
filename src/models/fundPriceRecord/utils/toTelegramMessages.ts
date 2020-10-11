@@ -2,7 +2,7 @@ import zeroPadding from "simply-utils/dist/number/zeroPadding";
 import capitalize from "lodash/capitalize";
 
 import { FundPriceRecord, CompanyType, FundPriceChangeRate } from "../FundPriceRecord.type"
-import { ScheduleType } from "src/cron/helpers/notifyCompanyRecordsByTelegram"
+import { ScheduleType } from "src/services/cron/helpers/notifyCompanyRecordsByTelegram"
 import parseLinesToChunks from "src/lib/telegram/parseLinesToChunks";
 import getDateTimeDictionary from "src/helpers/getDateTimeDictionary";
 

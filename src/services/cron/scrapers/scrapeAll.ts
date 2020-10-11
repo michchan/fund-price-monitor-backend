@@ -1,4 +1,4 @@
-import { FundPriceRecord } from "../../models/fundPriceRecord/FundPriceRecord.type";
+import { FundPriceRecord } from "../../../models/fundPriceRecord/FundPriceRecord.type";
 import { GetDataWithPage, launchBrowserSession } from "../helpers/launchBrowserSession";
 
 
