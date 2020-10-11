@@ -23,7 +23,13 @@ const createConfig = (handlersPath) => ({
         }, {})
     },
     output: {
-        path: `${process.cwd()}/${handlersPath.replace(/build/i, 'bundles')}`,
+        path: `${process.cwd()}/${
+            handlersPath
+                // Replace '/build' with '/bundles' pathname
+                .replace(/build/i, 'bundles')
+                // Remove "/services"
+                .replace(/\/services/i, '')
+        }`,
         // Keep the bundle name same as the orignal function name
         filename: `[name].js`,
         libraryTarget: 'umd'
@@ -59,6 +65,9 @@ module.exports = fs.readdirSync(SERVICES_PATH).map(path => createConfig(`${SERVI
 
 /** Example output */
 // module.exports = [
-//     createConfig('build/cron/handlers'),
-//     createConfig('build/api/handlers'),
+//     createConfig('build/services/cron/handlers'),
+//     createConfig('build/services/api/handlers'),
 // ];
+/** and they will be bundled into: */
+// /bundles/cron/handlers
+// /bundles/api/handlers
