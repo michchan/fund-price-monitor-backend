@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
-import cron from './cron';
-import api from './api';
+import cron from './services/cron';
+import api from './services/api';
 
 
 export class FundPriceMonitorBackendStack extends cdk.Stack {
