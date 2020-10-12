@@ -126,32 +126,30 @@ function init (scope: cdk.Construct) {
     const handlers = fs.readdirSync(`${__dirname}/handlers`);
 
     /**
+     * Scraper creator
+     */
+    const getScraperCreator = (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
+        const name = fileName.replace(nameRegExp, '').replace(/\.ts$/i, '');
+        return new lambda.Function(scope, `${namePrefix}${name}`, {
+            ...commonLambdaInput,
+            ...commonScrapersInput,
+            handler: `${fileName.replace(/\.ts$/i, '')}.handler`,
+        });
+    }
+
+    /**
      * * Handlers for scraping data and saving data
      */
     const scrapeHandlers = handlers
         .filter(fileName => /^handleScrapeFrom/i.test(fileName))
-        .map(fileName => {
-            const name = fileName.replace(/^handleScrapeFrom/i, '').replace(/\.ts$/i, '');
-            return new lambda.Function(scope, `CronScraper${name}`, {
-                ...commonLambdaInput,
-                ...commonScrapersInput,
-                handler: `${fileName.replace(/\.ts$/i, '')}.handler`,
-            });
-        });
+        .map(getScraperCreator(/^handleScrapeFrom/i, 'CronScraper'));
 
     /**
      * @DEBUG * Testing handlers for scrapers
      */
     const testScrapeHandlers = handlers
         .filter(fileName => /^testScrapeFrom/i.test(fileName))
-        .map(fileName => {
-            const name = fileName.replace(/^testScrapeFrom/i, '').replace(/\.ts$/i, '');
-            return new lambda.Function(scope, `CronScrapeTester${name}`, {
-                ...commonLambdaInput,
-                ...commonScrapersInput,
-                handler: `${fileName.replace(/\.ts$/i, '')}.handler`,
-            });
-        });
+        .map(getScraperCreator(/^testScrapeFrom/i, 'CronTestScraper'));
 
     /** ---------- Table Handlers ---------- */
 
@@ -180,33 +178,21 @@ function init (scope: cdk.Construct) {
 
     /** ---------- Notifications Handlers ---------- */
 
-    /**
-     * Handler for sending daily notifications upon updates
-     */
     const notifyDailyHandler = new lambda.Function(scope, 'CronNotifierDaily', {
         ...commonLambdaInput,
         handler: 'notifyDaily.handler',
         environment: commonNotifyEnv
     });
-    /**
-     * Handler for sending weekly notifications upon updates
-     */
     const notifyWeeklyHandler = new lambda.Function(scope, 'CronNotifierWeekly', {
         ...commonLambdaInput,
         handler: 'notifyWeekly.handler',
         environment: commonNotifyEnv
     });
-    /**
-     * Handler for sending monthly notifications upon updates
-     */
     const notifyMonthlyHandler = new lambda.Function(scope, 'CronNotifierMonthly', {
         ...commonLambdaInput,
         handler: 'notifyMonthly.handler',
         environment: commonNotifyEnv
     });
-    /**
-     * Handler for sending quarterly notifications upon updates
-     */
     const notifyQuarterlyHandler = new lambda.Function(scope, 'CronNotifierQuarterly', {
         ...commonLambdaInput,
         handler: 'notifyQuarterly.handler',
