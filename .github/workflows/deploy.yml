@@ -31,6 +31,10 @@ jobs:
       # NPM install
       - run: npm install
 
+      # Clear last build cache
+      - name: Clear last build cache
+        run: npm run clearBuildCache
+
       # Build
       - name: Build
         run: npm run build
