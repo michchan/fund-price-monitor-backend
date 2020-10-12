@@ -163,8 +163,6 @@ function init (scope: cdk.Construct) {
 
     /** ---------- Notifications Handlers ---------- */
 
-    console.log('DIRNAME', __dirname)
-
     /**
      * Handler for sending daily notifications upon updates
      */
