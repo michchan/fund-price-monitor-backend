@@ -1,6 +1,6 @@
 import { ScheduledHandler } from "aws-lambda";
 
-import scrapeAll from "../scrapers";
+import scrapeAll from "../helpers/scrapeAll";
 import scrapeFromManulifeMPF from "../scrapers/scrapeFromManulifeMPF";
 import scrapeFromAIAMPF from "../scrapers/scrapeFromAIAMPF";
 

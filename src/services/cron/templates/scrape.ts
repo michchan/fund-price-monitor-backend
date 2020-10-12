@@ -3,7 +3,7 @@ import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type
 import { GetDataWithPage } from "../helpers/launchBrowserSession";
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
-import scrapeAll from "src/services/cron/scrapers";
+import scrapeAll from "src/services/cron/helpers/scrapeAll";
 import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems";
 import serialize from "src/models/fundPriceRecord/utils/serialize";
 

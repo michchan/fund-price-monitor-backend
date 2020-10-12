@@ -1,7 +1,7 @@
 import { ScheduledHandler } from "aws-lambda";
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
-import scrapeAll from "../scrapers";
+import scrapeAll from "../helpers/scrapeAll";
 import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems";
 import serialize from "src/models/fundPriceRecord/utils/serialize";
 

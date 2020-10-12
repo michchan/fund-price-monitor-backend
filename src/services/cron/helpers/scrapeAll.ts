@@ -1,5 +1,5 @@
 import { FundPriceRecord } from "../../../models/fundPriceRecord/FundPriceRecord.type";
-import { GetDataWithPage, launchBrowserSession } from "../helpers/launchBrowserSession";
+import { GetDataWithPage, launchBrowserSession } from "./launchBrowserSession";
 
 
 type T = FundPriceRecord[]
