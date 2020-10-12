@@ -2,11 +2,11 @@ import { ScheduledHandler } from "aws-lambda";
 import getQuarter from "simply-utils/dist/dateTime/getQuarter";
 
 import scrapeAll from "../scrapers";
-import scrapeFromManulifeMPF from "../scrapers/scrapeFromManulifeMPF";
-import scrapeFromAIAMPF from "../scrapers/scrapeFromAIAMPF";
 import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems";
 import serialize from "src/models/fundPriceRecord/utils/serialize";
 
+import scrapeFromManulifeMPF from "../scrapers/scrapeFromManulifeMPF";
+import scrapeFromAIAMPF from "../scrapers/scrapeFromAIAMPF";
 
 
 // Create list of scrapers
