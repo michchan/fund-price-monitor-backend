@@ -1,8 +1,9 @@
-
+const fs = require('fs')
 
 
 const buildScrapers = (isTest = false) => {
-    
+    console.log(__dirname)
+    // const scrapers = fs.readdirSync()
 }
 
 // Run script

@@ -5,7 +5,8 @@
     "fund-price-monitor-backend": "bin/fund-price-monitor-backend.ts"
   },
   "scripts": {
-    "build": "tsc && ./node_modules/.bin/webpack",
+    "buildScrapers": "node scripts/buildScrapers",
+    "build": "npm run buildScrapers && tsc && ./node_modules/.bin/webpack",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
