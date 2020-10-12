@@ -131,7 +131,7 @@ function init (scope: cdk.Construct) {
     const scrapeHandlers = handlers
         .filter(fileName => /^handleScrapeFrom/i.test(fileName))
         .map(fileName => {
-            const name = fileName.replace(/^handleScrapeFrom/i, '');
+            const name = fileName.replace(/^handleScrapeFrom/i, '').replace(/\.ts$/i, '');
             return new lambda.Function(scope, `CronScraper${name}`, {
                 ...commonLambdaInput,
                 ...commonScrapersInput,
@@ -145,7 +145,7 @@ function init (scope: cdk.Construct) {
     const testScrapeHandlers = handlers
         .filter(fileName => /^testScrapeFrom/i.test(fileName))
         .map(fileName => {
-            const name = fileName.replace(/^testScrapeFrom/i, '');
+            const name = fileName.replace(/^testScrapeFrom/i, '').replace(/\.ts$/i, '');
             return new lambda.Function(scope, `CronScrapeTester${name}`, {
                 ...commonLambdaInput,
                 ...commonScrapersInput,
