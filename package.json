@@ -7,6 +7,7 @@
   "scripts": {
     "buildScrapers": "node scripts/buildScrapers",
     "build": "npm run buildScrapers && tsc && ./node_modules/.bin/webpack",
+    "clearBuildCache": "rm -rf ./build && rm -rf ./bundles",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
