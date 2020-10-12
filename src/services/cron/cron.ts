@@ -5,6 +5,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { Effect } from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
+import * as fs from 'fs'
 
 import env from 'src/lib/env';
 
@@ -161,6 +162,8 @@ function init (scope: cdk.Construct) {
     });
 
     /** ---------- Notifications Handlers ---------- */
+
+    console.log('DIRNAME', __dirname)
 
     /**
      * Handler for sending daily notifications upon updates
