@@ -110,7 +110,7 @@ function init (scope: cdk.Construct) {
         timeout: cdk.Duration.minutes(15),
     }
 
-    /** ---------- Data Processing Handlers ---------- */
+    /** ---------- Aggregation Handlers ---------- */
 
     /**
      * Handler for aggregating top-level items of records
@@ -119,22 +119,36 @@ function init (scope: cdk.Construct) {
         ...commonLambdaInput,
         handler: 'aggregate.handler',
     });
-    
-    /**
-     * Handler for scraping data and saving data
-     */
-    const scrapeHandler = new lambda.Function(scope, 'CronScraper', {
-        ...commonLambdaInput,
-        ...commonScrapersInput,
-        handler: 'scrape.handler',
-    });
 
-    /** @DEBUG Testing handler for scrapers */
-    const testScraperHandler = new lambda.Function(scope, 'CronScraperTester', {
-        ...commonLambdaInput,
-        ...commonScrapersInput,
-        handler: 'testScrapers.handler',
-    });
+    /** ---------- Scrape Handlers ---------- */
+
+    /**
+     * Handlers for scraping data and saving data
+     */
+    const scrapeHandlers = fs.readdirSync('handlers')
+        .filter(fileName => /^handleScrapeFrom/i.test(fileName))
+        .map(fileName => {
+            const name = fileName.replace(/^handleScrapeFrom/i, '');
+            return new lambda.Function(scope, `CronScraper${name}`, {
+                ...commonLambdaInput,
+                ...commonScrapersInput,
+                handler: `${fileName.replace(/\.ts$/i, '')}.handler`,
+            });
+        });
+
+    /**
+     * @DEBUG Testing handlers for scrapers
+     */
+    const testScrapeHandlers = fs.readdirSync('handlers')
+        .filter(fileName => /^testScrapeFrom/i.test(fileName))
+        .map(fileName => {
+            const name = fileName.replace(/^testScrapeFrom/i, '');
+            return new lambda.Function(scope, `CronScrapeTester${name}`, {
+                ...commonLambdaInput,
+                ...commonScrapersInput,
+                handler: `${fileName.replace(/\.ts$/i, '')}.handler`,
+            });
+        });
 
     /** ---------- Table Handlers ---------- */
 
@@ -205,7 +219,8 @@ function init (scope: cdk.Construct) {
     const dailyScrapeRule = new events.Rule(scope, 'DailyScrapeRule', {
         schedule: events.Schedule.expression('cron(0 20 * * ? *)')
     });
-    dailyScrapeRule.addTarget(new targets.LambdaFunction(scrapeHandler));
+    // Add target for each scraper
+    scrapeHandlers.forEach(handler => dailyScrapeRule.addTarget(new targets.LambdaFunction(handler)));
 
     // Run every day at 00:00AM UTC
     const dailyAlarmRule = new events.Rule(scope, 'DailyAlarmRule', {
