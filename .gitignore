@@ -1,6 +1,7 @@
 *.js
 !jest.config.js
 !webpack.config.js
+!scripts/*.js
 *.d.ts
 node_modules
 
