@@ -1,29 +1,61 @@
 const fs = require('fs')
 
-
 const rootDir = __dirname.replace(/\/scripts/i, '')
 const scrapersDir = `src/services/cron/scrapers`
 const scrapersDirAbs = `${rootDir}/${scrapersDir}`
 const templateDir = `src/services/cron/templates`
 const templateDirAbs = `${rootDir}/${templateDir}`
+const handlersDirAbs = `${rootDir}/src/services/cron/handlers`
 
 const removePathExtension = (path) => path.replace(/\.(ts|js)/i, '')
 
 const buildScrapers = () => {
-    // Get names of scrapers
-    const scrapers = fs.readdirSync(scrapersDirAbs)
+    // Get names of scraperNames
+    const scraperNames = fs.readdirSync(scrapersDirAbs)
         .map(path => removePathExtension(path))
 
-    // Get import path of scrapers
-    const scraperPaths = scrapers.map(path => `${scrapersDir}/${path}`)
-
-    console.log({ scrapers, scraperPaths })
-
     // Read template paths
-    const templatePaths = fs.readdirSync(templateDirAbs)
-        .map(path => `${templateDirAbs}/${removePathExtension(path)}`)
+    const templateNames = fs.readdirSync(templateDirAbs)
 
-    console.log({ templatePaths })
+    // Read each template
+    templateNames.forEach(templateName => {
+        const template = fs.readFileSync(`${templateDirAbs}/${templateName}`, 'utf8')
+        // Split ts file to lines
+        const lines = template.split('\n')
+        // Find index of last import statement
+        const lastImportIndex = lines.reduce((acc, line, index) => {
+            if (/^import/i.test(line)) return index
+            return acc
+        }, 0)
+
+        // Generate file for each scraper
+        scraperNames.forEach(name => {
+            // Generate import statement
+            const importStatment = `import ${name} from '${scrapersDir}/${name}';`
+            // Insert import statements
+            const linesWithImports = [
+                ...lines.slice(0, lastImportIndex + 1), 
+                importStatment, 
+                ...lines.slice(lastImportIndex + 1)
+            ]
+
+            // Insert scraper into scrapers array 
+            const linesWithScraper = linesWithImports.map(line => {
+                if (/^const scrapers/i.test(line)) {
+                    return line.replace(/\=\s\[\]$/i, `= [${name}]`)
+                }
+                return line
+            })
+            const linesText = linesWithScraper.join('\n')
+
+            // Write each handler file
+            const filePrefix = /test/i.test(templateName) ? 'test' : 'handle'
+            const nameCapitalized = name.charAt(0).toUpperCase() + name.slice(1)
+            const fileName = `${filePrefix}${nameCapitalized}.ts`
+
+            fs.writeFileSync(`${handlersDirAbs}/${fileName}`, linesText)
+        })
+    })
 }
 
 // Run script
