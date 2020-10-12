@@ -12,9 +12,7 @@
     "cdk": "cdk",
     "template": "npm run build && npm run cdk synth --no-staging > template.yaml",
     "invoke": "npm run template && sam local invoke",
-    "deploy": "npm run cdk deploy FundPriceMonitorBackendStack",
-    "buildDeploy": "npm run build && npm run deploy",
-    "pushDeploy": "git push && npm run buildDeploy"
+    "deploy": "npm run cdk deploy FundPriceMonitorBackendStack"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.66.0",
