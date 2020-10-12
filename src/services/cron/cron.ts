@@ -123,7 +123,7 @@ function init (scope: cdk.Construct) {
     /** ---------- Scrape Handlers ---------- */
 
     /**
-     * Handlers for scraping data and saving data
+     * * Handlers for scraping data and saving data
      */
     const scrapeHandlers = fs.readdirSync('handlers')
         .filter(fileName => /^handleScrapeFrom/i.test(fileName))
@@ -137,7 +137,7 @@ function init (scope: cdk.Construct) {
         });
 
     /**
-     * @DEBUG Testing handlers for scrapers
+     * @DEBUG * Testing handlers for scrapers
      */
     const testScrapeHandlers = fs.readdirSync('handlers')
         .filter(fileName => /^testScrapeFrom/i.test(fileName))
@@ -219,7 +219,7 @@ function init (scope: cdk.Construct) {
     const dailyScrapeRule = new events.Rule(scope, 'DailyScrapeRule', {
         schedule: events.Schedule.expression('cron(0 20 * * ? *)')
     });
-    // Add target for each scraper
+    // * Add target for each scraper
     scrapeHandlers.forEach(handler => dailyScrapeRule.addTarget(new targets.LambdaFunction(handler)));
 
     // Run every day at 00:00AM UTC

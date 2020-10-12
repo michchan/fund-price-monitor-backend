@@ -18,5 +18,9 @@ __*__sample.json
 # Ignore template.yaml
 template.yaml
 
-#Ignore DotEnv
+# Ignore DotEnv
 *.env
+
+# Ignore dynamically created scrape handlers
+**/cron/handlers/handleScrapeFrom*.ts
+**/cron/handlers/testScrapeFrom*.ts

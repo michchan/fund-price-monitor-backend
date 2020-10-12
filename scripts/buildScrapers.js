@@ -1,3 +1,25 @@
+/**
+ * Dynamically generate lambda handlers of scrapers.
+ * 
+ * This script will take 'scrapers' from `scrapersDir` directory, 
+ * and build lambda 'handlers' under `handlersDir` directory,
+ * based on 'templates' under `templateDir` directory.
+ * 
+ * For example:
+ * Given there are following files under `scrapersDir`:
+ * - scrapeFromAIAMPF.ts
+ * - scrapeFromManulifeMPF.ts
+ * 
+ * and the following files under `templateDir`:
+ * - scrape.ts
+ * - testScrapers.ts
+ * 
+ * The following handler files will be generated under `handlersDir`:
+ * - handleScrapeFromAIAMPF.ts
+ * - handleScrapeFromManulifeMPF.ts
+ * - testScrapeFromAIAMPF.ts
+ * - testScrapeFromManulifeMPF.ts
+ */
 const fs = require('fs')
 
 const rootDir = __dirname.replace(/\/scripts/i, '')
@@ -5,7 +27,8 @@ const scrapersDir = `src/services/cron/scrapers`
 const scrapersDirAbs = `${rootDir}/${scrapersDir}`
 const templateDir = `src/services/cron/templates`
 const templateDirAbs = `${rootDir}/${templateDir}`
-const handlersDirAbs = `${rootDir}/src/services/cron/handlers`
+const handlersDir = `src/services/cron/handlers`
+const handlersDirAbs = `${rootDir}/${handlersDir}`
 
 const removePathExtension = (path) => path.replace(/\.(ts|js)/i, '')
 
