@@ -31,9 +31,13 @@ jobs:
       # NPM install
       - run: npm install
 
+      # Build
+      - name: Build
+        run: npm run build
+
       # CDK Deploy 
       - name: cdk deploy
-        run: npm run buildDeploy
+        run: npm run deploy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
