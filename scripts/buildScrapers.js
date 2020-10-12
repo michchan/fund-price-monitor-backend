@@ -23,7 +23,6 @@
 const fs = require('fs')
 
 const rootDir = __dirname.replace(/\/scripts/i, '')
-console.log('ROOTDIR', rootDir)
 const scrapersDir = `src/services/cron/scrapers`
 const scrapersDirAbs = `${rootDir}/${scrapersDir}`
 const templateDir = `src/services/cron/templates`
