@@ -105,7 +105,7 @@ function init (scope: cdk.Construct) {
 
     // /fundprices/mpf/{company}/quarterrates
     const quarterRates = comRecords.addResource('quarterrates');
-        // /fundprices/mpf/{company}/quarterrates/{quarter}
+    // /fundprices/mpf/{company}/quarterrates/{quarter}
     const quarterRateSingle = quarterRates.addResource('{quarter}');
 
     // Integrations
