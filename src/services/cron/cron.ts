@@ -122,10 +122,13 @@ function init (scope: cdk.Construct) {
 
     /** ---------- Scrape Handlers ---------- */
 
+    // Read handlers directory
+    const handlers = fs.readdirSync(`${__dirname}/handlers`);
+
     /**
      * * Handlers for scraping data and saving data
      */
-    const scrapeHandlers = fs.readdirSync('handlers')
+    const scrapeHandlers = handlers
         .filter(fileName => /^handleScrapeFrom/i.test(fileName))
         .map(fileName => {
             const name = fileName.replace(/^handleScrapeFrom/i, '');
@@ -139,7 +142,7 @@ function init (scope: cdk.Construct) {
     /**
      * @DEBUG * Testing handlers for scrapers
      */
-    const testScrapeHandlers = fs.readdirSync('handlers')
+    const testScrapeHandlers = handlers
         .filter(fileName => /^testScrapeFrom/i.test(fileName))
         .map(fileName => {
             const name = fileName.replace(/^testScrapeFrom/i, '');
