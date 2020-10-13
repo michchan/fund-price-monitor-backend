@@ -18,7 +18,7 @@ export const handler: CloudWatchLogsHandler = async (event, context, callback) =
 
         // * Environment variable SNS_ARN is required
         const snsArn = process.env.SNS_ARN as string
-        publishMessage(payload, snsArn)
+        await publishMessage(payload, snsArn)
     } catch (error) {
         callback(error)
     }
@@ -43,8 +43,5 @@ const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) =
         TargetArn, 
         Subject: `Error for ${resourceType} - ${resourceName}`,
         Message: message,
-    }, (err, data) => {
-        if (err) throw err
-        console.log('Email sent', data)
     }).promise()
 }
