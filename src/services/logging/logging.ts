@@ -77,6 +77,9 @@ function init (scope: cdk.Construct, options: InitOptions) {
         handler: 'notifyError.handler',
     });
 
+    // Grant SNS publish
+    lambdaErrorLogTopic.grantPublish(notifyErrorHandler);
+
     /** ------------------ Cloudwatch Triggers Definition ------------------ */
 
     // Create subscription filters
