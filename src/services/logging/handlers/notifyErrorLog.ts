@@ -30,13 +30,14 @@ const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) =
     const resourceName = payload.logGroup.split('/').pop()
     const messages = payload.logEvents.map(e => e.message).join('\n')
 
-    const message = 
+    const message = (
         `\n${resourceType} Error Summary\n\n`
         + `------------------------------------------------------\n\n`
         + `# LogGroup name: ${payload.logGroup}\n`
         + `# LogStream: ${payload.logStream}\n`
         + `# LogMessage: \n\n${messages}\n\n`
         + `------------------------------------------------------`
+    )
 
     return sns.publish({
         TargetArn, 
