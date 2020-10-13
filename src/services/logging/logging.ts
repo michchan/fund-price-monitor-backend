@@ -16,6 +16,9 @@ export interface InitOptions {
     logGroups: logs.ILogGroup[];
 }
 
+/**
+ * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
+ */
 function init (scope: cdk.Construct, options: InitOptions) {
     const { logGroups } = options
 
@@ -70,19 +73,26 @@ function init (scope: cdk.Construct, options: InitOptions) {
         ...commonLambdaInput,
         handler: 'notifyError.handler',
     });
-
     // Grant SNS publish permission
     lambdaErrorLogTopic.grantPublish(notifyErrorHandler);
 
+    /** Mock error logs handler */
+    const mockErrorLogHandler = new lambda.Function(scope, 'MockErrorLogHandler', {
+        ...commonLambdaInput,
+        handler: 'mockErrorLog.handler',
+    });
+
     /** ------------------ Cloudwatch Triggers Definition ------------------ */
 
-    // Create subscription filters
-    // * Cannot use tokens in construct ID
-    logGroups.forEach((logGroup, i) => new logs.SubscriptionFilter(scope, `LambdaErrorLogsSubscription${i}${generateRandomString()}`, {
-        logGroup,
-        destination: new LambdaDestination(notifyErrorHandler),
-        filterPattern: FilterPattern.allTerms('?ERROR', '?WARN', '?5xx'),
-    }));
+    // Create subscription filters for each log group
+    [...logGroups, mockErrorLogHandler.logGroup].forEach((logGroup, i) => {
+        const id = `LambdaErrorLogsSubscription${i}${generateRandomString()}`
+        return new logs.SubscriptionFilter(scope, id, {
+            logGroup,
+            destination: new LambdaDestination(notifyErrorHandler),
+            filterPattern: FilterPattern.allTerms('?ERROR', '?WARN', '?5xx'),
+        })
+    });
 }
 
 const logging = { init } as const

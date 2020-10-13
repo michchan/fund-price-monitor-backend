@@ -2,6 +2,8 @@ import { CloudWatchLogsHandler } from "aws-lambda";
 
 /**
  * Notify cloudwatch log error through channels like email, messages etc.
+ * 
+ * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
  */
 export const handler: CloudWatchLogsHandler = async (event, context, callback) => {
     try {
