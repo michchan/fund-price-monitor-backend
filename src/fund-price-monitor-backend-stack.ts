@@ -14,6 +14,7 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
         const { handlers: cronHandlers } = cron.init(this);
         // Initialize API service
         const { handlers: apiHandlers } = api.init(this);
+        
         // Initialize logging service
         logging.init(this, {
             logGroups: [

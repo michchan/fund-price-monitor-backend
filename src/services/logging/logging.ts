@@ -30,25 +30,17 @@ function init (scope: cdk.Construct, options: InitOptions) {
         resources: ['*'],
         effect: Effect.ALLOW
     };
-
-    // Create SNS publish handling policy statement
-    const snsPubSubStatement = new iam.PolicyStatement({
+    
+    // Grant logging
+    subsRole.addToPolicy(new iam.PolicyStatement({
         ...commonIamStatementInput,
         sid: 'LambdaErrorLogs',
         actions: [
-            'sns:Publish',
             'logs:CreateLogGroup',
             'logs:CreateLogStream',
             'logs:PutLogEvents',
         ],
-        principals: [
-            new iam.ServicePrincipal('lambda.amazonaws.com'),
-            new iam.ServicePrincipal('sns.amazonaws.com'),
-        ]
-    });
-
-    // Grant SNS publish
-    subsRole.addToPolicy(snsPubSubStatement);
+    }));
 
     /** ------------------ SNS Topics Definition ------------------ */
 
@@ -61,9 +53,6 @@ function init (scope: cdk.Construct, options: InitOptions) {
     lambdaErrorLogTopic.addSubscription(
         new subs.EmailSubscription(env.values.LAMBDA_ERROR_LOG_SUBSCRIPTION_EMAIL)
     );
-
-    // Add role policy statement
-    lambdaErrorLogTopic.addToResourcePolicy(snsPubSubStatement);
 
     /** ------------------ Lambda Handlers Definition ------------------ */
 
