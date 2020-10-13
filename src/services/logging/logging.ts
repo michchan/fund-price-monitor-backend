@@ -7,6 +7,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import { FilterPattern } from '@aws-cdk/aws-logs';
 import { LambdaDestination } from '@aws-cdk/aws-logs-destinations';
+import generateRandomString from 'simply-utils/dist/string/generateRandomString';
 
 import env from 'src/lib/env';
 
@@ -70,13 +71,14 @@ function init (scope: cdk.Construct, options: InitOptions) {
         handler: 'notifyError.handler',
     });
 
-    // Grant SNS publish
+    // Grant SNS publish permission
     lambdaErrorLogTopic.grantPublish(notifyErrorHandler);
 
     /** ------------------ Cloudwatch Triggers Definition ------------------ */
 
     // Create subscription filters
-    logGroups.forEach(logGroup => new logs.SubscriptionFilter(scope, `LambdaErrorLogsSubscription-${logGroup.logGroupName}`, {
+    // * Cannot use tokens in construct ID
+    logGroups.forEach((logGroup, i) => new logs.SubscriptionFilter(scope, `LambdaErrorLogsSubscription-${i}-${generateRandomString()}`, {
         logGroup,
         destination: new LambdaDestination(notifyErrorHandler),
         filterPattern: FilterPattern.allTerms('?ERROR', '?WARN', '?5xx'),
