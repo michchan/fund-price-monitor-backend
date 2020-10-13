@@ -92,7 +92,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
         return new logs.SubscriptionFilter(scope, id, {
             logGroup,
             destination: new LambdaDestination(notifyErrorHandler),
-            filterPattern: FilterPattern.allTerms('?ERROR', '?WARN', '?5xx'),
+            filterPattern: FilterPattern.allTerms('ERROR', 'WARN'),
         })
     });
 }
