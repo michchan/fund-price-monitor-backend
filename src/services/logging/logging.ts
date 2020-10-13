@@ -40,6 +40,10 @@ function init (scope: cdk.Construct, options: InitOptions) {
             'logs:CreateLogGroup',
             'logs:CreateLogStream',
             'logs:PutLogEvents',
+        ],
+        principals: [
+            new iam.ServicePrincipal('lambda.amazonaws.com'),
+            new iam.ServicePrincipal('sns.amazonaws.com'),
         ]
     });
 
@@ -86,7 +90,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
     logGroups.forEach(logGroup => new logs.SubscriptionFilter(scope, `LambdaErrorLogsSubscription-${logGroup.logGroupName}`, {
         logGroup,
         destination: new LambdaDestination(notifyErrorHandler),
-        filterPattern: FilterPattern.allTerms('?ERROR', '?WARN', '?5xx')
+        filterPattern: FilterPattern.allTerms('?ERROR', '?WARN', '?5xx'),
     }));
 }
 
