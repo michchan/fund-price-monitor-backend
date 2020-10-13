@@ -1,14 +1,14 @@
-import puppeteer = require("puppeteer");
+import puppeteer = require("puppeteer")
 
 import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import retryWithDelay from "../../helpers/retryWithDelay";
+import retryWithDelay from "../../helpers/retryWithDelay"
 
 
 export interface PerfDataRecord extends Pick<FundPriceRecord, 
     | 'code'
     | 'launchedDate'
 > {
-    priceChangeRateSinceLaunch: number;
+    priceChangeRateSinceLaunch: number
 }
 
 /**
@@ -16,13 +16,13 @@ export interface PerfDataRecord extends Pick<FundPriceRecord,
 */
 const getPerformanceData = async (page: puppeteer.Page): Promise<PerfDataRecord[]> => {
     // Wait for the elements we want
-    await retryWithDelay(() => page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header):last-child > td'), 'scrapeFromAIAMPF.getPerformanceData');
+    await retryWithDelay(() => page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header):last-child > td'), 'scrapeFromAIAMPF.getPerformanceData')
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
     return page.evaluate((): PerfDataRecord[] => {
         // Query table rows nodes
-        const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)');
+        const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)')
 
         // Map table rows data to PerfDataRecord[]
         return Array.from(tableRows)

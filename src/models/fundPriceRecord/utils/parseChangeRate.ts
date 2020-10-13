@@ -1,8 +1,8 @@
-import { DynamoDB } from 'aws-sdk';
-import { ListAttributeValue } from 'aws-sdk/clients/dynamodbstreams';
+import { DynamoDB } from 'aws-sdk'
+import { ListAttributeValue } from 'aws-sdk/clients/dynamodbstreams'
 
 import { CompanyType, FundPriceChangeRate, AggregatedRecordType } from "../FundPriceRecord.type"
-import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames';
+import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames'
 
 
 /**

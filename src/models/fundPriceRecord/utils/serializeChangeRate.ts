@@ -1,8 +1,8 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB } from 'aws-sdk'
 
 import { FundPriceChangeRate } from "../FundPriceRecord.type"
-import attr from '../constants/attributeNames';
-import getCompositeSKFromChangeRate from './getCompositeSKFromChangeRate';
+import attr from '../constants/attributeNames'
+import getCompositeSKFromChangeRate from './getCompositeSKFromChangeRate'
 
 
 
@@ -20,7 +20,7 @@ const serializeChangeRate = (record: FundPriceChangeRate): DynamoDB.DocumentClie
         updatedDate,
         period,
         recordType,
-    } = record;
+    } = record
 
     return {
         Item: {

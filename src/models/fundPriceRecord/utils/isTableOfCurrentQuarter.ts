@@ -1,4 +1,4 @@
-import getQuarter from "simply-utils/dist/dateTime/getQuarter";
+import getQuarter from "simply-utils/dist/dateTime/getQuarter"
 
 import getTableName from "./getTableName"
 

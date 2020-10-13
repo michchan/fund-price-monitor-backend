@@ -1,14 +1,14 @@
-import capitalize from "lodash/capitalize";
+import capitalize from "lodash/capitalize"
 
 import { StructuredQuery, StructuredQueryString, StructuredQueryField, Operator } from "../StructuredQuery.type"
 
 
 
 const parseQuery = (q: StructuredQueryString): StructuredQuery => {
-    const components = q.split('+');
+    const components = q.split('+')
     return components.reduce((acc, curr) => {
-        const [nameAndOpt, value] = curr.split(']');
-        const [name, _operator] = nameAndOpt.split('[');
+        const [nameAndOpt, value] = curr.split(']')
+        const [name, _operator] = nameAndOpt.split('[')
         
         const operator = _operator as Operator
         const values = value

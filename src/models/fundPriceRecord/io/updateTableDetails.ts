@@ -1,10 +1,10 @@
 import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb"
 
 import getTableName from "../utils/getTableName"
-import attrs from "../constants/attributeNames";
-import topLevelKeysValues from "../constants/topLevelKeysValues";
-import updateItem, { Input } from "src/lib/AWS/dynamodb/updateItem";
+import attrs from "../constants/attributeNames"
+import topLevelKeysValues from "../constants/topLevelKeysValues"
+import updateItem, { Input } from "src/lib/AWS/dynamodb/updateItem"
 
 
 function updateTableDetails (
@@ -19,7 +19,7 @@ function updateTableDetails (
             [attrs.COMPANY_CODE]: `${topLevelKeysValues.DETAILS_PK}`,
             [attrs.TIME_SK]: `${topLevelKeysValues.TABLE_DETAILS_SK}`
         } as DocumentClient.AttributeValue,
-    });
+    })
 }
 
 export default updateTableDetails

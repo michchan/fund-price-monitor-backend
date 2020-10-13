@@ -3,7 +3,7 @@ import waitForAWSService from 'simply-utils/dist/AWS/waitForAWSService'
 
 
 // Initialize
-const dynamodbStreams = new AWS.DynamoDBStreams();
+const dynamodbStreams = new AWS.DynamoDBStreams()
 
 type I = AWS.DynamoDBStreams.DescribeStreamInput
 type O = AWS.DynamoDBStreams.DescribeStreamOutput

@@ -1,7 +1,7 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb"
 
-import { StructuredQuery } from "../StructuredQuery.type";
-import mapQueryFieldToFilterExpression from "./mapQueryFieldToFilterExpression";
+import { StructuredQuery } from "../StructuredQuery.type"
+import mapQueryFieldToFilterExpression from "./mapQueryFieldToFilterExpression"
 
 
 export type ReturnType = [
@@ -29,7 +29,7 @@ const mapQueryToFilterExpressions = (q: StructuredQuery): ReturnType => {
         })
         // Create expression
         filterExp.push(mapQueryFieldToFilterExpression(attrName, expValueKeys, field))
-    });
+    })
 
     return [expNames, expValues, filterExp]
 }

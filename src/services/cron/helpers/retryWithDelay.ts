@@ -11,6 +11,6 @@ function retryWithDelay <T = unknown> (
     return retry<T>(callback, DEFAULT_RETRY_TIME, DEFAULT_DELAY)
         .catch(err => {
             console.log(`ERROR at retryWithDelay (${logScope}): `, JSON.stringify(err, null, 2))
-        });
+        })
 }
 export default retryWithDelay

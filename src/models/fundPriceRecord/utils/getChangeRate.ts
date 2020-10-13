@@ -1,6 +1,6 @@
-import { FundPriceRecord, FundPriceChangeRate, AggregatedRecordType } from "../FundPriceRecord.type";
-import getPeriodByRecordType from "./getPeriodByRecordType";
-import calculatePriceChangeRate from "./calculatePriceChangeRate";
+import { FundPriceRecord, FundPriceChangeRate, AggregatedRecordType } from "../FundPriceRecord.type"
+import getPeriodByRecordType from "./getPeriodByRecordType"
+import calculatePriceChangeRate from "./calculatePriceChangeRate"
 
 
 const getChangeRate = (
@@ -12,7 +12,7 @@ const getChangeRate = (
     aggregateDate?: Date,
 ): FundPriceChangeRate => {
     // Get date from basedRecord time
-    const date = new Date(basedRecord.time);
+    const date = new Date(basedRecord.time)
 
     // Get next price list
     const priceList = (() => {

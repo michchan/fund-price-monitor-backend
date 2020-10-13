@@ -1,5 +1,5 @@
 import { AggregatedRecordType } from "../FundPriceRecord.type"
-import getDateTimeDictionary from "src/helpers/getDateTimeDictionary";
+import getDateTimeDictionary from "src/helpers/getDateTimeDictionary"
 
 
 
@@ -7,7 +7,7 @@ const getPeriodByRecordType = (
     recordType: AggregatedRecordType,
     date: Date,
 ): string => {
-    const { week, month, year, quarter } = getDateTimeDictionary(date);
+    const { week, month, year, quarter } = getDateTimeDictionary(date)
 
     switch (recordType) {
         case 'week': return `${year}-${month}.${week}`

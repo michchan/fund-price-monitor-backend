@@ -1,20 +1,20 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import { Effect } from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as apigateway from '@aws-cdk/aws-apigateway';
+import * as cdk from '@aws-cdk/core'
+import * as iam from '@aws-cdk/aws-iam'
+import { Effect } from '@aws-cdk/aws-iam'
+import * as lambda from '@aws-cdk/aws-lambda'
+import * as apigateway from '@aws-cdk/aws-apigateway'
 
 
 const DIRNAME = 'api'
 
 export interface ReturnType {
     handlers: {
-        listSingleFundRecords: lambda.Function;
-        listCompanyRecords: lambda.Function;
-        listCompanySinglePeriodRates: lambda.Function;
-        searchRecords: lambda.Function;
-        listQuarters: lambda.Function;
-    };
+        listSingleFundRecords: lambda.Function
+        listCompanyRecords: lambda.Function
+        listCompanySinglePeriodRates: lambda.Function
+        searchRecords: lambda.Function
+        listQuarters: lambda.Function
+    }
 }
 
 function init (scope: cdk.Construct): ReturnType {
@@ -24,13 +24,13 @@ function init (scope: cdk.Construct): ReturnType {
     // Create IAM roles for API handling
     const apiRole = new iam.Role(scope, 'ApiRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
-    });
+    })
     
     // Common attributes in IAM statement
     const commonIamStatementInput = {
         resources: ['*'],
         effect: Effect.ALLOW
-    };
+    }
 
     // Grant db access permissions for handler by assigning role
     apiRole.addToPolicy(new iam.PolicyStatement({
@@ -41,7 +41,7 @@ function init (scope: cdk.Construct): ReturnType {
             'dynamodb:Scan',
             'dynamodb:ListTables',
         ],
-    }));
+    }))
     // Grant cloudwatch log group access
     apiRole.addToPolicy(new iam.PolicyStatement({
         ...commonIamStatementInput,
@@ -51,7 +51,7 @@ function init (scope: cdk.Construct): ReturnType {
             'logs:CreateLogStream',
             'logs:PutLogEvents',
         ],
-    }));
+    }))
 
     /** ------------------ Lambda Handlers Definition ------------------ */
 
@@ -61,87 +61,87 @@ function init (scope: cdk.Construct): ReturnType {
         timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         role: apiRole,
-    };
+    }
 
     const listSingleFundRecordsHandler = new lambda.Function(scope, 'ListSingleFundRecords', {
         ...commonLambdaInput,
         handler: 'listSingleFundRecords.handler',
-    });
+    })
     const listComRecordsHandler = new lambda.Function(scope, 'ListCompanyRecords', {
         ...commonLambdaInput,
         handler: 'listCompanyRecords.handler',
-    });
+    })
     const listComSinglePeriodRatesHandler = new lambda.Function(scope, 'ListCompanySinglePeriodRates', {
         ...commonLambdaInput,
         handler: 'listCompanySinglePeriodRates.handler',
-    });
+    })
     const searchRecordsHandler = new lambda.Function(scope, 'SearchRecords', {
         ...commonLambdaInput,
         handler: 'searchRecords.handler',
-    });
+    })
     const listQuartersHandler = new lambda.Function(scope, 'ListQuarters', {
         ...commonLambdaInput,
         handler: 'listQuarters.handler',
-    });
+    })
 
     /** ------------------ API Gateway Definition ------------------ */
 
     // Create api service
     const api = new apigateway.RestApi(scope, 'MPFFundPricesApi', {
         restApiName: 'MPF Fund Prices Service',
-    });
+    })
 
     // Add records path
     // /fundprices
-    const funds = api.root.addResource('fundprices');
+    const funds = api.root.addResource('fundprices')
     // /fundprices/mpf
-    const mpfFunds = funds.addResource('mpf');
+    const mpfFunds = funds.addResource('mpf')
     // /fundprices/mpf/quarters
-    const quarterrates = mpfFunds.addResource('quarters');
+    const quarterrates = mpfFunds.addResource('quarters')
     // /fundprices/mpf/search
-    const searchedMpfRecords = mpfFunds.addResource('search');
+    const searchedMpfRecords = mpfFunds.addResource('search')
     // /fundprices/mpf/{company}
-    const comRecords = mpfFunds.addResource('{company}');
+    const comRecords = mpfFunds.addResource('{company}')
     // /fundprices/mpf/{company}/{code}
-    const singleFundRecords = comRecords.addResource('{code}');
+    const singleFundRecords = comRecords.addResource('{code}')
 
     // /fundprices/mpf/{company}/weekrates
-    const weekRates = comRecords.addResource('weekrates');
+    const weekRates = comRecords.addResource('weekrates')
     // /fundprices/mpf/{company}/weekrates/{week}
-    const weekRateSingle = weekRates.addResource('{week}');
+    const weekRateSingle = weekRates.addResource('{week}')
 
     // /fundprices/mpf/{company}/monthrates
-    const monthRates = comRecords.addResource('monthrates');
+    const monthRates = comRecords.addResource('monthrates')
     // /fundprices/mpf/{company}/monthrates/{month}
-    const monthRateSingle = monthRates.addResource('{month}');
+    const monthRateSingle = monthRates.addResource('{month}')
 
     // /fundprices/mpf/{company}/quarterrates
-    const quarterRates = comRecords.addResource('quarterrates');
+    const quarterRates = comRecords.addResource('quarterrates')
     // /fundprices/mpf/{company}/quarterrates/{quarter}
-    const quarterRateSingle = quarterRates.addResource('{quarter}');
+    const quarterRateSingle = quarterRates.addResource('{quarter}')
 
     // Integrations
-    const listSingleFundRecordsIntegration = new apigateway.LambdaIntegration(listSingleFundRecordsHandler);
-    const listComRecordsIntegration = new apigateway.LambdaIntegration(listComRecordsHandler);
-    const listComSinglePeriodRatesIntegration = new apigateway.LambdaIntegration(listComSinglePeriodRatesHandler);
-    const searchRecordsIntegration = new apigateway.LambdaIntegration(searchRecordsHandler);
-    const listQuartersIntegration = new apigateway.LambdaIntegration(listQuartersHandler);
+    const listSingleFundRecordsIntegration = new apigateway.LambdaIntegration(listSingleFundRecordsHandler)
+    const listComRecordsIntegration = new apigateway.LambdaIntegration(listComRecordsHandler)
+    const listComSinglePeriodRatesIntegration = new apigateway.LambdaIntegration(listComSinglePeriodRatesHandler)
+    const searchRecordsIntegration = new apigateway.LambdaIntegration(searchRecordsHandler)
+    const listQuartersIntegration = new apigateway.LambdaIntegration(listQuartersHandler)
 
     // Add methods
-    singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration);
-    quarterrates.addMethod('GET', listQuartersIntegration);
-    searchedMpfRecords.addMethod('GET', searchRecordsIntegration);
-    comRecords.addMethod('GET', listComRecordsIntegration);
-    weekRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
-    monthRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
-    quarterRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration);
+    singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration)
+    quarterrates.addMethod('GET', listQuartersIntegration)
+    searchedMpfRecords.addMethod('GET', searchRecordsIntegration)
+    comRecords.addMethod('GET', listComRecordsIntegration)
+    weekRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration)
+    monthRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration)
+    quarterRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration)
 
     // Add CORS options
-    addCorsOptions(comRecords);
-    addCorsOptions(singleFundRecords);
-    addCorsOptions(weekRates);
-    addCorsOptions(monthRates);
-    addCorsOptions(quarterRates);
+    addCorsOptions(comRecords)
+    addCorsOptions(singleFundRecords)
+    addCorsOptions(weekRates)
+    addCorsOptions(monthRates)
+    addCorsOptions(quarterRates)
 
     return {
         handlers: {

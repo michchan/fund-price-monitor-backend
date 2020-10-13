@@ -1,5 +1,5 @@
-import { FundPriceRecord } from "../../../models/fundPriceRecord/FundPriceRecord.type";
-import { GetDataWithPage, launchBrowserSession } from "./launchBrowserSession";
+import { FundPriceRecord } from "../../../models/fundPriceRecord/FundPriceRecord.type"
+import { GetDataWithPage, launchBrowserSession } from "./launchBrowserSession"
 
 
 type T = FundPriceRecord[]
@@ -20,7 +20,7 @@ const scrapeAll = async (scrapers: GetDataWithPage<T>[]) => {
         }
     }
     // Log records to insert
-    console.log(`Records to insert (${records.length}): `, JSON.stringify(records, null, 2));
+    console.log(`Records to insert (${records.length}): `, JSON.stringify(records, null, 2))
     return records
 }
 export default scrapeAll

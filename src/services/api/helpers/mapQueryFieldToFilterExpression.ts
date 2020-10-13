@@ -1,7 +1,7 @@
-import { StructuredQueryField } from "../StructuredQuery.type";
-import between from "src/lib/AWS/dynamodb/expressionFunctions/between";
-import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
-import contains from "src/lib/AWS/dynamodb/expressionFunctions/contains";
+import { StructuredQueryField } from "../StructuredQuery.type"
+import between from "src/lib/AWS/dynamodb/expressionFunctions/between"
+import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith"
+import contains from "src/lib/AWS/dynamodb/expressionFunctions/contains"
 
 
 
@@ -52,8 +52,8 @@ const mapQueryFieldToFilterExpression = (
         if (operator === 'between' && i > 0) return ''
         // Replace with expression value key
         if (/^[a-z0-9_\-\.]+$/i.test(str)) {
-            const values: string[] = [];
-            const next = () => _expValueKeys.shift() ?? '';
+            const values: string[] = []
+            const next = () => _expValueKeys.shift() ?? ''
 
             // There will be another value to compare for 'between' operation
             if (operator === 'between') {
@@ -73,8 +73,8 @@ const mapQueryFieldToFilterExpression = (
         return str
             .replace(/\#/g, 'AND')
             .replace(/\,/g, 'OR')
-    });
-    const expStr = expressions.join(' ');
+    })
+    const expStr = expressions.join(' ')
 
     return `${expressions.length > 1 ? `(${expStr})` : expStr}`
 }

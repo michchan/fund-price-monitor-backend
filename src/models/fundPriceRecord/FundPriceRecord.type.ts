@@ -26,25 +26,25 @@ export type RecordType =
  * A scrape recrod of the fundprice
  */
 export interface FundPriceRecord {
-    company: CompanyType;
+    company: CompanyType
     /** Fund code/ID */
-    code: string;
-    name: string;
+    code: string
+    name: string
     /** YYYY-MM-DD */
-    updatedDate: string;
+    updatedDate: string
     /** Unit price in HKD */
-    price: number;
+    price: number
     /** Change rate compared to previous recorded time */
-    priceChangeRate?: number;
+    priceChangeRate?: number
     /** Initial unit price */
-    initialPrice: number;
+    initialPrice: number
     /** YYYY-MM-DD */
-    launchedDate: string;
-    riskLevel: RiskLevel;
+    launchedDate: string
+    riskLevel: RiskLevel
     /** Record time in ISO timestamp */
-    time: string;
-    fundType: FundType;
-    recordType: RecordType;
+    time: string
+    fundType: FundType
+    recordType: RecordType
 }
 
 export interface FundPriceChangeRate extends Pick<FundPriceRecord, 
@@ -56,18 +56,18 @@ export interface FundPriceChangeRate extends Pick<FundPriceRecord,
     | 'updatedDate'
 > {
     /** In `YYYY-MM_[nth week]` , `YYYY-MM` or `YYYY.[nth quarter]` */
-    period: string;
-    recordType: AggregatedRecordType;
+    period: string
+    recordType: AggregatedRecordType
     /** --------- Aggregated fields --------- */
-    priceChangeRate: number;
-    priceList: number[];
+    priceChangeRate: number
+    priceList: number[]
 }
 
 export interface FundPriceTableDetails {
     /** ISO timestamp */
-    time: string;
+    time: string
     /** Order not preserved */
-    companies: CompanyType[];
+    companies: CompanyType[]
     /** Order not preserved */
-    fundTypes: FundType[];
+    fundTypes: FundType[]
 }

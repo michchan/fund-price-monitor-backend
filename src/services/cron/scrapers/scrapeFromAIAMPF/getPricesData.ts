@@ -1,7 +1,7 @@
-import puppeteer = require("puppeteer");
+import puppeteer = require("puppeteer")
 
 import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import retryWithDelay from "../../helpers/retryWithDelay";
+import retryWithDelay from "../../helpers/retryWithDelay"
 
 
 export interface PriceDataRecord extends Pick<FundPriceRecord, 
@@ -15,16 +15,16 @@ export interface PriceDataRecord extends Pick<FundPriceRecord,
  */
 const getPricesData = async (page: puppeteer.Page): Promise<PriceDataRecord[]> => {
     // Wait for the elements we want
-    await retryWithDelay(() => page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header):last-child > td'), 'scrapeFromAIAMPF.getPricesData');
+    await retryWithDelay(() => page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header):last-child > td'), 'scrapeFromAIAMPF.getPricesData')
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
     return page.evaluate((): PriceDataRecord[] => {
         // Query table rows nodes
-        const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)');
+        const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)')
 
         // Get page-level updatedDate
-        const updatedDateEl = document.querySelector('#main-block > table > tbody > tr > td > font') as HTMLFontElement;
+        const updatedDateEl = document.querySelector('#main-block > table > tbody > tr > td > font') as HTMLFontElement
         const [all, year, month, date] = (updatedDateEl?.innerText ?? '').match(/(\d{4})年(\d{1,2})月(\d{1,2})/i) ?? ''
         const MM = +month < 10 ? `0${month}` : month
         const DD = +date < 10 ? `0${date}` : date

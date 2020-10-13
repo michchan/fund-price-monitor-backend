@@ -8,8 +8,8 @@ import { MAX_LENGTH } from "./constants"
 const parseLinesToChunks = (lines: string[]): string[] => {
     return lines.reduce((chunks: string[], line) => {
         const rest = [...chunks]
-        const chunk = rest.pop() ?? '';
-        const testChunk = [chunk, line].join('\n');
+        const chunk = rest.pop() ?? ''
+        const testChunk = [chunk, line].join('\n')
 
         if (testChunk.length > MAX_LENGTH) {
             return [...rest, chunk, line]

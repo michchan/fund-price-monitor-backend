@@ -46,15 +46,15 @@ export type NumberListAttrNameKey = keyof Pick<AttrName,
 >
 
 export type FundPriceRecordAttributeMap = {
-    [key in AttrName[StringAttrNameKey]]: string;
+    [key in AttrName[StringAttrNameKey]]: string
 } & {
-    [key in AttrName[NumberAttrNameKey]]: number;
+    [key in AttrName[NumberAttrNameKey]]: number
 } & {
-    [key in AttrName[NumberListAttrNameKey]]: number[];
+    [key in AttrName[NumberListAttrNameKey]]: number[]
 } & {
-    [key in AttrName['FUND_TYPE']]: FundType;
+    [key in AttrName['FUND_TYPE']]: FundType
 } & {
-    [key in AttrName['RISK_LEVEL']]: RiskLevel;
+    [key in AttrName['RISK_LEVEL']]: RiskLevel
 } & {
-    [key in AttrName['COMPANY']]: CompanyType;
+    [key in AttrName['COMPANY']]: CompanyType
 }

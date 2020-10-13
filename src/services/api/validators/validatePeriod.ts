@@ -1,4 +1,4 @@
-import createParameterErrMsg from "../helpers/createParameterErrMsg";
+import createParameterErrMsg from "../helpers/createParameterErrMsg"
 
 
 
@@ -13,15 +13,15 @@ const validatePeriod = (
     switch (type) {
         case 'week':
             if (!/^[0-9]{4}-((0[0-9])|(1[1-2]))\.[0-9]+$/.test(maybePeriod)) throwErr()
-            break;
+            break
         case 'month': 
             if (!/^[0-9]{4}-((0[0-9])|(1[1-2]))$/.test(maybePeriod)) throwErr()
-            break;
+            break
         case 'quarter':
             if (!/^[0-9]{4}\.[1-4]$/.test(maybePeriod)) throwErr()
-            break;
+            break
         default:
-            break;
+            break
     }
 }
 

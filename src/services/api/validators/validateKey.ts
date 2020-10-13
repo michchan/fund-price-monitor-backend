@@ -1,7 +1,7 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb"
 
-import createParameterErrMsg from "../helpers/createParameterErrMsg";
-import { mapValues } from "lodash";
+import createParameterErrMsg from "../helpers/createParameterErrMsg"
+import { mapValues } from "lodash"
 
 
 
@@ -14,11 +14,11 @@ import { mapValues } from "lodash";
  */
 const validateKey = (key: DocumentClient.Key, fieldName: string) => {
     if (typeof key !== 'object') 
-        throw new Error(createParameterErrMsg(fieldName, 'query', 'invalid'));
+        throw new Error(createParameterErrMsg(fieldName, 'query', 'invalid'))
 
     return mapValues(key, value => {
         if (value && !/^[a-z0-9_\-\.]{3,255}$/i.test(`${value}`)) 
-            throw new Error(createParameterErrMsg(fieldName, 'query', 'invalidKeyFormat'));
+            throw new Error(createParameterErrMsg(fieldName, 'query', 'invalidKeyFormat'))
     })
 }
 

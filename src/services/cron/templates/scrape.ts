@@ -1,11 +1,11 @@
-import { ScheduledHandler } from "aws-lambda";
-import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type";
-import { GetDataWithPage } from "../helpers/launchBrowserSession";
-import getQuarter from "simply-utils/dist/dateTime/getQuarter";
+import { ScheduledHandler } from "aws-lambda"
+import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
+import { GetDataWithPage } from "../helpers/launchBrowserSession"
+import getQuarter from "simply-utils/dist/dateTime/getQuarter"
 
-import scrapeAll from "src/services/cron/helpers/scrapeAll";
-import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems";
-import serialize from "src/models/fundPriceRecord/utils/serialize";
+import scrapeAll from "src/services/cron/helpers/scrapeAll"
+import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems"
+import serialize from "src/models/fundPriceRecord/utils/serialize"
 
 // Create list of scrapers
 const scrapers: GetDataWithPage<FundPriceRecord[]>[] = []
@@ -24,7 +24,7 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
         const records = await scrapeAll(scrapers)
 
         // Write batch data to the table
-        await batchCreateItems(records, year, quarter, serialize);
+        await batchCreateItems(records, year, quarter, serialize)
     } catch (error) {
         callback(error)
     }

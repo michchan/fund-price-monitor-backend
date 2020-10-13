@@ -7,7 +7,7 @@ import notifyByTelegram from "../helpers/notifyByTelegram"
  */
 export const handler: ScheduledHandler = async (event, context, callback) => {
     try {
-        await notifyByTelegram('daily');
+        await notifyByTelegram('daily')
     } catch (error) {
         callback(error)
     }

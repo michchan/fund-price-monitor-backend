@@ -1,20 +1,20 @@
-import * as cdk from '@aws-cdk/core';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as cdk from '@aws-cdk/core'
+import * as lambda from '@aws-cdk/aws-lambda'
 
-import cron from './services/cron';
-import api from './services/api';
-import logging from './services/logging';
+import cron from './services/cron'
+import api from './services/api'
+import logging from './services/logging'
 
 
 export class FundPriceMonitorBackendStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-        super(scope, id, props);
+        super(scope, id, props)
 
         // Initialize cron service
-        const { handlers: cronHandlers } = cron.init(this);
+        const { handlers: cronHandlers } = cron.init(this)
         // Initialize API service
-        const { handlers: apiHandlers } = api.init(this);
-        
+        const { handlers: apiHandlers } = api.init(this)
+
         // Initialize logging service
         logging.init(this, {
             logGroups: [
@@ -26,6 +26,6 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
                 ...Object.values(apiHandlers)
             ]
             .map(lambda => lambda.logGroup),
-        });
+        })
     }
 }

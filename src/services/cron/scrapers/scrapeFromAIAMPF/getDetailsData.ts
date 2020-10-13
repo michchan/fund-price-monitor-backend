@@ -1,7 +1,7 @@
-import puppeteer = require("puppeteer");
+import puppeteer = require("puppeteer")
 
 import { FundPriceRecord, RiskLevel } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import retryWithDelay from "../../helpers/retryWithDelay";
+import retryWithDelay from "../../helpers/retryWithDelay"
 
 
 
@@ -15,7 +15,7 @@ export interface DetailsDataRecord extends Pick<FundPriceRecord,
 */
 const getDetailsData = async (page: puppeteer.Page): Promise<DetailsDataRecord[]> => {
     // Wait for the elements we want
-    await retryWithDelay(() => page.waitForSelector(`#funddetails_list > table > tbody > tr:not(.header):last-child > td`), 'scrapeFromAIAMPF.getDetailsData');
+    await retryWithDelay(() => page.waitForSelector(`#funddetails_list > table > tbody > tr:not(.header):last-child > td`), 'scrapeFromAIAMPF.getDetailsData')
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
@@ -29,12 +29,12 @@ const getDetailsData = async (page: puppeteer.Page): Promise<DetailsDataRecord[]
             'rating5': 'veryHigh',
         }
         // Query table rows nodes
-        const tables: NodeListOf<HTMLTableElement> = document.querySelectorAll('#funddetails_list > table:not(:first-child)');
+        const tables: NodeListOf<HTMLTableElement> = document.querySelectorAll('#funddetails_list > table:not(:first-child)')
 
         // Map table rows data to PriceDataRecord[]
         return Array.from(tables)
             .map((table): DetailsDataRecord => {
-                const rows = table.querySelectorAll('tr');
+                const rows = table.querySelectorAll('tr')
                 const nameCell = rows[0].children[0] as HTMLTableDataCellElement
                 const riskRow = rows[rows.length - 1]
                 const riskCell = riskRow.children[riskRow.children.length - 1] as HTMLTableDataCellElement

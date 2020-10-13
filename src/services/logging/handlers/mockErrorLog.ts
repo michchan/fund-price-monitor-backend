@@ -1,8 +1,8 @@
-import { Handler } from "aws-lambda";
+import { Handler } from "aws-lambda"
 
 
 export interface Event {
-    level: 'info' | 'warn' | 'error' | 'fatal';
+    level: 'info' | 'warn' | 'error' | 'fatal'
 }
 
 /**
@@ -13,12 +13,12 @@ export interface Event {
 export const handler: Handler<Event> = async (event, context, callback) => {
     try {
         switch (event.level) {
-            case 'info': console.log('Test info'); break;
-            case 'warn': console.warn('Test warning'); break;
-            case 'error': console.error('Test error'); break;
+            case 'info': console.log('Test info'); break
+            case 'warn': console.warn('Test warning'); break
+            case 'error': console.error('Test error'); break
             case 'fatal':
             default:
-                throw new Error('Test fatal error');
+                throw new Error('Test fatal error')
         }
     } catch (error) {
         callback(error)

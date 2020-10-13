@@ -1,12 +1,12 @@
-import isFunction from "lodash/isFunction";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import isFunction from "lodash/isFunction"
+import { DocumentClient } from "aws-sdk/clients/dynamodb"
 
-import indexNames from "../constants/indexNames";
-import queryItems from "./queryItems";
-import attrs from "../constants/attributeNames";
-import { RiskLevel } from "../FundPriceRecord.type";
-import TableRange from "../TableRange.type";
-import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
+import indexNames from "../constants/indexNames"
+import queryItems from "./queryItems"
+import attrs from "../constants/attributeNames"
+import { RiskLevel } from "../FundPriceRecord.type"
+import TableRange from "../TableRange.type"
+import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith"
 
 
 const EXP_RISK_LEVEL_PK = `:riskLevel` as string
@@ -35,7 +35,7 @@ const queryItemsByRiskLevel = (
     return queryItems({
         ...defaultInput,
         ...isFunction(input) ? input(defaultInput) : input,
-    }, all, at);
+    }, all, at)
 }
 
 export default queryItemsByRiskLevel

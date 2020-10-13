@@ -1,12 +1,12 @@
-import isFunction from "lodash/isFunction";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import isFunction from "lodash/isFunction"
+import { DocumentClient } from "aws-sdk/clients/dynamodb"
 
-import queryItems from "./queryItems";
-import attrs from "../constants/attributeNames";
-import { CompanyType, FundPriceRecord } from "../FundPriceRecord.type";
-import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith";
-import getDateTimeDictionary from "src/helpers/getDateTimeDictionary";
-import between from "src/lib/AWS/dynamodb/expressionFunctions/between";
+import queryItems from "./queryItems"
+import attrs from "../constants/attributeNames"
+import { CompanyType, FundPriceRecord } from "../FundPriceRecord.type"
+import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith"
+import getDateTimeDictionary from "src/helpers/getDateTimeDictionary"
+import between from "src/lib/AWS/dynamodb/expressionFunctions/between"
 
 
 const EXP_COM_CODE_PK = `:company_code` as string
@@ -27,10 +27,10 @@ const querySingleFundRecords = (
     endTime?: string,
     input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
 ) => {
-    const startDate = startTime ? new Date(startTime) : new Date();
-    const endDate = endTime ? new Date(endTime) : new Date();
+    const startDate = startTime ? new Date(startTime) : new Date()
+    const endDate = endTime ? new Date(endTime) : new Date()
     // Get table from
-    const from = getDateTimeDictionary(startDate);
+    const from = getDateTimeDictionary(startDate)
 
     // Construct TIME SK query
     const timeSKPfx = latest ? 'latest' : 'record'
@@ -43,14 +43,14 @@ const querySingleFundRecords = (
             return buf
         }
         return { [EXP_TIME_SK_PFX]: timeSKPfx }
-    })();
+    })()
     // Derive timeSK expression based on conditions
     const timeSKExpression = (() => {
         if (startTime && endTime) return between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END) 
         if (startTime) return `${attrs.TIME_SK} >= ${EXP_TIME_SK_START}`
         if (endTime) return `${attrs.TIME_SK} <= ${EXP_TIME_SK_END}`
         return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
-    })();
+    })()
 
     const defaultInput: Input = {
         ExpressionAttributeValues: {
@@ -65,7 +65,7 @@ const querySingleFundRecords = (
     return queryItems({
         ...defaultInput,
         ...isFunction(input) ? input(defaultInput) : input,
-    }, all, from);
+    }, all, from)
 }
 
 export default querySingleFundRecords

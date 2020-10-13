@@ -1,11 +1,11 @@
-import { APIGatewayProxyHandler } from "aws-lambda";
+import { APIGatewayProxyHandler } from "aws-lambda"
 
-import createReadResponse from "../helpers/createReadResponse";
-import listAllTables from "src/lib/AWS/dynamodb/listAllTables";
-import { ListResponse } from "../Responses.type";
-import createParameterErrMsg from "../helpers/createParameterErrMsg";
-import { Quarter } from "simply-utils/dist/dateTime/getQuarter";
-import validateYearQuarter from "../validators/validateYearQuarter";
+import createReadResponse from "../helpers/createReadResponse"
+import listAllTables from "src/lib/AWS/dynamodb/listAllTables"
+import { ListResponse } from "../Responses.type"
+import createParameterErrMsg from "../helpers/createParameterErrMsg"
+import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
+import validateYearQuarter from "../validators/validateYearQuarter"
 
 
 export interface QueryParams {
@@ -18,18 +18,18 @@ export interface QueryParams {
  */
 export const handler: APIGatewayProxyHandler = async (event) => {
     try {
-        const { exclusiveStartQuarter } = (event.queryStringParameters ?? {}) as QueryParams;
+        const { exclusiveStartQuarter } = (event.queryStringParameters ?? {}) as QueryParams
         
         /** ----------- Validations ----------- */
-        if (exclusiveStartQuarter) validateYearQuarter(exclusiveStartQuarter, 'exclusiveStartQuarter'); 
+        if (exclusiveStartQuarter) validateYearQuarter(exclusiveStartQuarter, 'exclusiveStartQuarter') 
 
         /** ----------- Query ----------- */
 
         // Extract query params
-        const [year, quarter] = exclusiveStartQuarter?.split('.') ?? [];
+        const [year, quarter] = exclusiveStartQuarter?.split('.') ?? []
         
         // Query
-        const tableNames = await listAllTables(year, quarter as unknown as Quarter);
+        const tableNames = await listAllTables(year, quarter as unknown as Quarter)
         // Create response
         const response: ListResponse<string> = {
             result: true,

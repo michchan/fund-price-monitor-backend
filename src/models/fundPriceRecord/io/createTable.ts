@@ -1,20 +1,20 @@
-import { DynamoDB, Lambda } from 'aws-sdk';
-import { NonKeyAttributeNameList } from 'aws-sdk/clients/dynamodb';
-import { StartingPosition } from '@aws-cdk/aws-lambda';
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter';
+import { DynamoDB, Lambda } from 'aws-sdk'
+import { NonKeyAttributeNameList } from 'aws-sdk/clients/dynamodb'
+import { StartingPosition } from '@aws-cdk/aws-lambda'
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
 import AWS from 'src/lib/AWS'
-import getTableName from '../utils/getTableName';
-import attrs from '../constants/attributeNames';
-import indexNames from '../constants/indexNames';
-import waitForStream from 'src/lib/AWS/dynamodb/waitForStream';
+import getTableName from '../utils/getTableName'
+import attrs from '../constants/attributeNames'
+import indexNames from '../constants/indexNames'
+import waitForStream from 'src/lib/AWS/dynamodb/waitForStream'
 
 
 // Initialize
-const dynamodb = new AWS.DynamoDB();
-const lambda = new AWS.Lambda();
+const dynamodb = new AWS.DynamoDB()
+const lambda = new AWS.Lambda()
 
-export interface Result extends DynamoDB.CreateTableOutput {};
+export interface Result extends DynamoDB.CreateTableOutput {}
 
 const createTable = async (
     /** In YYYY format */
@@ -25,16 +25,16 @@ const createTable = async (
     /** ------------- Create table ------------- */
 
     // Get based table name
-    const TableName = getTableName(year, quarter);
+    const TableName = getTableName(year, quarter)
     // Send create table request
     const createdTable = await dynamodb.createTable(getTableParams(TableName)).promise()
     // Wait for the table to be active
-    await dynamodb.waitFor('tableExists', { TableName }).promise();
+    await dynamodb.waitFor('tableExists', { TableName }).promise()
 
     /** ------------- Check create table result ------------- */
 
     // Get stream ARN
-    const StreamArn = createdTable?.TableDescription?.LatestStreamArn;
+    const StreamArn = createdTable?.TableDescription?.LatestStreamArn
     // Get table logicalID
     const tableLogicalId = createdTable.TableDescription?.TableId
     // Abort if the following are not defined
@@ -46,7 +46,7 @@ const createTable = async (
     /** ------------- Create stream and function event mapping ------------- */
 
     // Wait for the table's streams to be active
-    await waitForStream({ StreamArn });
+    await waitForStream({ StreamArn })
     // Create event source mapping request
     const eventSourceMapping = await lambda.createEventSourceMapping({
         // Assign function name passed
@@ -54,7 +54,7 @@ const createTable = async (
         EventSourceArn: StreamArn,
         StartingPosition: StartingPosition.LATEST,
         MaximumRetryAttempts: 10,
-    }).promise();
+    }).promise()
 
     // Get event source mapping logical ID
     const eventSrcMapId = eventSourceMapping.UUID
@@ -65,7 +65,7 @@ const createTable = async (
     }
 
     // Wait for function event-source mapping updated
-    await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise();
+    await lambda.waitFor('functionUpdated', { FunctionName: streamHandlerArn }).promise()
     // Return the create table result
     return createdTable
 }

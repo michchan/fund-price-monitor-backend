@@ -1,8 +1,8 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB } from 'aws-sdk'
 
 import { FundPriceRecord } from "../FundPriceRecord.type"
-import attr from '../constants/attributeNames';
-import getCompositeSK from './getCompositeSK';
+import attr from '../constants/attributeNames'
+import getCompositeSK from './getCompositeSK'
 
 
 
@@ -21,7 +21,7 @@ const serialize = (record: FundPriceRecord): DynamoDB.DocumentClient.PutRequest 
         launchedDate,
         riskLevel,
         fundType,
-    } = record;
+    } = record
 
     return {
         Item: {

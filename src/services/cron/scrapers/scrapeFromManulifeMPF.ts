@@ -1,14 +1,14 @@
-import puppeteer = require("puppeteer");
+import puppeteer = require("puppeteer")
 
-import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/fundPriceRecord/FundPriceRecord.type";
-import retryWithDelay from "../helpers/retryWithDelay";
+import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/fundPriceRecord/FundPriceRecord.type"
+import retryWithDelay from "../helpers/retryWithDelay"
 
 
 const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
 
 const scrapeFromManulifeMPF = async (page: puppeteer.Page) => {
-    await page.goto(PAGE_URL);
-    return getDataFromHTML(page);
+    await page.goto(PAGE_URL)
+    return getDataFromHTML(page)
 }
 export default scrapeFromManulifeMPF
 
@@ -17,7 +17,7 @@ export default scrapeFromManulifeMPF
  */
 const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
     // Wait for the elements we want
-    await retryWithDelay(() => page.waitForSelector('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr:last-child > td > img'), 'scrapeFromManulifeMPF');
+    await retryWithDelay(() => page.waitForSelector('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr:last-child > td > img'), 'scrapeFromManulifeMPF')
 
     // Query DOM data
     // * Constants/variables must be inside the scope of the callback function
@@ -31,10 +31,10 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
             'z.gif': 'veryHigh',
         }
         // Create a timestamp for current scrape
-        const time = new Date().toISOString();
+        const time = new Date().toISOString()
 
         // Query table rows nodes
-        const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr');
+        const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#viewns_Z7_4P4E1I02I8KL70QQRDQK530054_\\:mainContent\\:datat\\:tbody_element > tr')
 
         // Map table rows data to FundPriceRecord[]
         return Array.from(tableRows).map((row): FundPriceRecord => {
@@ -77,7 +77,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
                     const riskIndicatorImg = dataCells[4].querySelector('img')
                     // Find risk level key
                     const key = Object.keys(riskLevelIndicatorImageNameMap)
-                        .find(name => riskIndicatorImg?.src.includes(name)) as keyof typeof riskLevelIndicatorImageNameMap;
+                        .find(name => riskIndicatorImg?.src.includes(name)) as keyof typeof riskLevelIndicatorImageNameMap
                     return riskLevelIndicatorImageNameMap[key]
                 })(),
                 time,

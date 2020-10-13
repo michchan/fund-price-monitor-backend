@@ -1,10 +1,10 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB } from 'aws-sdk'
 import batchWriteDynamodbItems, { BatchWriteResult } from 'simply-utils/dist/AWS/batchWriteDynamodbItems'
 
 import AWS from 'src/lib/AWS'
 
 // Initialize
-const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true });
+const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
 type PT = DynamoDB.DocumentClient.PutRequest
 type DT = DynamoDB.DocumentClient.DeleteRequest

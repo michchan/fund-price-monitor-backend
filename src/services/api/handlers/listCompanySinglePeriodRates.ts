@@ -1,29 +1,29 @@
-import { APIGatewayProxyHandler } from "aws-lambda";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { APIGatewayProxyHandler } from "aws-lambda"
+import { DocumentClient } from "aws-sdk/clients/dynamodb"
 
-import { ListResponse } from "../Responses.type";
+import { ListResponse } from "../Responses.type"
 import { FundPriceChangeRate, CompanyType } from '../../../models/fundPriceRecord/FundPriceRecord.type'
-import createReadResponse from "../helpers/createReadResponse";
-import validateCompany from "../validators/validateCompany";
-import validateKey from "../validators/validateKey";
-import validatePeriod, { PeriodType } from "../validators/validatePeriod";
-import queryPeriodPriceChangeRate from "src/models/fundPriceRecord/io/queryPeriodPriceChangeRate";
-import validateYearQuarter from "../validators/validateYearQuarter";
-import yearQuarterToTableRange from "../helpers/yearQuarterToTableRange";
+import createReadResponse from "../helpers/createReadResponse"
+import validateCompany from "../validators/validateCompany"
+import validateKey from "../validators/validateKey"
+import validatePeriod, { PeriodType } from "../validators/validatePeriod"
+import queryPeriodPriceChangeRate from "src/models/fundPriceRecord/io/queryPeriodPriceChangeRate"
+import validateYearQuarter from "../validators/validateYearQuarter"
+import yearQuarterToTableRange from "../helpers/yearQuarterToTableRange"
 
 
-export type Res = ListResponse<FundPriceChangeRate>;
+export type Res = ListResponse<FundPriceChangeRate>
 
 export type PathParams = {
-    company: CompanyType;
+    company: CompanyType
 } & {
     /** Either `week`, `month` or `quarter` */
-    [key in PeriodType]: string;
+    [key in PeriodType]: string
 }
 export interface QueryParams {
-    exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
+    exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey']
     /** Format: YYYY.(1|2|3|4) */
-    quarter?: string;
+    quarter?: string
 }
 
 /** 
@@ -42,27 +42,27 @@ export const handler: APIGatewayProxyHandler = async (event) => {
                 default:
                     return 'week'
             }
-        })(event.path);
+        })(event.path)
 
         // Get path params
-        const { company, [periodType]: period } = (event.pathParameters ?? {}) as unknown as PathParams;
+        const { company, [periodType]: period } = (event.pathParameters ?? {}) as unknown as PathParams
         // Get query params
         const { 
             exclusiveStartKey,
             quarter,
-        } = (event.queryStringParameters ?? {}) as unknown as QueryParams;
+        } = (event.queryStringParameters ?? {}) as unknown as QueryParams
 
         /** ----------- Validations ----------- */
 
-        validateCompany(company);
-        validatePeriod(period, periodType);
-        if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey');
-        if (quarter) validateYearQuarter(quarter, 'quarter'); 
+        validateCompany(company)
+        validatePeriod(period, periodType)
+        if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
+        if (quarter) validateYearQuarter(quarter, 'quarter') 
 
         /** ----------- Query ----------- */
 
         // Get table range
-        const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined;
+        const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
 
         // Query
         const output = await queryPeriodPriceChangeRate(company, periodType, period, false, tableRange, {
