@@ -42,6 +42,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
         ...commonIamStatementInput,
         sid: 'LambdaErrorLogs',
         actions: [
+            'sns:Publish',
             'logs:CreateLogGroup',
             'logs:CreateLogStream',
             'logs:PutLogEvents',
