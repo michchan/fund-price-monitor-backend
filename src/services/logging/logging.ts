@@ -90,7 +90,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
     // Create lambda subscription destination
     const subsDestination = new LambdaDestination(notifyErrorHandler);
     // Create filter pattern
-    const subsFilterPattern = FilterPattern.allTerms('ERROR', 'WARN');
+    const subsFilterPattern = FilterPattern.anyTerm('ERROR', 'WARN');
 
     const _logGroups = [...logGroups, mockErrorLogHandler.logGroup];
     // Create subscription filters for each log group
