@@ -1,4 +1,5 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, CloudWatchLogsHandler } from "aws-lambda"
+import zlib from 'zlib'
 
 /**
  * Notify cloudwatch log error through channels like email, messages etc.
@@ -16,5 +17,7 @@ export const handler: CloudWatchLogsHandler = async (event, context, callback) =
 
 /** Decode payload */
 const decodePayload = (event: CloudWatchLogsEvent): CloudWatchLogsDecodedData => {
-    return JSON.parse(atob(event.awslogs.data))
+    const compressedPayload = Buffer.from(event.awslogs.data, 'base64')
+    const uncompressedPayload = zlib.unzipSync(compressedPayload).toString()
+    return JSON.parse(uncompressedPayload)
 }
