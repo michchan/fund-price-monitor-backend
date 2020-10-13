@@ -18,6 +18,7 @@ export const handler: CloudWatchLogsHandler = async (event, context, callback) =
 
         // * Environment variable SNS_ARN is required
         const snsArn = process.env.SNS_ARN as string
+        // Must await the service
         await publishMessage(payload, snsArn)
     } catch (error) {
         callback(error)
@@ -26,7 +27,7 @@ export const handler: CloudWatchLogsHandler = async (event, context, callback) =
 
 /** Publish error message to SNS topic */
 const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) => {
-    const resourceType = payload.logGroup.split('/')[1].toUpperCase()
+    const resourceType = payload.logGroup.split('/')[2].toUpperCase()
     const resourceName = payload.logGroup.split('/').pop()
     const messages = payload.logEvents.map(e => e.message).join('\n')
 
@@ -41,7 +42,7 @@ const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) =
 
     return sns.publish({
         TargetArn, 
-        Subject: `Error for ${resourceType} - ${resourceName}`,
+        Subject: `Error from ${resourceType} - ${resourceName}`,
         Message: message,
     }).promise()
 }
