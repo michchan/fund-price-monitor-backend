@@ -1,5 +1,6 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsHandler } from "aws-lambda"
 import decodeCloudWatchLogEventPayload from "simply-utils/dist/AWS/decodeCloudWatchLogEventPayload"
+import capitalizeWords from "simply-utils/dist/string/capitalizeWords"
 
 import AWS from 'src/lib/AWS'
 
@@ -27,7 +28,7 @@ export const handler: CloudWatchLogsHandler = async (event, context, callback) =
 
 /** Publish error message to SNS topic */
 const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) => {
-    const resourceType = payload.logGroup.split('/')[2].toUpperCase()
+    const resourceType = capitalizeWords(payload.logGroup.split('/')[2])
     const resourceName = payload.logGroup.split('/').pop()
     const messages = payload.logEvents.map(e => e.message).join('\n')
 
