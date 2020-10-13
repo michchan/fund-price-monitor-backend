@@ -78,7 +78,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
 
     // Create subscription filters
     // * Cannot use tokens in construct ID
-    logGroups.forEach((logGroup, i) => new logs.SubscriptionFilter(scope, `LambdaErrorLogsSubscription-${i}-${generateRandomString()}`, {
+    logGroups.forEach((logGroup, i) => new logs.SubscriptionFilter(scope, `LambdaErrorLogsSubscription${i}${generateRandomString()}`, {
         logGroup,
         destination: new LambdaDestination(notifyErrorHandler),
         filterPattern: FilterPattern.allTerms('?ERROR', '?WARN', '?5xx'),
