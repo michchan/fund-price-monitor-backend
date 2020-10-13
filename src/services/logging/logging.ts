@@ -33,8 +33,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
 
     // Create SNS publish handling policy statement
     const snsPubSubStatement = new iam.PolicyStatement({
-        resources: ['*'],
-        effect: Effect.ALLOW,
+        ...commonIamStatementInput,
         sid: 'LambdaErrorLogs',
         actions: [
             'sns:Publish',
