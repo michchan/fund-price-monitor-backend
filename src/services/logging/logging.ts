@@ -72,12 +72,15 @@ function init (scope: cdk.Construct, options: InitOptions) {
     }
 
     /** Error log handler */
-    const notifyErrorHandler = new lambda.Function(scope, 'NotifyErrorHandler', {
+    const notifyErrorLogHandler = new lambda.Function(scope, 'NotifyErrorHandler', {
         ...commonLambdaInput,
-        handler: 'notifyError.handler',
+        handler: 'notifyErrorLog.handler',
+        environment: {
+            SNS_ARN: lambdaErrorLogTopic.topicArn
+        }
     })
     // Grant SNS publish permission
-    lambdaErrorLogTopic.grantPublish(notifyErrorHandler)
+    lambdaErrorLogTopic.grantPublish(notifyErrorLogHandler)
 
     /** Mock error logs handler */
     const mockErrorLogHandler = new lambda.Function(scope, 'MockErrorLogHandler', {
@@ -88,7 +91,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
     /** ------------------ Cloudwatch Triggers Definition ------------------ */
 
     // Create lambda subscription destination
-    const subsDestination = new LambdaDestination(notifyErrorHandler)
+    const subsDestination = new LambdaDestination(notifyErrorLogHandler)
     // Create filter pattern
     const subsFilterPattern = FilterPattern.anyTerm('ERROR', 'WARN')
 
