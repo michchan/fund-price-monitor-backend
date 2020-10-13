@@ -42,5 +42,8 @@ const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) =
         TargetArn, 
         Subject: `Error for ${resourceType} - ${resourceName}`,
         Message: message,
+    }, (err, data) => {
+        if (err) throw err
+        console.log('Email sent', data)
     }).promise()
 }
