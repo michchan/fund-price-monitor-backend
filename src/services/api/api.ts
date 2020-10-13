@@ -5,7 +5,17 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as apigateway from '@aws-cdk/aws-apigateway';
 
 
-function init (scope: cdk.Construct) {
+export interface ReturnType {
+    handlers: {
+        listSingleFundRecords: lambda.Function;
+        listCompanyRecords: lambda.Function;
+        listCompanySinglePeriodRates: lambda.Function;
+        searchRecords: lambda.Function;
+        listQuarters: lambda.Function;
+    };
+}
+
+function init (scope: cdk.Construct): ReturnType {
 
     /** ------------------ IAM Role Definition ------------------ */
 
@@ -130,6 +140,16 @@ function init (scope: cdk.Construct) {
     addCorsOptions(weekRates);
     addCorsOptions(monthRates);
     addCorsOptions(quarterRates);
+
+    return {
+        handlers: {
+            listSingleFundRecords: listSingleFundRecordsHandler,
+            listCompanyRecords: listComRecordsHandler,
+            listCompanySinglePeriodRates: listComSinglePeriodRatesHandler,
+            searchRecords: searchRecordsHandler,
+            listQuarters: listQuartersHandler,
+        }
+    }
 }
 
 const api = { init } as const

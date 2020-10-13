@@ -11,7 +11,21 @@ import env from 'src/lib/env';
 
 
 
-function init (scope: cdk.Construct) {
+export interface ReturnType {
+    handlers: {
+        aggregation: lambda.Function;
+        scrapers: lambda.Function[];
+        testScrapers: lambda.Function[];
+        createTable: lambda.Function;
+        updateTable: lambda.Function;
+        notifyDaily: lambda.Function;
+        notifyWeekly: lambda.Function;
+        notifyMonthly: lambda.Function;
+        notifyQuarterly: lambda.Function;
+    };
+}
+
+function init (scope: cdk.Construct): ReturnType {
 
     /** ------------------ IAM Role Definition ------------------ */
 
@@ -247,6 +261,20 @@ function init (scope: cdk.Construct) {
         schedule: events.Schedule.expression('cron(0 0 1 1,4,7,10 ? *)')
     });
     quarterStartRule.addTarget(new targets.LambdaFunction(updateTableHandler));
+
+    return {
+        handlers: {
+            aggregation: aggregationHandler,
+            scrapers: scrapeHandlers,
+            testScrapers: testScrapeHandlers,
+            createTable: createTableHandler,
+            updateTable: updateTableHandler,
+            notifyDaily: notifyDailyHandler,
+            notifyWeekly: notifyWeeklyHandler,
+            notifyMonthly: notifyMonthlyHandler,
+            notifyQuarterly: notifyQuarterlyHandler,
+        }
+    }
 }
 
 const cron = { init } as const
