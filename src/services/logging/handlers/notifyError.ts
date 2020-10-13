@@ -1,4 +1,4 @@
-import { CloudWatchLogsHandler } from "aws-lambda";
+import { CloudWatchLogsDecodedData, CloudWatchLogsEvent, CloudWatchLogsHandler } from "aws-lambda";
 
 /**
  * Notify cloudwatch log error through channels like email, messages etc.
@@ -7,9 +7,14 @@ import { CloudWatchLogsHandler } from "aws-lambda";
  */
 export const handler: CloudWatchLogsHandler = async (event, context, callback) => {
     try {
-        console.log('EVENT', JSON.stringify(event, null, 2));
-        console.log('CONTEXT', JSON.stringify(context, null, 2));
+        const payload = decodePayload(event);
+        console.log('PAYLOAD', JSON.stringify(payload, null, 2));
     } catch (error) {
         callback(error)
     }
+}
+
+/** Decode payload */
+const decodePayload = (event: CloudWatchLogsEvent): CloudWatchLogsDecodedData => {
+    return JSON.parse(atob(event.awslogs.data));
 }
