@@ -11,7 +11,7 @@ import env from 'src/lib/env'
 
 
 
-const DIRNAME = 'logging'
+const DIRNAME = __dirname.split('/').pop()
 
 export interface ReturnType {
     handlers: {

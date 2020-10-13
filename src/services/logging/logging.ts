@@ -12,7 +12,7 @@ import generateRandomString from 'simply-utils/dist/string/generateRandomString'
 import env from 'src/lib/env'
 
 
-const DIRNAME = 'logging'
+const DIRNAME = __dirname.split('/').pop()
 
 export interface InitOptions {
     logGroups: logs.ILogGroup[]

@@ -5,7 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import * as apigateway from '@aws-cdk/aws-apigateway'
 
 
-const DIRNAME = 'api'
+const DIRNAME = __dirname.split('/').pop()
 
 export interface ReturnType {
     handlers: {
