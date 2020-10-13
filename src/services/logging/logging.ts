@@ -81,7 +81,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
     /** ------------------ Cloudwatch Triggers Definition ------------------ */
 
     // Create subscription filters
-    logGroups.forEach(logGroup => new logs.SubscriptionFilter(scope, 'LambdaErrorLogsSubscription', {
+    logGroups.forEach(logGroup => new logs.SubscriptionFilter(scope, `LambdaErrorLogsSubscription-${logGroup.logGroupName}`, {
         logGroup,
         destination: new LambdaDestination(notifyErrorHandler),
         filterPattern: FilterPattern.allTerms('?ERROR', '?WARN', '?5xx')
