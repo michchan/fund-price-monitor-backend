@@ -18,7 +18,7 @@ export const handler: Handler<Event> = async (event, context, callback) => {
             case 'error': console.error('Test error'); break;
             case 'fatal':
             default:
-                throw new Error('Test fatal error'); break;
+                throw new Error('Test fatal error');
         }
     } catch (error) {
         callback(error)

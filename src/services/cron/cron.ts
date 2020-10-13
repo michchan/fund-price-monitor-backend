@@ -11,6 +11,8 @@ import env from 'src/lib/env';
 
 
 
+const DIRNAME = 'logging'
+
 export interface ReturnType {
     handlers: {
         aggregation: lambda.Function;
@@ -105,7 +107,7 @@ function init (scope: cdk.Construct): ReturnType {
 
     // Common input for lambda Definition
     const commonLambdaInput = {
-        code: lambda.Code.fromAsset('bundles/cron/handlers'),
+        code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
         timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         memorySize: 250,

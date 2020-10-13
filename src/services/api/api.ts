@@ -5,6 +5,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as apigateway from '@aws-cdk/aws-apigateway';
 
 
+const DIRNAME = 'api'
+
 export interface ReturnType {
     handlers: {
         listSingleFundRecords: lambda.Function;
@@ -55,7 +57,7 @@ function init (scope: cdk.Construct): ReturnType {
 
     // Common input for lambda Definition
     const commonLambdaInput = {
-        code: lambda.Code.fromAsset('bundles/api/handlers'),
+        code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
         timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         role: apiRole,

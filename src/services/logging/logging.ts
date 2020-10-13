@@ -12,6 +12,8 @@ import generateRandomString from 'simply-utils/dist/string/generateRandomString'
 import env from 'src/lib/env';
 
 
+const DIRNAME = 'logging'
+
 export interface InitOptions {
     logGroups: logs.ILogGroup[];
 }
@@ -62,7 +64,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
 
     // Common input for lambda Definition
     const commonLambdaInput = {
-        code: lambda.Code.fromAsset('bundles/api/handlers'),
+        code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
         timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.NODEJS_12_X,
         role: subsRole,
