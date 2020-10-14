@@ -10,6 +10,7 @@ import { LambdaDestination } from '@aws-cdk/aws-logs-destinations'
 import generateRandomString from 'simply-utils/dist/string/generateRandomString'
 
 import env from 'src/lib/env'
+import { PROJECT_NAMESPACE } from 'src/constants'
 
 
 const DIRNAME = __dirname.split('/').pop()
@@ -53,7 +54,7 @@ function init (scope: cdk.Construct, options: InitOptions) {
 
     // Create topic for subscription to lambda error logs
     const lambdaErrorLogTopic = new sns.Topic(scope, 'LambdaErrorLogTopic', {
-        displayName: 'Lambda error logs subscription topic'
+        displayName: `${PROJECT_NAMESPACE} - Lambda error logs subscription topic`
     })
 
     // Create email subscription
