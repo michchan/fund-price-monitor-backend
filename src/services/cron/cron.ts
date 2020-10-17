@@ -27,7 +27,7 @@ export interface ReturnType {
     }
 }
 
-function init (scope: cdk.Construct): ReturnType {
+function construct (scope: cdk.Construct): ReturnType {
 
     /** ------------------ IAM Role Definition ------------------ */
 
@@ -279,5 +279,5 @@ function init (scope: cdk.Construct): ReturnType {
     }
 }
 
-const cron = { init } as const
+const cron = { construct } as const
 export default cron

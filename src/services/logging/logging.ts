@@ -22,7 +22,7 @@ export interface InitOptions {
 /**
  * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
  */
-function init (scope: cdk.Construct, options: InitOptions) {
+function construct (scope: cdk.Construct, options: InitOptions) {
     const { logGroups } = options
 
     /** ------------------ IAM Role Definition ------------------ */
@@ -108,5 +108,5 @@ function init (scope: cdk.Construct, options: InitOptions) {
     })
 }
 
-const logging = { init } as const
+const logging = { construct } as const
 export default logging

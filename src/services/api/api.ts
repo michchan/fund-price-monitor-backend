@@ -17,7 +17,7 @@ export interface ReturnType {
     }
 }
 
-function init (scope: cdk.Construct): ReturnType {
+function construct (scope: cdk.Construct): ReturnType {
 
     /** ------------------ IAM Role Definition ------------------ */
 
@@ -154,7 +154,7 @@ function init (scope: cdk.Construct): ReturnType {
     }
 }
 
-const api = { init } as const
+const api = { construct } as const
 export default api
 
 
