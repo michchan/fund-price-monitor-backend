@@ -16,26 +16,26 @@ export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
 const queryItemsByCompany = (
-    company: CompanyType,
-    latest?: boolean,
-    all?: boolean,
-    /** Default to current quarter of the current year */
-    at?: TableRange,
-    input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
+  company: CompanyType,
+  latest?: boolean,
+  all?: boolean,
+  /** Default to current quarter of the current year */
+  at?: TableRange,
+  input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
 ) => {
-    const defaultInput: Input = {
-        IndexName: indexNames.RECORDS_BY_COMPANY,
-        ExpressionAttributeValues: {
-            [EXP_COM_PK]: company,
-            [EXP_TIME_SK]: latest ? 'latest' : 'record'
-        },
-        KeyConditionExpression: `${attrs.COMPANY} = ${EXP_COM_PK}`,
-        FilterExpression: beginsWith(attrs.TIME_SK, EXP_TIME_SK),
-    }
-    return queryItems({
-        ...defaultInput,
-        ...isFunction(input) ? input(defaultInput) : input,
-    }, all, at)
+  const defaultInput: Input = {
+    IndexName: indexNames.RECORDS_BY_COMPANY,
+    ExpressionAttributeValues: {
+      [EXP_COM_PK]: company,
+      [EXP_TIME_SK]: latest ? 'latest' : 'record'
+    },
+    KeyConditionExpression: `${attrs.COMPANY} = ${EXP_COM_PK}`,
+    FilterExpression: beginsWith(attrs.TIME_SK, EXP_TIME_SK),
+  }
+  return queryItems({
+    ...defaultInput,
+    ...isFunction(input) ? input(defaultInput) : input,
+  }, all, at)
 }
 
 export default queryItemsByCompany

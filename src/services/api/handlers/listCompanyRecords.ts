@@ -23,76 +23,76 @@ const EXP_COM = ':com_code'
 export type Res = ListResponse<FundPriceRecord>
 
 export interface PathParams {
-    company: CompanyType
+  company: CompanyType
 }
 export interface QueryParams {
-    riskLevel?: RiskLevel
-    latest?: boolean
-    exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey']
-    /** Format: YYYY.(1|2|3|4) */
-    quarter?: string
+  riskLevel?: RiskLevel
+  latest?: boolean
+  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey']
+  /** Format: YYYY.(1|2|3|4) */
+  quarter?: string
 }
 
 /** 
  * Get fund records of a company
  */
 export const handler: APIGatewayProxyHandler = async (event) => {
-    try {
-        // Get path params
-        const pathParams = (event.pathParameters ?? {}) as unknown as PathParams
-        const { company } = pathParams
+  try {
+    // Get path params
+    const pathParams = (event.pathParameters ?? {}) as unknown as PathParams
+    const { company } = pathParams
 
-        // Get query params
-        const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
-            if (key === 'latest') return value === 'true'
-            return value
-        }) as unknown as QueryParams
-        const { 
-            riskLevel, 
-            latest,
-            exclusiveStartKey,
-            quarter,
-        } = queryParams
+    // Get query params
+    const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
+      if (key === 'latest') return value === 'true'
+      return value
+    }) as unknown as QueryParams
+    const { 
+      riskLevel, 
+      latest,
+      exclusiveStartKey,
+      quarter,
+    } = queryParams
 
-        /** ----------- Validations ----------- */
-        
-        validateCompany(company)
-        if (riskLevel && !isValidRiskLevel(riskLevel)) throw new Error(createParameterErrMsg('riskLevel'))
-        if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
-        if (quarter) validateYearQuarter(quarter, 'quarter') 
+    /** ----------- Validations ----------- */
+    
+    validateCompany(company)
+    if (riskLevel && !isValidRiskLevel(riskLevel)) throw new Error(createParameterErrMsg('riskLevel'))
+    if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
+    if (quarter) validateYearQuarter(quarter, 'quarter') 
 
-        /** ----------- Query ----------- */
+    /** ----------- Query ----------- */
 
-        // Get table range
-        const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
+    // Get table range
+    const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
 
-        // Get query handler by conditions
-        const output = await (() => {
-            if (riskLevel) {
-                // Query records with risk level and company constraint
-                return queryItemsByRiskLevel(riskLevel, latest, false, tableRange, defaultInput => ({
-                    ExclusiveStartKey: exclusiveStartKey,
-                    ExpressionAttributeValues: {
-                        ...defaultInput.ExpressionAttributeValues,
-                        // Add company constraint
-                        [EXP_COM]: company
-                    },
-                    FilterExpression: [
-                        defaultInput.FilterExpression,
-                        beginsWith(attrs.COMPANY_CODE, EXP_COM),
-                    ].filter(v => v).join(' AND ')
-                }))
-            }
-            // Query records with company constraint
-            return queryItemsByCompany(company, latest, false, tableRange, {
-                ExclusiveStartKey: exclusiveStartKey
-            })
-        })() 
+    // Get query handler by conditions
+    const output = await (() => {
+      if (riskLevel) {
+        // Query records with risk level and company constraint
+        return queryItemsByRiskLevel(riskLevel, latest, false, tableRange, defaultInput => ({
+          ExclusiveStartKey: exclusiveStartKey,
+          ExpressionAttributeValues: {
+            ...defaultInput.ExpressionAttributeValues,
+            // Add company constraint
+            [EXP_COM]: company
+          },
+          FilterExpression: [
+            defaultInput.FilterExpression,
+            beginsWith(attrs.COMPANY_CODE, EXP_COM),
+          ].filter(v => v).join(' AND ')
+        }))
+      }
+      // Query records with company constraint
+      return queryItemsByCompany(company, latest, false, tableRange, {
+        ExclusiveStartKey: exclusiveStartKey
+      })
+    })() 
 
-        // Send back successful response
-        return createReadResponse(null, output)
-    } catch (error) {
-        // Send back failed response
-        return createReadResponse(error)
-    }
+    // Send back successful response
+    return createReadResponse(null, output)
+  } catch (error) {
+    // Send back failed response
+    return createReadResponse(error)
+  }
 }

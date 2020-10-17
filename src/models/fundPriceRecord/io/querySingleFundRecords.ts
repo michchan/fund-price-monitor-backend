@@ -18,54 +18,54 @@ export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
 const querySingleFundRecords = (
-    company: CompanyType,
-    code: FundPriceRecord['code'],
-    latest?: boolean,
-    all?: boolean,
-    /** ISO Timestamp */
-    startTime?: string,
-    endTime?: string,
-    input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
+  company: CompanyType,
+  code: FundPriceRecord['code'],
+  latest?: boolean,
+  all?: boolean,
+  /** ISO Timestamp */
+  startTime?: string,
+  endTime?: string,
+  input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
 ) => {
-    const startDate = startTime ? new Date(startTime) : new Date()
-    const endDate = endTime ? new Date(endTime) : new Date()
-    // Get table from
-    const from = getDateTimeDictionary(startDate)
+  const startDate = startTime ? new Date(startTime) : new Date()
+  const endDate = endTime ? new Date(endTime) : new Date()
+  // Get table from
+  const from = getDateTimeDictionary(startDate)
 
-    // Construct TIME SK query
-    const timeSKPfx = latest ? 'latest' : 'record'
-    // Derive timeSK expression values based on conditions
-    const timeSKValues = (() => {
-        if (startTime || endTime) {
-            const buf: Input['ExpressionAttributeValues'] = {}
-            if (startTime) buf[EXP_TIME_SK_START] = `${timeSKPfx}_${company}_${startDate.toISOString()}`
-            if (endTime) buf[EXP_TIME_SK_END] = `${timeSKPfx}_${company}_${endDate.toISOString()}`
-            return buf
-        }
-        return { [EXP_TIME_SK_PFX]: timeSKPfx }
-    })()
-    // Derive timeSK expression based on conditions
-    const timeSKExpression = (() => {
-        if (startTime && endTime) return between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END) 
-        if (startTime) return `${attrs.TIME_SK} >= ${EXP_TIME_SK_START}`
-        if (endTime) return `${attrs.TIME_SK} <= ${EXP_TIME_SK_END}`
-        return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
-    })()
-
-    const defaultInput: Input = {
-        ExpressionAttributeValues: {
-            ...timeSKValues,
-            [EXP_COM_CODE_PK]: `${company}_${code}`,
-        },
-        KeyConditionExpression: [
-            `${attrs.COMPANY_CODE} = ${EXP_COM_CODE_PK}`,
-            timeSKExpression
-        ].join(' AND '),
+  // Construct TIME SK query
+  const timeSKPfx = latest ? 'latest' : 'record'
+  // Derive timeSK expression values based on conditions
+  const timeSKValues = (() => {
+    if (startTime || endTime) {
+      const buf: Input['ExpressionAttributeValues'] = {}
+      if (startTime) buf[EXP_TIME_SK_START] = `${timeSKPfx}_${company}_${startDate.toISOString()}`
+      if (endTime) buf[EXP_TIME_SK_END] = `${timeSKPfx}_${company}_${endDate.toISOString()}`
+      return buf
     }
-    return queryItems({
-        ...defaultInput,
-        ...isFunction(input) ? input(defaultInput) : input,
-    }, all, from)
+    return { [EXP_TIME_SK_PFX]: timeSKPfx }
+  })()
+  // Derive timeSK expression based on conditions
+  const timeSKExpression = (() => {
+    if (startTime && endTime) return between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END) 
+    if (startTime) return `${attrs.TIME_SK} >= ${EXP_TIME_SK_START}`
+    if (endTime) return `${attrs.TIME_SK} <= ${EXP_TIME_SK_END}`
+    return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
+  })()
+
+  const defaultInput: Input = {
+    ExpressionAttributeValues: {
+      ...timeSKValues,
+      [EXP_COM_CODE_PK]: `${company}_${code}`,
+    },
+    KeyConditionExpression: [
+      `${attrs.COMPANY_CODE} = ${EXP_COM_CODE_PK}`,
+      timeSKExpression
+    ].join(' AND '),
+  }
+  return queryItems({
+    ...defaultInput,
+    ...isFunction(input) ? input(defaultInput) : input,
+  }, all, from)
 }
 
 export default querySingleFundRecords

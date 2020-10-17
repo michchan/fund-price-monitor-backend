@@ -8,18 +8,18 @@ import updateItem, { Input } from "src/lib/AWS/dynamodb/updateItem"
 
 
 function updateTableDetails (
-    input: Omit<Input, 'TableName' | 'Key'>,
-    year: string | number,
-    quarter: Quarter,
+  input: Omit<Input, 'TableName' | 'Key'>,
+  year: string | number,
+  quarter: Quarter,
 ) {
-    return updateItem({
-        ...input,
-        TableName: getTableName(year, quarter),
-        Key: {
-            [attrs.COMPANY_CODE]: `${topLevelKeysValues.DETAILS_PK}`,
-            [attrs.TIME_SK]: `${topLevelKeysValues.TABLE_DETAILS_SK}`
-        } as DocumentClient.AttributeValue,
-    })
+  return updateItem({
+    ...input,
+    TableName: getTableName(year, quarter),
+    Key: {
+      [attrs.COMPANY_CODE]: `${topLevelKeysValues.DETAILS_PK}`,
+      [attrs.TIME_SK]: `${topLevelKeysValues.TABLE_DETAILS_SK}`
+    } as DocumentClient.AttributeValue,
+  })
 }
 
 export default updateTableDetails

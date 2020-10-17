@@ -12,21 +12,21 @@ import putItem from "src/lib/AWS/dynamodb/putItem"
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
 function createTableDetails (
-    details: FundPriceTableDetails,
-    year: string | number,
-    quarter: Quarter,
+  details: FundPriceTableDetails,
+  year: string | number,
+  quarter: Quarter,
 ) {
-    const { companies, fundTypes } = details
+  const { companies, fundTypes } = details
 
-    return putItem({
-        TableName: getTableName(year, quarter),
-        Item: {
-            [attrs.COMPANY_CODE]: topLevelKeysValues.DETAILS_PK,
-            [attrs.TIME_SK]: topLevelKeysValues.TABLE_DETAILS_SK,
-            [attrs.COMPANIES]: companies.length > 0 ? docClient.createSet(companies) : undefined,
-            [attrs.FUND_TYPES]: fundTypes.length > 0 ? docClient.createSet(fundTypes) : undefined,
-        } as DocumentClient.AttributeValue,
-    })
+  return putItem({
+    TableName: getTableName(year, quarter),
+    Item: {
+      [attrs.COMPANY_CODE]: topLevelKeysValues.DETAILS_PK,
+      [attrs.TIME_SK]: topLevelKeysValues.TABLE_DETAILS_SK,
+      [attrs.COMPANIES]: companies.length > 0 ? docClient.createSet(companies) : undefined,
+      [attrs.FUND_TYPES]: fundTypes.length > 0 ? docClient.createSet(fundTypes) : undefined,
+    } as DocumentClient.AttributeValue,
+  })
 }
 
 export default createTableDetails

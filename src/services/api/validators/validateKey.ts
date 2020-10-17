@@ -13,13 +13,13 @@ import { mapValues } from "lodash"
  * @param exclusiveStartKey 
  */
 const validateKey = (key: DocumentClient.Key, fieldName: string) => {
-    if (typeof key !== 'object') 
-        throw new Error(createParameterErrMsg(fieldName, 'query', 'invalid'))
+  if (typeof key !== 'object') 
+    throw new Error(createParameterErrMsg(fieldName, 'query', 'invalid'))
 
-    return mapValues(key, value => {
-        if (value && !/^[a-z0-9_\-\.]{3,255}$/i.test(`${value}`)) 
-            throw new Error(createParameterErrMsg(fieldName, 'query', 'invalidKeyFormat'))
-    })
+  return mapValues(key, value => {
+    if (value && !/^[a-z0-9_\-\.]{3,255}$/i.test(`${value}`)) 
+      throw new Error(createParameterErrMsg(fieldName, 'query', 'invalidKeyFormat'))
+  })
 }
 
 export default validateKey

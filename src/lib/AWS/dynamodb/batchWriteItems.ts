@@ -12,11 +12,11 @@ type DT = DynamoDB.DocumentClient.DeleteRequest
 export type Result = BatchWriteResult
 
 async function batchWriteItems <T, RT extends PT | DT> (
-    records: T[],
-    tableName: string,
-    mode: 'put' | 'delete',
-    serialize?: (item: T) => RT,
+  records: T[],
+  tableName: string,
+  mode: 'put' | 'delete',
+  serialize?: (item: T) => RT,
 ): Promise<BatchWriteResult | null> {
-    return batchWriteDynamodbItems(docClient, records, tableName, mode, serialize)
+  return batchWriteDynamodbItems(docClient, records, tableName, mode, serialize)
 }
 export default batchWriteItems

@@ -4,7 +4,7 @@ import createParameterErrMsg from "../helpers/createParameterErrMsg"
 
 
 const validateCompany = (maybeCompany: any) => {
-    if (!isValidCompany(maybeCompany)) throw new Error(createParameterErrMsg('company', 'path'))
+  if (!isValidCompany(maybeCompany)) throw new Error(createParameterErrMsg('company', 'path'))
 }
 
 export default validateCompany

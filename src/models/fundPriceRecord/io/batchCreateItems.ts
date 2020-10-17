@@ -13,12 +13,12 @@ type R = DocumentClient.PutRequest | DocumentClient.DeleteRequest
  * Return a list of properties of tables that have been created and match the criteria
  */
 function batchCreateItems <Rec extends T, Req extends R> (
-    records: Rec[],
-    /** In YYYY format */
-    year: string | number,
-    quarter: Quarter,
-    serializer: (record: Rec) => Req,
+  records: Rec[],
+  /** In YYYY format */
+  year: string | number,
+  quarter: Quarter,
+  serializer: (record: Rec) => Req,
 ): Promise<Result | null> {
-    return batchWriteItems(records, getTableName(year, quarter), 'put', serializer)
+  return batchWriteItems(records, getTableName(year, quarter), 'put', serializer)
 }
 export default batchCreateItems

@@ -16,30 +16,30 @@ type E = AWS.AWSError
 export interface Result extends DynamoDB.UpdateTableOutput {}
 
 const updateTable = async (
-    /** In YYYY format */
-    year: string | number,
-    quarter: Quarter,
-    input: Omit<DynamoDB.UpdateTableInput, 'TableName'>,
-    shouldWaitForUpdateComplete?: boolean,
+  /** In YYYY format */
+  year: string | number,
+  quarter: Quarter,
+  input: Omit<DynamoDB.UpdateTableInput, 'TableName'>,
+  shouldWaitForUpdateComplete?: boolean,
 ): Promise<Result> => {
-    // Get based table name
-    const TableName = getTableName(year, quarter)
-    // Update table
-    const output = await dynamodb.updateTable({ ...input, TableName }).promise()
+  // Get based table name
+  const TableName = getTableName(year, quarter)
+  // Update table
+  const output = await dynamodb.updateTable({ ...input, TableName }).promise()
 
-    if (shouldWaitForUpdateComplete) {
-        // Wait for status to be finished as "ACTIVE" (changing from "UPDATING")
-        await waitForAWSService<I, O, E>(
-            // Prevent `this` context problem
-            (...args) => dynamodb.describeTable(...args), 
-            // Input
-            { TableName }, 
-            // Predicate of whether the table has been changed to ACTIVE (update completed)
-            result => /^ACTIVE$/i.test(result?.Table?.TableStatus ?? '')
-        )
-    }
+  if (shouldWaitForUpdateComplete) {
+    // Wait for status to be finished as "ACTIVE" (changing from "UPDATING")
+    await waitForAWSService<I, O, E>(
+      // Prevent `this` context problem
+      (...args) => dynamodb.describeTable(...args), 
+      // Input
+      { TableName }, 
+      // Predicate of whether the table has been changed to ACTIVE (update completed)
+      result => /^ACTIVE$/i.test(result?.Table?.TableStatus ?? '')
+    )
+  }
 
-    return output
+  return output
 }
 
 export default updateTable

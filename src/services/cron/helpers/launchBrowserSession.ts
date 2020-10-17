@@ -12,34 +12,34 @@ export type GetDataWithPage <T> = (page: puppeteer.Page) => Promise<T> | T
  * Helpers to scrape data from html
  */
 export async function launchBrowserSession <T> (
-    getBatchData: GetDataWithPage<T>[],
+  getBatchData: GetDataWithPage<T>[],
 ): Promise<T[]> {
-    let browser: puppeteer.Browser | null = null
+  let browser: puppeteer.Browser | null = null
 
-    try {
-        // open the headless browser
-        browser = await chromium.puppeteer.launch({
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
-            ignoreHTTPSErrors: true,
-            timeout: 120000, // 120s
-        })
+  try {
+    // open the headless browser
+    browser = await chromium.puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
+      timeout: 120000, // 120s
+    })
 
-        // open a new page
-        var page = await browser.newPage()
+    // open a new page
+    var page = await browser.newPage()
 
-        // Get batches of data
-        const data: T[] = []
-        for (const getEach of getBatchData) {
-            data.push(await getEach(page))
-        }
-        // Run function to get data
-        return data
-    } catch (error) {
-        throw error
-    } finally {
-        if (browser) browser.close()
+    // Get batches of data
+    const data: T[] = []
+    for (const getEach of getBatchData) {
+      data.push(await getEach(page))
     }
+    // Run function to get data
+    return data
+  } catch (error) {
+    throw error
+  } finally {
+    if (browser) browser.close()
+  }
 }

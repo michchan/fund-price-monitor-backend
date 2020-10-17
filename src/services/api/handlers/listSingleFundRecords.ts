@@ -16,60 +16,60 @@ import validateTimestampRange from "../validators/validateTimestampRange"
 export type Res = ListResponse<FundPriceRecord>
 
 export interface PathParams {
-    company: CompanyType
-    code: FundPriceRecord['code']
+  company: CompanyType
+  code: FundPriceRecord['code']
 }
 
 export interface QueryParams {
-    latest?: boolean
-    exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey']
-    /** ISO timestamp */
-    startTime?: string
-    /** ISO timestamp */
-    endTime?: string
+  latest?: boolean
+  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey']
+  /** ISO timestamp */
+  startTime?: string
+  /** ISO timestamp */
+  endTime?: string
 }
 
 /** 
  * Get time-series recrods of a single fund
  */
 export const handler: APIGatewayProxyHandler = async (event) => {
-    try {
-        // Get path params
-        const pathParams = (event.pathParameters ?? {}) as unknown as PathParams
-        const { company, code } = pathParams
+  try {
+    // Get path params
+    const pathParams = (event.pathParameters ?? {}) as unknown as PathParams
+    const { company, code } = pathParams
 
-        // Get query params
-        const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
-            if (key === 'latest') return value === 'true'
-            return value
-        }) as unknown as QueryParams
-        const { 
-            latest,
-            exclusiveStartKey,
-            startTime,
-            endTime,
-        } = queryParams
+    // Get query params
+    const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
+      if (key === 'latest') return value === 'true'
+      return value
+    }) as unknown as QueryParams
+    const { 
+      latest,
+      exclusiveStartKey,
+      startTime,
+      endTime,
+    } = queryParams
 
-        /** ----------- Validations ----------- */
+    /** ----------- Validations ----------- */
 
-        validateCompany(company)
-        validateCode(code)
-        if (startTime) validateTimestamp(startTime, 'startTime')
-        if (endTime) validateTimestamp(endTime, 'endTime')
-        if (startTime && endTime) validateTimestampRange(startTime, endTime)
-        if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
+    validateCompany(company)
+    validateCode(code)
+    if (startTime) validateTimestamp(startTime, 'startTime')
+    if (endTime) validateTimestamp(endTime, 'endTime')
+    if (startTime && endTime) validateTimestampRange(startTime, endTime)
+    if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
 
-        /** ----------- Query ----------- */
+    /** ----------- Query ----------- */
 
-        // Query
-        const output = await querySingleFundRecords(company, code, latest, false, startTime, endTime, {
-            ExclusiveStartKey: exclusiveStartKey,
-        })
+    // Query
+    const output = await querySingleFundRecords(company, code, latest, false, startTime, endTime, {
+      ExclusiveStartKey: exclusiveStartKey,
+    })
 
-        // Send back successful response
-        return createReadResponse(null, output)
-    } catch (error) {
-        // Send back failed response
-        return createReadResponse(error)
-    }
+    // Send back successful response
+    return createReadResponse(null, output)
+  } catch (error) {
+    // Send back failed response
+    return createReadResponse(error)
+  }
 }

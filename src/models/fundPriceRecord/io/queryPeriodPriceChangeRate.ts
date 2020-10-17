@@ -13,25 +13,25 @@ export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
 const queryPeriodPriceChangeRate = (
-    company: CompanyType,
-    recordType: AggregatedRecordType, 
-    period: string,
-    all?: boolean,
-    /** Default to current quarter of the current year */
-    at?: TableRange,
-    input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
+  company: CompanyType,
+  recordType: AggregatedRecordType, 
+  period: string,
+  all?: boolean,
+  /** Default to current quarter of the current year */
+  at?: TableRange,
+  input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
 ) => {
-    const defaultInput: Input = {
-        IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
-        ExpressionAttributeValues: {
-            [EXP_TIME_SK]: `${recordType}_${company}_${period}`
-        },
-        KeyConditionExpression: `${attributeNames.PERIOD} = ${EXP_TIME_SK}`,
-    }
-    return queryItems({
-        ...defaultInput,
-        ...isFunction(input) ? input(defaultInput) : input,
-    }, all, at)
+  const defaultInput: Input = {
+    IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
+    ExpressionAttributeValues: {
+      [EXP_TIME_SK]: `${recordType}_${company}_${period}`
+    },
+    KeyConditionExpression: `${attributeNames.PERIOD} = ${EXP_TIME_SK}`,
+  }
+  return queryItems({
+    ...defaultInput,
+    ...isFunction(input) ? input(defaultInput) : input,
+  }, all, at)
 }
 
 export default queryPeriodPriceChangeRate

@@ -4,10 +4,10 @@ import createParameterErrMsg from "../helpers/createParameterErrMsg"
 
 
 const validateTimestamp = (
-    maybeTimestamp: any,
-    fieldName: string,
+  maybeTimestamp: any,
+  fieldName: string,
 ) => {
-    if (!isISOTimestamp(maybeTimestamp)) throw new Error(createParameterErrMsg(fieldName, 'query'))
+  if (!isISOTimestamp(maybeTimestamp)) throw new Error(createParameterErrMsg(fieldName, 'query'))
 }
 
 export default validateTimestamp

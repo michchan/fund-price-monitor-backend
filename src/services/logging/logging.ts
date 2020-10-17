@@ -16,96 +16,96 @@ import { PROJECT_NAMESPACE } from 'src/constants'
 const DIRNAME = __dirname.split('/').pop()
 
 export interface InitOptions {
-    logGroups: logs.ILogGroup[]
+  logGroups: logs.ILogGroup[]
 }
 
 /**
  * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
  */
 function construct (scope: cdk.Construct, options: InitOptions) {
-    const { logGroups } = options
+  const { logGroups } = options
 
-    /** ------------------ IAM Role Definition ------------------ */
-    
-    // Create IAM roles for SNS topics subscriptions handling
-    const subsRole = new iam.Role(scope, 'subsRole', {
-        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
-    })
+  /** ------------------ IAM Role Definition ------------------ */
+  
+  // Create IAM roles for SNS topics subscriptions handling
+  const subsRole = new iam.Role(scope, 'subsRole', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+  })
 
-    // Common attributes in IAM statement
-    const commonIamStatementInput = {
-        resources: ['*'],
-        effect: Effect.ALLOW
+  // Common attributes in IAM statement
+  const commonIamStatementInput = {
+    resources: ['*'],
+    effect: Effect.ALLOW
+  }
+  
+  // Grant logging
+  subsRole.addToPolicy(new iam.PolicyStatement({
+    ...commonIamStatementInput,
+    sid: 'LambdaErrorLogs',
+    actions: [
+      'sns:Publish',
+      'logs:CreateLogGroup',
+      'logs:CreateLogStream',
+      'logs:PutLogEvents',
+    ],
+  }))
+
+  /** ------------------ SNS Topics Definition ------------------ */
+
+  // Create topic for subscription to lambda error logs
+  const lambdaErrorLogTopic = new sns.Topic(scope, 'LambdaErrorLogTopic', {
+    displayName: `${PROJECT_NAMESPACE} - Lambda error logs subscription topic`
+  })
+
+  // Create email subscription
+  lambdaErrorLogTopic.addSubscription(
+    new subs.EmailSubscription(env.values.LAMBDA_ERROR_LOG_SUBSCRIPTION_EMAIL)
+  )
+
+  /** ------------------ Lambda Handlers Definition ------------------ */
+
+  // Common input for lambda Definition
+  const commonLambdaInput = {
+    code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
+    timeout: cdk.Duration.minutes(5),
+    runtime: lambda.Runtime.NODEJS_12_X,
+    role: subsRole,
+  }
+
+  /** Error log handler */
+  const notifyErrorLogHandler = new lambda.Function(scope, 'NotifyErrorHandler', {
+    ...commonLambdaInput,
+    handler: 'notifyErrorLog.handler',
+    environment: {
+      SNS_ARN: lambdaErrorLogTopic.topicArn
     }
-    
-    // Grant logging
-    subsRole.addToPolicy(new iam.PolicyStatement({
-        ...commonIamStatementInput,
-        sid: 'LambdaErrorLogs',
-        actions: [
-            'sns:Publish',
-            'logs:CreateLogGroup',
-            'logs:CreateLogStream',
-            'logs:PutLogEvents',
-        ],
-    }))
+  })
+  // Grant SNS publish permission
+  lambdaErrorLogTopic.grantPublish(notifyErrorLogHandler)
 
-    /** ------------------ SNS Topics Definition ------------------ */
+  /** Mock error logs handler */
+  const mockErrorLogHandler = new lambda.Function(scope, 'MockErrorLogHandler', {
+    ...commonLambdaInput,
+    handler: 'mockErrorLog.handler',
+  })
 
-    // Create topic for subscription to lambda error logs
-    const lambdaErrorLogTopic = new sns.Topic(scope, 'LambdaErrorLogTopic', {
-        displayName: `${PROJECT_NAMESPACE} - Lambda error logs subscription topic`
+  /** ------------------ Cloudwatch Triggers Definition ------------------ */
+
+  // Create lambda subscription destination
+  const subsDestination = new LambdaDestination(notifyErrorLogHandler)
+  // Create filter pattern
+  const subsFilterPattern = FilterPattern.anyTerm('ERROR', 'WARN')
+
+  const _logGroups = [...logGroups, mockErrorLogHandler.logGroup]
+  // Create subscription filters for each log group
+  _logGroups.forEach((logGroup, i) => {
+    const id = `LambdaErrorLogsSubscription${i}${generateRandomString()}`
+    return new logs.SubscriptionFilter(scope, id, {
+      logGroup,
+      destination: subsDestination,
+      filterPattern: subsFilterPattern,
     })
-
-    // Create email subscription
-    lambdaErrorLogTopic.addSubscription(
-        new subs.EmailSubscription(env.values.LAMBDA_ERROR_LOG_SUBSCRIPTION_EMAIL)
-    )
-
-    /** ------------------ Lambda Handlers Definition ------------------ */
-
-    // Common input for lambda Definition
-    const commonLambdaInput = {
-        code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
-        timeout: cdk.Duration.minutes(5),
-        runtime: lambda.Runtime.NODEJS_12_X,
-        role: subsRole,
-    }
-
-    /** Error log handler */
-    const notifyErrorLogHandler = new lambda.Function(scope, 'NotifyErrorHandler', {
-        ...commonLambdaInput,
-        handler: 'notifyErrorLog.handler',
-        environment: {
-            SNS_ARN: lambdaErrorLogTopic.topicArn
-        }
-    })
-    // Grant SNS publish permission
-    lambdaErrorLogTopic.grantPublish(notifyErrorLogHandler)
-
-    /** Mock error logs handler */
-    const mockErrorLogHandler = new lambda.Function(scope, 'MockErrorLogHandler', {
-        ...commonLambdaInput,
-        handler: 'mockErrorLog.handler',
-    })
-
-    /** ------------------ Cloudwatch Triggers Definition ------------------ */
-
-    // Create lambda subscription destination
-    const subsDestination = new LambdaDestination(notifyErrorLogHandler)
-    // Create filter pattern
-    const subsFilterPattern = FilterPattern.anyTerm('ERROR', 'WARN')
-
-    const _logGroups = [...logGroups, mockErrorLogHandler.logGroup]
-    // Create subscription filters for each log group
-    _logGroups.forEach((logGroup, i) => {
-        const id = `LambdaErrorLogsSubscription${i}${generateRandomString()}`
-        return new logs.SubscriptionFilter(scope, id, {
-            logGroup,
-            destination: subsDestination,
-            filterPattern: subsFilterPattern,
-        })
-    })
+  })
 }
 
 const logging = { construct } as const
