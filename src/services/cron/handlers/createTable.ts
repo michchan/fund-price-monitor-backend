@@ -29,19 +29,23 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
     const hasExistingTable = await checkTableExistence(year, quarter)
     // Create a table of the specified quarter if it does NOT exist
     if (!hasExistingTable) {
-      // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
-      // to map as dynamodb stream target function
-      const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
-      // Create one if it doesn't exist
-      await createTable(year, quarter, aggregationHandlerArn)
-      // Create table detail row
-      await createTableDetails({
-        time: new Date().toISOString(),
-        companies: [],
-        fundTypes: [],
-      }, year, quarter)
+      await createTableAndDetails(year, quarter)
     }
   } catch (error) {
     callback(error)
   }
+}
+
+const createTableAndDetails = async (year: number | string, quarter: Quarter) => {
+  // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
+  // to map as dynamodb stream target function
+  const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
+  // Create one if it doesn't exist
+  await createTable(year, quarter, aggregationHandlerArn)
+  // Create table detail row
+  await createTableDetails({
+    time: new Date().toISOString(),
+    companies: [],
+    fundTypes: [],
+  }, year, quarter)
 }
