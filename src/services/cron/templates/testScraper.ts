@@ -1,7 +1,7 @@
 import { ScheduledHandler } from "aws-lambda"
-import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import { GetDataWithPage } from "../helpers/launchBrowserSession"
+import { GetDataWithPage } from "simply-utils/dist/scraping/launchPuppeteerBrowserSession"
 
+import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
 import scrapeAll from "src/services/cron/helpers/scrapeAll"
 
 // Create list of scrapers

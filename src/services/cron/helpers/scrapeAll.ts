@@ -1,11 +1,11 @@
-import launchBrowserSession, { GetDataWithPage } from "./launchBrowserSession"
+import launchPuppeteerBrowserSession, { GetDataWithPage } from "simply-utils/dist/scraping/launchPuppeteerBrowserSession"
 
 
 async function scrapeAll <T> (scrapers: GetDataWithPage<T[]>[]): Promise<T[]> {
   /** ------------ Scrape and Create records ------------ */
 
   // Scrape records from the site
-  const results = await launchBrowserSession<T[]>(scrapers)
+  const results = await launchPuppeteerBrowserSession<T[]>(scrapers)
   // Flatten records (Array.flat())
   const records = results.reduce((acc, curr) => [...acc, ...curr], [])
 

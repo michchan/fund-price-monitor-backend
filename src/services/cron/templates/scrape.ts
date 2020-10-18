@@ -1,8 +1,8 @@
 import { ScheduledHandler } from "aws-lambda"
-import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import { GetDataWithPage } from "../helpers/launchBrowserSession"
+import { GetDataWithPage } from "simply-utils/dist/scraping/launchPuppeteerBrowserSession"
 import getQuarter from "simply-utils/dist/dateTime/getQuarter"
 
+import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
 import scrapeAll from "src/services/cron/helpers/scrapeAll"
 import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems"
 import serialize from "src/models/fundPriceRecord/utils/serialize"
