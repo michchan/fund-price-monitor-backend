@@ -131,7 +131,7 @@ function construct (scope: cdk.Construct): ReturnType {
   /**
    * Handler for aggregating top-level items of records
    */
-  const aggregationHandler = new lambda.Function(scope, 'CronsAggregator', {
+  const aggregationHandler = new lambda.Function(scope, 'CronAggregator', {
     ...commonLambdaInput,
     handler: 'aggregate.handler',
   })
@@ -158,14 +158,14 @@ function construct (scope: cdk.Construct): ReturnType {
    */
   const scrapeHandlers = handlers
     .filter(fileName => /^handleScrapeFrom/i.test(fileName))
-    .map(getScraperCreator(/^handleScrapeFrom/i, 'CronsScraper'))
+    .map(getScraperCreator(/^handleScrapeFrom/i, 'CronScraper'))
 
   /**
    * @DEBUG * Testing handlers for scrapers
    */
   const testScrapeHandlers = handlers
     .filter(fileName => /^testScrapeFrom/i.test(fileName))
-    .map(getScraperCreator(/^testScrapeFrom/i, 'CronsTestScraper'))
+    .map(getScraperCreator(/^testScrapeFrom/i, 'CronTestScraper'))
 
   /** ---------- Table Handlers ---------- */
 
@@ -177,7 +177,7 @@ function construct (scope: cdk.Construct): ReturnType {
   /**
    * Handler for create table for next coming quarter
    */
-  const createTableHandler = new lambda.Function(scope, 'CronsTableCreateHandler', {
+  const createTableHandler = new lambda.Function(scope, 'CronTableCreateHandler', {
     ...commonLambdaInput,
     handler: 'createTable.handler',
     environment: commonTableHandlingEnv,
@@ -186,7 +186,7 @@ function construct (scope: cdk.Construct): ReturnType {
   /**
    * Handler for adjust the provisioned throughput of table for previous quarter
    */
-  const updateTableHandler = new lambda.Function(scope, 'CronsTableUpdateHandler', {
+  const updateTableHandler = new lambda.Function(scope, 'CronTableUpdateHandler', {
     ...commonLambdaInput,
     handler: 'updateTable.handler',
     environment: commonTableHandlingEnv,
@@ -194,22 +194,22 @@ function construct (scope: cdk.Construct): ReturnType {
 
   /** ---------- Notifications Handlers ---------- */
 
-  const notifyDailyHandler = new lambda.Function(scope, 'CronsNotifierDaily', {
+  const notifyDailyHandler = new lambda.Function(scope, 'CronNotifierDaily', {
     ...commonLambdaInput,
     handler: 'notifyDaily.handler',
     environment: commonNotifyEnv
   })
-  const notifyWeeklyHandler = new lambda.Function(scope, 'CronsNotifierWeekly', {
+  const notifyWeeklyHandler = new lambda.Function(scope, 'CronNotifierWeekly', {
     ...commonLambdaInput,
     handler: 'notifyWeekly.handler',
     environment: commonNotifyEnv
   })
-  const notifyMonthlyHandler = new lambda.Function(scope, 'CronsNotifierMonthly', {
+  const notifyMonthlyHandler = new lambda.Function(scope, 'CronNotifierMonthly', {
     ...commonLambdaInput,
     handler: 'notifyMonthly.handler',
     environment: commonNotifyEnv
   })
-  const notifyQuarterlyHandler = new lambda.Function(scope, 'CronsNotifierQuarterly', {
+  const notifyQuarterlyHandler = new lambda.Function(scope, 'CronNotifierQuarterly', {
     ...commonLambdaInput,
     handler: 'notifyQuarterly.handler',
     environment: commonNotifyEnv
