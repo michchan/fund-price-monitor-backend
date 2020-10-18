@@ -12,6 +12,7 @@ const createConfig = (handlersPath) => ({
             const isSubDir = !/(\.js|\.ts)$/.test(dir) 
             if (isSubDir) {
                 const subDir = fs.readdirSync(`${handlersPath}/${dir}`)
+                // See if there is an index file for this sub directory
                 return subDir.filter(n => /^index.js$/.test(n))
             }
             return /\.js$/.test(dir)
