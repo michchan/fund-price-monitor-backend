@@ -6,13 +6,18 @@ import 'chrome-aws-lambda/bin/chromium.br'
 import 'chrome-aws-lambda/bin/swiftshader.tar.br'
 
 
+const DEFAULT_TIMEOUT = 240_000 // 240s
+
 export type GetDataWithPage <T> = (page: puppeteer.Page) => Promise<T> | T
 
 /**
  * Helpers to scrape data from html
+ * @param getBatchData 
+ * @param defaultTimeout Default to 120000
  */
 export async function launchBrowserSession <T> (
   getBatchData: GetDataWithPage<T>[],
+  defaultTimeout: number = DEFAULT_TIMEOUT
 ): Promise<T[]> {
   let browser: puppeteer.Browser | null = null
 
@@ -24,11 +29,13 @@ export async function launchBrowserSession <T> (
       executablePath: await chromium.executablePath,
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
-      timeout: 120000, // 120s
     })
 
     // open a new page
-    var page = await browser.newPage()
+    const page = await browser.newPage()
+
+    // Set default timeout
+    page.setDefaultTimeout(defaultTimeout)
 
     // Get batches of data
     const data: T[] = []
