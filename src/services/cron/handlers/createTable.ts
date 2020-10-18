@@ -1,10 +1,11 @@
 import { ScheduledHandler } from "aws-lambda"
-import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter"
+import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
 
 import TableRange from "src/models/fundPriceRecord/TableRange.type"
 import createTable from "src/models/fundPriceRecord/io/createTable"
 import createTableDetails from "src/models/fundPriceRecord/io/createTableDetails"
 import checkTableExistence from "../helpers/checkTableExistence"
+import getCurrentYearAndQuarter from "../../../helpers/getCurrentYearAndQuarter"
 
 
 
@@ -17,10 +18,7 @@ export type EventDetail = TableRange | undefined
  */
 export const handler: ScheduledHandler<EventDetail> = async (event, context, callback) => {
   try {
-    // Get current year and quarter
-    const date = new Date()
-    const currentYear = date.getFullYear()
-    const currentQuarter = getQuarter(date)
+    const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
 
     // Get passed params and assign default with NEXT quarter
     const { 
@@ -38,7 +36,7 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
       await createTable(year, quarter, aggregationHandlerArn)
       // Create table detail row
       await createTableDetails({
-        time: date.toISOString(),
+        time: new Date().toISOString(),
         companies: [],
         fundTypes: [],
       }, year, quarter)

@@ -1,11 +1,11 @@
 import { ScheduledHandler } from "aws-lambda"
 import { GetDataWithPage } from "simply-utils/dist/scraping/launchPuppeteerBrowserSession"
-import getQuarter from "simply-utils/dist/dateTime/getQuarter"
 
 import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
 import scrapeAll from "src/services/cron/helpers/scrapeAll"
 import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems"
 import serialize from "src/models/fundPriceRecord/utils/serialize"
+import getCurrentYearAndQuarter from "src/helpers/getCurrentYearAndQuarter"
 
 // Create list of scrapers
 const scrapers: GetDataWithPage<FundPriceRecord[]>[] = []
@@ -14,11 +14,7 @@ const scrapers: GetDataWithPage<FundPriceRecord[]>[] = []
  */
 export const handler: ScheduledHandler = async (event, context, callback) => {
   try {
-    // Get current year and quarter
-    const year = new Date().getFullYear()
-    const quarter = getQuarter()
-    
-    /** ------------ Scrape and Create records ------------ */
+    const [year, quarter] = getCurrentYearAndQuarter()
 
     // Scrape records from the site
     const records = await scrapeAll(scrapers)
