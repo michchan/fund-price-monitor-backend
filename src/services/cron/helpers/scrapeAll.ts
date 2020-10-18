@@ -1,15 +1,12 @@
-import { FundPriceRecord } from "../../../models/fundPriceRecord/FundPriceRecord.type"
 import { GetDataWithPage, launchBrowserSession } from "./launchBrowserSession"
 
 
-type T = FundPriceRecord[]
-
-const scrapeAll = async (scrapers: GetDataWithPage<T>[]) => {
+async function scrapeAll <T> (scrapers: GetDataWithPage<T[]>[]): Promise<T[]> {
   /** ------------ Scrape and Create records ------------ */
 
   // Scrape records from the site
-  const results = await launchBrowserSession<T>(scrapers)
-  // Merge records
+  const results = await launchBrowserSession<T[]>(scrapers)
+  // Flatten records
   const records = results.reduce((acc, curr) => [...acc, ...curr], [])
 
   // Throw an error if any of the fields got undefined (not scraped properly)
