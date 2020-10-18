@@ -63,23 +63,23 @@ function construct (scope: cdk.Construct): ReturnType {
     role: apiRole,
   }
 
-  const listSingleFundRecordsHandler = new lambda.Function(scope, 'ListSingleFundRecords', {
+  const listSingleFundRecordsHandler = new lambda.Function(scope, 'ApiListSingleFundRecords', {
     ...commonLambdaInput,
     handler: 'listSingleFundRecords.handler',
   })
-  const listComRecordsHandler = new lambda.Function(scope, 'ListCompanyRecords', {
+  const listComRecordsHandler = new lambda.Function(scope, 'ApiListCompanyRecords', {
     ...commonLambdaInput,
     handler: 'listCompanyRecords.handler',
   })
-  const listComSinglePeriodRatesHandler = new lambda.Function(scope, 'ListCompanySinglePeriodRates', {
+  const listComSinglePeriodRatesHandler = new lambda.Function(scope, 'ApiListCompanySinglePeriodRates', {
     ...commonLambdaInput,
     handler: 'listCompanySinglePeriodRates.handler',
   })
-  const searchRecordsHandler = new lambda.Function(scope, 'SearchRecords', {
+  const searchRecordsHandler = new lambda.Function(scope, 'ApiSearchRecords', {
     ...commonLambdaInput,
     handler: 'searchRecords.handler',
   })
-  const listQuartersHandler = new lambda.Function(scope, 'ListQuarters', {
+  const listQuartersHandler = new lambda.Function(scope, 'ApiListQuarters', {
     ...commonLambdaInput,
     handler: 'listQuarters.handler',
   })

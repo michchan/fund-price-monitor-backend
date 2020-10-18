@@ -73,7 +73,7 @@ function construct (scope: cdk.Construct, options: InitOptions) {
   }
 
   /** Error log handler */
-  const notifyErrorLogHandler = new lambda.Function(scope, 'NotifyErrorHandler', {
+  const notifyErrorLogHandler = new lambda.Function(scope, 'LoggingNotifyErrorLog', {
     ...commonLambdaInput,
     handler: 'notifyErrorLog.handler',
     environment: {
@@ -84,7 +84,7 @@ function construct (scope: cdk.Construct, options: InitOptions) {
   lambdaErrorLogTopic.grantPublish(notifyErrorLogHandler)
 
   /** Mock error logs handler */
-  const mockErrorLogHandler = new lambda.Function(scope, 'MockErrorLogHandler', {
+  const mockErrorLogHandler = new lambda.Function(scope, 'LoggingMockErrorLog', {
     ...commonLambdaInput,
     handler: 'mockErrorLog.handler',
   })
