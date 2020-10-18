@@ -12,7 +12,6 @@ import checkTableExistence from "../helpers/checkTableExistence"
 import getCurrentYearAndQuarter from "../../../helpers/getCurrentYearAndQuarter"
 
 
-
 const lambda = new AWS.Lambda()
 
 export type EventDetail = Partial<TableRange & {
