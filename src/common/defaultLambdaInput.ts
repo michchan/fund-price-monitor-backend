@@ -12,7 +12,7 @@ const defaultLambdaInput: Pick<lambda.FunctionProps,
 > = {
   timeout: cdk.Duration.minutes(5),
   runtime: lambda.Runtime.NODEJS_12_X,
-  logRetention: RetentionDays.ONE_MONTH,
+  logRetention: RetentionDays.ONE_YEAR,
   /** Fix issues: https://github.com/aws/aws-cdk/issues/8257 */
   logRetentionRetryOptions: {
     base: Duration.millis(200),
