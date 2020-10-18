@@ -62,6 +62,10 @@ const createConfig = (handlersPath) => ({
         alias: {
             src: path.resolve(__dirname, 'build')
         }
+    },
+    externals: {
+        // * Do NOT bundle 'aws-sdk' since it is included in the AWS Lambda NodeJS runtime
+        ['aws-sdk']: 'aws-sdk'
     }
 })
 
