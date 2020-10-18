@@ -37,9 +37,7 @@ const processCompanyRecords = async (
   // Get year and quarter
   const { year, quarter } = getDateTimeDictionary(date)
 
-  /**
-   * ! IMPORTANT: All the records retrieved process must be filtered by `insertedItems`
-   */
+  /** // ! IMPORTANT: All the records retrieved process must be filtered by `insertedItems` */
   const matchInserted = (rec: FundPriceRecord | FundPriceChangeRate) => insertedItems.some(inserted => inserted.code === rec.code)
 
   // Fetch previous recrods for price change rate of week, month and quarter 
