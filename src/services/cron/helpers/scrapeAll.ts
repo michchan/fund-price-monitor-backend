@@ -1,4 +1,4 @@
-import { GetDataWithPage, launchBrowserSession } from "./launchBrowserSession"
+import launchBrowserSession, { GetDataWithPage } from "./launchBrowserSession"
 
 
 async function scrapeAll <T> (scrapers: GetDataWithPage<T[]>[]): Promise<T[]> {

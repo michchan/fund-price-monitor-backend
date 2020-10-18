@@ -15,7 +15,7 @@ export type GetDataWithPage <T> = (page: puppeteer.Page) => Promise<T> | T
  * @param getBatchData 
  * @param defaultTimeout Default to 120000
  */
-export async function launchBrowserSession <T> (
+async function launchBrowserSession <T> (
   getBatchData: GetDataWithPage<T>[],
   defaultTimeout: number = DEFAULT_TIMEOUT
 ): Promise<T[]> {
@@ -50,3 +50,4 @@ export async function launchBrowserSession <T> (
     if (browser) browser.close()
   }
 }
+export default launchBrowserSession
