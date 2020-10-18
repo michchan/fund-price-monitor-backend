@@ -6,7 +6,7 @@ async function scrapeAll <T> (scrapers: GetDataWithPage<T[]>[]): Promise<T[]> {
 
   // Scrape records from the site
   const results = await launchBrowserSession<T[]>(scrapers)
-  // Flatten records
+  // Flatten records (Array.flat())
   const records = results.reduce((acc, curr) => [...acc, ...curr], [])
 
   // Throw an error if any of the fields got undefined (not scraped properly)
