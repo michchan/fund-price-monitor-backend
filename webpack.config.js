@@ -8,7 +8,14 @@ const createConfig = (handlersPath) => ({
     entry: () => {
         const dirs = fs.readdirSync(handlersPath)
         // Get names of js files
-        const names = dirs.filter(dir => /\.js$/.test(dir))
+        const names = dirs.filter(dir => {
+            const isSubDir = !/(\.js|\.ts)$/.test(dir) 
+            if (isSubDir) {
+                const subDir = fs.readdirSync(`${handlersPath}/${dir}`)
+                return subDir.filter(n => /^index.js$/.test(n))
+            }
+            return /\.js$/.test(dir)
+        })
         // Map entry object
         return names.reduce((obj, name) => {
             // Remove .js file extension
