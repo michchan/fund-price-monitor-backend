@@ -8,6 +8,7 @@ import * as ssm from '@aws-cdk/aws-ssm'
 import * as fs from 'fs'
 
 import env from 'src/lib/env'
+import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
 
 
@@ -107,9 +108,8 @@ function construct (scope: cdk.Construct): ReturnType {
 
   // Common input for lambda Definition
   const commonLambdaInput = {
+    ...defaultLambdaInput,
     code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
-    timeout: cdk.Duration.minutes(5),
-    runtime: lambda.Runtime.NODEJS_12_X,
     memorySize: 250,
     role: cronRole,
   }

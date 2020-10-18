@@ -11,6 +11,7 @@ import generateRandomString from 'simply-utils/dist/string/generateRandomString'
 
 import env from 'src/lib/env'
 import { PROJECT_NAMESPACE } from 'src/constants'
+import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
 
 const DIRNAME = __dirname.split('/').pop()
@@ -66,9 +67,8 @@ function construct (scope: cdk.Construct, options: InitOptions) {
 
   // Common input for lambda Definition
   const commonLambdaInput = {
+    ...defaultLambdaInput,
     code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
-    timeout: cdk.Duration.minutes(5),
-    runtime: lambda.Runtime.NODEJS_12_X,
     role: subsRole,
   }
 

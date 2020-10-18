@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam'
 import { Effect } from '@aws-cdk/aws-iam'
 import * as lambda from '@aws-cdk/aws-lambda'
 import * as apigateway from '@aws-cdk/aws-apigateway'
+import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
 
 const DIRNAME = __dirname.split('/').pop()
@@ -57,9 +58,8 @@ function construct (scope: cdk.Construct): ReturnType {
 
   // Common input for lambda Definition
   const commonLambdaInput = {
+    ...defaultLambdaInput,
     code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
-    timeout: cdk.Duration.minutes(5),
-    runtime: lambda.Runtime.NODEJS_12_X,
     role: apiRole,
   }
 
