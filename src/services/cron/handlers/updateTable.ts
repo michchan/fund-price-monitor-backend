@@ -5,9 +5,9 @@ import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter"
 import TableRange from "src/models/fundPriceRecord/TableRange.type"
 import AWS from 'src/lib/AWS'
 import getTableName from "src/models/fundPriceRecord/utils/getTableName"
-import listLatestTables from "src/models/fundPriceRecord/io/listLatestTables"
 import describeTable from "src/models/fundPriceRecord/io/describeTable"
 import updateTable from "src/models/fundPriceRecord/io/updateTable"
+import checkTableExistence from "../helpers/checkTableExistence"
 
 
 
@@ -45,14 +45,14 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
     const tableName = getTableName(year, quarter)
 
     // Check table existence
-    const tableNames = await listLatestTables({ 
+    const hasExistingPrevTable = await checkTableExistence( 
       // Need to get the previous of previous table name coz it is exclusive here
-      year: quarter === 1 ? +year - 1 : year, 
-      quarter: quarter === 1 ? 4 : quarter - 1 as Quarter, 
-    })
+      quarter === 1 ? +year - 1 : year, 
+      quarter === 1 ? 4 : quarter - 1 as Quarter, 
+    )
 
     // Do update if the table exists
-    if (tableNames.some(name => name === tableName)) {
+    if (hasExistingPrevTable) {
       /** ------------------ Delete stream-lambda event source mapping ------------------ */
     
       // Describe table and get the stream arn

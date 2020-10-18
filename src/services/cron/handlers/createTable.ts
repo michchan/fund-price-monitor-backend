@@ -2,10 +2,9 @@ import { ScheduledHandler } from "aws-lambda"
 import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter"
 
 import TableRange from "src/models/fundPriceRecord/TableRange.type"
-import getTableName from "src/models/fundPriceRecord/utils/getTableName"
-import listLatestTables from "src/models/fundPriceRecord/io/listLatestTables"
 import createTable from "src/models/fundPriceRecord/io/createTable"
 import createTableDetails from "src/models/fundPriceRecord/io/createTableDetails"
+import checkTableExistence from "../helpers/checkTableExistence"
 
 
 
@@ -29,13 +28,9 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
       quarter = currentQuarter === 4 ? 1 : currentQuarter + 1 as Quarter
     } = event.detail ?? {}
 
-    // Get table name to create
-    const tableName = getTableName(year, quarter)
-    
-    // Check table existence
-    const tableNames = await listLatestTables({ year, quarter })
+    const hasExistingTable = await checkTableExistence(year, quarter)
     // Create a table of the specified quarter if it does NOT exist
-    if (!tableNames.some(name => name === tableName)) {
+    if (!hasExistingTable) {
       // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
       // to map as dynamodb stream target function
       const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
