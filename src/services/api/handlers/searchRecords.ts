@@ -1,37 +1,35 @@
-import { APIGatewayProxyHandler } from "aws-lambda"
-import { DocumentClient } from "aws-sdk/clients/dynamodb"
-import mapValues from "lodash/mapValues"
+import { APIGatewayProxyHandler } from 'aws-lambda'
+import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import mapValues from 'lodash/mapValues'
 
-import { ListResponse } from "../Responses.type"
+import { ListResponse } from '../Responses.type'
 import { FundPriceRecord } from '../../../models/fundPriceRecord/FundPriceRecord.type'
-import createReadResponse from "../helpers/createReadResponse"
-import { StructuredQuery } from "../StructuredQuery.type"
-import parseQuery from "../helpers/parseQuery"
-import validateKey from "../validators/validateKey"
-import scanItems from "src/models/fundPriceRecord/io/scanItems"
-import attrs from "src/models/fundPriceRecord/constants/attributeNames"
-import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith"
-import mapQueryFieldToFilterExpression from "../helpers/mapQueryFieldToFilterExpression"
-import createParameterErrMsg from "../helpers/createParameterErrMsg"
-import mapQueryToFilterExpressions from "../helpers/mapQueryToFilterExpressions"
-import validateYearQuarter from "../validators/validateYearQuarter"
-import yearQuarterToTableRange from "../helpers/yearQuarterToTableRange"
+import createReadResponse from '../helpers/createReadResponse'
+import { StructuredQuery } from '../StructuredQuery.type'
+import parseQuery from '../helpers/parseQuery'
+import validateKey from '../validators/validateKey'
+import scanItems from 'src/models/fundPriceRecord/io/scanItems'
+import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
+import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
+import mapQueryFieldToFilterExpression from '../helpers/mapQueryFieldToFilterExpression'
+import createParameterErrMsg from '../helpers/createParameterErrMsg'
+import mapQueryToFilterExpressions from '../helpers/mapQueryToFilterExpressions'
+import validateYearQuarter from '../validators/validateYearQuarter'
+import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
 
-
-
-const EXP_TIME_SK_PFX = `:timeSK_prefix` as string
+const EXP_TIME_SK_PFX = ':timeSK_prefix' as string
 
 export type Res = ListResponse<FundPriceRecord>
 
 export interface QueryParams {
-  latest?: boolean
-  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey']
-  q?: StructuredQuery
+  latest?: boolean;
+  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
+  q?: StructuredQuery;
   /** Format: YYYY.(1|2|3|4) */
-  quarter?: string
+  quarter?: string;
 }
 
-/** 
+/**
  * Search all fund records
  */
 export const handler: APIGatewayProxyHandler = async (event, context, callback) => {
@@ -42,7 +40,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
       if (key === 'q') return parseQuery(value)
       return value
     }) as unknown as QueryParams
-    const { 
+    const {
       latest,
       exclusiveStartKey,
       q,
@@ -53,7 +51,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
 
     if (!q) throw new Error(createParameterErrMsg('q', 'query'))
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
-    if (quarter) validateYearQuarter(quarter, 'quarter') 
+    if (quarter) validateYearQuarter(quarter, 'quarter')
 
     /** ----------- Query ----------- */
 
@@ -68,7 +66,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
       ExpressionAttributeNames: expNames,
       ExpressionAttributeValues: {
         ...expValues,
-        [EXP_TIME_SK_PFX]: latest ? 'latest' : 'record'
+        [EXP_TIME_SK_PFX]: latest ? 'latest' : 'record',
       },
       FilterExpression: [
         beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),

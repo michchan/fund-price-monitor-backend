@@ -1,9 +1,8 @@
 import { DynamoDB } from 'aws-sdk'
 import { ListAttributeValue } from 'aws-sdk/clients/dynamodbstreams'
 
-import { CompanyType, FundPriceChangeRate, AggregatedRecordType } from "../FundPriceRecord.type"
+import { AggregatedRecordType, CompanyType, FundPriceChangeRate } from '../FundPriceRecord.type'
 import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames'
-
 
 /**
  * Parse a dynamodb item to FundPriceChangeRate
@@ -19,7 +18,7 @@ const parseChangeRate = (attributeMap: DynamoDB.DocumentClient.AttributeMap): Fu
     [attr.PERIOD]: period = '',
     [attr.UPDATED_DATE]: updatedDate,
   } = attributeMap as unknown as FundPriceRecordAttributeMap
-  
+
   const [company, code] = company_code.split('_') as [CompanyType, string]
 
   return {

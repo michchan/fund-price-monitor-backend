@@ -1,8 +1,7 @@
-import puppeteer = require("puppeteer")
+import puppeteer = require('puppeteer')
 
-import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import retryWithDelay from "../helpers/retryWithDelay"
-
+import { CompanyType, FundPriceRecord, FundType, RecordType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import retryWithDelay from '../helpers/retryWithDelay'
 
 const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
 
@@ -59,7 +58,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
         // Derive price
         price: (() => {
           const text = dataCells[3].innerText.trim()
-          return +text.replace(/HKD|↵|\n/gim, '')
+          return Number(text.replace(/HKD|↵|\n/gim, ''))
         })(),
         // Derive initialPrice and launchedDate
         ...(() => {
@@ -67,7 +66,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
           const textWithoutDollarSign = text.replace(/^HKD(↵|\n)/gim, '')
           const [price, date] = textWithoutDollarSign.split(/↵|\n/)
           return {
-            initialPrice: +price,
+            initialPrice: Number(price),
             // Replace 'slashes' with 'hyphens'
             launchedDate: date.trim().replace(/\//g, '-'),
           }

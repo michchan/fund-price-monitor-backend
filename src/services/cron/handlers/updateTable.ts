@@ -1,36 +1,35 @@
-import { ScheduledHandler } from "aws-lambda"
-import { DynamoDB } from "aws-sdk"
-import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
-import { ProvisionedThroughput } from "aws-sdk/clients/dynamodb"
+import { DynamoDB } from 'aws-sdk'
+import { ProvisionedThroughput } from 'aws-sdk/clients/dynamodb'
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import { ScheduledHandler } from 'aws-lambda'
 
-import TableRange from "src/models/fundPriceRecord/TableRange.type"
 import AWS from 'src/lib/AWS'
-import getTableName from "src/models/fundPriceRecord/utils/getTableName"
-import describeTable, { Result as DescribeTableResult } from "src/models/fundPriceRecord/io/describeTable"
-import updateTable from "src/models/fundPriceRecord/io/updateTable"
-import checkTableExistence from "../helpers/checkTableExistence"
-import getCurrentYearAndQuarter from "../../../helpers/getCurrentYearAndQuarter"
-
+import checkTableExistence from '../helpers/checkTableExistence'
+import describeTable, { Result as DescribeTableResult } from 'src/models/fundPriceRecord/io/describeTable'
+import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
+import getTableName from 'src/models/fundPriceRecord/utils/getTableName'
+import TableRange from 'src/models/fundPriceRecord/TableRange.type'
+import updateTable from 'src/models/fundPriceRecord/io/updateTable'
 
 const lambda = new AWS.Lambda()
 
 export type EventDetail = Partial<TableRange & {
-  ProvisionedThroughput: Partial<DynamoDB.UpdateTableInput['ProvisionedThroughput']>
+  ProvisionedThroughput: Partial<DynamoDB.UpdateTableInput['ProvisionedThroughput']>;
 }> | undefined
 
-/** 
+/**
  * Adjust the provisioned throughput of table for previous prevQuarter.
- * 
+ *
  * To run this function with customized prevQuarter, pass "prevYear" and "prevQuarter" in `event.detail` as an object. Specify `ProvisionedThroughput` to customize the throughput to update.
- * 
+ *
  */
 export const handler: ScheduledHandler<EventDetail> = async (event, context, callback) => {
   try {
     const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
 
     // Get passed params and assign default with PREVIOUS quarter
-    const { 
-      year: prevYear = currentQuarter === 1 ? currentYear - 1 : currentYear, 
+    const {
+      year: prevYear = currentQuarter === 1 ? currentYear - 1 : currentYear,
       quarter: prevQuarter = currentQuarter === 1 ? 4 : currentQuarter - 1 as Quarter,
     } = event.detail ?? {}
     const {
@@ -42,7 +41,7 @@ export const handler: ScheduledHandler<EventDetail> = async (event, context, cal
     // Get table name to update
     const prevQuarterTableName = getTableName(prevYear, prevQuarter)
     // Need to get the previous of previous table name coz the year and quarter of `checkTableExistence` is exclusive
-    const exclusiveYear = prevQuarter === 1 ? +prevYear - 1 : prevYear
+    const exclusiveYear = prevQuarter === 1 ? Number(prevYear) - 1 : prevYear
     const exclusiveQuarter = prevQuarter === 1 ? 4 : prevQuarter - 1 as Quarter
     // Check table existence
     const hasExistingPrevTable = await checkTableExistence(exclusiveYear, exclusiveQuarter, prevQuarterTableName)
@@ -65,11 +64,11 @@ const deleteLambdaStreamEventSourceMapping = async (year: number | string, quart
   // Remove event source mapping for aggregation handler
   if (streamArn) {
     // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
-    // to map as dynamodb stream target function
+    // To map as dynamodb stream target function
     const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
 
     // List event source mapping
-    const eventSourceMappings = await lambda.listEventSourceMappings({ 
+    const eventSourceMappings = await lambda.listEventSourceMappings({
       FunctionName: aggregationHandlerArn,
       EventSourceArn: streamArn,
     }).promise()
@@ -78,9 +77,7 @@ const deleteLambdaStreamEventSourceMapping = async (year: number | string, quart
     await Promise.all(
       (eventSourceMappings.EventSourceMappings ?? []).map(mapping => {
         if (!mapping.UUID) return
-        return lambda.deleteEventSourceMapping({
-          UUID: mapping.UUID
-        }).promise()
+        return lambda.deleteEventSourceMapping({ UUID: mapping.UUID }).promise()
       })
     )
   }
@@ -98,12 +95,12 @@ const updateTableThroughputsAndDisableStream = async (
   const streamEnabled = describeTableOutput.Table?.StreamSpecification?.StreamEnabled
 
   // * The following update-table requests must be separate,
-  // * since AWS DynamoDB only allow update either one per request.
+  // * Since AWS DynamoDB only allow update either one per request.
 
   // Update only when some of the throughput changed
   // Since AWS don't allow an "unchanged update".
   if (
-    throughput?.ReadCapacityUnits !== ReadCapacityUnits 
+    throughput?.ReadCapacityUnits !== ReadCapacityUnits
     || throughput?.WriteCapacityUnits !== WriteCapacityUnits
   ) {
     // Send update table request
@@ -113,8 +110,8 @@ const updateTableThroughputsAndDisableStream = async (
         ReadCapacityUnits,
         WriteCapacityUnits,
       },
-    // Wait for the service to be updated complete, 
-    // if there is another update, i.e. disabling table's stream
+    // Wait for the service to be updated complete,
+    // If there is another update, i.e. disabling table's stream
     }, streamEnabled)
   }
   // Disable stream if it is enabled
@@ -123,7 +120,7 @@ const updateTableThroughputsAndDisableStream = async (
     // "You cannot modify stream status while updating table IOPS"
     await updateTable(prevYear, prevQuarter, {
       // Disable stream
-      StreamSpecification: { StreamEnabled: false }
+      StreamSpecification: { StreamEnabled: false },
     })
   }
 }

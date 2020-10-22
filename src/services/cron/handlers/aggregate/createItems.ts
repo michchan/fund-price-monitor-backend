@@ -1,10 +1,9 @@
-import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
-import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems"
-import serialize from "src/models/fundPriceRecord/utils/serialize"
-import serializeChangeRate from "src/models/fundPriceRecord/utils/serializeChangeRate"
+import batchCreateItems from 'src/models/fundPriceRecord/io/batchCreateItems'
+import serialize from 'src/models/fundPriceRecord/utils/serialize'
+import serializeChangeRate from 'src/models/fundPriceRecord/utils/serializeChangeRate'
 import { Output } from './deriveAggregatedItems'
-
 
 const createItems = async (
   year: string | number,
@@ -32,9 +31,9 @@ const createItems = async (
 
   // Create change rates
   await batchCreateItems([
-    ...weekRateItems, 
-    ...monthRateItems, 
-    ...quarterRateItems
+    ...weekRateItems,
+    ...monthRateItems,
+    ...quarterRateItems,
   ], year, quarter, serializeChangeRate)
 }
 export default createItems

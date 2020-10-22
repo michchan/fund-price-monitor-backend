@@ -1,9 +1,7 @@
-import { FundPriceRecord } from "../FundPriceRecord.type"
+import { FundPriceRecord } from '../FundPriceRecord.type'
 
-
-
-export interface Item { 
-  code: FundPriceRecord['code'] 
+export interface Item {
+  code: FundPriceRecord['code'];
 }
 
 /**

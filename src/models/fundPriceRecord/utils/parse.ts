@@ -1,8 +1,7 @@
 import { DynamoDB } from 'aws-sdk'
 
-import { FundPriceRecord, CompanyType, RiskLevel, FundType, RecordType } from "../FundPriceRecord.type"
+import { CompanyType, FundPriceRecord, FundType, RecordType, RiskLevel } from '../FundPriceRecord.type'
 import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames'
-
 
 /**
  * Parse a dynamodb item to FundPriceRecord
@@ -40,7 +39,7 @@ const parse = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundPriceRec
     // Get the first composite segment of `timeSK`
     recordType: timeSKSegments.shift() as RecordType,
     priceChangeRate,
-  }  
+  }
 }
 
 export default parse

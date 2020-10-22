@@ -1,5 +1,4 @@
-import { FundType, RiskLevel, CompanyType } from "../FundPriceRecord.type"
-
+import { CompanyType, FundType, RiskLevel } from '../FundPriceRecord.type'
 
 const attributeNames = {
   // Based table partition key
@@ -18,31 +17,30 @@ const attributeNames = {
   PERIOD: 'period',
   PRICE_CHANGE_RATE: 'priceChangeRate',
   PRICE_LIST: 'priceList',
-  /** table-level fields (table details items) */
+  /** Table-level fields (table details items) */
   COMPANIES: 'companies',
   FUND_TYPES: 'fundTypes',
 } as const
 export default attributeNames
 
-
 export type AttrName = typeof attributeNames
-export type StringAttrNameKey = keyof Pick<AttrName, 
-  | 'COMPANY'
-  | 'COMPANY_CODE'
-  | 'TIME_SK'
-  | 'NAME'
-  | 'PRICE'
-  | 'UPDATED_DATE'
-  | 'LAUNCHED_DATE'
-  | 'PERIOD'
+export type StringAttrNameKey = keyof Pick<AttrName,
+| 'COMPANY'
+| 'COMPANY_CODE'
+| 'TIME_SK'
+| 'NAME'
+| 'PRICE'
+| 'UPDATED_DATE'
+| 'LAUNCHED_DATE'
+| 'PERIOD'
 >
-export type NumberAttrNameKey = keyof Pick<AttrName, 
-  | 'PRICE'
-  | 'INITIAL_PRICE'
-  | 'PRICE_CHANGE_RATE'
+export type NumberAttrNameKey = keyof Pick<AttrName,
+| 'PRICE'
+| 'INITIAL_PRICE'
+| 'PRICE_CHANGE_RATE'
 >
-export type NumberListAttrNameKey = keyof Pick<AttrName, 
-  | 'PRICE_LIST'
+export type NumberListAttrNameKey = keyof Pick<AttrName,
+| 'PRICE_LIST'
 >
 
 export type FundPriceRecordAttributeMap = {

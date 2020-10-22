@@ -1,12 +1,11 @@
-import createParameterErrMsg from "../helpers/createParameterErrMsg"
-import getDateTimeDictionary from "src/helpers/getDateTimeDictionary"
-
+import createParameterErrMsg from '../helpers/createParameterErrMsg'
+import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 
 /**
- * startTime and endTime must be within a certain quarter
- * 
- * @param startTime 
- * @param endTime 
+ * StartTime and endTime must be within a certain quarter
+ *
+ * @param startTime
+ * @param endTime
  */
 const validateTimestampRange = (
   startTime: string,
@@ -18,9 +17,7 @@ const validateTimestampRange = (
   const startQuarterAbsolute = `${start.year}.${start.quarter}`
   const endQuarterAbsolute = `${end.year}.${end.quarter}`
 
-  if (startQuarterAbsolute !== endQuarterAbsolute) {
-    throw new Error(createParameterErrMsg(`startTime', 'endTime`, 'query', 'custom', `must be within a certain quarter`))
-  }
+  if (startQuarterAbsolute !== endQuarterAbsolute) throw new Error(createParameterErrMsg('startTime\', \'endTime', 'query', 'custom', 'must be within a certain quarter'))
 }
 
 export default validateTimestampRange

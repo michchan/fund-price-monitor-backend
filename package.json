@@ -5,15 +5,17 @@
     "fund-price-monitor-backend": "bin/fund-price-monitor-backend.ts"
   },
   "scripts": {
+    "build": "npm run buildScrapers && npm run tsc && ./node_modules/.bin/webpack",
     "buildScrapers": "node scripts/buildScrapers",
-    "build": "npm run buildScrapers && tsc && ./node_modules/.bin/webpack",
-    "clearBuildCache": "rm -rf ./build && rm -rf ./bundles",
-    "watch": "tsc -w",
-    "test": "jest",
     "cdk": "cdk",
-    "template": "npm run build && npm run cdk synth --no-staging > template.yaml",
+    "clearBuildCache": "rm -rf ./build && rm -rf ./bundles",
+    "deploy": "npm run cdk deploy FundPriceMonitorBackendStack -- --require-approval never",
+    "eslint": "node_modules/.bin/eslint --ext .js,.jsx,.ts,.tsx src/ scripts/",
     "invoke": "npm run template && sam local invoke",
-    "deploy": "npm run cdk deploy FundPriceMonitorBackendStack -- --require-approval never"
+    "template": "npm run build && npm run cdk synth --no-staging > template.yaml",
+    "test": "jest",
+    "tsc": "node_modules/.bin/tsc",
+    "watch": "npm run tsc -- --watch --noemit"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.68.0",
@@ -32,7 +34,11 @@
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.0.3",
     "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
+    "@typescript-eslint/parser": "^4.5.0",
+    "eslint": "^7.11.0",
+    "eslint-plugin-import": "^2.22.1"
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "^1.68.0",

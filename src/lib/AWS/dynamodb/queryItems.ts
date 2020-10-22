@@ -1,6 +1,5 @@
 import AWS from 'src/lib/AWS'
 
-
 // Initialize
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 

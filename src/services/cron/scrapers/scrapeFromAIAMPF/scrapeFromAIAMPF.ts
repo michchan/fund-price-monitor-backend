@@ -1,10 +1,9 @@
-import puppeteer = require("puppeteer")
+import puppeteer = require('puppeteer')
 
-import { FundPriceRecord, CompanyType, FundType, RecordType } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import getPricesData from "./getPricesData"
-import getPerformanceData from "./getPerformanceData"
-import getDetailsData from "./getDetailsData"
-
+import { CompanyType, FundPriceRecord, FundType, RecordType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import getPricesData from './getPricesData'
+import getPerformanceData from './getPerformanceData'
+import getDetailsData from './getDetailsData'
 
 const PRICES_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundprices.jspa?mt=MT3&lang=zh_TW'
 const PERFORMANCE_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundperf.jspa?mt=MT3&lang=zh_TW'

@@ -1,8 +1,6 @@
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
-import { PROJECT_NAMESPACE } from "src/constants"
-
-
+import { PROJECT_NAMESPACE } from 'src/constants'
 
 const getTableName = (
   /** In YYYY format */
@@ -13,10 +11,15 @@ const getTableName = (
   const diffYr = Math.trunc(quarterOffset / 4)
   const diffQuarter = quarterOffset % 4
 
-  const yr = +year + diffYr
-  const qt = +quarter + diffQuarter
+  const yr = Number(year) + diffYr
+  const qt = Number(quarter) + diffQuarter
 
-  if (!yr || !qt || yr < 0 || qt < 0) throw new Error(`Cannot get table name: ${JSON.stringify({ yr, qt })}`)
+  if (!yr || !qt || yr < 0 || qt < 0) {
+    throw new Error(`Cannot get table name: ${JSON.stringify({
+      yr,
+      qt,
+    })}`)
+  }
 
   return `${PROJECT_NAMESPACE}.FundPriceRecords_${yr}_q${qt}`
 }

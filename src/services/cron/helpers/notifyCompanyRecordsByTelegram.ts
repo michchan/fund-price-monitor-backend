@@ -1,6 +1,6 @@
 import callPromiseWithDelay from 'simply-utils/dist/async/callPromiseWithDelay'
 
-import { CompanyType } from "src/models/fundPriceRecord/FundPriceRecord.type"
+import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import sendMessage from 'src/lib/telegram/sendMessage'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
@@ -9,8 +9,6 @@ import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
 import parse from 'src/models/fundPriceRecord/utils/parse'
 import getSorterByCode from 'src/models/fundPriceRecord/utils/getSorterByCode'
 import toTelegramMessages from 'src/models/fundPriceRecord/utils/toTelegramMessages'
-
-
 
 export type ScheduleType = 'daily' | 'weekly' | 'monthly' | 'quarterly'
 
@@ -22,10 +20,10 @@ const notifyCompanyRecordsByTelegram = async (
 ) => {
   // Create date of latest item
   const date = new Date()
-  
+
   /** -------- Query and parse records -------- */
-  
-  // query records to be sent in notification
+
+  // Query records to be sent in notification
   const queryOutput = await ((scheduleType: ScheduleType) => {
     switch (scheduleType) {
       case 'quarterly':
@@ -53,13 +51,13 @@ const notifyCompanyRecordsByTelegram = async (
     }
   // Sort by code in ascending order
   }).sort(getSorterByCode())
-  
+
   // Abort if no items found
   if (items.length === 0) {
     console.log('No items found')
-    return 
+    return
   }
-  
+
   /** -------- Transform records to messages and send messages -------- */
 
   // Parse items as telegram messages
@@ -72,7 +70,7 @@ const notifyCompanyRecordsByTelegram = async (
 
     if (i < messages.length)
       // Delay to make sure the previous message has been sent and displayed to all user
-      await callPromiseWithDelay((async () => null), 5000)
+      await callPromiseWithDelay(async () => null, 5000)
   }
 }
 

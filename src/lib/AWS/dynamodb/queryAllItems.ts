@@ -2,7 +2,6 @@ import { DynamoDB } from 'aws-sdk'
 
 import queryOrScanAllItems from './queryOrScanAllItems'
 
-
 export type Input = DynamoDB.DocumentClient.QueryInput
 export type Output = DynamoDB.DocumentClient.QueryOutput
 /**

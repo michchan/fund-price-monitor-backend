@@ -1,17 +1,16 @@
-import zeroPadding from "simply-utils/dist/number/zeroPadding"
-import getWeekOfYear from "simply-utils/dist/dateTime/getWeekOfYear"
-import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter"
-
+import zeroPadding from 'simply-utils/dist/number/zeroPadding'
+import getWeekOfYear from 'simply-utils/dist/dateTime/getWeekOfYear'
+import getQuarter, { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
 export interface Result {
   /** YYYY */
-  year: number
+  year: number;
   /** MM */
-  month: string
+  month: string;
   /** Start from 1 */
-  week: number
+  week: number;
   /** Start from 1 */
-  quarter: Quarter
+  quarter: Quarter;
 }
 
 const getDateTimeDictionary = (date: Date): Result => {

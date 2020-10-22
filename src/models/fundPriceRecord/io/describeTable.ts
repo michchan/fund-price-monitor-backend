@@ -1,9 +1,8 @@
-import { DynamoDB } from "aws-sdk"
-import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
+import { DynamoDB } from 'aws-sdk'
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
-import getTableName from "../utils/getTableName"
+import getTableName from '../utils/getTableName'
 import AWS from 'src/lib/AWS'
-
 
 // Initialize
 const dynamodb = new AWS.DynamoDB()
@@ -19,7 +18,10 @@ const describeTable = (
   // Get based table name
   const TableName = getTableName(year, quarter)
   // Update table
-  return dynamodb.describeTable({ ...input, TableName }).promise()
+  return dynamodb.describeTable({
+    ...input,
+    TableName,
+  }).promise()
 }
 
 export default describeTable

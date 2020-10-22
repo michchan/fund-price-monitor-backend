@@ -9,7 +9,6 @@ import attrs from '../constants/attributeNames'
 import indexNames from '../constants/indexNames'
 import waitForStream from 'src/lib/AWS/dynamodb/waitForStream'
 
-
 // Initialize
 const dynamodb = new AWS.DynamoDB()
 const lambda = new AWS.Lambda()
@@ -59,7 +58,7 @@ const createTable = async (
   // Get event source mapping logical ID
   const eventSrcMapId = eventSourceMapping.UUID
   // Abort if the following are not defined
-  if (!(eventSrcMapId)) {
+  if (!eventSrcMapId) {
     // Throw an error if the stream ARN is undefined. As it supposed to be defined.
     throw new Error(`eventSourceMapping invalid: ${JSON.stringify(eventSourceMapping, null, 2)}`)
   }
@@ -70,7 +69,6 @@ const createTable = async (
   return createdTable
 }
 export default createTable
-
 
 /** Common throughput for GSI */
 const GSI_COMMON_THROUGHPUT: DynamoDB.GlobalSecondaryIndex['ProvisionedThroughput'] = {
@@ -85,26 +83,50 @@ const createInclusiveCSI = (
 ): DynamoDB.GlobalSecondaryIndex => ({
   Projection: {
     ProjectionType: 'INCLUDE',
-    NonKeyAttributes: NonKeyAttributes
+    NonKeyAttributes,
   },
   ProvisionedThroughput: GSI_COMMON_THROUGHPUT,
-  ...config
+  ...config,
 })
 
 /** Helper to get table params */
 const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
-  TableName: TableName,
+  TableName,
   KeySchema: [
-    { AttributeName: attrs.COMPANY_CODE, KeyType: 'HASH' },
-    { AttributeName: attrs.TIME_SK, KeyType: 'RANGE' },
+    {
+      AttributeName: attrs.COMPANY_CODE,
+      KeyType: 'HASH',
+    },
+    {
+      AttributeName: attrs.TIME_SK,
+      KeyType: 'RANGE',
+    },
   ],
   AttributeDefinitions: [
-    { AttributeName: attrs.COMPANY_CODE, AttributeType: 'S' },
-    { AttributeName: attrs.TIME_SK, AttributeType: 'S' },
-    { AttributeName: attrs.COMPANY, AttributeType: 'S' },
-    { AttributeName: attrs.RISK_LEVEL, AttributeType: 'S' },
-    { AttributeName: attrs.PERIOD, AttributeType: 'S' },
-    { AttributeName: attrs.PRICE_CHANGE_RATE, AttributeType: 'N' },
+    {
+      AttributeName: attrs.COMPANY_CODE,
+      AttributeType: 'S',
+    },
+    {
+      AttributeName: attrs.TIME_SK,
+      AttributeType: 'S',
+    },
+    {
+      AttributeName: attrs.COMPANY,
+      AttributeType: 'S',
+    },
+    {
+      AttributeName: attrs.RISK_LEVEL,
+      AttributeType: 'S',
+    },
+    {
+      AttributeName: attrs.PERIOD,
+      AttributeType: 'S',
+    },
+    {
+      AttributeName: attrs.PRICE_CHANGE_RATE,
+      AttributeType: 'N',
+    },
   ],
   // Every created table are regarded as a table containing the latest timeSK series data,
   // So assign the best capacity units.
@@ -116,36 +138,48 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
     createInclusiveCSI({
       IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
       KeySchema: [
-        { AttributeName: attrs.PERIOD, KeyType: 'HASH' },
-        { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
+        {
+          AttributeName: attrs.PERIOD,
+          KeyType: 'HASH',
+        },
+        {
+          AttributeName: attrs.PRICE_CHANGE_RATE,
+          KeyType: 'RANGE',
+        },
       ],
     }, [
-      attrs.PRICE, 
-      attrs.NAME, 
-      attrs.UPDATED_DATE, 
-      attrs.PRICE_LIST, 
+      attrs.PRICE,
+      attrs.NAME,
+      attrs.UPDATED_DATE,
+      attrs.PRICE_LIST,
     ]),
     createInclusiveCSI({
       IndexName: indexNames.RECORDS_BY_COMPANY,
       KeySchema: [
-        { AttributeName: attrs.COMPANY, KeyType: 'HASH' },
+        {
+          AttributeName: attrs.COMPANY,
+          KeyType: 'HASH',
+        },
       ],
     }, [
-      attrs.PRICE, 
-      attrs.PRICE_CHANGE_RATE, 
-      attrs.NAME, 
-      attrs.UPDATED_DATE
+      attrs.PRICE,
+      attrs.PRICE_CHANGE_RATE,
+      attrs.NAME,
+      attrs.UPDATED_DATE,
     ]),
     createInclusiveCSI({
       IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
       KeySchema: [
-        { AttributeName: attrs.RISK_LEVEL, KeyType: 'HASH' },
+        {
+          AttributeName: attrs.RISK_LEVEL,
+          KeyType: 'HASH',
+        },
       ],
     }, [
-      attrs.PRICE, 
-      attrs.PRICE_CHANGE_RATE, 
-      attrs.NAME, 
-      attrs.UPDATED_DATE
+      attrs.PRICE,
+      attrs.PRICE_CHANGE_RATE,
+      attrs.NAME,
+      attrs.UPDATED_DATE,
     ]),
   ],
   // Add stream for aggregation of top-level items

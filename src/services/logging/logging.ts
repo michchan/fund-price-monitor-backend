@@ -1,23 +1,20 @@
 import * as cdk from '@aws-cdk/core'
-import * as sns from '@aws-cdk/aws-sns'
-import * as subs from '@aws-cdk/aws-sns-subscriptions'
 import * as iam from '@aws-cdk/aws-iam'
-import { Effect } from '@aws-cdk/aws-iam'
 import * as lambda from '@aws-cdk/aws-lambda'
 import * as logs from '@aws-cdk/aws-logs'
-import { FilterPattern } from '@aws-cdk/aws-logs'
+import * as sns from '@aws-cdk/aws-sns'
+import * as subs from '@aws-cdk/aws-sns-subscriptions'
 import { LambdaDestination } from '@aws-cdk/aws-logs-destinations'
 import generateRandomString from 'simply-utils/dist/string/generateRandomString'
 
-import env from 'src/lib/env'
 import { PROJECT_NAMESPACE } from 'src/constants'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
-
+import env from 'src/lib/env'
 
 const DIRNAME = __dirname.split('/').pop()
 
 export interface InitOptions {
-  logGroups: logs.ILogGroup[]
+  logGroups: logs.ILogGroup[];
 }
 
 /**
@@ -27,18 +24,16 @@ function construct (scope: cdk.Construct, options: InitOptions) {
   const { logGroups } = options
 
   /** ------------------ IAM Role Definition ------------------ */
-  
+
   // Create IAM roles for SNS topics subscriptions handling
-  const subsRole = new iam.Role(scope, 'subsRole', {
-    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
-  })
+  const subsRole = new iam.Role(scope, 'subsRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') })
 
   // Common attributes in IAM statement
   const commonIamStatementInput = {
     resources: ['*'],
-    effect: Effect.ALLOW
+    effect: iam.Effect.ALLOW,
   }
-  
+
   // Grant logging
   subsRole.addToPolicy(new iam.PolicyStatement({
     ...commonIamStatementInput,
@@ -54,9 +49,7 @@ function construct (scope: cdk.Construct, options: InitOptions) {
   /** ------------------ SNS Topics Definition ------------------ */
 
   // Create topic for subscription to lambda error logs
-  const lambdaErrorLogTopic = new sns.Topic(scope, 'LambdaErrorLogTopic', {
-    displayName: `${PROJECT_NAMESPACE} - Lambda error logs subscription topic`
-  })
+  const lambdaErrorLogTopic = new sns.Topic(scope, 'LambdaErrorLogTopic', { displayName: `${PROJECT_NAMESPACE} - Lambda error logs subscription topic` })
 
   // Create email subscription
   lambdaErrorLogTopic.addSubscription(
@@ -76,9 +69,7 @@ function construct (scope: cdk.Construct, options: InitOptions) {
   const notifyErrorLogHandler = new lambda.Function(scope, 'LoggingNotifyErrorLog', {
     ...commonLambdaInput,
     handler: 'notifyErrorLog.handler',
-    environment: {
-      SNS_ARN: lambdaErrorLogTopic.topicArn
-    }
+    environment: { SNS_ARN: lambdaErrorLogTopic.topicArn },
   })
   // Grant SNS publish permission
   lambdaErrorLogTopic.grantPublish(notifyErrorLogHandler)
@@ -94,7 +85,7 @@ function construct (scope: cdk.Construct, options: InitOptions) {
   // Create lambda subscription destination
   const subsDestination = new LambdaDestination(notifyErrorLogHandler)
   // Create filter pattern
-  const subsFilterPattern = FilterPattern.anyTerm('ERROR', 'WARN')
+  const subsFilterPattern = logs.FilterPattern.anyTerm('ERROR', 'WARN')
 
   const _logGroups = [...logGroups, mockErrorLogHandler.logGroup]
   // Create subscription filters for each log group

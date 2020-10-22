@@ -2,6 +2,7 @@
 !jest.config.js
 !webpack.config.js
 !scripts/*.js
+!.eslintrc.js
 *.d.ts
 node_modules
 

@@ -1,8 +1,6 @@
-import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
-import TableRange from "src/models/fundPriceRecord/TableRange.type"
-
-
+import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 
 const yearQuarterToTableRange = (yearQuarter: string): TableRange => {
   const [year, quarter] = yearQuarter?.split('.')

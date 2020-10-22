@@ -1,5 +1,4 @@
-import createParameterErrMsg from "../helpers/createParameterErrMsg"
-
+import createParameterErrMsg from '../helpers/createParameterErrMsg'
 
 const validateYearQuarter = (
   maybeYearQuarter: any,

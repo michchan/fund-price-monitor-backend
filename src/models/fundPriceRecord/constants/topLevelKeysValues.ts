@@ -1,5 +1,3 @@
-
-
 const DETAILS_PK = '#details'
 const TABLE_DETAILS_SK = '#tableDetails'
 

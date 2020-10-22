@@ -1,12 +1,11 @@
-import getDateTimeDictionary from "src/helpers/getDateTimeDictionary"
-import { CompanyType, FundPriceChangeRate, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import queryItemsByCompany from "src/models/fundPriceRecord/io/queryItemsByCompany"
-import queryPeriodPriceChangeRate from "src/models/fundPriceRecord/io/queryPeriodPriceChangeRate"
-import TableRange from "src/models/fundPriceRecord/TableRange.type"
-import getPeriodByRecordType from "src/models/fundPriceRecord/utils/getPeriodByRecordType"
-import parse from "src/models/fundPriceRecord/utils/parse"
-import parseChangeRate from "src/models/fundPriceRecord/utils/parseChangeRate"
-
+import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
+import { CompanyType, FundPriceChangeRate, FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
+import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
+import TableRange from 'src/models/fundPriceRecord/TableRange.type'
+import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
+import parse from 'src/models/fundPriceRecord/utils/parse'
+import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
 
 export type Output = [
   FundPriceRecord[],
@@ -23,8 +22,11 @@ const queryPrevItems = async (
   // Get year and quarter
   const { year, quarter } = getDateTimeDictionary(date)
   // Create table range
-  const tableRange: TableRange = { year, quarter }
-  
+  const tableRange: TableRange = {
+    year,
+    quarter,
+  }
+
   /** Query previous latest records */
   const prevLatestRecords = await queryItemsByCompany(company, true, true, tableRange)
   const prevLatestItems = (prevLatestRecords.Items || [])
@@ -33,19 +35,18 @@ const queryPrevItems = async (
     // Filters by insertedItems
     .filter(matchInserted)
 
-
   // Query week price change rate
   const [
-    prevWeekRateRecords, 
-    prevMonthRateRecords, 
-    prevQuarterRateRecords
+    prevWeekRateRecords,
+    prevMonthRateRecords,
+    prevQuarterRateRecords,
   ] = await Promise.all([
     // Week query
-    queryPeriodPriceChangeRate(company, `week`, getPeriodByRecordType('week', date), true),
+    queryPeriodPriceChangeRate(company, 'week', getPeriodByRecordType('week', date), true),
     // Month query
-    queryPeriodPriceChangeRate(company, `month`, getPeriodByRecordType('month', date), true),
+    queryPeriodPriceChangeRate(company, 'month', getPeriodByRecordType('month', date), true),
     // Quarter query
-    queryPeriodPriceChangeRate(company, `quarter`, getPeriodByRecordType('quarter', date), true),
+    queryPeriodPriceChangeRate(company, 'quarter', getPeriodByRecordType('quarter', date), true),
   ])
 
   // Parse previous records

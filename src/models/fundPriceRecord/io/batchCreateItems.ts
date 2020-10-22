@@ -1,10 +1,9 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
-import { FundPriceRecord, FundPriceChangeRate } from '../FundPriceRecord.type'
+import { FundPriceChangeRate, FundPriceRecord } from '../FundPriceRecord.type'
 import batchWriteItems, { Result } from 'src/lib/AWS/dynamodb/batchWriteItems'
 import getTableName from '../utils/getTableName'
-
 
 type T = FundPriceRecord | FundPriceChangeRate
 type R = DocumentClient.PutRequest | DocumentClient.DeleteRequest

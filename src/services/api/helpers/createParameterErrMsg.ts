@@ -1,9 +1,6 @@
-
-
-
 export type ParamType = 'path' | 'query'
-export type MessageType = 
-  | 'invalid' 
+export type MessageType =
+  | 'invalid'
   | 'invalidKeyFormat'
   | 'custom'
 

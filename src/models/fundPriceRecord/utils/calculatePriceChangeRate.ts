@@ -1,11 +1,8 @@
-
-
-
 /**
- * 
- * @param basedPrice 
+ *
+ * @param basedPrice
  * @param updatedPrice
- * 
+ *
  * @returns A number in between 1-100 as percentage
  */
 const calculatePriceChangeRate = (basedPrice: number, updatedPrice: number): number => {

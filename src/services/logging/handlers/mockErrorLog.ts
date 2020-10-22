@@ -1,13 +1,12 @@
-import { Handler } from "aws-lambda"
-
+import { Handler } from 'aws-lambda'
 
 export interface Event {
-  level: 'info' | 'warn' | 'error' | 'fatal'
+  level: 'info' | 'warn' | 'error' | 'fatal';
 }
 
 /**
  * Mock errors logs created by any lambda
- * 
+ *
  * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
  */
 export const handler: Handler<Event> = async (event, context, callback) => {

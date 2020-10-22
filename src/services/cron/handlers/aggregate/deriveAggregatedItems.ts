@@ -1,8 +1,7 @@
-import { AggregatedRecordType, FundPriceChangeRate, FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import getChangeRate from "src/models/fundPriceRecord/utils/getChangeRate"
-import toLatestPriceRecord from "src/models/fundPriceRecord/utils/toLatestPriceRecord"
+import { AggregatedRecordType, FundPriceChangeRate, FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import getChangeRate from 'src/models/fundPriceRecord/utils/getChangeRate'
+import toLatestPriceRecord from 'src/models/fundPriceRecord/utils/toLatestPriceRecord'
 import { Output as Input } from './queryPrevItems'
-
 
 export type Output = Input
 
@@ -17,7 +16,7 @@ const deriveAggregatedItems = (
     prevMonthRateItems,
     prevQuarterRateItems,
   ] = rest
-  
+
   // Aggregation for latest price
   const latestItems = insertedItems.map(item => {
     const prevItem = prevLatestItems.find(eachItem => eachItem.code === item.code)
@@ -33,9 +32,9 @@ const deriveAggregatedItems = (
   ) => latestItems.map(item => {
     const prevChangeRate = prevItems.find(chRate => chRate.code === item.code)
     const nextChangeRate = getChangeRate(
-      prevChangeRate ?? item, 
-      type, 
-      item.price, 
+      prevChangeRate ?? item,
+      type,
+      item.price,
       prevChangeRate?.priceList ?? [],
       'prepend',
       date

@@ -1,14 +1,13 @@
-import puppeteer = require("puppeteer")
+import puppeteer = require('puppeteer')
 
-import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import retryWithDelay from "../../helpers/retryWithDelay"
+import { FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import retryWithDelay from '../../helpers/retryWithDelay'
 
-
-export interface PerfDataRecord extends Pick<FundPriceRecord, 
-  | 'code'
-  | 'launchedDate'
+export interface PerfDataRecord extends Pick<FundPriceRecord,
+| 'code'
+| 'launchedDate'
 > {
-  priceChangeRateSinceLaunch: number
+  priceChangeRateSinceLaunch: number;
 }
 
 /**

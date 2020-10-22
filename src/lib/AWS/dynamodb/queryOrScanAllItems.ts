@@ -3,13 +3,12 @@ import queryOrScanAllDynamodbItems from 'simply-utils/dist/AWS/queryOrScanAllDyn
 
 import AWS from '..'
 
-
 // Initialize
 const docClient = new AWS.DynamoDB.DocumentClient()
 
 function queryOrScanAllItems <
   Input extends DynamoDB.DocumentClient.QueryInput | DynamoDB.DocumentClient.ScanInput,
-  Output extends DynamoDB.DocumentClient.QueryOutput | DynamoDB.DocumentClient.ScanOutput,
+  Output extends DynamoDB.DocumentClient.QueryOutput | DynamoDB.DocumentClient.ScanOutput
 > (
   method: 'scan' | 'query',
   input: Input,

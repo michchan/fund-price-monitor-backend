@@ -1,19 +1,17 @@
-import { StructuredQueryField } from "../StructuredQuery.type"
-import between from "src/lib/AWS/dynamodb/expressionFunctions/between"
-import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith"
-import contains from "src/lib/AWS/dynamodb/expressionFunctions/contains"
-
-
+import { StructuredQueryField } from '../StructuredQuery.type'
+import between from 'src/lib/AWS/dynamodb/expressionFunctions/between'
+import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
+import contains from 'src/lib/AWS/dynamodb/expressionFunctions/contains'
 
 const mapQueryFieldToFilterExpression = (
   attrName: string,
-  expValueKeys: string[], 
+  expValueKeys: string[],
   field: StructuredQueryField,
 ): string => {
   const { operator, value } = field
   // Clone an array for manipulation
   const _expValueKeys = [...expValueKeys]
-  
+
   const expressEach = (value: string, comparedValue: string = '') => {
     switch (operator) {
       case 'notinc':

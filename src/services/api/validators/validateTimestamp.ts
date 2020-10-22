@@ -1,7 +1,6 @@
-import isISOTimestamp from "simply-utils/dist/dateTime/isISOTimestamp"
+import isISOTimestamp from 'simply-utils/dist/dateTime/isISOTimestamp'
 
-import createParameterErrMsg from "../helpers/createParameterErrMsg"
-
+import createParameterErrMsg from '../helpers/createParameterErrMsg'
 
 const validateTimestamp = (
   maybeTimestamp: any,

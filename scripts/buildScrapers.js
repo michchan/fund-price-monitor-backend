@@ -1,19 +1,19 @@
 /**
  * Dynamically generate lambda handlers of scrapers.
- * 
- * This script will take 'scrapers' from `scrapersDir` directory, 
+ *
+ * This script will take 'scrapers' from `scrapersDir` directory,
  * and build lambda 'handlers' under `handlersDir` directory,
  * based on 'templates' under `templateDir` directory.
- * 
+ *
  * For example:
  * Given there are following files under `scrapersDir`:
  * - scrapeFromAIAMPF.ts
  * - scrapeFromManulifeMPF.ts
- * 
+ *
  * and the following files under `templateDir`:
  * - scrape.ts
  * - testScrapers.ts
- * 
+ *
  * The following handler files will be generated under `handlersDir`:
  * - handleScrapeFromAIAMPF.ts
  * - handleScrapeFromManulifeMPF.ts
@@ -23,14 +23,14 @@
 const fs = require('fs')
 
 const rootDir = __dirname.replace(/\/scripts/i, '')
-const scrapersDir = `src/services/cron/scrapers`
+const scrapersDir = 'src/services/cron/scrapers'
 const scrapersDirAbs = `${rootDir}/${scrapersDir}`
-const templateDir = `src/services/cron/templates`
+const templateDir = 'src/services/cron/templates'
 const templateDirAbs = `${rootDir}/${templateDir}`
-const handlersDir = `src/services/cron/handlers`
+const handlersDir = 'src/services/cron/handlers'
 const handlersDirAbs = `${rootDir}/${handlersDir}`
 
-const removePathExtension = (path) => path.replace(/\.(ts|js)/i, '')
+const removePathExtension = path => path.replace(/\.(ts|js)/i, '')
 
 const buildScrapers = () => {
   // Get names of scraperNames
@@ -57,16 +57,15 @@ const buildScrapers = () => {
       const importStatment = `import ${name} from '${scrapersDir}/${name}';`
       // Insert import statements
       const linesWithImports = [
-        ...lines.slice(0, lastImportIndex + 1), 
-        importStatment, 
-        ...lines.slice(lastImportIndex + 1)
+        ...lines.slice(0, lastImportIndex + 1),
+        importStatment,
+        ...lines.slice(lastImportIndex + 1),
       ]
 
-      // Insert scraper into scrapers array 
+      // Insert scraper into scrapers array
       const linesWithScraper = linesWithImports.map(line => {
-        if (/^const scrapers/i.test(line)) {
-          return line.replace(/\=\s\[\]$/i, `= [${name}]`)
-        }
+        if (/^const scrapers/i.test(line)) return line.replace(/\=\s\[\]$/i, `= [${name}]`)
+
         return line
       })
       const linesText = linesWithScraper.join('\n')

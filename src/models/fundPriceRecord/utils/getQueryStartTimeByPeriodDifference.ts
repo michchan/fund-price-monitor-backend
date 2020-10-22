@@ -1,14 +1,12 @@
-import { FundPriceRecord } from "../FundPriceRecord.type"
-
-
+import { FundPriceRecord } from '../FundPriceRecord.type'
 
 export type Period = 'week' | 'month' | 'quarter'
 
 /**
- * 
- * @param referenceRecord 
- * @param period 
- * 
+ *
+ * @param referenceRecord
+ * @param period
+ *
  * @returns The ISO timestamp of the start time to query
  */
 const getQueryStartTimeByPeriodDifference = (
@@ -26,7 +24,6 @@ const getQueryStartTimeByPeriodDifference = (
 }
 
 export default getQueryStartTimeByPeriodDifference
-
 
 /** Get time difference in milliseconds by Period */
 const getDiffMSByPeriod = (period: Period): number => {

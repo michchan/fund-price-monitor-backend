@@ -1,18 +1,17 @@
-import isFunction from "lodash/isFunction"
-import { DocumentClient } from "aws-sdk/clients/dynamodb"
+import isFunction from 'lodash/isFunction'
+import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import queryItems from "./queryItems"
-import attrs from "../constants/attributeNames"
-import { CompanyType, FundPriceRecord } from "../FundPriceRecord.type"
-import beginsWith from "src/lib/AWS/dynamodb/expressionFunctions/beginsWith"
-import getDateTimeDictionary from "src/helpers/getDateTimeDictionary"
-import between from "src/lib/AWS/dynamodb/expressionFunctions/between"
+import queryItems from './queryItems'
+import attrs from '../constants/attributeNames'
+import { CompanyType, FundPriceRecord } from '../FundPriceRecord.type'
+import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
+import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
+import between from 'src/lib/AWS/dynamodb/expressionFunctions/between'
 
-
-const EXP_COM_CODE_PK = `:company_code` as string
-const EXP_TIME_SK_PFX = `:time_SK` as string
-const EXP_TIME_SK_START = `:timeSK_start` as string
-const EXP_TIME_SK_END = `:timeSK_end` as string
+const EXP_COM_CODE_PK = ':company_code' as string
+const EXP_TIME_SK_PFX = ':time_SK' as string
+const EXP_TIME_SK_START = ':timeSK_start' as string
+const EXP_TIME_SK_END = ':timeSK_end' as string
 
 export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
@@ -46,7 +45,7 @@ const querySingleFundRecords = (
   })()
   // Derive timeSK expression based on conditions
   const timeSKExpression = (() => {
-    if (startTime && endTime) return between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END) 
+    if (startTime && endTime) return between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END)
     if (startTime) return `${attrs.TIME_SK} >= ${EXP_TIME_SK_START}`
     if (endTime) return `${attrs.TIME_SK} <= ${EXP_TIME_SK_END}`
     return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
@@ -59,7 +58,7 @@ const querySingleFundRecords = (
     },
     KeyConditionExpression: [
       `${attrs.COMPANY_CODE} = ${EXP_COM_CODE_PK}`,
-      timeSKExpression
+      timeSKExpression,
     ].join(' AND '),
   }
   return queryItems({

@@ -1,13 +1,13 @@
-import pick from "lodash/pick"
+import pick from 'lodash/pick'
 
 // Config dot env
 require('dotenv').config()
 
 export interface EnvValues {
-  TELEGRAM_BOT_API_KEY_PARAMETER_NAME: string
-  TELEGRAM_BOT_API_KEY_PARAMETER_VERSION: number
-  TELEGRAM_CHAT_ID_PARAMETER_NAME: string
-  LAMBDA_ERROR_LOG_SUBSCRIPTION_EMAIL: string
+  TELEGRAM_BOT_API_KEY_PARAMETER_NAME: string;
+  TELEGRAM_BOT_API_KEY_PARAMETER_VERSION: number;
+  TELEGRAM_CHAT_ID_PARAMETER_NAME: string;
+  LAMBDA_ERROR_LOG_SUBSCRIPTION_EMAIL: string;
 }
 
 const keys: (keyof EnvValues)[] = [
@@ -24,9 +24,7 @@ const values: EnvValues = pick(process.env, keys) as unknown as EnvValues
 (() => {
   for (const key of keys) {
     const value = values[key]
-    if (value === undefined) {
-      throw new Error(`${key} is undefined but required in .env file`)
-    }
+    if (value === undefined) throw new Error(`${key} is undefined but required in .env file`)
   }
 })()
 

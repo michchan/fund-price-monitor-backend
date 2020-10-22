@@ -1,13 +1,12 @@
-import { AWSError } from "aws-sdk"
-import { DocumentClient } from "aws-sdk/clients/dynamodb"
-import pick from "lodash/pick"
-import { APIGatewayProxyResult } from "aws-lambda"
+import { AWSError } from 'aws-sdk'
+import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import pick from 'lodash/pick'
+import { APIGatewayProxyResult } from 'aws-lambda'
 
-import { ListResponse } from "../Responses.type"
+import { ListResponse } from '../Responses.type'
 
-
-export type Output = 
-  | DocumentClient.QueryOutput 
+export type Output =
+  | DocumentClient.QueryOutput
   | DocumentClient.ScanOutput
 
 function createReadResponse <T> (
@@ -15,14 +14,14 @@ function createReadResponse <T> (
   output?: Output,
 ): APIGatewayProxyResult {
   if (error) {
-    console.log(`ERROR: `, JSON.stringify(error, null, 2))
+    console.log('ERROR: ', JSON.stringify(error, null, 2))
     const body: ListResponse<T> = {
       result: false,
-      error: pick(error, ['message', 'code'])
+      error: pick(error, ['message', 'code']),
     }
     return {
       statusCode: error.statusCode,
-      body: JSON.stringify(body, null, 2)
+      body: JSON.stringify(body, null, 2),
     }
   }
 
@@ -33,7 +32,7 @@ function createReadResponse <T> (
   }
   return {
     statusCode: 200,
-    body: JSON.stringify(body, null, 2)
+    body: JSON.stringify(body, null, 2),
   }
 }
 

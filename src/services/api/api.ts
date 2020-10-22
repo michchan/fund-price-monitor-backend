@@ -5,32 +5,28 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import * as apigateway from '@aws-cdk/aws-apigateway'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
-
 const DIRNAME = __dirname.split('/').pop()
 
 export interface ReturnType {
   handlers: {
-    listSingleFundRecords: lambda.Function
-    listCompanyRecords: lambda.Function
-    listCompanySinglePeriodRates: lambda.Function
-    searchRecords: lambda.Function
-    listQuarters: lambda.Function
-  }
+    listSingleFundRecords: lambda.Function;
+    listCompanyRecords: lambda.Function;
+    listCompanySinglePeriodRates: lambda.Function;
+    searchRecords: lambda.Function;
+    listQuarters: lambda.Function;
+  };
 }
 
 function construct (scope: cdk.Construct): ReturnType {
-
   /** ------------------ IAM Role Definition ------------------ */
 
   // Create IAM roles for API handling
-  const apiRole = new iam.Role(scope, 'ApiRole', {
-    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
-  })
-  
+  const apiRole = new iam.Role(scope, 'ApiRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') })
+
   // Common attributes in IAM statement
   const commonIamStatementInput = {
     resources: ['*'],
-    effect: Effect.ALLOW
+    effect: Effect.ALLOW,
   }
 
   // Grant db access permissions for handler by assigning role
@@ -87,9 +83,7 @@ function construct (scope: cdk.Construct): ReturnType {
   /** ------------------ API Gateway Definition ------------------ */
 
   // Create api service
-  const api = new apigateway.RestApi(scope, 'MPFFundPricesApi', {
-    restApiName: 'MPF Fund Prices Service',
-  })
+  const api = new apigateway.RestApi(scope, 'MPFFundPricesApi', { restApiName: 'MPF Fund Prices Service' })
 
   // Add records path
   // /fundprices
@@ -150,32 +144,29 @@ function construct (scope: cdk.Construct): ReturnType {
       listCompanySinglePeriodRates: listComSinglePeriodRatesHandler,
       searchRecords: searchRecordsHandler,
       listQuarters: listQuartersHandler,
-    }
+    },
   }
 }
 
 const api = { construct } as const
 export default api
 
-
 /**
  * Helper to add CORS options to resources
  */
-function addCorsOptions(apiResource: apigateway.IResource) {
+function addCorsOptions (apiResource: apigateway.IResource) {
   apiResource.addMethod('OPTIONS', new apigateway.MockIntegration({
     integrationResponses: [{
       statusCode: '200',
       responseParameters: {
-        'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-        'method.response.header.Access-Control-Allow-Origin': "'*'",
-        'method.response.header.Access-Control-Allow-Credentials': "'false'",
-        'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET'",
+        'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent\'',
+        'method.response.header.Access-Control-Allow-Origin': '\'*\'',
+        'method.response.header.Access-Control-Allow-Credentials': '\'false\'',
+        'method.response.header.Access-Control-Allow-Methods': '\'OPTIONS,GET\'',
       },
     }],
     passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
-    requestTemplates: {
-      "application/json": "{\"statusCode\": 200}"
-    },
+    requestTemplates: { 'application/json': '{"statusCode": 200}' },
   }), {
     methodResponses: [{
       statusCode: '200',
@@ -184,7 +175,7 @@ function addCorsOptions(apiResource: apigateway.IResource) {
         'method.response.header.Access-Control-Allow-Methods': true,
         'method.response.header.Access-Control-Allow-Credentials': true,
         'method.response.header.Access-Control-Allow-Origin': true,
-      }, 
-    }]
+      },
+    }],
   })
 }

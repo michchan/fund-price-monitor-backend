@@ -1,13 +1,12 @@
-import { Quarter } from "simply-utils/dist/dateTime/getQuarter"
-import { DocumentClient } from "aws-sdk/clients/dynamodb"
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import getTableName from "../utils/getTableName"
-import { FundPriceTableDetails } from "../FundPriceRecord.type"
-import attrs from "../constants/attributeNames"
-import topLevelKeysValues from "../constants/topLevelKeysValues"
+import getTableName from '../utils/getTableName'
+import { FundPriceTableDetails } from '../FundPriceRecord.type'
+import attrs from '../constants/attributeNames'
+import topLevelKeysValues from '../constants/topLevelKeysValues'
 import AWS from 'src/lib/AWS'
-import putItem from "src/lib/AWS/dynamodb/putItem"
-
+import putItem from 'src/lib/AWS/dynamodb/putItem'
 
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 

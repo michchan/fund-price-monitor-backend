@@ -10,37 +10,32 @@ import * as fs from 'fs'
 import env from 'src/lib/env'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
-
-
 const DIRNAME = __dirname.split('/').pop()
 
 export interface ReturnType {
   handlers: {
-    aggregation: lambda.Function
-    scrapers: lambda.Function[]
-    testScrapers: lambda.Function[]
-    createTable: lambda.Function
-    updateTable: lambda.Function
-    notifyDaily: lambda.Function
-    notifyWeekly: lambda.Function
-    notifyMonthly: lambda.Function
-    notifyQuarterly: lambda.Function
-  }
+    aggregation: lambda.Function;
+    scrapers: lambda.Function[];
+    testScrapers: lambda.Function[];
+    createTable: lambda.Function;
+    updateTable: lambda.Function;
+    notifyDaily: lambda.Function;
+    notifyWeekly: lambda.Function;
+    notifyMonthly: lambda.Function;
+    notifyQuarterly: lambda.Function;
+  };
 }
 
 function construct (scope: cdk.Construct): ReturnType {
-
   /** ------------------ IAM Role Definition ------------------ */
 
   // Create IAM roles for scraping handlers
-  const cronRole = new iam.Role(scope, 'CronRole', {
-    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
-  })
+  const cronRole = new iam.Role(scope, 'CronRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') })
 
   // Common attributes in IAM statement
   const commonIamStatementInput = {
     resources: ['*'],
-    effect: Effect.ALLOW
+    effect: Effect.ALLOW,
   }
 
   // Grant db access permissions for handler by assigning role
@@ -81,7 +76,7 @@ function construct (scope: cdk.Construct): ReturnType {
       'lambda:GetFunctionConfiguration',
       'dynamodb:DescribeStream',
       'dynamodb:GetRecords',
-      'dynamodb:GetShardIterator', 
+      'dynamodb:GetShardIterator',
       'dynamodb:ListStreams',
     ],
   }))
@@ -91,7 +86,7 @@ function construct (scope: cdk.Construct): ReturnType {
     sid: 'SSMParameterStore',
     actions: [
       'ssm:GetParameter',
-    ]
+    ],
   }))
 
   /** ------------------ Get non-secure string paramters from parameter store ------------------ */
@@ -170,9 +165,7 @@ function construct (scope: cdk.Construct): ReturnType {
   /** ---------- Table Handlers ---------- */
 
   // Common environment variables for table handling
-  const commonTableHandlingEnv = {
-    AGGREGATION_HANDLER_ARN: aggregationHandler.functionArn,
-  }
+  const commonTableHandlingEnv = { AGGREGATION_HANDLER_ARN: aggregationHandler.functionArn }
 
   /**
    * Handler for create table for next coming quarter
@@ -197,22 +190,22 @@ function construct (scope: cdk.Construct): ReturnType {
   const notifyDailyHandler = new lambda.Function(scope, 'CronNotifierDaily', {
     ...commonLambdaInput,
     handler: 'notifyDaily.handler',
-    environment: commonNotifyEnv
+    environment: commonNotifyEnv,
   })
   const notifyWeeklyHandler = new lambda.Function(scope, 'CronNotifierWeekly', {
     ...commonLambdaInput,
     handler: 'notifyWeekly.handler',
-    environment: commonNotifyEnv
+    environment: commonNotifyEnv,
   })
   const notifyMonthlyHandler = new lambda.Function(scope, 'CronNotifierMonthly', {
     ...commonLambdaInput,
     handler: 'notifyMonthly.handler',
-    environment: commonNotifyEnv
+    environment: commonNotifyEnv,
   })
   const notifyQuarterlyHandler = new lambda.Function(scope, 'CronNotifierQuarterly', {
     ...commonLambdaInput,
     handler: 'notifyQuarterly.handler',
-    environment: commonNotifyEnv
+    environment: commonNotifyEnv,
   })
 
   /** ------------------ Events Rule Definition ------------------ */
@@ -221,47 +214,35 @@ function construct (scope: cdk.Construct): ReturnType {
 
   // Run every day at 20:00 UTC
   // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
-  const dailyScrapeRule = new events.Rule(scope, 'DailyScrapeRule', {
-    schedule: events.Schedule.expression('cron(0 20 * * ? *)')
-  })
+  const dailyScrapeRule = new events.Rule(scope, 'DailyScrapeRule', { schedule: events.Schedule.expression('cron(0 20 * * ? *)') })
   // * Add target for each scraper
   scrapeHandlers.forEach(handler => dailyScrapeRule.addTarget(new targets.LambdaFunction(handler)))
 
   // Run every day at 00:00AM UTC
-  const dailyAlarmRule = new events.Rule(scope, 'DailyAlarmRule', {
-    schedule: events.Schedule.expression('cron(0 0 * * ? *)')
-  })
+  const dailyAlarmRule = new events.Rule(scope, 'DailyAlarmRule', { schedule: events.Schedule.expression('cron(0 0 * * ? *)') })
   dailyAlarmRule.addTarget(new targets.LambdaFunction(notifyDailyHandler))
 
   /** ------------ Weekly ------------ */
   // Run on Saturday in every week at 15:00 UTC
-  const weeklyReviewRule = new events.Rule(scope, 'WeeklyReviewRule', {
-    schedule: events.Schedule.expression('cron(0 15 ? * 7 *)')
-  })
+  const weeklyReviewRule = new events.Rule(scope, 'WeeklyReviewRule', { schedule: events.Schedule.expression('cron(0 15 ? * 7 *)') })
   weeklyReviewRule.addTarget(new targets.LambdaFunction(notifyWeeklyHandler))
 
   /** ------------ Monthly ------------ */
   // Run on the 28th day in every month at 15:00 UTC
-  const monthlyReviewRule = new events.Rule(scope, 'MonthlyReviewRule', {
-    schedule: events.Schedule.expression('cron(0 15 28 * ? *)')
-  })
+  const monthlyReviewRule = new events.Rule(scope, 'MonthlyReviewRule', { schedule: events.Schedule.expression('cron(0 15 28 * ? *)') })
   monthlyReviewRule.addTarget(new targets.LambdaFunction(notifyMonthlyHandler))
 
   /** ------------ Quarterly ------------ */
 
   // Run every END of a quarter
   // At 15:00 UTC, on the 28th day, in March, June, September and December
-  const quarterNearEndRule = new events.Rule(scope, 'QuarterNearEndRule', {
-    schedule: events.Schedule.expression('cron(0 15 28 3,6,9,12 ? *)')
-  })
+  const quarterNearEndRule = new events.Rule(scope, 'QuarterNearEndRule', { schedule: events.Schedule.expression('cron(0 15 28 3,6,9,12 ? *)') })
   quarterNearEndRule.addTarget(new targets.LambdaFunction(createTableHandler))
   quarterNearEndRule.addTarget(new targets.LambdaFunction(notifyQuarterlyHandler))
 
   // Run every START of a quarter
   // At 00:00AM UTC, on the 1st day, in January, April, July and October
-  const quarterStartRule = new events.Rule(scope, 'QuarterStartRule', {
-    schedule: events.Schedule.expression('cron(0 0 1 1,4,7,10 ? *)')
-  })
+  const quarterStartRule = new events.Rule(scope, 'QuarterStartRule', { schedule: events.Schedule.expression('cron(0 0 1 1,4,7,10 ? *)') })
   quarterStartRule.addTarget(new targets.LambdaFunction(updateTableHandler))
 
   return {
@@ -275,7 +256,7 @@ function construct (scope: cdk.Construct): ReturnType {
       notifyWeekly: notifyWeeklyHandler,
       notifyMonthly: notifyMonthlyHandler,
       notifyQuarterly: notifyQuarterlyHandler,
-    }
+    },
   }
 }
 

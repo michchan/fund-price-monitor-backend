@@ -1,8 +1,6 @@
-import notifyCompanyRecordsByTelegram, { ScheduleType } from "./notifyCompanyRecordsByTelegram"
-import getTelegramApiCredentials from "src/helpers/getTelegramApiCredentials"
-import getTableDetails from "src/models/fundPriceRecord/io/getTableDetails"
-
-
+import notifyCompanyRecordsByTelegram, { ScheduleType } from './notifyCompanyRecordsByTelegram'
+import getTelegramApiCredentials from 'src/helpers/getTelegramApiCredentials'
+import getTableDetails from 'src/models/fundPriceRecord/io/getTableDetails'
 
 const notifyByTelegram = async (
   scheduleType: ScheduleType

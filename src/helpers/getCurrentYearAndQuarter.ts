@@ -1,5 +1,4 @@
-import getQuarter, { Quarter } from "simply-utils/dist/dateTime/getQuarter"
-
+import getQuarter, { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
 const getCurrentYearAndQuarter = (): [number, Quarter] => {
   const date = new Date()

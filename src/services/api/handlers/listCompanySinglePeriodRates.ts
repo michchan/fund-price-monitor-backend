@@ -1,35 +1,34 @@
-import { APIGatewayProxyHandler } from "aws-lambda"
-import { DocumentClient } from "aws-sdk/clients/dynamodb"
+import { APIGatewayProxyHandler } from 'aws-lambda'
+import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import { ListResponse } from "../Responses.type"
-import { FundPriceChangeRate, CompanyType } from '../../../models/fundPriceRecord/FundPriceRecord.type'
-import createReadResponse from "../helpers/createReadResponse"
-import validateCompany from "../validators/validateCompany"
-import validateKey from "../validators/validateKey"
-import validatePeriod, { PeriodType } from "../validators/validatePeriod"
-import queryPeriodPriceChangeRate from "src/models/fundPriceRecord/io/queryPeriodPriceChangeRate"
-import validateYearQuarter from "../validators/validateYearQuarter"
-import yearQuarterToTableRange from "../helpers/yearQuarterToTableRange"
-
+import { ListResponse } from '../Responses.type'
+import { CompanyType, FundPriceChangeRate } from '../../../models/fundPriceRecord/FundPriceRecord.type'
+import createReadResponse from '../helpers/createReadResponse'
+import validateCompany from '../validators/validateCompany'
+import validateKey from '../validators/validateKey'
+import validatePeriod, { PeriodType } from '../validators/validatePeriod'
+import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
+import validateYearQuarter from '../validators/validateYearQuarter'
+import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
 
 export type Res = ListResponse<FundPriceChangeRate>
 
 export type PathParams = {
-  company: CompanyType
+  company: CompanyType;
 } & {
   /** Either `week`, `month` or `quarter` */
   [key in PeriodType]: string
 }
 export interface QueryParams {
-  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey']
+  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
   /** Format: YYYY.(1|2|3|4) */
-  quarter?: string
+  quarter?: string;
 }
 
-/** 
+/**
  * Get rates records of a single fund
  */
-export const handler: APIGatewayProxyHandler = async (event) => {
+export const handler: APIGatewayProxyHandler = async event => {
   try {
     // Get period type
     const periodType = ((path: string): PeriodType => {
@@ -47,7 +46,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     // Get path params
     const { company, [periodType]: period } = (event.pathParameters ?? {}) as unknown as PathParams
     // Get query params
-    const { 
+    const {
       exclusiveStartKey,
       quarter,
     } = (event.queryStringParameters ?? {}) as unknown as QueryParams
@@ -57,7 +56,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     validateCompany(company)
     validatePeriod(period, periodType)
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
-    if (quarter) validateYearQuarter(quarter, 'quarter') 
+    if (quarter) validateYearQuarter(quarter, 'quarter')
 
     /** ----------- Query ----------- */
 
@@ -65,9 +64,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
 
     // Query
-    const output = await queryPeriodPriceChangeRate(company, periodType, period, false, tableRange, {
-      ExclusiveStartKey: exclusiveStartKey
-    })
+    const output = await queryPeriodPriceChangeRate(company, periodType, period, false, tableRange, { ExclusiveStartKey: exclusiveStartKey })
 
     // Send back successful response
     return createReadResponse(null, output)

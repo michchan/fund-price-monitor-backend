@@ -1,1 +1,1 @@
-export const MAX_LENGTH = 4096 // character
+export const MAX_LENGTH = 4096 // Character

@@ -1,6 +1,4 @@
-import createParameterErrMsg from "../helpers/createParameterErrMsg"
-
-
+import createParameterErrMsg from '../helpers/createParameterErrMsg'
 
 export type PeriodType = 'week' | 'month' | 'quarter'
 
@@ -14,7 +12,7 @@ const validatePeriod = (
     case 'week':
       if (!/^[0-9]{4}-((0[0-9])|(1[1-2]))\.[0-9]+$/.test(maybePeriod)) throwErr()
       break
-    case 'month': 
+    case 'month':
       if (!/^[0-9]{4}-((0[0-9])|(1[1-2]))$/.test(maybePeriod)) throwErr()
       break
     case 'quarter':

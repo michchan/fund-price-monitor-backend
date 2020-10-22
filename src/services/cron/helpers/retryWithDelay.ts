@@ -1,6 +1,5 @@
 import retry from 'simply-utils/dist/async/retry'
 
-
 const DEFAULT_RETRY_TIME = 10
 const DEFAULT_DELAY = 500
 

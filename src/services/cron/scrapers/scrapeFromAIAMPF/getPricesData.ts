@@ -1,14 +1,13 @@
-import puppeteer = require("puppeteer")
+import puppeteer = require('puppeteer')
 
-import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import retryWithDelay from "../../helpers/retryWithDelay"
+import { FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import retryWithDelay from '../../helpers/retryWithDelay'
 
-
-export interface PriceDataRecord extends Pick<FundPriceRecord, 
-  | 'code'
-  | 'name'
-  | 'price'
-  | 'updatedDate'
+export interface PriceDataRecord extends Pick<FundPriceRecord,
+| 'code'
+| 'name'
+| 'price'
+| 'updatedDate'
 > {}
 /**
  * Helpers to query the prices data from html
@@ -26,8 +25,8 @@ const getPricesData = async (page: puppeteer.Page): Promise<PriceDataRecord[]> =
     // Get page-level updatedDate
     const updatedDateEl = document.querySelector('#main-block > table > tbody > tr > td > font') as HTMLFontElement
     const [all, year, month, date] = (updatedDateEl?.innerText ?? '').match(/(\d{4})年(\d{1,2})月(\d{1,2})/i) ?? ''
-    const MM = +month < 10 ? `0${month}` : month
-    const DD = +date < 10 ? `0${date}` : date
+    const MM = Number(month) < 10 ? `0${month}` : month
+    const DD = Number(date) < 10 ? `0${date}` : date
     const updatedDate = `${year}-${MM}-${DD}`
 
     // Map table rows data to PriceDataRecord[]
@@ -48,7 +47,7 @@ const getPricesData = async (page: puppeteer.Page): Promise<PriceDataRecord[]> =
         return {
           code: getIDFromAnchorTag(anchor),
           name: dataCells[0].innerText.trim(),
-          price: +dataCells[2].innerText.trim(),
+          price: Number(dataCells[2].innerText.trim()),
           updatedDate,
         }
       })

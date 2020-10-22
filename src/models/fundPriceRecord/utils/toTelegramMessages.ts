@@ -1,17 +1,15 @@
-import zeroPadding from "simply-utils/dist/number/zeroPadding"
-import capitalize from "lodash/capitalize"
+import zeroPadding from 'simply-utils/dist/number/zeroPadding'
+import capitalize from 'lodash/capitalize'
 
-import { FundPriceRecord, CompanyType, FundPriceChangeRate } from "../FundPriceRecord.type"
-import { ScheduleType } from "src/services/cron/helpers/notifyCompanyRecordsByTelegram"
-import parseLinesToChunks from "src/lib/telegram/parseLinesToChunks"
-import getDateTimeDictionary from "src/helpers/getDateTimeDictionary"
-
-
+import { CompanyType, FundPriceChangeRate, FundPriceRecord } from '../FundPriceRecord.type'
+import { ScheduleType } from 'src/services/cron/helpers/notifyCompanyRecordsByTelegram'
+import parseLinesToChunks from 'src/lib/telegram/parseLinesToChunks'
+import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 
 export interface Item extends Pick<FundPriceRecord, 'code' | 'price' | 'name' | 'updatedDate'>, Partial<Pick<FundPriceChangeRate, 'priceChangeRate'>> {}
 
 const toTelegramMessages = (
-  company: CompanyType, 
+  company: CompanyType,
   scheduleType: ScheduleType,
   items: Item[]
 ): string[] => {
@@ -29,9 +27,9 @@ const toTelegramMessages = (
 
     const rate = Number(priceChangeRate)
     const rateTag = Math.abs(rate).toFixed(2)
-    const sign = +rate === 0 ? '' : +rate > 0 ? `+` : `-`
+    const sign = Number(rate) === 0 ? '' : Number(rate) > 0 ? '+' : '-'
     const priceRateTag = `(${sign}${rateTag}%)`
-    
+
     return `${order} ${codeTag} - ${priceTag} ${priceRateTag} - ${name}`
   })
 

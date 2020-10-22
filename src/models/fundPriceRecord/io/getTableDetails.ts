@@ -1,16 +1,15 @@
-import getQuarter from "simply-utils/dist/dateTime/getQuarter"
+import getQuarter from 'simply-utils/dist/dateTime/getQuarter'
 
-import queryAllItems, { Input } from "src/lib/AWS/dynamodb/queryAllItems"
+import queryAllItems, { Input } from 'src/lib/AWS/dynamodb/queryAllItems'
 import TableRange from '../TableRange.type'
 import getTableName from '../utils/getTableName'
-import { FundPriceTableDetails, FundType, CompanyType } from "../FundPriceRecord.type"
-import attrs from "../constants/attributeNames"
-import topLevelKeysValues from "../constants/topLevelKeysValues"
-import { DynamoDB } from "aws-sdk"
+import { CompanyType, FundPriceTableDetails, FundType } from '../FundPriceRecord.type'
+import attrs from '../constants/attributeNames'
+import topLevelKeysValues from '../constants/topLevelKeysValues'
+import { DynamoDB } from 'aws-sdk'
 
-
-const EXP_PK = `:pk`
-const EXP_SK = `:sk`
+const EXP_PK = ':pk'
+const EXP_SK = ':sk'
 
 const getTableDetails = async (
   input?: Omit<Input, 'TableName' | 'ExpressionAttributeValues' | 'KeyConditionExpression'>,
@@ -18,7 +17,10 @@ const getTableDetails = async (
   from?: TableRange,
 ): Promise<FundPriceTableDetails> => {
   // Normalize params
-  const _from = from || { year: new Date().getFullYear(), quarter: getQuarter() }
+  const _from = from || {
+    year: new Date().getFullYear(),
+    quarter: getQuarter(),
+  }
   const TableName = getTableName(_from.year, _from.quarter)
 
   const output = await queryAllItems({
@@ -30,10 +32,10 @@ const getTableDetails = async (
     },
     KeyConditionExpression: [
       `${attrs.COMPANY_CODE} = ${EXP_PK}`,
-      `${attrs.TIME_SK} = ${EXP_SK}`
-    ].join(' AND ')
+      `${attrs.TIME_SK} = ${EXP_SK}`,
+    ].join(' AND '),
   })
-  
+
   const item = (output.Items || [])[0]
   if (!item) throw new Error(`tableDetails row is not defined for table: ${TableName}`)
 

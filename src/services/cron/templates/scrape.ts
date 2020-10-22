@@ -1,15 +1,15 @@
-import { ScheduledHandler } from "aws-lambda"
-import { GetDataWithPage } from "simply-utils/dist/scraping/launchPuppeteerBrowserSession"
+import { ScheduledHandler } from 'aws-lambda'
+import { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 
-import { FundPriceRecord } from "src/models/fundPriceRecord/FundPriceRecord.type"
-import scrapeAll from "src/services/cron/helpers/scrapeAll"
-import batchCreateItems from "src/models/fundPriceRecord/io/batchCreateItems"
-import serialize from "src/models/fundPriceRecord/utils/serialize"
-import getCurrentYearAndQuarter from "src/helpers/getCurrentYearAndQuarter"
+import { FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import scrapeAll from 'src/services/cron/helpers/scrapeAll'
+import batchCreateItems from 'src/models/fundPriceRecord/io/batchCreateItems'
+import serialize from 'src/models/fundPriceRecord/utils/serialize'
+import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 
 // Create list of scrapers
 const scrapers: GetDataWithPage<FundPriceRecord[]>[] = []
-/** 
+/**
  * Scrape and Create records
  */
 export const handler: ScheduledHandler = async (event, context, callback) => {

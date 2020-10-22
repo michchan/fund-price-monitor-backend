@@ -5,7 +5,6 @@ import getQuarter, { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import AWS from 'src/lib/AWS'
 import getTableName from 'src/models/fundPriceRecord/utils/getTableName'
 
-
 // Initialize
 const dynamodb = new AWS.DynamoDB()
 

@@ -1,12 +1,11 @@
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
-import uniq from "lodash/uniq"
+import uniq from 'lodash/uniq'
 
 import { FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import { Groups } from './groupEventRecordsByCompany'
 import updateTableDetails from 'src/models/fundPriceRecord/io/updateTableDetails'
-import attrs from "src/models/fundPriceRecord/constants/attributeNames"
+import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import AWS from 'src/lib/AWS'
-
 
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
@@ -29,7 +28,7 @@ const updateTableLevelDetails = async (
     // Append values to sets
     UpdateExpression: `ADD ${[
       `${attrs.COMPANIES} ${EXP_COMS}`,
-      `${attrs.FUND_TYPES} ${EXP_FUND_TYPES}`
+      `${attrs.FUND_TYPES} ${EXP_FUND_TYPES}`,
     ].join(',')}`,
     ExpressionAttributeValues: {
       [EXP_COMS]: docClient.createSet(Object.keys(groups)),
