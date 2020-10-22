@@ -165,7 +165,7 @@ module.exports = {
         "if": "any",
       },
     }],
-    "object-curly-newline": ["error", { "multiline": true }],
+    "object-curly-newline": ["error", { "consistent": true }],
     "object-curly-spacing": ["error", "always"],
     "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": false }],
     "one-var": ["error", "never"],
