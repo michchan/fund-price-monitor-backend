@@ -9,7 +9,7 @@ export interface Event {
  *
  * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
  */
-export const handler: Handler<Event> = async (event, context, callback) => {
+export const handler: Handler<Event> = (event, context, callback) => {
   try {
     switch (event.level) {
       case 'info': console.log('Test info'); break

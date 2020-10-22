@@ -8,11 +8,11 @@ const checkTableExistence = async (
   quarter: Quarter,
   tableName?: string,
 ): Promise<boolean> => {
-  const _tableName = tableName || getTableName(year, quarter)
+  const thisTableName = tableName || getTableName(year, quarter)
   const tableNames = await listLatestTables({
     year,
     quarter,
   })
-  return tableNames.some(name => name === _tableName)
+  return tableNames.some(name => name === thisTableName)
 }
 export default checkTableExistence

@@ -38,11 +38,7 @@ module.exports = {
     /** --------- Possible errors --------- */
     // * This project allow console
     "no-console": "off",
-    "no-extra-parens": ["error", "all", {
-      "nestedBinaryExpressions": false,
-      "ignoreJSX": "multi-line",
-      "enforceForArrowConditionals": false,
-    }],
+    "no-extra-parens": ["error", "functions"],
     "no-promise-executor-return": "error",
     "no-template-curly-in-string": "error",
     "no-unreachable-loop": "error",
@@ -129,6 +125,14 @@ module.exports = {
       "code": 100,
       "tabWidth": 2,
       "ignoreUrls": true,
+      // Ignore require and single-line imports from very long module
+      "ignorePattern":
+        // Ignore require statement
+        "(^\\s*(var|const)\\s.+=\\s*require\\s*\\()"
+        // Ignore single-line import statement
+        + "|(^import\\s([a-zA-Z0-9]+)\\sfrom\\s')"
+        // Ignore last-line of import statement
+        + "|(^\\}\\sfrom\\s')",
     }],
     "max-lines": ["error", { "max": 300 }],
     "max-lines-per-function": ["error", 50],
@@ -167,7 +171,7 @@ module.exports = {
     }],
     "object-curly-newline": ["error", { "consistent": true }],
     "object-curly-spacing": ["error", "always"],
-    "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": false }],
+    "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": true }],
     "one-var": ["error", "never"],
     "operator-assignment": ["error", "always"],
     "operator-linebreak": ["error", "before"],

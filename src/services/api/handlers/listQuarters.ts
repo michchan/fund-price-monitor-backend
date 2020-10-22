@@ -1,11 +1,12 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
+import statusCodes from 'http-status-codes'
 
 import createReadResponse from '../helpers/createReadResponse'
 import listAllTables from 'src/lib/AWS/dynamodb/listAllTables'
 import { ListResponse } from '../Responses.type'
-import createParameterErrMsg from '../helpers/createParameterErrMsg'
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import validateYearQuarter from '../validators/validateYearQuarter'
+import stringify from 'src/helpers/stringify'
 
 export interface QueryParams {
   /** Format: YYYY.(1|2|3|4) */
@@ -37,8 +38,8 @@ export const handler: APIGatewayProxyHandler = async event => {
         .filter(v => !!v),
     }
     return {
-      statusCode: 200,
-      body: JSON.stringify(response, null, 2),
+      statusCode: statusCodes.OK,
+      body: stringify(response),
     }
   } catch (error) {
     // Send back failed response

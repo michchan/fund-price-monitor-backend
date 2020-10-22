@@ -1,6 +1,10 @@
 import callPromiseWithDelay from 'simply-utils/dist/async/callPromiseWithDelay'
 
-import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import {
+  CompanyType,
+  FundPriceChangeRate,
+  FundPriceRecord,
+} from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import sendMessage from 'src/lib/telegram/sendMessage'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
@@ -9,48 +13,64 @@ import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
 import parse from 'src/models/fundPriceRecord/utils/parse'
 import getSorterByCode from 'src/models/fundPriceRecord/utils/getSorterByCode'
 import toTelegramMessages from 'src/models/fundPriceRecord/utils/toTelegramMessages'
+import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 export type ScheduleType = 'daily' | 'weekly' | 'monthly' | 'quarterly'
 
+const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date: Date) => {
+  switch (scheduleType) {
+    case 'quarterly': {
+      const period = getPeriodByRecordType('quarter', date)
+      return queryPeriodPriceChangeRate(company, 'quarter', period, true)
+    }
+    case 'monthly': {
+      const period = getPeriodByRecordType('month', date)
+      return queryPeriodPriceChangeRate(company, 'month', period, true)
+    }
+    case 'weekly': {
+      const period = getPeriodByRecordType('week', date)
+      return queryPeriodPriceChangeRate(company, 'week', period, true)
+    }
+    case 'daily':
+    default:
+      return queryItemsByCompany(company, true, true)
+  }
+}
+
+const getItemParser = (scheduleType: ScheduleType) => (
+  item: DocumentClient.AttributeMap
+): FundPriceChangeRate | FundPriceRecord => {
+  switch (scheduleType) {
+    case 'quarterly':
+    case 'monthly':
+    case 'weekly':
+      return parseChangeRate(item)
+    case 'daily':
+    default:
+      return parse(item)
+  }
+}
+
+const MESSAGES_INTERVAL = 5000
 const notifyCompanyRecordsByTelegram = async (
   chatId: string,
   apiKey: string,
   company: CompanyType,
   scheduleType: ScheduleType,
-) => {
+): Promise<void> => {
   // Create date of latest item
   const date = new Date()
 
   /** -------- Query and parse records -------- */
 
   // Query records to be sent in notification
-  const queryOutput = await ((scheduleType: ScheduleType) => {
-    switch (scheduleType) {
-      case 'quarterly':
-        return queryPeriodPriceChangeRate(company, 'quarter', getPeriodByRecordType('quarter', date), true)
-      case 'monthly':
-        return queryPeriodPriceChangeRate(company, 'month', getPeriodByRecordType('month', date), true)
-      case 'weekly':
-        return queryPeriodPriceChangeRate(company, 'week', getPeriodByRecordType('week', date), true)
-      case 'daily':
-      default:
-        return queryItemsByCompany(company, true, true)
-    }
-  })(scheduleType)
+  const queryOutput = await queryBySchedule(scheduleType, company, date)
 
   // Parse items
-  const items = (queryOutput.Items || []).map(item => {
-    switch (scheduleType) {
-      case 'quarterly':
-      case 'monthly':
-      case 'weekly':
-        return parseChangeRate(item)
-      case 'daily':
-      default:
-        return parse(item)
-    }
-  // Sort by code in ascending order
-  }).sort(getSorterByCode())
+  const items = (queryOutput.Items || [])
+    .map(getItemParser(scheduleType))
+    // Sort by code in ascending order
+    .sort(getSorterByCode())
 
   // Abort if no items found
   if (items.length === 0) {
@@ -70,7 +90,7 @@ const notifyCompanyRecordsByTelegram = async (
 
     if (i < messages.length)
       // Delay to make sure the previous message has been sent and displayed to all user
-      await callPromiseWithDelay(async () => null, 5000)
+      await callPromiseWithDelay(() => Promise.resolve(), MESSAGES_INTERVAL)
   }
 }
 

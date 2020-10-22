@@ -20,7 +20,7 @@ const updateTableLevelDetails = async (
   records: FundPriceRecord[],
   year: number | string,
   quarter: Quarter,
-) => {
+): Promise<void> => {
   // Get fund types
   const fundTypes = uniq(records.map(rec => rec.fundType))
   // Update table details with companies and fund types

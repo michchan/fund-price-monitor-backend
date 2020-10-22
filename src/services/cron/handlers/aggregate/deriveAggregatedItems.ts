@@ -1,4 +1,8 @@
-import { AggregatedRecordType, FundPriceChangeRate, FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import {
+  AggregatedRecordType,
+  FundPriceChangeRate,
+  FundPriceRecord,
+} from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import getChangeRate from 'src/models/fundPriceRecord/utils/getChangeRate'
 import toLatestPriceRecord from 'src/models/fundPriceRecord/utils/toLatestPriceRecord'
 import { Output as Input } from './queryPrevItems'

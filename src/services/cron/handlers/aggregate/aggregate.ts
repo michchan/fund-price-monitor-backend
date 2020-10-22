@@ -1,6 +1,10 @@
 import { DynamoDBStreamHandler } from 'aws-lambda'
 
-import { CompanyType, FundPriceChangeRate, FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import {
+  CompanyType,
+  FundPriceChangeRate,
+  FundPriceRecord,
+} from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import groupEventRecordsByCompany from './groupEventRecordsByCompany'
 import updateTableLevelDetails from './updateTableLevelDetails'
@@ -9,7 +13,7 @@ import deriveAggregatedItems from './deriveAggregatedItems'
 import createItems from './createItems'
 import deleteItems from './deleteItems'
 
-export const handler: DynamoDBStreamHandler = async (event, context, callback) => {
+export const handler: DynamoDBStreamHandler = async event => {
   // Create date of latest item
   const date = new Date()
   const { year, quarter } = getDateTimeDictionary(date)
@@ -37,7 +41,9 @@ const processCompanyRecords = async (
   const { year, quarter } = getDateTimeDictionary(date)
 
   /** // ! IMPORTANT: All the records retrieved process must be filtered by `insertedItems` */
-  const matchInserted = (rec: FundPriceRecord | FundPriceChangeRate) => insertedItems.some(inserted => inserted.code === rec.code)
+  function matchInserted (rec: FundPriceRecord | FundPriceChangeRate) {
+    return insertedItems.some(inserted => inserted.code === rec.code)
+  }
 
   // Fetch previous recrods for price change rate of week, month and quarter
   const prevOutputs = await queryPrevItems(company, matchInserted, date)

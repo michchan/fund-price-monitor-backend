@@ -13,27 +13,16 @@ import env from 'src/lib/env'
 
 const DIRNAME = __dirname.split('/').pop()
 
-export interface InitOptions {
-  logGroups: logs.ILogGroup[];
-}
-
-/**
- * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
- */
-function construct (scope: cdk.Construct, options: InitOptions) {
-  const { logGroups } = options
-
-  /** ------------------ IAM Role Definition ------------------ */
-
+const constructIamRole = (scope: cdk.Construct) => {
   // Create IAM roles for SNS topics subscriptions handling
-  const subsRole = new iam.Role(scope, 'subsRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') })
-
+  const subsRole = new iam.Role(scope, 'subsRole', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  })
   // Common attributes in IAM statement
   const commonIamStatementInput = {
     resources: ['*'],
     effect: iam.Effect.ALLOW,
   }
-
   // Grant logging
   subsRole.addToPolicy(new iam.PolicyStatement({
     ...commonIamStatementInput,
@@ -45,16 +34,32 @@ function construct (scope: cdk.Construct, options: InitOptions) {
       'logs:PutLogEvents',
     ],
   }))
+  return subsRole
+}
 
-  /** ------------------ SNS Topics Definition ------------------ */
-
+const constructSNSTopics = (scope: cdk.Construct) => {
   // Create topic for subscription to lambda error logs
-  const lambdaErrorLogTopic = new sns.Topic(scope, 'LambdaErrorLogTopic', { displayName: `${PROJECT_NAMESPACE} - Lambda error logs subscription topic` })
-
+  const lambdaErrorLogTopic = new sns.Topic(scope, 'LambdaErrorLogTopic', {
+    displayName: `${PROJECT_NAMESPACE} - Lambda error logs subscription topic`,
+  })
   // Create email subscription
   lambdaErrorLogTopic.addSubscription(
     new subs.EmailSubscription(env.values.LAMBDA_ERROR_LOG_SUBSCRIPTION_EMAIL)
   )
+  return lambdaErrorLogTopic
+}
+
+export interface InitOptions {
+  logGroups: logs.ILogGroup[];
+}
+/**
+ * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
+ */
+function construct (scope: cdk.Construct, options: InitOptions) {
+  const { logGroups } = options
+
+  const subsRole = constructIamRole(scope)
+  const lambdaErrorLogTopic = constructSNSTopics(scope)
 
   /** ------------------ Lambda Handlers Definition ------------------ */
 
@@ -64,7 +69,6 @@ function construct (scope: cdk.Construct, options: InitOptions) {
     code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
     role: subsRole,
   }
-
   /** Error log handler */
   const notifyErrorLogHandler = new lambda.Function(scope, 'LoggingNotifyErrorLog', {
     ...commonLambdaInput,
@@ -81,15 +85,14 @@ function construct (scope: cdk.Construct, options: InitOptions) {
   })
 
   /** ------------------ Cloudwatch Triggers Definition ------------------ */
-
   // Create lambda subscription destination
   const subsDestination = new LambdaDestination(notifyErrorLogHandler)
   // Create filter pattern
   const subsFilterPattern = logs.FilterPattern.anyTerm('ERROR', 'WARN')
 
-  const _logGroups = [...logGroups, mockErrorLogHandler.logGroup]
+  const allLogGroups = [...logGroups, mockErrorLogHandler.logGroup]
   // Create subscription filters for each log group
-  _logGroups.forEach((logGroup, i) => {
+  allLogGroups.forEach((logGroup, i) => {
     const id = `LambdaErrorLogsSubscription${i}${generateRandomString()}`
     return new logs.SubscriptionFilter(scope, id, {
       logGroup,

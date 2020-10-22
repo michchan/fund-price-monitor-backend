@@ -8,6 +8,7 @@ import getTableName from '../utils/getTableName'
 import attrs from '../constants/attributeNames'
 import indexNames from '../constants/indexNames'
 import waitForStream from 'src/lib/AWS/dynamodb/waitForStream'
+import stringify from 'src/helpers/stringify'
 
 // Initialize
 const dynamodb = new AWS.DynamoDB()
@@ -39,7 +40,7 @@ const createTable = async (
   // Abort if the following are not defined
   if (!(StreamArn && tableLogicalId)) {
     // Throw an error if the stream ARN is undefined. As it supposed to be defined.
-    throw new Error(`createdTable invalid: ${JSON.stringify(createdTable, null, 2)}`)
+    throw new Error(`createdTable invalid: ${stringify(createdTable)}`)
   }
 
   /** ------------- Create stream and function event mapping ------------- */
@@ -60,7 +61,7 @@ const createTable = async (
   // Abort if the following are not defined
   if (!eventSrcMapId) {
     // Throw an error if the stream ARN is undefined. As it supposed to be defined.
-    throw new Error(`eventSourceMapping invalid: ${JSON.stringify(eventSourceMapping, null, 2)}`)
+    throw new Error(`eventSourceMapping invalid: ${stringify(eventSourceMapping)}`)
   }
 
   // Wait for function event-source mapping updated

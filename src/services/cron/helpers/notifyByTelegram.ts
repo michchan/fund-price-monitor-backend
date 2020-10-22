@@ -2,9 +2,7 @@ import notifyCompanyRecordsByTelegram, { ScheduleType } from './notifyCompanyRec
 import getTelegramApiCredentials from 'src/helpers/getTelegramApiCredentials'
 import getTableDetails from 'src/models/fundPriceRecord/io/getTableDetails'
 
-const notifyByTelegram = async (
-  scheduleType: ScheduleType
-) => {
+const notifyByTelegram = async (scheduleType: ScheduleType): Promise<void> => {
   /** -------- Get credentials for sending notifications -------- */
   const { chatId, apiKey } = await getTelegramApiCredentials()
 

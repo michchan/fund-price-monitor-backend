@@ -1,5 +1,9 @@
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
-import { CompanyType, FundPriceChangeRate, FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import {
+  CompanyType,
+  FundPriceChangeRate,
+  FundPriceRecord,
+} from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
@@ -22,10 +26,7 @@ const queryPrevItems = async (
   // Get year and quarter
   const { year, quarter } = getDateTimeDictionary(date)
   // Create table range
-  const tableRange: TableRange = {
-    year,
-    quarter,
-  }
+  const tableRange: TableRange = { year, quarter }
 
   /** Query previous latest records */
   const prevLatestRecords = await queryItemsByCompany(company, true, true, tableRange)
@@ -50,9 +51,15 @@ const queryPrevItems = async (
   ])
 
   // Parse previous records
-  const prevWeekRateItems = (prevWeekRateRecords.Items ?? []).map(rec => parseChangeRate(rec)).filter(matchInserted)
-  const prevMonthRateItems = (prevMonthRateRecords.Items ?? []).map(rec => parseChangeRate(rec)).filter(matchInserted)
-  const prevQuarterRateItems = (prevQuarterRateRecords.Items ?? []).map(rec => parseChangeRate(rec)).filter(matchInserted)
+  const prevWeekRateItems = (prevWeekRateRecords.Items ?? [])
+    .map(rec => parseChangeRate(rec))
+    .filter(matchInserted)
+  const prevMonthRateItems = (prevMonthRateRecords.Items ?? [])
+    .map(rec => parseChangeRate(rec))
+    .filter(matchInserted)
+  const prevQuarterRateItems = (prevQuarterRateRecords.Items ?? [])
+    .map(rec => parseChangeRate(rec))
+    .filter(matchInserted)
 
   return [
     prevLatestItems,

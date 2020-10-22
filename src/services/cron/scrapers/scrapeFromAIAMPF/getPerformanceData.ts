@@ -3,6 +3,8 @@ import puppeteer = require('puppeteer')
 import { FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import retryWithDelay from '../../helpers/retryWithDelay'
 
+const MAX_PERCENT = 100
+
 export interface PerfDataRecord extends Pick<FundPriceRecord,
 | 'code'
 | 'launchedDate'
@@ -15,13 +17,16 @@ export interface PerfDataRecord extends Pick<FundPriceRecord,
 */
 const getPerformanceData = async (page: puppeteer.Page): Promise<PerfDataRecord[]> => {
   // Wait for the elements we want
-  await retryWithDelay(() => page.waitForSelector('#fundpriceslist > table > tbody > tr:not(.header):last-child > td'), 'scrapeFromAIAMPF.getPerformanceData')
+  await retryWithDelay(() => page.waitForSelector(
+    '#fundpriceslist > table > tbody > tr:not(.header):last-child > td'
+  ), 'scrapeFromAIAMPF.getPerformanceData')
 
   // Query DOM data
   // * Constants/variables must be inside the scope of the callback function
   return page.evaluate((): PerfDataRecord[] => {
     // Query table rows nodes
-    const tableRows: NodeListOf<HTMLTableRowElement> = document.querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)')
+    const tableRows: NodeListOf<HTMLTableRowElement> = document
+      .querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)')
 
     // Map table rows data to PerfDataRecord[]
     return Array.from(tableRows)
@@ -39,7 +44,7 @@ const getPerformanceData = async (page: puppeteer.Page): Promise<PerfDataRecord[
         return {
           code: getIDFromAnchorTag(anchor),
           launchedDate: dataCells[1].innerText.trim(),
-          priceChangeRateSinceLaunch: Number(dataCells[7].innerText.trim()) / 100,
+          priceChangeRateSinceLaunch: Number(dataCells[7].innerText.trim()) / MAX_PERCENT,
         }
       })
   })

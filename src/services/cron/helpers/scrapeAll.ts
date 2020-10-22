@@ -1,4 +1,7 @@
-import launchPuppeteerBrowserSession, { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
+import launchPuppeteerBrowserSession, {
+  GetDataWithPage,
+} from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
+import logObj from 'src/helpers/logObj'
 
 async function scrapeAll <T> (scrapers: GetDataWithPage<T[]>[]): Promise<T[]> {
   /** ------------ Scrape and Create records ------------ */
@@ -14,7 +17,7 @@ async function scrapeAll <T> (scrapers: GetDataWithPage<T[]>[]): Promise<T[]> {
       if (value === undefined) throw new Error(`${key} undefined from scraped data`)
   }
   // Log records to insert
-  console.log(`Records to insert (${records.length}): `, JSON.stringify(records, null, 2))
+  logObj(`Records to insert (${records.length}): `, records)
   return records
 }
 export default scrapeAll
