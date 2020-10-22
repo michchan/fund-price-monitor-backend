@@ -11,7 +11,6 @@ import validateKey from '../validators/validateKey'
 import scanItems from 'src/models/fundPriceRecord/io/scanItems'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
-import mapQueryFieldToFilterExpression from '../helpers/mapQueryFieldToFilterExpression'
 import createParameterErrMsg from '../helpers/createParameterErrMsg'
 import mapQueryToFilterExpressions from '../helpers/mapQueryToFilterExpressions'
 import validateYearQuarter from '../validators/validateYearQuarter'
@@ -32,7 +31,7 @@ export interface QueryParams {
 /**
  * Search all fund records
  */
-export const handler: APIGatewayProxyHandler = async (event, context, callback) => {
+export const handler: APIGatewayProxyHandler = async event => {
   try {
     // Get query params
     const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
@@ -41,7 +40,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
       return value
     }) as unknown as QueryParams
     const {
-      latest,
+      latest: isLatest,
       exclusiveStartKey,
       q,
       quarter,
@@ -66,7 +65,7 @@ export const handler: APIGatewayProxyHandler = async (event, context, callback) 
       ExpressionAttributeNames: expNames,
       ExpressionAttributeValues: {
         ...expValues,
-        [EXP_TIME_SK_PFX]: latest ? 'latest' : 'record',
+        [EXP_TIME_SK_PFX]: isLatest ? 'latest' : 'record',
       },
       FilterExpression: [
         beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),

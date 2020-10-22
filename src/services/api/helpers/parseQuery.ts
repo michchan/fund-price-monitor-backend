@@ -1,6 +1,11 @@
 import capitalize from 'lodash/capitalize'
 
-import { Operator, StructuredQuery, StructuredQueryField, StructuredQueryString } from '../StructuredQuery.type'
+import {
+  Operator,
+  StructuredQuery,
+  StructuredQueryField,
+  StructuredQueryString,
+} from '../StructuredQuery.type'
 
 const parseQuery = (q: StructuredQueryString): StructuredQuery => {
   const components = q.split('+')

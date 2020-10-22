@@ -3,7 +3,11 @@ import mapValues from 'lodash/mapValues'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { ListResponse } from '../Responses.type'
-import { CompanyType, FundPriceRecord, RiskLevel } from '../../../models/fundPriceRecord/FundPriceRecord.type'
+import {
+  CompanyType,
+  FundPriceRecord,
+  RiskLevel,
+} from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import isValidRiskLevel from 'src/models/fundPriceRecord/utils/isValidRiskLevel'
@@ -15,8 +19,44 @@ import validateKey from '../validators/validateKey'
 import validateCompany from '../validators/validateCompany'
 import validateYearQuarter from '../validators/validateYearQuarter'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
+import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 
 const EXP_COM = ':com_code'
+
+interface QueryOptions {
+  company: CompanyType;
+  tableRange?: TableRange;
+  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
+  riskLevel?: RiskLevel;
+  isLatest?: boolean;
+}
+const queryByRiskLevel = ({
+  riskLevel,
+  company,
+  tableRange,
+  exclusiveStartKey,
+  isLatest,
+}: QueryOptions) => {
+  if (riskLevel) {
+    // Query records with risk level and company constraint
+    return queryItemsByRiskLevel(riskLevel, isLatest, false, tableRange, defaultInput => ({
+      ExclusiveStartKey: exclusiveStartKey,
+      ExpressionAttributeValues: {
+        ...defaultInput.ExpressionAttributeValues,
+        // Add company constraint
+        [EXP_COM]: company,
+      },
+      FilterExpression: [
+        defaultInput.FilterExpression,
+        beginsWith(attrs.COMPANY_CODE, EXP_COM),
+      ].filter(v => v).join(' AND '),
+    }))
+  }
+  // Query records with company constraint
+  return queryItemsByCompany(company, isLatest, false, tableRange, {
+    ExclusiveStartKey: exclusiveStartKey,
+  })
+}
 
 export type Res = ListResponse<FundPriceRecord>
 
@@ -47,43 +87,29 @@ export const handler: APIGatewayProxyHandler = async event => {
     }) as unknown as QueryParams
     const {
       riskLevel,
-      latest,
+      latest: isLatest,
       exclusiveStartKey,
       quarter,
     } = queryParams
 
     /** ----------- Validations ----------- */
-
     validateCompany(company)
-    if (riskLevel && !isValidRiskLevel(riskLevel)) throw new Error(createParameterErrMsg('riskLevel'))
+    if (riskLevel && !isValidRiskLevel(riskLevel))
+      throw new Error(createParameterErrMsg('riskLevel'))
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
     if (quarter) validateYearQuarter(quarter, 'quarter')
 
     /** ----------- Query ----------- */
-
     // Get table range
     const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
-
     // Get query handler by conditions
-    const output = await (() => {
-      if (riskLevel) {
-        // Query records with risk level and company constraint
-        return queryItemsByRiskLevel(riskLevel, latest, false, tableRange, defaultInput => ({
-          ExclusiveStartKey: exclusiveStartKey,
-          ExpressionAttributeValues: {
-            ...defaultInput.ExpressionAttributeValues,
-            // Add company constraint
-            [EXP_COM]: company,
-          },
-          FilterExpression: [
-            defaultInput.FilterExpression,
-            beginsWith(attrs.COMPANY_CODE, EXP_COM),
-          ].filter(v => v).join(' AND '),
-        }))
-      }
-      // Query records with company constraint
-      return queryItemsByCompany(company, latest, false, tableRange, { ExclusiveStartKey: exclusiveStartKey })
-    })()
+    const output = await queryByRiskLevel({
+      company,
+      tableRange,
+      exclusiveStartKey,
+      riskLevel,
+      isLatest,
+    })
 
     // Send back successful response
     return createReadResponse(null, output)

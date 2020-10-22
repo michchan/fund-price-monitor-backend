@@ -43,7 +43,7 @@ export const handler: APIGatewayProxyHandler = async event => {
       return value
     }) as unknown as QueryParams
     const {
-      latest,
+      latest: isLatest,
       exclusiveStartKey,
       startTime,
       endTime,
@@ -61,7 +61,15 @@ export const handler: APIGatewayProxyHandler = async event => {
     /** ----------- Query ----------- */
 
     // Query
-    const output = await querySingleFundRecords(company, code, latest, false, startTime, endTime, { ExclusiveStartKey: exclusiveStartKey })
+    const output = await querySingleFundRecords(
+      company,
+      code,
+      isLatest,
+      false,
+      startTime,
+      endTime,
+      { ExclusiveStartKey: exclusiveStartKey }
+    )
 
     // Send back successful response
     return createReadResponse(null, output)

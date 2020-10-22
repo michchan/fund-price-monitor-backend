@@ -2,7 +2,10 @@ import { APIGatewayProxyHandler } from 'aws-lambda'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { ListResponse } from '../Responses.type'
-import { CompanyType, FundPriceChangeRate } from '../../../models/fundPriceRecord/FundPriceRecord.type'
+import {
+  CompanyType,
+  FundPriceChangeRate,
+} from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import createReadResponse from '../helpers/createReadResponse'
 import validateCompany from '../validators/validateCompany'
 import validateKey from '../validators/validateKey'
@@ -52,19 +55,23 @@ export const handler: APIGatewayProxyHandler = async event => {
     } = (event.queryStringParameters ?? {}) as unknown as QueryParams
 
     /** ----------- Validations ----------- */
-
     validateCompany(company)
     validatePeriod(period, periodType)
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
     if (quarter) validateYearQuarter(quarter, 'quarter')
 
     /** ----------- Query ----------- */
-
     // Get table range
     const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
-
     // Query
-    const output = await queryPeriodPriceChangeRate(company, periodType, period, false, tableRange, { ExclusiveStartKey: exclusiveStartKey })
+    const output = await queryPeriodPriceChangeRate(
+      company,
+      periodType,
+      period,
+      false,
+      tableRange,
+      { ExclusiveStartKey: exclusiveStartKey }
+    )
 
     // Send back successful response
     return createReadResponse(null, output)

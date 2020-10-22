@@ -1,10 +1,10 @@
 import createParameterErrMsg from '../helpers/createParameterErrMsg'
 
 const validateYearQuarter = (
-  maybeYearQuarter: any,
+  maybeYearQuarter: unknown,
   name: string,
-) => {
-  if (!/^([0-9]{4})\.[1-4]$/.test(maybeYearQuarter)) throw new Error(createParameterErrMsg(name, 'query'))
+): void => {
+  if (!/^([0-9]{4})\.[1-4]$/.test(maybeYearQuarter as string))
+    throw new Error(createParameterErrMsg(name, 'query'))
 }
-
 export default validateYearQuarter

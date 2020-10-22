@@ -1,7 +1,7 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import createParameterErrMsg from '../helpers/createParameterErrMsg'
-import { mapValues } from 'lodash'
+import { forEach } from 'lodash'
 
 /**
  * Validate 'key' of dynamodb document client
@@ -10,11 +10,12 @@ import { mapValues } from 'lodash'
  *
  * @param exclusiveStartKey
  */
-const validateKey = (key: DocumentClient.Key, fieldName: string) => {
+const validateKey = (key: DocumentClient.Key, fieldName: string): void => {
   if (typeof key !== 'object') throw new Error(createParameterErrMsg(fieldName, 'query', 'invalid'))
 
-  return mapValues(key, value => {
-    if (value && !/^[a-z0-9_\-\.]{3,255}$/i.test(`${value}`)) throw new Error(createParameterErrMsg(fieldName, 'query', 'invalidKeyFormat'))
+  forEach(key, value => {
+    if (value && !/^[a-z0-9_\-\.]{3,255}$/i.test(`${value}`))
+      throw new Error(createParameterErrMsg(fieldName, 'query', 'invalidKeyFormat'))
   })
 }
 

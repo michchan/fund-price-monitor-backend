@@ -3,10 +3,11 @@ import isISOTimestamp from 'simply-utils/dist/dateTime/isISOTimestamp'
 import createParameterErrMsg from '../helpers/createParameterErrMsg'
 
 const validateTimestamp = (
-  maybeTimestamp: any,
+  maybeTimestamp: unknown,
   fieldName: string,
-) => {
-  if (!isISOTimestamp(maybeTimestamp)) throw new Error(createParameterErrMsg(fieldName, 'query'))
+): void => {
+  if (!isISOTimestamp(maybeTimestamp as string))
+    throw new Error(createParameterErrMsg(fieldName, 'query'))
 }
 
 export default validateTimestamp
