@@ -162,6 +162,7 @@ module.exports = {
         "while": "below",
         "do": "any",
         "for": "below",
+        "if": "any",
       },
     }],
     "object-curly-newline": ["error", { "multiline": true }],
