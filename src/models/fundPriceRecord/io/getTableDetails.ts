@@ -17,11 +17,11 @@ const getTableDetails = async (
   from?: TableRange,
 ): Promise<FundPriceTableDetails> => {
   // Normalize params
-  const _from = from || {
+  const { year, quarter } = from || {
     year: new Date().getFullYear(),
     quarter: getQuarter(),
   }
-  const TableName = getTableName(_from.year, _from.quarter)
+  const TableName = getTableName(year, quarter)
 
   const output = await queryAllItems({
     ...input,
@@ -36,7 +36,7 @@ const getTableDetails = async (
     ].join(' AND '),
   })
 
-  const item = (output.Items || [])[0]
+  const [item] = (output.Items || [])
   if (!item) throw new Error(`tableDetails row is not defined for table: ${TableName}`)
 
   const companiesSet = item[attrs.COMPANIES] as DynamoDB.DocumentClient.StringSet | undefined

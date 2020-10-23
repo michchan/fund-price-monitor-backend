@@ -6,15 +6,16 @@ import { FundPriceTableDetails } from '../FundPriceRecord.type'
 import attrs from '../constants/attributeNames'
 import topLevelKeysValues from '../constants/topLevelKeysValues'
 import AWS from 'src/lib/AWS'
-import putItem from 'src/lib/AWS/dynamodb/putItem'
+import putItem, { Output as O } from 'src/lib/AWS/dynamodb/putItem'
 
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
+export interface Output extends O {}
 function createTableDetails (
   details: FundPriceTableDetails,
   year: string | number,
   quarter: Quarter,
-) {
+): Promise<Output> {
   const { companies, fundTypes } = details
 
   return putItem({

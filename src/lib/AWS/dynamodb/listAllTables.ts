@@ -8,7 +8,7 @@ import getTableName from 'src/models/fundPriceRecord/utils/getTableName'
 // Initialize
 const dynamodb = new AWS.DynamoDB()
 
-export type Result = DynamoDB.TableNameList
+export type Output = DynamoDB.TableNameList
 
 const listAllTables = (
   exclusiveStartYear?: string | number,

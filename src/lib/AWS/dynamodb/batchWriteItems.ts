@@ -9,9 +9,9 @@ const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 type PT = DynamoDB.DocumentClient.PutRequest
 type DT = DynamoDB.DocumentClient.DeleteRequest
 
-export type Result = BatchWriteResult
+export type Output = BatchWriteResult
 
-async function batchWriteItems <T, RT extends PT | DT> (
+function batchWriteItems <T, RT extends PT | DT> (
   records: T[],
   tableName: string,
   mode: 'put' | 'delete',

@@ -6,9 +6,9 @@ const dynamodbStreams = new AWS.DynamoDBStreams()
 
 type I = AWS.DynamoDBStreams.DescribeStreamInput
 type O = AWS.DynamoDBStreams.DescribeStreamOutput
-export type Result = O
+export type Output = O
 
-const waitForStream = (input: I): Promise<null | Result> => waitForAWSService<I, O, AWS.AWSError>(
+const waitForStream = (input: I): Promise<null | Output> => waitForAWSService<I, O, AWS.AWSError>(
   // Prevent `this` context problem
   (...args) => dynamodbStreams.describeStream(...args),
   input,

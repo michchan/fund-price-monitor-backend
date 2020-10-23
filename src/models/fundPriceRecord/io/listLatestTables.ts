@@ -2,7 +2,7 @@ import { DynamoDB } from 'aws-sdk'
 import getQuarter from 'simply-utils/dist/dateTime/getQuarter'
 
 import { PROJECT_NAMESPACE } from 'src/constants'
-import listAllTables, { Result } from 'src/lib/AWS/dynamodb/listAllTables'
+import listAllTables, { Output } from 'src/lib/AWS/dynamodb/listAllTables'
 import TableRange from '../TableRange.type'
 
 /**
@@ -12,14 +12,14 @@ const listLatestTables = async (
   /** Default to current quarter of the current year */
   from?: TableRange,
   limit?: DynamoDB.ListTablesInput['Limit']
-): Promise<Result> => {
+): Promise<Output> => {
   // Normalize params
-  const _from = from || {
+  const { year, quarter } = from || {
     year: new Date().getFullYear(),
     quarter: getQuarter(),
   }
   // Send list tables request
-  const results = await listAllTables(_from.year, _from.quarter, limit)
+  const results = await listAllTables(year, quarter, limit)
   // Filter out non project-scope tables
   return results.filter(name => new RegExp(`^${PROJECT_NAMESPACE}`).test(name))
 }

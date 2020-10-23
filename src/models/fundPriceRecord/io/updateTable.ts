@@ -12,7 +12,7 @@ type I = DynamoDB.DescribeTableInput
 type O = DynamoDB.DescribeTableOutput
 type E = AWS.AWSError
 
-export interface Result extends DynamoDB.UpdateTableOutput {}
+export interface Output extends DynamoDB.UpdateTableOutput {}
 
 const updateTable = async (
   /** In YYYY format */
@@ -20,7 +20,7 @@ const updateTable = async (
   quarter: Quarter,
   input: Omit<DynamoDB.UpdateTableInput, 'TableName'>,
   shouldWaitForUpdateComplete?: boolean,
-): Promise<Result> => {
+): Promise<Output> => {
   // Get based table name
   const TableName = getTableName(year, quarter)
   // Update table

@@ -6,7 +6,7 @@ import { ScheduledHandler } from 'aws-lambda'
 import AWS from 'src/lib/AWS'
 import checkTableExistence from '../helpers/checkTableExistence'
 import describeTable, {
-  Result as DescribeTableResult,
+  Output as DescribeTableResult,
 } from 'src/models/fundPriceRecord/io/describeTable'
 import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
 import getTableName from 'src/models/fundPriceRecord/utils/getTableName'

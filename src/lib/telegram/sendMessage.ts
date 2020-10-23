@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 const API_BOT_API_KEY = '{{BOT_API_KEY}}'
 const API_CHAT_ID = '{{CHAT_ID}}'
@@ -10,7 +10,8 @@ const sendMessage = (
   chatId: string,
   apiKey: string,
   text: string,
-) => {
+  // @TODO: Specify telegram response type
+): Promise<AxiosResponse<any>> => {
   // Create api uri
   const url = API_PATTERN
     .replace(API_BOT_API_KEY, apiKey)

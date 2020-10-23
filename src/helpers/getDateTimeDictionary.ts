@@ -2,7 +2,9 @@ import zeroPadding from 'simply-utils/dist/number/zeroPadding'
 import getWeekOfYear from 'simply-utils/dist/dateTime/getWeekOfYear'
 import getQuarter, { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
-export interface Result {
+const PADDING = 2
+
+export interface Output {
   /** YYYY */
   year: number;
   /** MM */
@@ -12,12 +14,11 @@ export interface Result {
   /** Start from 1 */
   quarter: Quarter;
 }
-
-const getDateTimeDictionary = (date: Date): Result => {
+const getDateTimeDictionary = (date: Date): Output => {
   // Get year
   const year = date.getFullYear()
   // Get month
-  const month = zeroPadding(date.getMonth() + 1, 2)
+  const month = zeroPadding(date.getMonth() + 1, PADDING)
   // Get week
   const week = getWeekOfYear(date)
   // Get quarter

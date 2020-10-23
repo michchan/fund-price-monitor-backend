@@ -7,14 +7,14 @@ import AWS from 'src/lib/AWS'
 // Initialize
 const dynamodb = new AWS.DynamoDB()
 
-export interface Result extends DynamoDB.DescribeTableOutput {}
+export interface Output extends DynamoDB.DescribeTableOutput {}
 
 const describeTable = (
   /** In YYYY format */
   year: string | number,
   quarter: Quarter,
   input?: Omit<DynamoDB.DescribeTableInput, 'TableName'>,
-): Promise<Result> => {
+): Promise<Output> => {
   // Get based table name
   const TableName = getTableName(year, quarter)
   // Update table

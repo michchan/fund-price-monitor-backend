@@ -1,2 +1,6 @@
-const between = (attributeName: string, a: string, b: string) => `${attributeName} BETWEEN ${a} AND ${b}`
+const between = (
+  attributeName: string,
+  a: string,
+  b: string
+): string => `${attributeName} BETWEEN ${a} AND ${b}`
 export default between
