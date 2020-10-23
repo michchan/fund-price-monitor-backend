@@ -25,6 +25,7 @@ interface ScrapingHandlers {
 }
 const constructScrapingHandlers = (
   scope: cdk.Construct,
+  serviceDirname: string,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
 ): ScrapingHandlers => {
   /** ---------- Aggregation Handlers ---------- */
@@ -37,7 +38,7 @@ const constructScrapingHandlers = (
   /** ---------- Scrape Handlers ---------- */
 
   // Read handlers directory
-  const handlers = fs.readdirSync(`${__dirname}/handlers`)
+  const handlers = fs.readdirSync(`${serviceDirname}/handlers`)
   /** Scraper creator */
   const getScraperCreator = (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
     const name = fileName.replace(nameRegExp, '').replace(/\.ts$/i, '')
@@ -161,7 +162,7 @@ const constructLamdas = (
   telegramChatId: string,
 ): Handlers => {
   const defaultInput = getDefaultLambdaInput(role, serviceDirname)
-  const scrapingHandlers = constructScrapingHandlers(scope, defaultInput)
+  const scrapingHandlers = constructScrapingHandlers(scope, serviceDirname, defaultInput)
   return {
     ...scrapingHandlers,
     ...constructTableHandlers(scope, defaultInput, scrapingHandlers.aggregation),
