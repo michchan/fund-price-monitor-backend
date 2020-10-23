@@ -25,7 +25,7 @@ interface ScrapingHandlers {
 }
 const constructScrapingHandlers = (
   scope: cdk.Construct,
-  serviceDirname: string,
+  serviceDirnameFullPath: string,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
 ): ScrapingHandlers => {
   /** ---------- Aggregation Handlers ---------- */
@@ -38,7 +38,7 @@ const constructScrapingHandlers = (
   /** ---------- Scrape Handlers ---------- */
 
   // Read handlers directory
-  const handlers = fs.readdirSync(`${serviceDirname}/handlers`)
+  const handlers = fs.readdirSync(`${serviceDirnameFullPath}/handlers`)
   /** Scraper creator */
   const getScraperCreator = (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
     const name = fileName.replace(nameRegExp, '').replace(/\.ts$/i, '')
@@ -155,14 +155,22 @@ const getDefaultLambdaInput = (role: iam.Role, serviceDirname: string) => {
   }
 }
 export interface Handlers extends ScrapingHandlers, TableHandlers, NotificationHandlers {}
+export interface Options {
+  serviceDirname: string;
+  serviceDirnameFullPath: string;
+  telegramChatId: string;
+}
 const constructLamdas = (
   scope: cdk.Construct,
   role: iam.Role,
-  serviceDirname: string,
-  telegramChatId: string,
+  {
+    serviceDirname,
+    serviceDirnameFullPath,
+    telegramChatId,
+  }: Options,
 ): Handlers => {
   const defaultInput = getDefaultLambdaInput(role, serviceDirname)
-  const scrapingHandlers = constructScrapingHandlers(scope, serviceDirname, defaultInput)
+  const scrapingHandlers = constructScrapingHandlers(scope, serviceDirnameFullPath, defaultInput)
   return {
     ...scrapingHandlers,
     ...constructTableHandlers(scope, defaultInput, scrapingHandlers.aggregation),
