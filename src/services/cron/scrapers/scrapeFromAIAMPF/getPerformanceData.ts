@@ -3,8 +3,6 @@ import puppeteer = require('puppeteer')
 import { FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import retryWithDelay from '../../helpers/retryWithDelay'
 
-const MAX_PERCENT = 100
-
 export interface PerfDataRecord extends Pick<FundPriceRecord,
 | 'code'
 | 'launchedDate'
@@ -24,6 +22,7 @@ const getPerformanceData = async (page: puppeteer.Page): Promise<PerfDataRecord[
   // Query DOM data
   // * Constants/variables must be inside the scope of the callback function
   return page.evaluate((): PerfDataRecord[] => {
+    const MAX_PERCENT = 100
     // Query table rows nodes
     const tableRows: NodeListOf<HTMLTableRowElement> = document
       .querySelectorAll('#fundpriceslist > table > tbody > tr:not(.header)')

@@ -8,8 +8,6 @@ import {
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import retryWithDelay from '../helpers/retryWithDelay'
 
-const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
-
 interface RiskLevlIndicatorImageNameMap {
   [key: string]: FundPriceRecord['riskLevel'];
 }
@@ -98,6 +96,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
   })
 }
 
+const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
 const scrapeFromManulifeMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
   await page.goto(PAGE_URL)
   return getDataFromHTML(page)
