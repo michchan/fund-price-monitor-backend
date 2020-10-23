@@ -64,14 +64,11 @@ export const handler: APIGatewayProxyHandler = async event => {
     // Get table range
     const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
     // Query
-    const output = await queryPeriodPriceChangeRate(
-      company,
-      periodType,
-      period,
-      false,
-      tableRange,
-      { ExclusiveStartKey: exclusiveStartKey }
-    )
+    const output = await queryPeriodPriceChangeRate(company, periodType, period, {
+      shouldQueryAll: false,
+      at: tableRange,
+      input: { ExclusiveStartKey: exclusiveStartKey },
+    })
 
     // Send back successful response
     return createReadResponse(null, output)

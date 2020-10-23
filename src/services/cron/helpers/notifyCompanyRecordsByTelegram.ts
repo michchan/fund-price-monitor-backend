@@ -34,7 +34,10 @@ const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date:
     }
     case 'daily':
     default:
-      return queryItemsByCompany(company, true, true)
+      return queryItemsByCompany(company, {
+        shouldQueryAll: true,
+        shouldQueryLatest: true,
+      })
   }
 }
 
