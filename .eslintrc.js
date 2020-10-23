@@ -243,7 +243,7 @@ module.exports = {
     "prefer-spread": "error",
     "prefer-template": "error",
     "rest-spread-spacing": "error",
-    // @TODO: Enforce this
+    // @TODO: Enforce this, since there seems some bugs
     "sort-imports": ["off", {
       "ignoreCase": false,
       "ignoreDeclarationSort": false,
