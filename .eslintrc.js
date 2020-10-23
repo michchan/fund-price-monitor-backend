@@ -303,7 +303,7 @@ module.exports = {
         "ignoreEnums": true,
         "ignoreNumericLiteralTypes": true,
         "ignoreReadonlyClassProperties": true,
-        "ignore": [0, 1],
+        "ignore": [0, 1, -1],
         "ignoreArrayIndexes": true,
         "ignoreDefaultValues": true,
         "enforceConst": true,
