@@ -74,12 +74,13 @@ const buildByTemplate = (templateName, scraperNames) => {
 
 const buildScrapers = () => {
   // Get names of scraperNames
-  const scraperNames = fs.readdirSync(scrapersDirAbs)
+  const scraperNames = fs
+    .readdirSync(scrapersDirAbs)
     .map(path => removePathExtension(path))
   // Read template paths
   const templateNames = fs.readdirSync(templateDirAbs)
   // Read each template
-  templateNames.forEach(buildByTemplate, scraperNames)
+  templateNames.forEach(templateName => buildByTemplate(templateName, scraperNames))
 }
 
 // Run script
