@@ -4,7 +4,7 @@ import constructIamRole from './constructs/constructIamRole'
 import constructLamdas, { Handlers } from './constructs/constructLambdas'
 import constructApiGateway from './constructs/constructApiGateway'
 
-const DIRNAME = __dirname.split('/').pop() ?? ''
+const DIRNAME = 'api'
 
 export interface ReturnType {
   handlers: Handlers;
