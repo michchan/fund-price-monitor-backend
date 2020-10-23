@@ -15,21 +15,22 @@ import getSorterByCode from 'src/models/fundPriceRecord/utils/getSorterByCode'
 import toTelegramMessages from 'src/models/fundPriceRecord/utils/toTelegramMessages'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-export type ScheduleType = 'daily' | 'weekly' | 'monthly' | 'quarterly'
+const priceChangeRateQueryInput = { shouldQueryAll: true }
 
+export type ScheduleType = 'daily' | 'weekly' | 'monthly' | 'quarterly'
 const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date: Date) => {
   switch (scheduleType) {
     case 'quarterly': {
       const period = getPeriodByRecordType('quarter', date)
-      return queryPeriodPriceChangeRate(company, 'quarter', period, true)
+      return queryPeriodPriceChangeRate(company, 'quarter', period, priceChangeRateQueryInput)
     }
     case 'monthly': {
       const period = getPeriodByRecordType('month', date)
-      return queryPeriodPriceChangeRate(company, 'month', period, true)
+      return queryPeriodPriceChangeRate(company, 'month', period, priceChangeRateQueryInput)
     }
     case 'weekly': {
       const period = getPeriodByRecordType('week', date)
-      return queryPeriodPriceChangeRate(company, 'week', period, true)
+      return queryPeriodPriceChangeRate(company, 'week', period, priceChangeRateQueryInput)
     }
     case 'daily':
     default:

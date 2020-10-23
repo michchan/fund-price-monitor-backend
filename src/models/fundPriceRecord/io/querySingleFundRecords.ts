@@ -1,7 +1,7 @@
 import isFunction from 'lodash/isFunction'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import queryItems from './queryItems'
+import queryItems, { Output as O } from './queryItems'
 import attrs from '../constants/attributeNames'
 import { CompanyType, FundPriceRecord } from '../FundPriceRecord.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
@@ -16,23 +16,32 @@ const EXP_TIME_SK_END = ':timeSK_end' as string
 export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
+export interface Output extends O {}
+export interface Options {
+  shouldQueryLatest?: boolean;
+  shouldQueryAll?: boolean;
+  /** ISO Timestamp */
+  startTime?: string;
+  endTime?: string;
+  input?: PartialInput | ((defaultInput: Input) => PartialInput);
+}
 const querySingleFundRecords = (
   company: CompanyType,
   code: FundPriceRecord['code'],
-  latest?: boolean,
-  all?: boolean,
-  /** ISO Timestamp */
-  startTime?: string,
-  endTime?: string,
-  input: PartialInput | ((defaultInput: Input) => PartialInput) = {},
-) => {
+  {
+    shouldQueryLatest,
+    shouldQueryAll,
+    startTime,
+    endTime,
+    input = {},
+  }: Options = {},
+): Promise<Output> => {
   const startDate = startTime ? new Date(startTime) : new Date()
   const endDate = endTime ? new Date(endTime) : new Date()
   // Get table from
   const from = getDateTimeDictionary(startDate)
-
   // Construct TIME SK query
-  const timeSKPfx = latest ? 'latest' : 'record'
+  const timeSKPfx = shouldQueryLatest ? 'shouldQueryLatest' : 'record'
   // Derive timeSK expression values based on conditions
   const timeSKValues = (() => {
     if (startTime || endTime) {
@@ -64,7 +73,7 @@ const querySingleFundRecords = (
   return queryItems({
     ...defaultInput,
     ...isFunction(input) ? input(defaultInput) : input,
-  }, all, from)
+  }, shouldQueryAll, from)
 }
 
 export default querySingleFundRecords

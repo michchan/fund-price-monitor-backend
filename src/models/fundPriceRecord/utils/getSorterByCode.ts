@@ -8,11 +8,11 @@ export interface Item {
  * Sort recrods by code. Default to in ascending order.
  */
 const getSorterByCode = (isDescending?: boolean) => (a: Item, b: Item): number => {
-  const ab = a.code > b.code
-  const ba = a.code < b.code
+  const isAGreator = a.code > b.code
+  const isBGreator = a.code < b.code
 
-  if (isDescending ? ba : ab) return 1
-  if (isDescending ? ab : ba) return -1
+  if (isDescending ? isBGreator : isAGreator) return 1
+  if (isDescending ? isAGreator : isBGreator) return -1
   return 0
 }
 

@@ -40,7 +40,7 @@ export const handler: APIGatewayProxyHandler = async event => {
       return value
     }) as unknown as QueryParams
     const {
-      latest: isLatest,
+      latest: shouldQueryLatest,
       exclusiveStartKey,
       q,
       quarter,
@@ -65,7 +65,7 @@ export const handler: APIGatewayProxyHandler = async event => {
       ExpressionAttributeNames: expNames,
       ExpressionAttributeValues: {
         ...expValues,
-        [EXP_TIME_SK_PFX]: isLatest ? 'latest' : 'record',
+        [EXP_TIME_SK_PFX]: shouldQueryLatest ? 'latest' : 'record',
       },
       FilterExpression: [
         beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),

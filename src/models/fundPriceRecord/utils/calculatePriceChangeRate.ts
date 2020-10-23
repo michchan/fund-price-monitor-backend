@@ -1,3 +1,4 @@
+const MAX_PERCENT = 100
 /**
  *
  * @param basedPrice
@@ -8,7 +9,7 @@
 const calculatePriceChangeRate = (basedPrice: number, updatedPrice: number): number => {
   if (basedPrice === 0) return 0
 
-  return ((updatedPrice - basedPrice) / basedPrice) * 100
+  return ((updatedPrice - basedPrice) / basedPrice) * MAX_PERCENT
 }
 
 export default calculatePriceChangeRate

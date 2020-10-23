@@ -35,14 +35,11 @@ const deriveAggregatedItems = (
     prevItems: FundPriceChangeRate[],
   ) => latestItems.map(item => {
     const prevChangeRate = prevItems.find(chRate => chRate.code === item.code)
-    const nextChangeRate = getChangeRate(
-      prevChangeRate ?? item,
-      type,
-      item.price,
-      prevChangeRate?.priceList ?? [],
-      'prepend',
-      date
-    )
+    const nextChangeRate = getChangeRate(prevChangeRate ?? item, type, item.price, {
+      prevPriceList: prevChangeRate?.priceList ?? [],
+      priceListMode: 'prepend',
+      aggregateDate: date,
+    })
     return nextChangeRate
   })
 

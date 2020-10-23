@@ -10,14 +10,14 @@ const scanQuarterRecords = (
   at?: TableRange,
 ): Promise<Output> => {
   // Normalize params
-  const _at = at || {
+  const { year, quarter } = at || {
     year: new Date().getFullYear(),
     quarter: getQuarter(),
   }
 
   return scanAllItems({
     ...input,
-    TableName: getTableName(_at.year, _at.quarter),
+    TableName: getTableName(year, quarter),
   })
 }
 

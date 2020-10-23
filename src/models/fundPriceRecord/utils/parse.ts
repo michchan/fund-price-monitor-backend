@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk'
 
-import { CompanyType, FundPriceRecord, FundType, RecordType, RiskLevel } from '../FundPriceRecord.type'
+import { FundPriceRecord, RecordType } from '../FundPriceRecord.type'
 import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames'
 
 /**

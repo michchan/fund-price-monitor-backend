@@ -28,33 +28,43 @@ interface QueryOptions {
   tableRange?: TableRange;
   exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
   riskLevel?: RiskLevel;
-  isLatest?: boolean;
+  shouldQueryLatest?: boolean;
 }
 const queryByRiskLevel = ({
   riskLevel,
   company,
   tableRange,
   exclusiveStartKey,
-  isLatest,
+  shouldQueryLatest,
 }: QueryOptions) => {
   if (riskLevel) {
     // Query records with risk level and company constraint
-    return queryItemsByRiskLevel(riskLevel, isLatest, false, tableRange, defaultInput => ({
-      ExclusiveStartKey: exclusiveStartKey,
-      ExpressionAttributeValues: {
-        ...defaultInput.ExpressionAttributeValues,
-        // Add company constraint
-        [EXP_COM]: company,
-      },
-      FilterExpression: [
-        defaultInput.FilterExpression,
-        beginsWith(attrs.COMPANY_CODE, EXP_COM),
-      ].filter(v => v).join(' AND '),
-    }))
+    return queryItemsByRiskLevel(riskLevel, {
+      shouldQueryLatest,
+      shouldQueryAll: false,
+      at: tableRange,
+      input: defaultInput => ({
+        ExclusiveStartKey: exclusiveStartKey,
+        ExpressionAttributeValues: {
+          ...defaultInput.ExpressionAttributeValues,
+          // Add company constraint
+          [EXP_COM]: company,
+        },
+        FilterExpression: [
+          defaultInput.FilterExpression,
+          beginsWith(attrs.COMPANY_CODE, EXP_COM),
+        ].filter(v => v).join(' AND '),
+      }),
+    })
   }
   // Query records with company constraint
-  return queryItemsByCompany(company, isLatest, false, tableRange, {
-    ExclusiveStartKey: exclusiveStartKey,
+  return queryItemsByCompany(company, {
+    at: tableRange,
+    shouldQueryLatest,
+    shouldQueryAll: false,
+    input: {
+      ExclusiveStartKey: exclusiveStartKey,
+    },
   })
 }
 
@@ -87,7 +97,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     }) as unknown as QueryParams
     const {
       riskLevel,
-      latest: isLatest,
+      latest: shouldQueryLatest,
       exclusiveStartKey,
       quarter,
     } = queryParams
@@ -108,7 +118,7 @@ export const handler: APIGatewayProxyHandler = async event => {
       tableRange,
       exclusiveStartKey,
       riskLevel,
-      isLatest,
+      shouldQueryLatest,
     })
 
     // Send back successful response

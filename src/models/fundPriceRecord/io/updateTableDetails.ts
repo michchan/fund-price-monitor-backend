@@ -4,13 +4,15 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import getTableName from '../utils/getTableName'
 import attrs from '../constants/attributeNames'
 import topLevelKeysValues from '../constants/topLevelKeysValues'
-import updateItem, { Input } from 'src/lib/AWS/dynamodb/updateItem'
+import updateItem, { Input, Output as O } from 'src/lib/AWS/dynamodb/updateItem'
+
+export interface Output extends O {}
 
 function updateTableDetails (
   input: Omit<Input, 'TableName' | 'Key'>,
   year: string | number,
   quarter: Quarter,
-) {
+): Promise<Output> {
   return updateItem({
     ...input,
     TableName: getTableName(year, quarter),

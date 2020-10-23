@@ -6,6 +6,9 @@ import { ScheduleType } from 'src/services/cron/helpers/notifyCompanyRecordsByTe
 import parseLinesToChunks from 'src/lib/telegram/parseLinesToChunks'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 
+const PADDING = 2
+const PRECISION = 2
+
 export interface Item extends Pick<FundPriceRecord, 'code' | 'price' | 'name' | 'updatedDate'>, Partial<Pick<FundPriceChangeRate, 'priceChangeRate'>> {}
 
 const toTelegramMessages = (
@@ -15,18 +18,27 @@ const toTelegramMessages = (
 ): string[] => {
   const date = new Date()
   const { year, month, week, quarter } = getDateTimeDictionary(date)
-  const dateOfMonth = zeroPadding(date.getDate(), 2)
+  const dateOfMonth = zeroPadding(date.getDate(), PADDING)
 
   // Derive title line
-  const titleLine = `* ------ ${capitalize(scheduleType)} - ${capitalize(company)} - ${year}-${month}-${dateOfMonth} (week: ${week}, Q${quarter}) ------ *`
+  const titleLine = (() => {
+    const S = capitalize(scheduleType)
+    const C = capitalize(company)
+    const Y = year
+    const M = month
+    const D = dateOfMonth
+    const W = week
+    const Q = quarter
+    return `* ------ ${S} - ${C} - ${Y}-${M}-${D} (week: ${W}, Q${Q}) ------ *`
+  })()
   // Derive item lines
   const itemLines = items.map(({ code, name, price, priceChangeRate = 0 }, i) => {
     const order = `${i + 1}.`
     const codeTag = `__${code}__`
-    const priceTag = `*$${Number(price).toFixed(2)}*`
+    const priceTag = `*$${Number(price).toFixed(PRECISION)}*`
 
     const rate = Number(priceChangeRate)
-    const rateTag = Math.abs(rate).toFixed(2)
+    const rateTag = Math.abs(rate).toFixed(PRECISION)
     const sign = Number(rate) === 0 ? '' : Number(rate) > 0 ? '+' : '-'
     const priceRateTag = `(${sign}${rateTag}%)`
 

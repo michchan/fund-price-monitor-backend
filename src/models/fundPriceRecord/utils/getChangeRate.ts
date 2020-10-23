@@ -2,13 +2,21 @@ import { AggregatedRecordType, FundPriceChangeRate, FundPriceRecord } from '../F
 import getPeriodByRecordType from './getPeriodByRecordType'
 import calculatePriceChangeRate from './calculatePriceChangeRate'
 
+export interface Options {
+  prevPriceList: number[];
+  /** Default to 'prepend' */
+  priceListMode: 'append' | 'prepend';
+  aggregateDate?: Date;
+}
 const getChangeRate = (
   basedRecord: FundPriceRecord | FundPriceChangeRate,
   recordType: AggregatedRecordType,
   latestPrice: number,
-  prevPriceList: number[] = [],
-  priceListMode: 'append' | 'prepend' = 'prepend',
-  aggregateDate?: Date,
+  {
+    prevPriceList = [],
+    priceListMode = 'prepend',
+    aggregateDate,
+  }: Options,
 ): FundPriceChangeRate => {
   // Get date from basedRecord time
   const date = new Date(basedRecord.time)
@@ -22,7 +30,7 @@ const getChangeRate = (
       : [latestPrice, ...prevPriceList]
   })()
 
-  const startPrice = priceList[0]
+  const [startPrice] = priceList
   const endPrice = priceList[priceList.length - 1]
   // Calculate change rate
   const priceChangeRate = calculatePriceChangeRate(startPrice, endPrice)
