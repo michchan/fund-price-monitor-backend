@@ -1,6 +1,8 @@
 import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
 
+const ROLE_ID = 'CronRole'
+
 const commonIamStatementInput = {
   resources: ['*'],
   effect: iam.Effect.ALLOW,
@@ -8,8 +10,8 @@ const commonIamStatementInput = {
 
 // Grant db access permissions for handler by assigning role
 const grantIamDBAccess = (
-  cronRole: iam.Role
-) => cronRole.addToPolicy(new iam.PolicyStatement({
+  role: iam.Role
+) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
   sid: 'ListCreateTableBatchWriteItem',
   actions: [
@@ -26,8 +28,8 @@ const grantIamDBAccess = (
 }))
 // Grant cloudwatch log group access
 const grantCloudWatchLogGroupAccess = (
-  cronRole: iam.Role
-) => cronRole.addToPolicy(new iam.PolicyStatement({
+  role: iam.Role
+) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
   sid: 'LogGroupWrite',
   actions: [
@@ -37,8 +39,8 @@ const grantCloudWatchLogGroupAccess = (
   ],
 }))
 const grantLambdaStreamMappingAccess = (
-  cronRole: iam.Role
-) => cronRole.addToPolicy(new iam.PolicyStatement({
+  role: iam.Role
+) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
   sid: 'LambdaStreamMapping',
   actions: [
@@ -54,8 +56,8 @@ const grantLambdaStreamMappingAccess = (
   ],
 }))
 const grantSSNParameterStoreAccess = (
-  cronRole: iam.Role
-) => cronRole.addToPolicy(new iam.PolicyStatement({
+  role: iam.Role
+) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
   sid: 'SSMParameterStore',
   actions: [
@@ -65,13 +67,13 @@ const grantSSNParameterStoreAccess = (
 
 const constructIamRole = (scope: cdk.Construct): iam.Role => {
   // Create IAM roles for scraping handlers
-  const cronRole = new iam.Role(scope, 'CronRole', {
+  const role = new iam.Role(scope, ROLE_ID, {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
-  grantIamDBAccess(cronRole)
-  grantCloudWatchLogGroupAccess(cronRole)
-  grantLambdaStreamMappingAccess(cronRole)
-  grantSSNParameterStoreAccess(cronRole)
-  return cronRole
+  grantIamDBAccess(role)
+  grantCloudWatchLogGroupAccess(role)
+  grantLambdaStreamMappingAccess(role)
+  grantSSNParameterStoreAccess(role)
+  return role
 }
 export default constructIamRole
