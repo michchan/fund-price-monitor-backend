@@ -41,7 +41,7 @@
     "eslint-plugin-import": "^2.22.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^1.68.0",
+    "@aws-cdk/aws-apigateway": "1.68.0",
     "@aws-cdk/aws-dynamodb": "1.68.0",
     "@aws-cdk/aws-events": "1.68.0",
     "@aws-cdk/aws-events-targets": "1.68.0",
