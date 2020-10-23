@@ -11,7 +11,7 @@ import { PROJECT_NAMESPACE } from 'src/constants'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 import env from 'src/lib/env'
 
-const DIRNAME = 'logging'
+const DIRNAME = __dirname.split('/').pop() ?? ''
 
 const ROLE_ID = 'SubsRole'
 const commonIamStatementInput = {

@@ -6,7 +6,7 @@ import constructIamRole from './constructs/constructIamRole'
 import constructLamdas, { Handlers } from './constructs/constructLamdas'
 import constructEventRules from './constructs/constructEventRules'
 
-const DIRNAME = 'cron'
+const DIRNAME = __dirname.split('/').pop() ?? ''
 
 const getSecrets = (scope: cdk.Construct) => {
   // Retrieve the telegram notification channel's chat ID
