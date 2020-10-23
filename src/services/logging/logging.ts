@@ -13,18 +13,19 @@ import env from 'src/lib/env'
 
 const DIRNAME = __dirname.split('/').pop()
 
+const ROLE_ID = 'SubsRole'
+const commonIamStatementInput = {
+  resources: ['*'],
+  effect: iam.Effect.ALLOW,
+}
+
 const constructIamRole = (scope: cdk.Construct) => {
   // Create IAM roles for SNS topics subscriptions handling
-  const subsRole = new iam.Role(scope, 'subsRole', {
+  const role = new iam.Role(scope, ROLE_ID, {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
-  // Common attributes in IAM statement
-  const commonIamStatementInput = {
-    resources: ['*'],
-    effect: iam.Effect.ALLOW,
-  }
   // Grant logging
-  subsRole.addToPolicy(new iam.PolicyStatement({
+  role.addToPolicy(new iam.PolicyStatement({
     ...commonIamStatementInput,
     sid: 'LambdaErrorLogs',
     actions: [
@@ -34,7 +35,7 @@ const constructIamRole = (scope: cdk.Construct) => {
       'logs:PutLogEvents',
     ],
   }))
-  return subsRole
+  return role
 }
 
 const constructSNSTopics = (scope: cdk.Construct) => {
@@ -49,25 +50,20 @@ const constructSNSTopics = (scope: cdk.Construct) => {
   return lambdaErrorLogTopic
 }
 
-export interface InitOptions {
-  logGroups: logs.ILogGroup[];
+interface Handlers {
+  notifyErrorLog: lambda.Function;
+  mockErrorLog: lambda.Function;
 }
-/**
- * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
- */
-function construct (scope: cdk.Construct, options: InitOptions) {
-  const { logGroups } = options
-
-  const subsRole = constructIamRole(scope)
-  const lambdaErrorLogTopic = constructSNSTopics(scope)
-
-  /** ------------------ Lambda Handlers Definition ------------------ */
-
+const constructLambdas = (
+  scope: cdk.Construct,
+  role: iam.Role,
+  lambdaErrorLogTopic: sns.Topic,
+): Handlers => {
   // Common input for lambda Definition
   const commonLambdaInput = {
     ...defaultLambdaInput,
     code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
-    role: subsRole,
+    role,
   }
   /** Error log handler */
   const notifyErrorLogHandler = new lambda.Function(scope, 'LoggingNotifyErrorLog', {
@@ -84,13 +80,23 @@ function construct (scope: cdk.Construct, options: InitOptions) {
     handler: 'mockErrorLog.handler',
   })
 
-  /** ------------------ Cloudwatch Triggers Definition ------------------ */
+  return {
+    notifyErrorLog: notifyErrorLogHandler,
+    mockErrorLog: mockErrorLogHandler,
+  }
+}
+
+const constructSubscriptions = (
+  scope: cdk.Construct,
+  { notifyErrorLog, mockErrorLog }: Handlers,
+  logGroups: logs.ILogGroup[],
+) => {
   // Create lambda subscription destination
-  const subsDestination = new LambdaDestination(notifyErrorLogHandler)
+  const subsDestination = new LambdaDestination(notifyErrorLog)
   // Create filter pattern
   const subsFilterPattern = logs.FilterPattern.anyTerm('ERROR', 'WARN')
 
-  const allLogGroups = [...logGroups, mockErrorLogHandler.logGroup]
+  const allLogGroups = [...logGroups, mockErrorLog.logGroup]
   // Create subscription filters for each log group
   allLogGroups.forEach((logGroup, i) => {
     const id = `LambdaErrorLogsSubscription${i}${generateRandomString()}`
@@ -100,6 +106,21 @@ function construct (scope: cdk.Construct, options: InitOptions) {
       filterPattern: subsFilterPattern,
     })
   })
+}
+
+export interface InitOptions {
+  logGroups: logs.ILogGroup[];
+}
+/**
+ * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
+ */
+function construct (scope: cdk.Construct, options: InitOptions) {
+  const { logGroups } = options
+
+  const role = constructIamRole(scope)
+  const lambdaErrorLogTopic = constructSNSTopics(scope)
+  const handlers = constructLambdas(scope, role, lambdaErrorLogTopic)
+  constructSubscriptions(scope, handlers, logGroups)
 }
 
 const logging = { construct } as const
