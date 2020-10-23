@@ -6,6 +6,8 @@ import constructIamRole from './constructs/constructIamRole'
 import constructLamdas, { Handlers } from './constructs/constructLamdas'
 import constructEventRules from './constructs/constructEventRules'
 
+const DIRNAME = __dirname.split('/').pop() ?? ''
+
 const getSecrets = (scope: cdk.Construct) => {
   // Retrieve the telegram notification channel's chat ID
   const telegramChatId = ssm.StringParameter
@@ -23,7 +25,7 @@ function construct (scope: cdk.Construct): ReturnType {
   const role = constructIamRole(scope)
   // Get non-secure string paramters from parameter store
   const { telegramChatId } = getSecrets(scope)
-  const handlers = constructLamdas(scope, role, telegramChatId)
+  const handlers = constructLamdas(scope, role, DIRNAME, telegramChatId)
   constructEventRules(scope, handlers)
   return { handlers }
 }

@@ -11,7 +11,7 @@ import { PROJECT_NAMESPACE } from 'src/constants'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 import env from 'src/lib/env'
 
-const DIRNAME = __dirname.split('/').pop()
+const DIRNAME = __dirname.split('/').pop() ?? ''
 
 const ROLE_ID = 'SubsRole'
 const commonIamStatementInput = {
@@ -57,17 +57,18 @@ interface Handlers {
 const constructLambdas = (
   scope: cdk.Construct,
   role: iam.Role,
+  serviceDirname: string,
   lambdaErrorLogTopic: sns.Topic,
 ): Handlers => {
   // Common input for lambda Definition
-  const commonLambdaInput = {
+  const defaultInput = {
     ...defaultLambdaInput,
-    code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
+    code: lambda.Code.fromAsset(`bundles/${serviceDirname}/handlers`),
     role,
   }
   /** Error log handler */
   const notifyErrorLogHandler = new lambda.Function(scope, 'LoggingNotifyErrorLog', {
-    ...commonLambdaInput,
+    ...defaultInput,
     handler: 'notifyErrorLog.handler',
     environment: { SNS_ARN: lambdaErrorLogTopic.topicArn },
   })
@@ -76,7 +77,7 @@ const constructLambdas = (
 
   /** Mock error logs handler */
   const mockErrorLogHandler = new lambda.Function(scope, 'LoggingMockErrorLog', {
-    ...commonLambdaInput,
+    ...defaultInput,
     handler: 'mockErrorLog.handler',
   })
 
@@ -119,7 +120,7 @@ function construct (scope: cdk.Construct, options: InitOptions) {
 
   const role = constructIamRole(scope)
   const lambdaErrorLogTopic = constructSNSTopics(scope)
-  const handlers = constructLambdas(scope, role, lambdaErrorLogTopic)
+  const handlers = constructLambdas(scope, role, DIRNAME, lambdaErrorLogTopic)
   constructSubscriptions(scope, handlers, logGroups)
 }
 

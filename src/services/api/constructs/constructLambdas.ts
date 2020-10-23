@@ -4,8 +4,6 @@ import * as iam from '@aws-cdk/aws-iam'
 
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
-const DIRNAME = __dirname.split('/').pop()
-
 export interface Handlers {
   listSingleFundRecords: lambda.Function;
   listCompanyRecords: lambda.Function;
@@ -13,32 +11,36 @@ export interface Handlers {
   searchRecords: lambda.Function;
   listQuarters: lambda.Function;
 }
-const constructLamdas = (scope: cdk.Construct, role: iam.Role): Handlers => {
+const constructLamdas = (
+  scope: cdk.Construct,
+  role: iam.Role,
+  serviceDirname: string
+): Handlers => {
   // Common input for lambda Definition
-  const commonLambdaInput = {
+  const defaultInput = {
     ...defaultLambdaInput,
-    code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
+    code: lambda.Code.fromAsset(`bundles/${serviceDirname}/handlers`),
     role,
   }
 
   const listSingleFundRecordsHandler = new lambda.Function(scope, 'ApiListSingleFundRecords', {
-    ...commonLambdaInput,
+    ...defaultInput,
     handler: 'listSingleFundRecords.handler',
   })
   const listComRecordsHandler = new lambda.Function(scope, 'ApiListCompanyRecords', {
-    ...commonLambdaInput,
+    ...defaultInput,
     handler: 'listCompanyRecords.handler',
   })
   const listComSinglePeriodRatesHandler = new lambda.Function(scope, 'ApiListCompanySinglePeriodRates', {
-    ...commonLambdaInput,
+    ...defaultInput,
     handler: 'listCompanySinglePeriodRates.handler',
   })
   const searchRecordsHandler = new lambda.Function(scope, 'ApiSearchRecords', {
-    ...commonLambdaInput,
+    ...defaultInput,
     handler: 'searchRecords.handler',
   })
   const listQuartersHandler = new lambda.Function(scope, 'ApiListQuarters', {
-    ...commonLambdaInput,
+    ...defaultInput,
     handler: 'listQuarters.handler',
   })
 

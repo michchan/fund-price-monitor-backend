@@ -6,24 +6,6 @@ import * as fs from 'fs'
 import env from 'src/lib/env'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
-const DIRNAME = __dirname.split('/').pop()
-const { TELEGRAM_BOT_API_KEY_PARAMETER_NAME } = env.values
-
-// Common environment variables for notification handling
-const getDefaultNotifierEnv = (telegramChatId: string) => ({
-  TELEGRAM_CHAT_ID: telegramChatId,
-  TELEGRAM_BOT_API_KEY_PARAMETER_NAME,
-})
-// Common input for lambda Definition
-const getDefaultLambdaInput = (role: iam.Role) => {
-  const MEMORY_SIZE_MB = 250
-  return {
-    ...defaultLambdaInput,
-    code: lambda.Code.fromAsset(`bundles/${DIRNAME}/handlers`),
-    memorySize: MEMORY_SIZE_MB,
-    role,
-  }
-}
 // Common lambda configs for scrape handlers
 const getDefaultScrapersInput = () => {
   const MEMORY_SIZE_MB = 700
@@ -41,11 +23,14 @@ interface ScrapingHandlers {
   scrapers: lambda.Function[];
   testScrapers: lambda.Function[];
 }
-const constructScrapingHandlers = (scope: cdk.Construct, role: iam.Role): ScrapingHandlers => {
+const constructScrapingHandlers = (
+  scope: cdk.Construct,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+): ScrapingHandlers => {
   /** ---------- Aggregation Handlers ---------- */
   // Handler for aggregating top-level items of records
   const aggregationHandler = new lambda.Function(scope, 'CronAggregator', {
-    ...getDefaultLambdaInput(role),
+    ...defaultInput,
     handler: 'aggregate.handler',
   })
 
@@ -57,7 +42,7 @@ const constructScrapingHandlers = (scope: cdk.Construct, role: iam.Role): Scrapi
   const getScraperCreator = (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
     const name = fileName.replace(nameRegExp, '').replace(/\.ts$/i, '')
     return new lambda.Function(scope, `${namePrefix}${name}`, {
-      ...getDefaultLambdaInput(role),
+      ...defaultInput,
       ...getDefaultScrapersInput(),
       handler: `${fileName.replace(/\.ts$/i, '')}.handler`,
     })
@@ -86,7 +71,7 @@ interface TableHandlers {
 }
 const constructTableHandlers = (
   scope: cdk.Construct,
-  role: iam.Role,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
   aggregationHandler: lambda.Function,
 ): TableHandlers => {
   // Common environment variables for table handling
@@ -94,13 +79,13 @@ const constructTableHandlers = (
 
   // Handler for create table for next coming quarter
   const createTableHandler = new lambda.Function(scope, 'CronTableCreateHandler', {
-    ...getDefaultLambdaInput(role),
+    ...defaultInput,
     handler: 'createTable.handler',
     environment: commonTableHandlingEnv,
   })
   // Handler for adjust the provisioned throughput of table for previous quarter
   const updateTableHandler = new lambda.Function(scope, 'CronTableUpdateHandler', {
-    ...getDefaultLambdaInput(role),
+    ...defaultInput,
     handler: 'updateTable.handler',
     environment: commonTableHandlingEnv,
   })
@@ -110,6 +95,13 @@ const constructTableHandlers = (
   }
 }
 
+const { TELEGRAM_BOT_API_KEY_PARAMETER_NAME } = env.values
+// Common environment variables for notification handling
+const getDefaultNotifierEnv = (telegramChatId: string) => ({
+  TELEGRAM_CHAT_ID: telegramChatId,
+  TELEGRAM_BOT_API_KEY_PARAMETER_NAME,
+})
+
 interface NotificationHandlers {
   notifyDaily: lambda.Function;
   notifyWeekly: lambda.Function;
@@ -118,28 +110,30 @@ interface NotificationHandlers {
 }
 const constructNotificationHandlers = (
   scope: cdk.Construct,
-  role: iam.Role,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
   telegramChatId: string,
 ): NotificationHandlers => {
+  const environment = getDefaultNotifierEnv(telegramChatId)
+
   const notifyDailyHandler = new lambda.Function(scope, 'CronNotifierDaily', {
-    ...getDefaultLambdaInput(role),
+    ...defaultInput,
     handler: 'notifyDaily.handler',
-    environment: getDefaultNotifierEnv(telegramChatId),
+    environment,
   })
   const notifyWeeklyHandler = new lambda.Function(scope, 'CronNotifierWeekly', {
-    ...getDefaultLambdaInput(role),
+    ...defaultInput,
     handler: 'notifyWeekly.handler',
-    environment: getDefaultNotifierEnv(telegramChatId),
+    environment,
   })
   const notifyMonthlyHandler = new lambda.Function(scope, 'CronNotifierMonthly', {
-    ...getDefaultLambdaInput(role),
+    ...defaultInput,
     handler: 'notifyMonthly.handler',
-    environment: getDefaultNotifierEnv(telegramChatId),
+    environment,
   })
   const notifyQuarterlyHandler = new lambda.Function(scope, 'CronNotifierQuarterly', {
-    ...getDefaultLambdaInput(role),
+    ...defaultInput,
     handler: 'notifyQuarterly.handler',
-    environment: getDefaultNotifierEnv(telegramChatId),
+    environment,
   })
   return {
     notifyDaily: notifyDailyHandler,
@@ -149,17 +143,29 @@ const constructNotificationHandlers = (
   }
 }
 
+// Common input for lambda Definition
+const getDefaultLambdaInput = (role: iam.Role, serviceDirname: string) => {
+  const MEMORY_SIZE_MB = 250
+  return {
+    ...defaultLambdaInput,
+    code: lambda.Code.fromAsset(`bundles/${serviceDirname}/handlers`),
+    memorySize: MEMORY_SIZE_MB,
+    role,
+  }
+}
 export interface Handlers extends ScrapingHandlers, TableHandlers, NotificationHandlers {}
 const constructLamdas = (
   scope: cdk.Construct,
   role: iam.Role,
-  telegramChatId: string
+  serviceDirname: string,
+  telegramChatId: string,
 ): Handlers => {
-  const scrapingHandlers = constructScrapingHandlers(scope, role)
+  const defaultInput = getDefaultLambdaInput(role, serviceDirname)
+  const scrapingHandlers = constructScrapingHandlers(scope, defaultInput)
   return {
     ...scrapingHandlers,
-    ...constructTableHandlers(scope, role, scrapingHandlers.aggregation),
-    ...constructNotificationHandlers(scope, role, telegramChatId),
+    ...constructTableHandlers(scope, defaultInput, scrapingHandlers.aggregation),
+    ...constructNotificationHandlers(scope, defaultInput, telegramChatId),
   }
 }
 export default constructLamdas
