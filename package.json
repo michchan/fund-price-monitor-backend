@@ -28,16 +28,16 @@
     "@typescript-eslint/parser": "^4.5.0",
     "aws-cdk": "1.69.0",
     "aws-lambda-mock-context": "^3.2.1",
-    "eslint-plugin-import": "^2.22.1",
     "eslint": "^7.11.0",
+    "eslint-plugin-import": "^2.22.1",
+    "file-loader": "^6.0.0",
     "jest": "^26.6.1",
-    "puppeteer": "^5.3.1",
     "ts-jest": "^26.4.2",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.0.3",
-    "webpack-cli": "^3.3.12",
-    "webpack": "^4.44.1"
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "1.69.0",
@@ -53,10 +53,13 @@
     "@aws-cdk/core": "1.69.0",
     "aws-sdk": "2.777.0",
     "axios": "^0.20.0",
+    "chrome-aws-lambda": "5.3.1",
     "dotenv": "^8.2.0",
     "http-status-codes": "^2.1.4",
     "lodash": "^4.17.20",
-    "simply-utils": "0.40.0",
+    "puppeteer-core": "5.3.0",
+    "puppeteer": "5.3.0",
+    "simply-utils": "0.41.0",
     "source-map-support": "^0.5.19"
   }
 }

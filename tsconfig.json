@@ -1,8 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ES2019",
     "module": "commonjs",
-    "lib": ["es2018"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2019",
+      "es2020.promise",
+      "es2020.bigint",
+      "es2020.string"
+    ],
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -16,8 +23,10 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "typeRoots": ["./node_modules/@types"],
     "rootDir": "src",
     "outDir": "build",
