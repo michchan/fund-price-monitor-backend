@@ -46,7 +46,7 @@ const buildByTemplate = (templateName, scraperNames) => {
   // Generate file for each scraper
   scraperNames.forEach(name => {
     // Generate import statement
-    const importStatment = `import ${name} from '${scrapersDir}/${name}';`
+    const importStatment = `import ${name} from '${scrapersDir}/${name}'`
     // Insert import statements
     const linesWithImports = [
       ...lines.slice(0, lastImportIndex + 1),
