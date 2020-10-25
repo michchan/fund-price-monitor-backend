@@ -56,19 +56,3 @@ jobs:
           TELEGRAM_BOT_API_KEY_PARAMETER_VERSION: 1
           TELEGRAM_CHAT_ID_PARAMETER_NAME: ${{ secrets.TELEGRAM_CHAT_ID_PARAMETER_NAME }}
           LAMBDA_ERROR_LOG_SUBSCRIPTION_EMAIL: ${{ secrets.LAMBDA_ERROR_LOG_SUBSCRIPTION_EMAIL }}
-
-      # Notify success deploy by email
-      - name: Notify success by email
-        uses: dawidd6/action-send-mail@v2
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.ACTION_BOT_MAIL }}
-          password: ${{ secrets.ACTION_BOT_MAIL_PASSWORD }}
-          subject: "[${{ github.repository }}] Run successful: ${{ github.action }} - ${{ github.ref }} (${{ github.sha }})"
-          # Literal body:
-          body: "Run successful for ${{ github.ref }} (${{ github.sha }}) of repository ${{ github.repository }}, by action: ${{ github.action }}."
-          to: ${{ secrets.ACTION_SUBSCRIPTION_MAIL }}
-          from: Mich Bot
-      
-
