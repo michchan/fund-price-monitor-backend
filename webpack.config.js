@@ -18,7 +18,7 @@ const mapEntry = handlersPath => {
     // Remove .js file extension
     const key = name.replace(/\.js$/, '')
     // Append 'index.js' if it is a directory
-    const filePath = !/\.js$/.test(name) ? `${name}/index.js` : name
+    const filePath = /\.js$/.test(name) ? name : `${name}/index.js`
 
     return {
       ...obj,
