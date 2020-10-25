@@ -33,7 +33,7 @@ jobs:
 
       # Run eslint test
       - name: Run ESLint test
-        run: npm run eslintTest
+        run: npm run eslint
 
       # Clear last build cache
       - name: Clear last build cache
