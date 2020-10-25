@@ -17,6 +17,6 @@ function batchWriteItems <T, RT extends PT | DT> (
   mode: 'put' | 'delete',
   serialize?: (item: T) => RT,
 ): Promise<BatchWriteResult | null> {
-  return batchWriteDynamodbItems(docClient, records, tableName, mode, serialize)
+  return batchWriteDynamodbItems({ docClient, records, tableName, mode, serialize })
 }
 export default batchWriteItems
