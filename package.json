@@ -12,6 +12,7 @@
     "deploy": "npm run cdk deploy FundPriceMonitorBackendStack -- --require-approval never",
     "eslint": "node_modules/.bin/eslint --ext .js,.jsx,.ts,.tsx",
     "eslintTest": "npm run eslint src/ scripts/",
+    "eslintFix": "npm run eslint src/ scripts/ -- --fix",
     "invoke": "npm run template && sam local invoke",
     "template": "npm run build && npm run cdk synth --no-staging > template.yaml",
     "test": "jest",
