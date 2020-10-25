@@ -1,7 +1,7 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import createParameterErrMsg from '../helpers/createParameterErrMsg'
-import { forEach } from 'lodash'
+import forEach from 'lodash/forEach'
 
 /**
  * Validate 'key' of dynamodb document client
