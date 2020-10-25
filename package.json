@@ -5,19 +5,17 @@
     "fund-price-monitor-backend": "bin/fund-price-monitor-backend.ts"
   },
   "scripts": {
-    "build": "npm run buildScrapers && npm run tsc && ./node_modules/.bin/webpack",
-    "buildScrapers": "node scripts/buildScrapers",
+    "build": "npm run build:scrapers && tsc && webpack",
+    "build:scrapers": "node scripts/buildScrapers",
     "cdk": "cdk",
-    "clearBuildCache": "rm -rf ./build && rm -rf ./bundles",
-    "deploy": "npm run cdk deploy FundPriceMonitorBackendStack -- --require-approval never",
-    "eslint": "node_modules/.bin/eslint --ext .js,.jsx,.ts,.tsx",
-    "eslintTest": "npm run eslint src/ scripts/",
-    "eslintFix": "npm run eslint src/ scripts/ -- --fix",
+    "clearbuildcache": "rm -rf ./build && rm -rf ./bundles",
+    "deploy": "cdk deploy FundPriceMonitorBackendStack -- --require-approval never",
+    "eslint": "eslint --ext .js,.jsx,.ts,.tsx src/ scripts/",
+    "eslint:fix": "npm run eslint -- --fix",
     "invoke": "npm run template && sam local invoke",
     "template": "npm run build && npm run cdk synth --no-staging > template.yaml",
     "test": "jest",
-    "tsc": "node_modules/.bin/tsc",
-    "watch": "npm run tsc -- --watch --noemit"
+    "watch": "tsc --watch --noemit"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.69.0",

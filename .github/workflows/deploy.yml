@@ -37,7 +37,7 @@ jobs:
 
       # Clear last build cache
       - name: Clear last build cache
-        run: npm run clearBuildCache
+        run: npm run clearbuildcache
 
       # Build
       - name: Build
