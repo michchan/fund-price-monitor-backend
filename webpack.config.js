@@ -1,5 +1,8 @@
 const fs = require('fs')
 const path = require('path')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+
+const DEFAULT_ANALYZER_PORT = 8888
 
 const mapEntry = handlersPath => {
   const dirs = fs.readdirSync(handlersPath)
@@ -27,7 +30,7 @@ const mapEntry = handlersPath => {
   }, {})
 }
 
-const createConfig = handlersPath => ({
+const createConfig = (handlersPath, index) => ({
   mode: 'development',
   target: 'node',
   entry: mapEntry(handlersPath),
@@ -68,6 +71,11 @@ const createConfig = handlersPath => ({
     // * Do NOT bundle 'aws-sdk' since it is included in the AWS Lambda NodeJS runtime
     'aws-sdk': 'aws-sdk',
   },
+  plugins: [
+    new BundleAnalyzerPlugin({
+      analyzerPort: DEFAULT_ANALYZER_PORT + index,
+    }),
+  ],
 })
 
 // Services directory path
@@ -75,7 +83,7 @@ const SERVICES_PATH = 'build/services'
 
 // Create config for handlers folder of each service
 module.exports = fs.readdirSync(SERVICES_PATH)
-  .map(path => createConfig(`${SERVICES_PATH}/${path}/handlers`))
+  .map((path, i) => createConfig(`${SERVICES_PATH}/${path}/handlers`, i))
 
 /** Example output */
 // Module.exports = [
