@@ -1,6 +1,5 @@
 import { DynamoDB, Lambda } from 'aws-sdk'
 import { NonKeyAttributeNameList } from 'aws-sdk/clients/dynamodb'
-import { StartingPosition } from '@aws-cdk/aws-lambda'
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
 import AWS from 'src/lib/AWS'
@@ -131,7 +130,7 @@ const createStreamEventSourceMapping = async (streamArn: string, streamHandlerAr
     // Assign function name passed
     FunctionName: streamHandlerArn,
     EventSourceArn: streamArn,
-    StartingPosition: StartingPosition.LATEST,
+    StartingPosition: 'LATEST',
     MaximumRetryAttempts: STREAM_HANDLER_MAX_RETRY_ATTEMPTS,
   }).promise()
 
