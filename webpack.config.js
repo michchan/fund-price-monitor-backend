@@ -30,7 +30,7 @@ const mapEntry = handlersPath => {
   }, {})
 }
 
-const createConfig = (handlersPath, index) => ({
+const createConfig = (handlersPath, configName, portOffset) => ({
   mode: 'development',
   target: 'node',
   entry: mapEntry(handlersPath),
@@ -73,7 +73,8 @@ const createConfig = (handlersPath, index) => ({
   },
   plugins: [
     new BundleAnalyzerPlugin({
-      analyzerPort: DEFAULT_ANALYZER_PORT + index,
+      reportTitle: configName,
+      analyzerPort: DEFAULT_ANALYZER_PORT + portOffset,
     }),
   ],
 })
@@ -83,7 +84,7 @@ const SERVICES_PATH = 'build/services'
 
 // Create config for handlers folder of each service
 module.exports = fs.readdirSync(SERVICES_PATH)
-  .map((path, i) => createConfig(`${SERVICES_PATH}/${path}/handlers`, i))
+  .map((path, i) => createConfig(`${SERVICES_PATH}/${path}/handlers`, path, i))
 
 /** Example output */
 // Module.exports = [
