@@ -22,6 +22,10 @@ template.yaml
 # Ignore DotEnv
 *.env
 
+# Ignore build and bundles
+build
+bundles
+
 # Ignore dynamically created scrape handlers
 **/cron/handlers/handleScrapeFrom*.ts
 **/cron/handlers/testScrapeFrom*.ts

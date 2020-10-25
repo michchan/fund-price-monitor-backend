@@ -3,6 +3,14 @@ const path = require('path')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 const DEFAULT_ANALYZER_PORT = 8888
+const createBundleAnalyzerPlugin = (reportTitle, portOffset = 0) => new BundleAnalyzerPlugin({
+  // Avoid CI crash issue
+  analyzerMode: 'static',
+  openAnalyzer: false,
+  reportTitle,
+  reportFilename: 'bundler_report.html',
+  analyzerPort: DEFAULT_ANALYZER_PORT + portOffset,
+})
 
 const mapEntry = handlersPath => {
   const dirs = fs.readdirSync(handlersPath)
@@ -30,7 +38,7 @@ const mapEntry = handlersPath => {
   }, {})
 }
 
-const createConfig = (handlersPath, configName, portOffset) => ({
+const createConfig = (handlersPath, name, index) => ({
   mode: 'development',
   target: 'node',
   entry: mapEntry(handlersPath),
@@ -71,12 +79,7 @@ const createConfig = (handlersPath, configName, portOffset) => ({
     // * Do NOT bundle 'aws-sdk' since it is included in the AWS Lambda NodeJS runtime
     'aws-sdk': 'aws-sdk',
   },
-  plugins: [
-    new BundleAnalyzerPlugin({
-      reportTitle: configName,
-      analyzerPort: DEFAULT_ANALYZER_PORT + portOffset,
-    }),
-  ],
+  plugins: [createBundleAnalyzerPlugin(name, index)],
 })
 
 // Services directory path
