@@ -40,14 +40,14 @@ const constructIamRole = (scope: cdk.Construct) => {
 
 const constructSNSTopics = (scope: cdk.Construct) => {
   // Create topic for subscription to lambda error logs
-  const lambdaErrorLogTopic = new sns.Topic(scope, 'LambdaErrorLogTopic', {
-    displayName: `${PROJECT_NAMESPACE} - Lambda error logs subscription topic`,
+  const topic = new sns.Topic(scope, 'GeneralLog', {
+    displayName: `${PROJECT_NAMESPACE} - General Log`,
   })
   // Create email subscription
-  lambdaErrorLogTopic.addSubscription(
+  topic.addSubscription(
     new subs.EmailSubscription(env.values.GENERAL_LOG_SUBSCRIPTION_EMAIL)
   )
-  return lambdaErrorLogTopic
+  return topic
 }
 
 interface Handlers {
@@ -58,7 +58,7 @@ const constructLambdas = (
   scope: cdk.Construct,
   role: iam.Role,
   serviceDirname: string,
-  lambdaErrorLogTopic: sns.Topic,
+  topic: sns.Topic,
 ): Handlers => {
   // Common input for lambda Definition
   const defaultInput = {
@@ -70,10 +70,10 @@ const constructLambdas = (
   const notifyErrorLogHandler = new lambda.Function(scope, 'LoggingNotifyErrorLog', {
     ...defaultInput,
     handler: 'notifyErrorLog.handler',
-    environment: { SNS_ARN: lambdaErrorLogTopic.topicArn },
+    environment: { SNS_ARN: topic.topicArn },
   })
   // Grant SNS publish permission
-  lambdaErrorLogTopic.grantPublish(notifyErrorLogHandler)
+  topic.grantPublish(notifyErrorLogHandler)
 
   /** Mock error logs handler */
   const mockErrorLogHandler = new lambda.Function(scope, 'LoggingMockErrorLog', {
@@ -119,8 +119,8 @@ function construct (scope: cdk.Construct, options: InitOptions) {
   const { logGroups } = options
 
   const role = constructIamRole(scope)
-  const lambdaErrorLogTopic = constructSNSTopics(scope)
-  const handlers = constructLambdas(scope, role, DIRNAME, lambdaErrorLogTopic)
+  const topic = constructSNSTopics(scope)
+  const handlers = constructLambdas(scope, role, DIRNAME, topic)
   constructSubscriptions(scope, handlers, logGroups)
 }
 
