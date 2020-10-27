@@ -7,25 +7,6 @@ import AWS from 'src/lib/AWS'
 
 const sns = new AWS.SNS()
 
-/**
- * Notify cloudwatch log error through channels like email, messages etc.
- *
- * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
- */
-export const handler: CloudWatchLogsHandler = async (event, context, callback) => {
-  try {
-    const payload = decodeCloudWatchLogEventPayload(event)
-    logObj('Payload: ', payload)
-
-    // * Environment variable SNS_ARN is required
-    const snsArn = process.env.SNS_ARN as string
-    // Must await the service
-    await publishMessage(payload, snsArn)
-  } catch (error) {
-    callback(error)
-  }
-}
-
 /** Publish error message to SNS topic */
 const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) => {
   const resourceType = capitalizeWords(payload.logGroup.split('/')[2])
@@ -45,4 +26,23 @@ const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) =
     Subject: `Error from ${resourceType} - ${resourceName}`,
     Message: message,
   }).promise()
+}
+
+/**
+ * Notify cloudwatch log error through channels like email, messages etc.
+ *
+ * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
+ */
+export const handler: CloudWatchLogsHandler = async (event, context, callback) => {
+  try {
+    const payload = decodeCloudWatchLogEventPayload(event)
+    logObj('Payload: ', payload)
+
+    // * Environment variable SNS_ARN is required
+    const snsArn = process.env.SNS_ARN as string
+    // Must await the service
+    await publishMessage(payload, snsArn)
+  } catch (error) {
+    callback(error)
+  }
 }
