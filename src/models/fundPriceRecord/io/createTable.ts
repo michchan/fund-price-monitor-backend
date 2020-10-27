@@ -87,8 +87,9 @@ const StreamSpecification = {
   StreamViewType: 'NEW_AND_OLD_IMAGES',
 }
 
+// Minimum of 2 is required for the table aggregation IO processes
 const ReadCapacityUnits = 2
-const WriteCapacityUnits = 1
+const WriteCapacityUnits = 2
 /** Helper to get table params */
 const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
   TableName,
