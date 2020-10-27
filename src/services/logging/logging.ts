@@ -45,7 +45,7 @@ const constructSNSTopics = (scope: cdk.Construct) => {
   })
   // Create email subscription
   lambdaErrorLogTopic.addSubscription(
-    new subs.EmailSubscription(env.values.LAMBDA_ERROR_LOG_SUBSCRIPTION_EMAIL)
+    new subs.EmailSubscription(env.values.GENERAL_LOG_SUBSCRIPTION_EMAIL)
   )
   return lambdaErrorLogTopic
 }
