@@ -10,7 +10,7 @@
     "build:scrapers": "node scripts/buildScrapers",
     "cdk": "cdk",
     "clearbuildcache": "rm -rf ./build && rm -rf ./bundles",
-    "deploy": "cdk deploy FundPriceMonitorBackendStack -- --require-approval never",
+    "deploy": "cdk deploy FundPriceMonitorBackendStack --require-approval never",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "eslint:fix": "npm run eslint -- --fix",
     "invoke": "npm run template && sam local invoke",
