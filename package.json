@@ -14,7 +14,7 @@
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "eslint:fix": "npm run eslint -- --fix",
     "invoke": "npm run template && sam local invoke",
-    "template": "npm run build && npm run cdk synth --no-staging > template.yaml",
+    "template": "npm run build && cdk synth --no-staging > template.yaml",
     "test": "jest",
     "watch": "tsc --watch --noemit"
   },
