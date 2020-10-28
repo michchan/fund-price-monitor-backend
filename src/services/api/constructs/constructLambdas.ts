@@ -14,12 +14,12 @@ export interface Handlers {
 const constructLamdas = (
   scope: cdk.Construct,
   role: iam.Role,
-  serviceDirname: string
+  servicePathname: string
 ): Handlers => {
   // Common input for lambda Definition
   const defaultInput = {
     ...defaultLambdaInput,
-    code: lambda.Code.fromAsset(`bundles/${serviceDirname}/handlers`),
+    code: lambda.Code.fromAsset(`bundles/${servicePathname}/handlers`),
     role,
   }
 

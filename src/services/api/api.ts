@@ -4,7 +4,7 @@ import constructIamRole from './constructs/constructIamRole'
 import constructLamdas, { Handlers } from './constructs/constructLambdas'
 import constructApiGateway from './constructs/constructApiGateway'
 
-const DIRNAME = __dirname.split('/').pop() ?? ''
+const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
 
 export interface ReturnType {
   handlers: Handlers;
@@ -12,7 +12,7 @@ export interface ReturnType {
 
 function construct (scope: cdk.Construct): ReturnType {
   const role = constructIamRole(scope)
-  const handlers = constructLamdas(scope, role, DIRNAME)
+  const handlers = constructLamdas(scope, role, SERVICE_PATHNAME)
   constructApiGateway(scope, handlers)
   return { handlers }
 }

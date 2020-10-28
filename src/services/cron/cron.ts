@@ -6,7 +6,7 @@ import constructIamRole from './constructs/constructIamRole'
 import constructLamdas, { Handlers } from './constructs/constructLamdas'
 import constructEventRules from './constructs/constructEventRules'
 
-const DIRNAME = __dirname.split('/').pop() ?? ''
+const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
 
 const getSecrets = (scope: cdk.Construct) => {
   // Retrieve the telegram notification channel's chat ID
@@ -26,8 +26,8 @@ function construct (scope: cdk.Construct): ReturnType {
   // Get non-secure string paramters from parameter store
   const { telegramChatId } = getSecrets(scope)
   const handlers = constructLamdas(scope, role, {
-    serviceDirname: DIRNAME,
-    serviceDirnameFullPath: __dirname,
+    servicePathname: SERVICE_PATHNAME,
+    serviceDirname: __dirname,
     telegramChatId,
   })
   constructEventRules(scope, handlers)

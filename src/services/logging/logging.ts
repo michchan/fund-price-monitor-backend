@@ -11,7 +11,7 @@ import { PROJECT_NAMESPACE } from 'src/constants'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 import env from 'src/lib/env'
 
-const DIRNAME = __dirname.split('/').pop() ?? ''
+const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
 
 const ROLE_ID = 'SubsRole'
 const commonIamStatementInput = {
@@ -57,13 +57,13 @@ interface Handlers {
 const constructLambdas = (
   scope: cdk.Construct,
   role: iam.Role,
-  serviceDirname: string,
+  servicePathname: string,
   generalLogTopic: sns.Topic,
 ): Handlers => {
   // Common input for lambda Definition
   const defaultInput = {
     ...defaultLambdaInput,
-    code: lambda.Code.fromAsset(`bundles/${serviceDirname}/handlers`),
+    code: lambda.Code.fromAsset(`bundles/${servicePathname}/handlers`),
     role,
   }
   /** Error log handler */
@@ -120,7 +120,7 @@ function construct (scope: cdk.Construct, options: InitOptions) {
 
   const role = constructIamRole(scope)
   const generalLogTopic = constructSNSTopics(scope)
-  const handlers = constructLambdas(scope, role, DIRNAME, generalLogTopic)
+  const handlers = constructLambdas(scope, role, SERVICE_PATHNAME, generalLogTopic)
   constructSubscriptions(scope, handlers, logGroups)
 }
 
