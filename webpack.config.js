@@ -61,7 +61,7 @@ const createConfig = (handlersPath, name, index) => ({
   module: {
     rules: [
       /**
-       * Use file loader to move chromium .br files into /bin
+       * Use file loader to move chromnium .br files into /bin
        * @link https://github.com/alixaxel/chrome-aws-lambda/issues/80
        */
       {
