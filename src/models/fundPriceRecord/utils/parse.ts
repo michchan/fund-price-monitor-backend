@@ -26,7 +26,7 @@ const parse = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundPriceRec
   return {
     company,
     // Get the last composite segment of `company_code`
-    code: company_code.split('_').pop() ?? '',
+    code: company_code.split('_').pop() || '',
     name,
     updatedDate,
     price,
@@ -34,7 +34,7 @@ const parse = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundPriceRec
     launchedDate,
     riskLevel,
     // Get the last composite segment of `timeSK`
-    time: timeSKSegments.pop() ?? '',
+    time: timeSKSegments.pop() || '',
     fundType,
     // Get the first composite segment of `timeSK`
     recordType: timeSKSegments.shift() as RecordType,
