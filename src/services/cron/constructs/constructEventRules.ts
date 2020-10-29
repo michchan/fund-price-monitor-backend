@@ -17,10 +17,10 @@ const constructDailyEventRules = (
   scrapers.forEach(handler => dailyScrapeRule.addTarget(new targets.LambdaFunction(handler)))
 
   // Run every day at 00:00AM UTC
-  const dailyAlarmRule = new events.Rule(scope, 'DailyAlarmRule', {
+  const dailyReviewRule = new events.Rule(scope, 'DailyAlarmRule', {
     schedule: events.Schedule.expression('cron(0 0 * * ? *)'),
   })
-  dailyAlarmRule.addTarget(new targets.LambdaFunction(notifyDaily))
+  dailyReviewRule.addTarget(new targets.LambdaFunction(notifyDaily))
 }
 
 const constructWeeklyEventRules = (
