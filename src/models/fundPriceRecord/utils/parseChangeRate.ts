@@ -33,7 +33,12 @@ const parseChangeRate = (
     // Get the last composite segment of `timeSK`
     time: timeSK.split('@').pop() ?? '',
     updatedDate,
-    period: period.split('_').pop() ?? '',
+    period: period.split('_').pop()
+      ?? timeSK.split('@')
+        .shift()
+        ?.split('_')
+        ?.pop()
+      ?? '',
     // Get the first composite segment of `timeSK`
     recordType: timeSK.split('_').shift() as AggregatedRecordType,
   }
