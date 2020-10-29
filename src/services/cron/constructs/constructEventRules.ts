@@ -10,7 +10,7 @@ import { Handlers } from './constructLamdas'
 const TOTAL_HOURS = 24
 const SCRAPE_START_HOUR = 18
 /** Offset to prevent burst of DynamoDB provisioned throughputs */
-const EACH_SCRAPE_OFFSET_MINS = 10
+const EACH_SCRAPE_OFFSET_MINS = 15
 const MIN_SCRAPE_REVIEW_GAP_HOUR = 8
 const DAILY_REVIEW_HOUR = (SCRAPE_START_HOUR + MIN_SCRAPE_REVIEW_GAP_HOUR) % TOTAL_HOURS
 
