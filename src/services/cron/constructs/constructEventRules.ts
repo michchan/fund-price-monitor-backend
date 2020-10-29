@@ -1,24 +1,42 @@
+/**
+ * Reference: https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
+ */
 import * as cdk from '@aws-cdk/core'
 import * as events from '@aws-cdk/aws-events'
 import * as targets from '@aws-cdk/aws-events-targets'
 
 import { Handlers } from './constructLamdas'
 
+const TOTAL_HOURS = 24
+const SCRAPE_START_HOUR = 18
+/** Offset to prevent burst of DynamoDB provisioned throughputs */
+const EACH_SCRAPE_OFFSET_MINS = 10
+const MIN_SCRAPE_REVIEW_GAP_HOUR = 8
+const DAILY_REVIEW_HOUR = (SCRAPE_START_HOUR + MIN_SCRAPE_REVIEW_GAP_HOUR) % TOTAL_HOURS
+
 const constructDailyEventRules = (
   scope: cdk.Construct,
   { scrapers, notifyDaily }: Pick<Handlers, 'scrapers' | 'notifyDaily'>,
 ) => {
-  // Run every day at 20:00 UTC
-  // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
-  const dailyScrapeRule = new events.Rule(scope, 'DailyScrapeRule', {
-    schedule: events.Schedule.expression('cron(0 20 * * ? *)'),
+  // Add target for each scraper
+  scrapers.forEach((handler, i) => {
+    const id = `DailyScrapeRule${i}${handler.functionName}`
+    const basedTimeNum = Number(`${SCRAPE_START_HOUR}00`)
+    const scrapeTime = `${basedTimeNum + (i * EACH_SCRAPE_OFFSET_MINS)}`
+    const hr = Number(scrapeTime.substr(0, Math.floor(scrapeTime.length / 2)))
+    const min = Number(scrapeTime.substr(scrapeTime.length - 2))
+    // Run every day upon 18:00 UTC
+    // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
+    const eachDailyScrapeRule = new events.Rule(scope, id, {
+      schedule: events.Schedule.expression(`cron(${min} ${hr} * * ? *)`),
+    })
+    eachDailyScrapeRule.addTarget(new targets.LambdaFunction(handler))
   })
-  // * Add target for each scraper
-  scrapers.forEach(handler => dailyScrapeRule.addTarget(new targets.LambdaFunction(handler)))
 
-  // Run every day at 00:00AM UTC
+  const reviewHr = DAILY_REVIEW_HOUR
+  // Run every day at 02:00 UTC
   const dailyReviewRule = new events.Rule(scope, 'DailyAlarmRule', {
-    schedule: events.Schedule.expression('cron(0 0 * * ? *)'),
+    schedule: events.Schedule.expression(`cron(0 ${reviewHr} * * ? *)`),
   })
   dailyReviewRule.addTarget(new targets.LambdaFunction(notifyDaily))
 }
