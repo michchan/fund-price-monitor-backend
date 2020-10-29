@@ -121,9 +121,9 @@ const processEachCompany = async (company: CompanyType, tableRange: TableRange) 
       type CArgs = [number, Quarter, typeof getCompositeSKFromChangeRate]
       const changeRateArgs = [year, quarter, getTimeSK] as CArgs
 
+      if (records.length === 0) return
       if (isRecord) await batchDeleteItems(records as FundPriceRecord[], ...recordArgs)
       else await batchDeleteItems(records as FundPriceChangeRate[], ...changeRateArgs)
-
       if (i < arr.length - 1) await wait(REQUEST_DELAY)
     })
 
