@@ -11,12 +11,14 @@ const TOTAL_HOURS = 24
 const SCRAPE_START_HOUR = 18
 /** Offset to prevent burst of DynamoDB provisioned throughputs */
 const EACH_SCRAPE_OFFSET_MINS = 15
-const MIN_SCRAPE_REVIEW_GAP_HOUR = 8
-const DAILY_REVIEW_HOUR = (SCRAPE_START_HOUR + MIN_SCRAPE_REVIEW_GAP_HOUR) % TOTAL_HOURS
+const SCRAPE_CLEANUP_GAP_HOUR = 6
+const DAILY_CLEANUP_HOUR = (SCRAPE_START_HOUR + SCRAPE_CLEANUP_GAP_HOUR) % TOTAL_HOURS
+const CLEANUP_REVIEW_GAP_HOUR = 2
+const DAILY_REVIEW_HOUR = (DAILY_CLEANUP_HOUR + CLEANUP_REVIEW_GAP_HOUR) % TOTAL_HOURS
 
 const constructDailyEventRules = (
   scope: cdk.Construct,
-  { scrapers, notifyDaily }: Pick<Handlers, 'scrapers' | 'notifyDaily'>,
+  { scrapers, notifyDaily, dedup }: Pick<Handlers, 'scrapers' | 'notifyDaily' | 'dedup'>,
 ) => {
   // Add target for each scraper
   scrapers.forEach((handler, i) => {
@@ -33,10 +35,13 @@ const constructDailyEventRules = (
     eachDailyScrapeRule.addTarget(new targets.LambdaFunction(handler))
   })
 
-  const reviewHr = DAILY_REVIEW_HOUR
-  // Run every day at 02:00 UTC
-  const dailyReviewRule = new events.Rule(scope, 'DailyAlarmRule', {
-    schedule: events.Schedule.expression(`cron(0 ${reviewHr} * * ? *)`),
+  const dailyCleanupRule = new events.Rule(scope, 'DailyCleanupRule', {
+    schedule: events.Schedule.expression(`cron(0 ${DAILY_CLEANUP_HOUR} * * ? *)`),
+  })
+  dailyCleanupRule.addTarget(new targets.LambdaFunction(dedup))
+
+  const dailyReviewRule = new events.Rule(scope, 'DailyReviewRule', {
+    schedule: events.Schedule.expression(`cron(0 ${DAILY_REVIEW_HOUR} * * ? *)`),
   })
   dailyReviewRule.addTarget(new targets.LambdaFunction(notifyDaily))
 }

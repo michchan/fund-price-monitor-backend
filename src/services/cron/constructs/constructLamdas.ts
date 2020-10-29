@@ -90,6 +90,7 @@ const constructTableHandlers = (
     handler: 'updateTable.handler',
     environment: commonTableHandlingEnv,
   })
+
   return {
     createTable: createTableHandler,
     updateTable: updateTableHandler,
@@ -144,6 +145,21 @@ const constructNotificationHandlers = (
   }
 }
 
+interface CleanupHandlers {
+  dedup: lambda.Function;
+}
+const constructCleanupHandlers = (
+  scope: cdk.Construct,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+): CleanupHandlers => {
+  // Handler for de-duplications of records
+  const dedupHandler = new lambda.Function(scope, 'CronDedupHandler', {
+    ...defaultInput,
+    handler: 'dedup.handler',
+  })
+  return { dedup: dedupHandler }
+}
+
 // Common input for lambda Definition
 const getDefaultLambdaInput = (role: iam.Role, servicePathname: string) => {
   const MEMORY_SIZE_MB = 250
@@ -154,7 +170,10 @@ const getDefaultLambdaInput = (role: iam.Role, servicePathname: string) => {
     role,
   }
 }
-export interface Handlers extends ScrapingHandlers, TableHandlers, NotificationHandlers {}
+export interface Handlers extends ScrapingHandlers,
+  TableHandlers,
+  NotificationHandlers,
+  CleanupHandlers {}
 export interface Options {
   servicePathname: string;
   serviceDirname: string;
@@ -175,6 +194,7 @@ const constructLamdas = (
     ...scrapingHandlers,
     ...constructTableHandlers(scope, defaultInput, scrapingHandlers.aggregation),
     ...constructNotificationHandlers(scope, defaultInput, telegramChatId),
+    ...constructCleanupHandlers(scope, defaultInput),
   }
 }
 export default constructLamdas
