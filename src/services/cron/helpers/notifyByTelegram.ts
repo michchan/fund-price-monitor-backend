@@ -19,7 +19,7 @@ const notifyByTelegram = async (scheduleType: ScheduleType): Promise<void> => {
   await pipeAsync(...companies.map(
     (company, i, arr) => async () => {
       await notifyCompanyRecordsByTelegram(chatId, apiKey, company, scheduleType)
-      if (i < arr.length) await wait(REQUEST_DELAY)
+      if (i < arr.length - 1) await wait(REQUEST_DELAY)
     }
   ))()
 }
