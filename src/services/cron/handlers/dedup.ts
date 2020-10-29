@@ -105,7 +105,7 @@ const REQUEST_DELAY = 1000
 const processEachCompany = async (company: CompanyType, tableRange: TableRange) => {
   const itemsDict = await getItems(company, tableRange)
   const dupedItemsDict = getAllDuped(itemsDict)
-  logObj(`Duplicates found for ${company}:`, dupedItemsDict)
+  logObj(`Duplicates found for ${company}:`, mapValues(dupedItemsDict, val => val.length))
 
   const requestSenders = Object.entries(dupedItemsDict)
     .map(([key, records], i, arr) => async () => {
