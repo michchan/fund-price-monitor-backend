@@ -7,6 +7,6 @@ export type Output = DynamoDB.DocumentClient.ScanOutput
 /**
  * Return a list of properties of tables that have been created and match the criteria
  */
-const scanAllItems = (input: Input): Promise<Output> => queryOrScanAllItems<Input, Output>('query', input)
+const scanAllItems = (input: Input, delay?: number): Promise<Output> => queryOrScanAllItems<Input, Output>('query', input, delay)
 
 export default scanAllItems

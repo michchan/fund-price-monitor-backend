@@ -5,6 +5,7 @@ import AWS from '..'
 
 // Initialize
 const docClient = new AWS.DynamoDB.DocumentClient()
+const DEFAULT_DELAY = 300
 
 function queryOrScanAllItems <
   Input extends DynamoDB.DocumentClient.QueryInput | DynamoDB.DocumentClient.ScanInput,
@@ -12,7 +13,8 @@ function queryOrScanAllItems <
 > (
   method: 'scan' | 'query',
   input: Input,
+  delay: number = DEFAULT_DELAY,
 ): Promise<Output> {
-  return queryOrScanAllDynamodbItems<Input, Output>(docClient, method, input)
+  return queryOrScanAllDynamodbItems<Input, Output>(docClient, method, input, { delay })
 }
 export default queryOrScanAllItems
