@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import cron from './services/cron'
 import api from './services/api'
 import logging from './services/logging'
+import migration from './services/migration'
 
 export class FundPriceMonitorBackendStack extends cdk.Stack {
   constructor (scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -13,6 +14,8 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
     const { handlers: cronHandlers } = cron.construct(this)
     // Initialize API service
     const { handlers: apiHandlers } = api.construct(this)
+    // Initialize migration service
+    migration.construct(this)
 
     // Initialize logging service
     logging.construct(this, {
