@@ -22,14 +22,13 @@ const constructDailyEventRules = (
 ) => {
   // Add target for each scraper
   scrapers.forEach((handler, i) => {
-    const id = `DailyScrapeRule${i}${handler.functionName}`
     const basedTimeNum = Number(`${SCRAPE_START_HOUR}00`)
     const scrapeTime = `${basedTimeNum + (i * EACH_SCRAPE_OFFSET_MINS)}`
     const hr = Number(scrapeTime.substr(0, Math.floor(scrapeTime.length / 2)))
     const min = Number(scrapeTime.substr(scrapeTime.length - 2))
     // Run every day upon 18:00 UTC
     // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
-    const eachDailyScrapeRule = new events.Rule(scope, id, {
+    const eachDailyScrapeRule = new events.Rule(scope, `DailyScrapeRule${i}`, {
       schedule: events.Schedule.expression(`cron(${min} ${hr} * * ? *)`),
     })
     eachDailyScrapeRule.addTarget(new targets.LambdaFunction(handler))
