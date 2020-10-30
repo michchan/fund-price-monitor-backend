@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
+import grantCloudWatchLogGroupAccess from 'src/lib/AWS/iam/grantCloudWatchLogGroupAccess'
 
 const ROLE_ID = 'ApiRole'
 const commonIamStatementInput = {
@@ -15,19 +16,6 @@ const grantIamDBAccess = (role: iam.Role) => role.addToPolicy(new iam.PolicyStat
     'dynamodb:Query',
     'dynamodb:Scan',
     'dynamodb:ListTables',
-  ],
-}))
-
-// Grant cloudwatch log group access
-const grantCloudWatchLogGroupAccess = (
-  role: iam.Role
-) => role.addToPolicy(new iam.PolicyStatement({
-  ...commonIamStatementInput,
-  sid: 'LogGroupWrite',
-  actions: [
-    'logs:CreateLogGroup',
-    'logs:CreateLogStream',
-    'logs:PutLogEvents',
   ],
 }))
 

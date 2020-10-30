@@ -6,11 +6,11 @@ import constructApiGateway from './constructs/constructApiGateway'
 
 const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
 
-export interface ReturnType {
+export interface Output {
   handlers: Handlers;
 }
 
-function construct (scope: cdk.Construct): ReturnType {
+function construct (scope: cdk.Construct): Output {
   const role = constructIamRole(scope)
   const handlers = constructLamdas(scope, role, SERVICE_PATHNAME)
   constructApiGateway(scope, handlers)

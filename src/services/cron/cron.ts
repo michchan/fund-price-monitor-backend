@@ -18,10 +18,10 @@ const getSecrets = (scope: cdk.Construct) => {
   return { telegramChatId }
 }
 
-export interface ReturnType {
+export interface Output {
   handlers: Handlers;
 }
-function construct (scope: cdk.Construct): ReturnType {
+function construct (scope: cdk.Construct): Output {
   const role = constructIamRole(scope)
   // Get non-secure string paramters from parameter store
   const { telegramChatId } = getSecrets(scope)

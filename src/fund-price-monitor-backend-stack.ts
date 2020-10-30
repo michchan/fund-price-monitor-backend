@@ -15,17 +15,18 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
     // Initialize API service
     const { handlers: apiHandlers } = api.construct(this)
     // Initialize migration service
-    migration.construct(this)
+    const { handlers: migrationHandlers } = migration.construct(this)
 
     // Initialize logging service
     logging.construct(this, {
       logGroups: [
+        ...Object.values(apiHandlers),
+        ...Object.values(migrationHandlers),
         ...Object.values(cronHandlers)
           .reduce((
             acc: lambda.Function[],
             curr
           ) => Array.isArray(curr) ? [...acc, ...curr] : [...acc, curr], []),
-        ...Object.values(apiHandlers),
       ]
         .map(lambda => lambda.logGroup),
     })

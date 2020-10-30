@@ -3,14 +3,14 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { StructuredQuery } from '../StructuredQuery.type'
 import mapQueryFieldToFilterExpression from './mapQueryFieldToFilterExpression'
 
-export type ReturnType = [
+export type Output = [
   DocumentClient.QueryInput['ExpressionAttributeNames'],
   DocumentClient.QueryInput['ExpressionAttributeValues'],
   // Filter expression lines
   string[]
 ]
 
-const mapQueryToFilterExpressions = (q: StructuredQuery): ReturnType => {
+const mapQueryToFilterExpressions = (q: StructuredQuery): Output => {
   const expNames: DocumentClient.QueryInput['ExpressionAttributeNames'] = {}
   const expValues: DocumentClient.QueryInput['ExpressionAttributeValues'] = {}
   const filterExp: string[] = []

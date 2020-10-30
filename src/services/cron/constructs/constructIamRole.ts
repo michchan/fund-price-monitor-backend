@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
+import grantCloudWatchLogGroupAccess from 'src/lib/AWS/iam/grantCloudWatchLogGroupAccess'
 
 const ROLE_ID = 'CronRole'
 
@@ -24,18 +25,6 @@ const grantIamDBAccess = (
     'dynamodb:Query',
     'dynamodb:PutItem',
     'dynamodb:UpdateItem',
-  ],
-}))
-// Grant cloudwatch log group access
-const grantCloudWatchLogGroupAccess = (
-  role: iam.Role
-) => role.addToPolicy(new iam.PolicyStatement({
-  ...commonIamStatementInput,
-  sid: 'LogGroupWrite',
-  actions: [
-    'logs:CreateLogGroup',
-    'logs:CreateLogStream',
-    'logs:PutLogEvents',
   ],
 }))
 const grantLambdaStreamMappingAccess = (
@@ -66,7 +55,7 @@ const grantSSNParameterStoreAccess = (
 }))
 
 const constructIamRole = (scope: cdk.Construct): iam.Role => {
-  // Create IAM roles for scraping handlers
+  // Create IAM roles for cron handlers
   const role = new iam.Role(scope, ROLE_ID, {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
