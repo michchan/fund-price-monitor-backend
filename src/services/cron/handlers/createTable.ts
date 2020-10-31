@@ -6,9 +6,9 @@ import createTable from 'src/models/fundPriceRecord/io/createTable'
 import createTableDetails from 'src/models/fundPriceRecord/io/createTableDetails'
 import checkTableExistence from '../helpers/checkTableExistence'
 import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
+import getOffsetQuarter from 'src/helpers/getOffsetQuarter'
 
 export type EventDetail = TableRange | undefined
-const MAX_QUARTER = 4
 
 const createTableAndDetails = async (year: number | string, quarter: Quarter) => {
   // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
@@ -32,11 +32,12 @@ const createTableAndDetails = async (year: number | string, quarter: Quarter) =>
  */
 export const handler: ScheduledHandler<EventDetail> = async event => {
   const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
+  const [nextYear, nextQuarter] = getOffsetQuarter(currentYear, currentQuarter, 1)
 
   // Get passed params and assign default with NEXT quarter
   const {
-    year = currentQuarter === MAX_QUARTER ? currentYear + 1 : currentYear,
-    quarter = currentQuarter === MAX_QUARTER ? 1 : currentQuarter + 1 as Quarter,
+    year = nextYear,
+    quarter = nextQuarter,
   } = event.detail ?? {}
 
   const hasExistingTable = await checkTableExistence(year, quarter)

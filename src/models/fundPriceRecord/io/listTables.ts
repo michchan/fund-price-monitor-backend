@@ -8,7 +8,7 @@ import TableRange from '../TableRange.type'
 /**
  * Return a list of properties of tables that have been created and match the criteria
  */
-const listLatestTables = async (
+const listTables = async (
   /** Default to current quarter of the current year */
   from?: TableRange,
   limit?: DynamoDB.ListTablesInput['Limit']
@@ -23,4 +23,4 @@ const listLatestTables = async (
   // Filter out non project-scope tables
   return results.filter(name => new RegExp(`^${PROJECT_NAMESPACE}`).test(name))
 }
-export default listLatestTables
+export default listTables

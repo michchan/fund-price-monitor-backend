@@ -1,6 +1,6 @@
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
-import listLatestTables from 'src/models/fundPriceRecord/io/listLatestTables'
+import listTables from 'src/models/fundPriceRecord/io/listTables'
 import getTableName from 'src/models/fundPriceRecord/utils/getTableName'
 
 const checkTableExistence = async (
@@ -9,7 +9,7 @@ const checkTableExistence = async (
   tableName?: string,
 ): Promise<boolean> => {
   const thisTableName = tableName || getTableName(year, quarter)
-  const tableNames = await listLatestTables({
+  const tableNames = await listTables({
     year,
     quarter,
   })

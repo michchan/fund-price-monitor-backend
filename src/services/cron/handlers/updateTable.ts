@@ -12,6 +12,7 @@ import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
 import getTableName from 'src/models/fundPriceRecord/utils/getTableName'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import updateTable from 'src/models/fundPriceRecord/io/updateTable'
+import getOffsetQuarter from 'src/helpers/getOffsetQuarter'
 
 const lambda = new AWS.Lambda()
 const MAX_QUARTER = 4
@@ -101,11 +102,12 @@ export type EventDetail = Partial<TableRange & {
  */
 export const handler: ScheduledHandler<EventDetail> = async event => {
   const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
+  const [defaultPrevYear, defaultPrevQuarter] = getOffsetQuarter(currentYear, currentQuarter, -1)
 
   // Get passed params and assign default with PREVIOUS quarter
   const {
-    year: prevYear = currentQuarter === 1 ? currentYear - 1 : currentYear,
-    quarter: prevQuarter = currentQuarter === 1 ? MAX_QUARTER : currentQuarter - 1 as Quarter,
+    year: prevYear = defaultPrevYear,
+    quarter: prevQuarter = defaultPrevQuarter,
   } = event.detail ?? {}
   const {
     // Default to 1 for both RCU and WCU
