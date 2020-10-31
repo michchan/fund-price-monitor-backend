@@ -8,8 +8,12 @@ const getOffsetQuarter = (
   quarterOffset: number,
 ): [number, Quarter] => {
   const yr = Number(year)
-  const nextQuarter = quarter + (quarterOffset % MAX_QUARTER) as Quarter
-  const nextYear = yr + Math.floor(quarterOffset / MAX_QUARTER)
+  const qtoff = quarterOffset
+
+  const nextQuarter = quarter + (qtoff % MAX_QUARTER) as Quarter
+  const m = qtoff < 0 ? -1 : 1
+  const nextYear = yr + (m * Math.floor(Math.abs(qtoff / MAX_QUARTER)))
+
   return [nextYear, nextQuarter]
 }
 export default getOffsetQuarter
