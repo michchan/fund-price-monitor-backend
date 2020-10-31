@@ -31,8 +31,11 @@ const constructIamRole = (scope: cdk.Construct): iam.Role => {
   // Grante s3 write permissions
   role.addToPolicy(new iam.PolicyStatement({
     ...commonIamStatementInput,
-    sid: 'PutS3',
-    actions: ['s3:PutObject'],
+    sid: 'RWS3',
+    actions: [
+      's3:PutObject',
+      's3:GetObject',
+    ],
   }))
   grantCloudWatchLogGroupAccess(role)
   return role
