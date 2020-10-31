@@ -96,37 +96,44 @@ const getAllDuped = (itemsDict: ItemsDict) => mapValues<ItemsDict, TRecs>(
   getDupedRecords as ObjIteratee
 )
 
+type ItemEntry = [string, ItemsDict[keyof ItemsDict]]
 const REQUEST_DELAY = 1000
+const getBatchRequestSender = (tableRange: TableRange) => (
+  [key, records]: ItemEntry,
+  i: number,
+  arr: ItemEntry[],
+) => async () => {
+  const k = key as keyof ItemsDict
+  type RArgs = [number, Quarter, typeof getCompositeSK]
+  type CArgs = [number, Quarter, typeof getCompositeSKFromChangeRate]
+
+  const { year, quarter } = tableRange
+  const isRecord = k === 'latest' || k === 'record'
+  const getTimeSK = isRecord
+    ? getCompositeSK
+    : getCompositeSKFromChangeRate
+
+  const recordArgs = [year, quarter, getTimeSK] as RArgs
+  const changeRateArgs = [year, quarter, getTimeSK] as CArgs
+
+  if (records.length === 0) return
+
+  if (isRecord) await batchDeleteItems(records as FundPriceRecord[], ...recordArgs)
+  else await batchDeleteItems(records as FundPriceChangeRate[], ...changeRateArgs)
+
+  if (i < arr.length - 1) await wait(REQUEST_DELAY)
+}
 
 const manipulateEachCompany = async (company: CompanyType, tableRange: TableRange) => {
   const itemsDict = await getItems(company, tableRange)
   const dupedItemsDict = getAllDuped(itemsDict)
   logObj(`Duplicates found for ${company}:`, mapValues(dupedItemsDict, val => val.length))
 
-  const requestSenders = Object.entries(dupedItemsDict)
-    .map(([key, records], i, arr) => async () => {
-      const k = key as keyof ItemsDict
-      type RArgs = [number, Quarter, typeof getCompositeSK]
-      type CArgs = [number, Quarter, typeof getCompositeSKFromChangeRate]
+  const batchReqSenders = Object
+    .entries(dupedItemsDict)
+    .map(getBatchRequestSender(tableRange))
 
-      const { year, quarter } = tableRange
-      const isRecord = k === 'latest' || k === 'record'
-      const getTimeSK = isRecord
-        ? getCompositeSK
-        : getCompositeSKFromChangeRate
-
-      const recordArgs = [year, quarter, getTimeSK] as RArgs
-      const changeRateArgs = [year, quarter, getTimeSK] as CArgs
-
-      if (records.length === 0) return
-
-      if (isRecord) await batchDeleteItems(records as FundPriceRecord[], ...recordArgs)
-      else await batchDeleteItems(records as FundPriceChangeRate[], ...changeRateArgs)
-
-      if (i < arr.length - 1) await wait(REQUEST_DELAY)
-    })
-
-  await pipeAsync(...requestSenders)()
+  await pipeAsync(...batchReqSenders)()
 }
 
 /**
