@@ -6,13 +6,9 @@ import getTableName from 'src/models/fundPriceRecord/utils/getTableName'
 const checkTableExistence = async (
   year: string | number,
   quarter: Quarter,
-  tableName?: string,
 ): Promise<boolean> => {
-  const thisTableName = tableName || getTableName(year, quarter)
-  const tableNames = await listTables({
-    year,
-    quarter,
-  })
-  return tableNames.some(name => name === thisTableName)
+  const tableName = getTableName(year, quarter)
+  const tableNames = await listTables({ year, quarter })
+  return tableNames.some(name => name === tableName)
 }
 export default checkTableExistence

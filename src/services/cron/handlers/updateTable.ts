@@ -9,13 +9,11 @@ import describeTable, {
   Output as DescribeTableResult,
 } from 'src/models/fundPriceRecord/io/describeTable'
 import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
-import getTableName from 'src/models/fundPriceRecord/utils/getTableName'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import updateTable from 'src/models/fundPriceRecord/io/updateTable'
 import getOffsetQuarter from 'src/helpers/getOffsetQuarter'
 
 const lambda = new AWS.Lambda()
-const MAX_QUARTER = 4
 
 const deleteLambdaStreamEventSourceMapping = async (year: number | string, quarter: Quarter) => {
   // Describe table and get the stream arn
@@ -115,18 +113,8 @@ export const handler: ScheduledHandler<EventDetail> = async event => {
     WriteCapacityUnits = 1,
   } = event.detail?.ProvisionedThroughput ?? {}
 
-  // Get table name to update
-  const prevQuarterTableName = getTableName(prevYear, prevQuarter)
-  /* Need to get the previous of previous table name coz the year and
-      quarter of `checkTableExistence` is exclusive */
-  const exclusiveYear = prevQuarter === 1 ? Number(prevYear) - 1 : prevYear
-  const exclusiveQuarter = prevQuarter === 1 ? MAX_QUARTER : prevQuarter - 1 as Quarter
-  // Check table existence
-  const hasExistingPrevTable = await checkTableExistence(
-    exclusiveYear,
-    exclusiveQuarter,
-    prevQuarterTableName
-  )
+  // Check table existence of previous quarter
+  const hasExistingPrevTable = await checkTableExistence(prevYear, prevQuarter)
 
   // Do update if the table exists
   if (hasExistingPrevTable) {
