@@ -1,12 +1,12 @@
 import { ScheduledHandler } from 'aws-lambda'
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
 
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import createTable from 'src/models/fundPriceRecord/io/createTable'
 import createTableDetails from 'src/models/fundPriceRecord/io/createTableDetails'
 import checkTableExistence from '../helpers/checkTableExistence'
 import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
-import getOffsetQuarter from 'src/helpers/getOffsetQuarter'
 
 export type EventDetail = TableRange | undefined
 
@@ -32,7 +32,7 @@ const createTableAndDetails = async (year: number | string, quarter: Quarter) =>
  */
 export const handler: ScheduledHandler<EventDetail> = async event => {
   const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
-  const [nextYear, nextQuarter] = getOffsetQuarter(currentYear, currentQuarter, 1)
+  const [nextYear, nextQuarter] = getQuarterOffset(currentYear, currentQuarter, 1)
 
   // Get passed params and assign default with NEXT quarter
   const {

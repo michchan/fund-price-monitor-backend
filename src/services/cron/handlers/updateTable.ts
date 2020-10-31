@@ -1,7 +1,8 @@
 import { DynamoDB } from 'aws-sdk'
 import { ProvisionedThroughput } from 'aws-sdk/clients/dynamodb'
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import { ScheduledHandler } from 'aws-lambda'
+import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
 
 import AWS from 'src/lib/AWS'
 import checkTableExistence from '../helpers/checkTableExistence'
@@ -11,7 +12,6 @@ import describeTable, {
 import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import updateTable from 'src/models/fundPriceRecord/io/updateTable'
-import getOffsetQuarter from 'src/helpers/getOffsetQuarter'
 
 const lambda = new AWS.Lambda()
 
@@ -100,7 +100,7 @@ export type EventDetail = Partial<TableRange & {
  */
 export const handler: ScheduledHandler<EventDetail> = async event => {
   const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
-  const [defaultPrevYear, defaultPrevQuarter] = getOffsetQuarter(currentYear, currentQuarter, -1)
+  const [defaultPrevYear, defaultPrevQuarter] = getQuarterOffset(currentYear, currentQuarter, -1)
 
   // Get passed params and assign default with PREVIOUS quarter
   const {

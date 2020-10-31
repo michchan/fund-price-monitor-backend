@@ -1,8 +1,7 @@
 import { DynamoDB } from 'aws-sdk'
-import getQuarter from 'simply-utils/dist/dateTime/getQuarter'
+import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
 
 import { PROJECT_NAMESPACE } from 'src/constants'
-import getOffsetQuarter from 'src/helpers/getOffsetQuarter'
 import listAllTables, { Output } from 'src/lib/AWS/dynamodb/listAllTables'
 import TableRange from '../TableRange.type'
 
@@ -14,16 +13,16 @@ const listTables = async (
   from?: TableRange,
   limit?: DynamoDB.ListTablesInput['Limit']
 ): Promise<Output> => {
-  // Normalize params
-  const { year, quarter } = from || {
-    year: new Date().getFullYear(),
-    quarter: getQuarter(),
-  }
-  // Get the previous quarter
-  // Because `listAllTables` will return table names sorted in ASC.
-  const [prevYear, prevQuarter] = getOffsetQuarter(year, quarter, -1)
+  const [exclusiveYear, exclusiveQuarter] = (() => {
+    if (!from) return [undefined, undefined]
+    // Normalize params
+    const { year, quarter } = from
+    // Get the previous quarter
+    // Because `listAllTables` will return table names sorted in ASC.
+    return getQuarterOffset(year, quarter, -1)
+  })()
   // Send list tables request
-  const results = await listAllTables(prevYear, prevQuarter, limit)
+  const results = await listAllTables(exclusiveYear, exclusiveQuarter, limit)
   // Filter out non project-scope tables
   return results.filter(name => new RegExp(`^${PROJECT_NAMESPACE}`).test(name))
 }
