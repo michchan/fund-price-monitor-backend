@@ -1,27 +1,13 @@
-import pipeAsync from 'simply-utils/dist/async/pipeAsync'
-import wait from 'simply-utils/dist/async/wait'
-
 import notifyCompanyRecordsByTelegram, { ScheduleType } from './notifyCompanyRecordsByTelegram'
 import getTelegramApiCredentials from 'src/helpers/getTelegramApiCredentials'
-import getTableDetails from 'src/models/fundPriceRecord/io/getTableDetails'
-
-const REQUEST_DELAY = 500
+import forEachCompany from 'src/models/fundPriceRecord/utils/forEachCompany'
 
 const notifyByTelegram = async (scheduleType: ScheduleType): Promise<void> => {
-  /** -------- Get credentials for sending notifications -------- */
+  // Get credentials for sending notifications
   const { chatId, apiKey } = await getTelegramApiCredentials()
-
-  /** -------- Get list of companies -------- */
-  // Get from table-level "details" record
-  const { companies } = await getTableDetails()
-
-  /** -------- Notify for each company -------- */
-  await pipeAsync(...companies.map(
-    (company, i, arr) => async () => {
-      await notifyCompanyRecordsByTelegram(chatId, apiKey, company, scheduleType)
-      if (i < arr.length - 1) await wait(REQUEST_DELAY)
-    }
-  ))()
+  await forEachCompany(
+    company => notifyCompanyRecordsByTelegram(chatId, apiKey, company, scheduleType)
+  )
 }
 
 export default notifyByTelegram

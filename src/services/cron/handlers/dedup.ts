@@ -6,11 +6,11 @@ import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import logObj from 'src/helpers/logObj'
+import forEachCompany from 'src/models/fundPriceRecord/utils/forEachCompany'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import { CompanyType, FundPriceChangeRate, FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import batchDeleteItems from 'src/models/fundPriceRecord/io/batchDeleteItems'
-import getTableDetails from 'src/models/fundPriceRecord/io/getTableDetails'
 import queryItemsByCompany, {
   Output as QueryItemsOutput,
   Input as QueryItemsInput,
@@ -102,7 +102,7 @@ const getAllDuped = (itemsDict: ItemsDict) => mapValues<ItemsDict, TResult>(item
 
 const REQUEST_DELAY = 1000
 
-const processEachCompany = async (company: CompanyType, tableRange: TableRange) => {
+const manipulateEachCompany = async (company: CompanyType, tableRange: TableRange) => {
   const itemsDict = await getItems(company, tableRange)
   const dupedItemsDict = getAllDuped(itemsDict)
   logObj(`Duplicates found for ${company}:`, mapValues(dupedItemsDict, val => val.length))
@@ -137,18 +137,7 @@ export const handler: ScheduledHandler = async (event, context, callback) => {
   try {
     const date = new Date()
     const { year, quarter } = getDateTimeDictionary(date)
-
-    /** -------- Get list of companies -------- */
-    // Get from table-level "details" record
-    const { companies } = await getTableDetails()
-
-    /** -------- Process for each company -------- */
-    await pipeAsync(...companies.map(
-      (company, i, arr) => async () => {
-        await processEachCompany(company, { year, quarter })
-        if (i < arr.length - 1) await wait(REQUEST_DELAY)
-      }
-    ))()
+    await forEachCompany(company => manipulateEachCompany(company, { year, quarter }))
   } catch (error) {
     callback(error)
   }
