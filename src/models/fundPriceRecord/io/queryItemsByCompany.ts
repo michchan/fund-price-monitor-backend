@@ -8,8 +8,8 @@ import { CompanyType } from '../FundPriceRecord.type'
 import TableRange from '../TableRange.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 
-const EXP_COM_PK = ':company' as string
-const EXP_TIME_SK = ':timeSK' as string
+export const EXP_COM_PK = ':company' as string
+export const EXP_TIME_SK = ':timeSK' as string
 
 export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
