@@ -99,43 +99,39 @@ export type EventDetail = Partial<TableRange & {
  * pass "prevYear" and "prevQuarter" in `event.detail` as an object.
  * Specify `ProvisionedThroughput` to customize the throughput to update.
  */
-export const handler: ScheduledHandler<EventDetail> = async (event, context, callback) => {
-  try {
-    const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
+export const handler: ScheduledHandler<EventDetail> = async event => {
+  const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
 
-    // Get passed params and assign default with PREVIOUS quarter
-    const {
-      year: prevYear = currentQuarter === 1 ? currentYear - 1 : currentYear,
-      quarter: prevQuarter = currentQuarter === 1 ? MAX_QUARTER : currentQuarter - 1 as Quarter,
-    } = event.detail ?? {}
-    const {
-      // Default to 1 for both RCU and WCU
-      ReadCapacityUnits = 1,
-      WriteCapacityUnits = 1,
-    } = event.detail?.ProvisionedThroughput ?? {}
+  // Get passed params and assign default with PREVIOUS quarter
+  const {
+    year: prevYear = currentQuarter === 1 ? currentYear - 1 : currentYear,
+    quarter: prevQuarter = currentQuarter === 1 ? MAX_QUARTER : currentQuarter - 1 as Quarter,
+  } = event.detail ?? {}
+  const {
+    // Default to 1 for both RCU and WCU
+    ReadCapacityUnits = 1,
+    WriteCapacityUnits = 1,
+  } = event.detail?.ProvisionedThroughput ?? {}
 
-    // Get table name to update
-    const prevQuarterTableName = getTableName(prevYear, prevQuarter)
-    /* Need to get the previous of previous table name coz the year and
-       quarter of `checkTableExistence` is exclusive */
-    const exclusiveYear = prevQuarter === 1 ? Number(prevYear) - 1 : prevYear
-    const exclusiveQuarter = prevQuarter === 1 ? MAX_QUARTER : prevQuarter - 1 as Quarter
-    // Check table existence
-    const hasExistingPrevTable = await checkTableExistence(
-      exclusiveYear,
-      exclusiveQuarter,
-      prevQuarterTableName
-    )
+  // Get table name to update
+  const prevQuarterTableName = getTableName(prevYear, prevQuarter)
+  /* Need to get the previous of previous table name coz the year and
+      quarter of `checkTableExistence` is exclusive */
+  const exclusiveYear = prevQuarter === 1 ? Number(prevYear) - 1 : prevYear
+  const exclusiveQuarter = prevQuarter === 1 ? MAX_QUARTER : prevQuarter - 1 as Quarter
+  // Check table existence
+  const hasExistingPrevTable = await checkTableExistence(
+    exclusiveYear,
+    exclusiveQuarter,
+    prevQuarterTableName
+  )
 
-    // Do update if the table exists
-    if (hasExistingPrevTable) {
-      const describeTableOutput = await deleteLambdaStreamEventSourceMapping(prevYear, prevQuarter)
-      await updateTableThroughputsAndDisableStream(describeTableOutput, prevYear, prevQuarter, {
-        ReadCapacityUnits,
-        WriteCapacityUnits,
-      })
-    }
-  } catch (error) {
-    callback(error)
+  // Do update if the table exists
+  if (hasExistingPrevTable) {
+    const describeTableOutput = await deleteLambdaStreamEventSourceMapping(prevYear, prevQuarter)
+    await updateTableThroughputsAndDisableStream(describeTableOutput, prevYear, prevQuarter, {
+      ReadCapacityUnits,
+      WriteCapacityUnits,
+    })
   }
 }

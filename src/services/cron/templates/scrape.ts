@@ -12,16 +12,12 @@ const scrapers: GetDataWithPage<FundPriceRecord[]>[] = []
 /**
  * Scrape and Create records
  */
-export const handler: ScheduledHandler = async (event, context, callback) => {
-  try {
-    const [year, quarter] = getCurrentYearAndQuarter()
+export const handler: ScheduledHandler = async () => {
+  const [year, quarter] = getCurrentYearAndQuarter()
 
-    // Scrape records from the site
-    const records = await scrapeAll(scrapers)
+  // Scrape records from the site
+  const records = await scrapeAll(scrapers)
 
-    // Write batch data to the table
-    await batchCreateItems(records, year, quarter, serialize)
-  } catch (error) {
-    callback(error)
-  }
+  // Write batch data to the table
+  await batchCreateItems(records, year, quarter, serialize)
 }

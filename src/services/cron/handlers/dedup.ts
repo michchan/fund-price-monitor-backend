@@ -132,12 +132,8 @@ const manipulateEachCompany = async (company: CompanyType, tableRange: TableRang
 /**
  * De-duplications of records
  */
-export const handler: ScheduledHandler = async (event, context, callback) => {
-  try {
-    const date = new Date()
-    const { year, quarter } = getDateTimeDictionary(date)
-    await forEachCompany(company => manipulateEachCompany(company, { year, quarter }))
-  } catch (error) {
-    callback(error)
-  }
+export const handler: ScheduledHandler = async () => {
+  const date = new Date()
+  const { year, quarter } = getDateTimeDictionary(date)
+  await forEachCompany(company => manipulateEachCompany(company, { year, quarter }))
 }

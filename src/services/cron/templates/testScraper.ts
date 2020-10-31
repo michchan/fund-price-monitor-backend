@@ -9,11 +9,7 @@ const scrapers: GetDataWithPage<FundPriceRecord[]>[] = []
 /**
  * Scrape and Create records
  */
-export const handler: ScheduledHandler = async (event, context, callback) => {
-  try {
-    // Scrape records from the site
-    await scrapeAll(scrapers)
-  } catch (error) {
-    callback(error)
-  }
+export const handler: ScheduledHandler = async () => {
+  // Scrape records from the site
+  await scrapeAll(scrapers)
 }

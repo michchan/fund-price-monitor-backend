@@ -33,16 +33,12 @@ const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) =
  *
  * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
  */
-export const handler: CloudWatchLogsHandler = async (event, context, callback) => {
-  try {
-    const payload = decodeCloudWatchLogEventPayload(event)
-    logObj('Payload: ', payload)
+export const handler: CloudWatchLogsHandler = async event => {
+  const payload = decodeCloudWatchLogEventPayload(event)
+  logObj('Payload: ', payload)
 
-    // * Environment variable SNS_ARN is required
-    const snsArn = process.env.SNS_ARN as string
-    // Must await the service
-    await publishMessage(payload, snsArn)
-  } catch (error) {
-    callback(error)
-  }
+  // * Environment variable SNS_ARN is required
+  const snsArn = process.env.SNS_ARN as string
+  // Must await the service
+  await publishMessage(payload, snsArn)
 }

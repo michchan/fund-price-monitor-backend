@@ -30,20 +30,16 @@ const createTableAndDetails = async (year: number | string, quarter: Quarter) =>
  * To run this function with customized quarter,
  * pass "year" and "quarter" in `event.detail` as an object.
  */
-export const handler: ScheduledHandler<EventDetail> = async (event, context, callback) => {
-  try {
-    const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
+export const handler: ScheduledHandler<EventDetail> = async event => {
+  const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
 
-    // Get passed params and assign default with NEXT quarter
-    const {
-      year = currentQuarter === MAX_QUARTER ? currentYear + 1 : currentYear,
-      quarter = currentQuarter === MAX_QUARTER ? 1 : currentQuarter + 1 as Quarter,
-    } = event.detail ?? {}
+  // Get passed params and assign default with NEXT quarter
+  const {
+    year = currentQuarter === MAX_QUARTER ? currentYear + 1 : currentYear,
+    quarter = currentQuarter === MAX_QUARTER ? 1 : currentQuarter + 1 as Quarter,
+  } = event.detail ?? {}
 
-    const hasExistingTable = await checkTableExistence(year, quarter)
-    // Create a table of the specified quarter if it does NOT exist
-    if (!hasExistingTable) await createTableAndDetails(year, quarter)
-  } catch (error) {
-    callback(error)
-  }
+  const hasExistingTable = await checkTableExistence(year, quarter)
+  // Create a table of the specified quarter if it does NOT exist
+  if (!hasExistingTable) await createTableAndDetails(year, quarter)
 }
