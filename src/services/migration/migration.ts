@@ -28,6 +28,12 @@ const constructIamRole = (scope: cdk.Construct): iam.Role => {
       'dynamodb:Query',
     ],
   }))
+  // Grante s3 write permissions
+  role.addToPolicy(new iam.PolicyStatement({
+    ...commonIamStatementInput,
+    sid: 'PutS3',
+    actions: ['s3:PutObject'],
+  }))
   grantCloudWatchLogGroupAccess(role)
   return role
 }
