@@ -89,16 +89,12 @@ const getDupedRecords = <T extends FundPriceRecord | FundPriceChangeRate> (recor
   }, [])
 }
 
-type TResult = FundPriceRecord[] | FundPriceChangeRate[]
-const getAllDuped = (itemsDict: ItemsDict) => mapValues<ItemsDict, TResult>(itemsDict, (
-  records: FundPriceRecord[] | FundPriceChangeRate[],
-  argKey
-) => {
-  const key = argKey as keyof ItemsDict
-  if (key === 'latest' || key === 'record')
-    return getDupedRecords(records as FundPriceRecord[])
-  return getDupedRecords(records as FundPriceChangeRate[])
-})
+type TRecs = FundPriceRecord[] | FundPriceChangeRate[]
+type ObjIteratee = (records: ItemsDict[keyof ItemsDict]) => typeof records
+const getAllDuped = (itemsDict: ItemsDict) => mapValues<ItemsDict, TRecs>(
+  itemsDict,
+  getDupedRecords as ObjIteratee
+)
 
 const REQUEST_DELAY = 1000
 
@@ -109,21 +105,24 @@ const manipulateEachCompany = async (company: CompanyType, tableRange: TableRang
 
   const requestSenders = Object.entries(dupedItemsDict)
     .map(([key, records], i, arr) => async () => {
-      const { year, quarter } = tableRange
       const k = key as keyof ItemsDict
+      type RArgs = [number, Quarter, typeof getCompositeSK]
+      type CArgs = [number, Quarter, typeof getCompositeSKFromChangeRate]
+
+      const { year, quarter } = tableRange
       const isRecord = k === 'latest' || k === 'record'
       const getTimeSK = isRecord
         ? getCompositeSK
         : getCompositeSKFromChangeRate
 
-      type RArgs = [number, Quarter, typeof getCompositeSK]
       const recordArgs = [year, quarter, getTimeSK] as RArgs
-      type CArgs = [number, Quarter, typeof getCompositeSKFromChangeRate]
       const changeRateArgs = [year, quarter, getTimeSK] as CArgs
 
       if (records.length === 0) return
+
       if (isRecord) await batchDeleteItems(records as FundPriceRecord[], ...recordArgs)
       else await batchDeleteItems(records as FundPriceChangeRate[], ...changeRateArgs)
+
       if (i < arr.length - 1) await wait(REQUEST_DELAY)
     })
 
