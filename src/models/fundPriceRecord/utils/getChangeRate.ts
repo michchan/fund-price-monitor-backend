@@ -42,7 +42,7 @@ const getChangeRate = (
     code: basedRecord.code,
     name: basedRecord.name,
     updatedDate: basedRecord.updatedDate,
-    price: basedRecord.price,
+    price: latestPrice,
     priceChangeRate,
     priceList,
     time: (aggregateDate ?? new Date()).toISOString(),
