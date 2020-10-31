@@ -7,11 +7,11 @@ import omit from 'lodash/omit'
 import listTables from 'src/models/fundPriceRecord/io/listTables'
 import fromTableName from 'src/models/fundPriceRecord/utils/fromTableName'
 import queryItemsByCompany, { EXP_TIME_SK } from 'src/models/fundPriceRecord/io/queryItemsByCompany'
-// !import AWS from 'src/lib/AWS'
+import AWS from 'src/lib/AWS'
 import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import pipeByCompany from 'src/models/fundPriceRecord/utils/pipeByCompany'
 
-// != new AWS.S3()
+const s3 = new AWS.S3()
 const TABLE_BATCH_DELAY = 1000
 
 const getCompanyManipulator = (tableName: string) => async (company: CompanyType) => {
@@ -28,20 +28,38 @@ const getCompanyManipulator = (tableName: string) => async (company: CompanyType
       ),
     }),
   })
-  console.log(JSON.stringify({ company, length: output.Items?.length }))
   return output.Items ?? []
 }
 
+const getRecords = (tableName: string) => pipeByCompany<AttributeMap[]>(input => async company => {
+  const companyRecords = await getCompanyManipulator(tableName)(company)
+  return [...input, ...companyRecords]
+}, [])
+
+const putObjectToS3 = (
+  bucketName: string,
+  tableName: string,
+  records: AttributeMap[]
+) => s3.putObject({
+  Bucket: bucketName,
+  Key: `${tableName}_${new Date().getTime()}`,
+  Body: records,
+}).promise()
+
+/**
+ * Environment:
+ *  - BUCKET_NAME: string (required) - S3 bucket name to store migrated data
+ */
 export const handler: Handler = async () => {
+  const bucketName = process.env.BUCKET_NAME
+  if (!bucketName) throw new Error('Environment variable BUCKET_NAME undefined')
+
   // Get list of table names
   const tableNames = await listTables()
   // Manipulation for each table
   await pipeAsync(...tableNames.map((tableName, i, arr) => async () => {
-    const records = await pipeByCompany<AttributeMap[]>(input => async company => {
-      const companyRecords = await getCompanyManipulator(tableName)(company)
-      return [...input, ...companyRecords]
-    }, [])
-    console.log(JSON.stringify({ i, tableName, length: records.length }, null, 2))
+    const records = await getRecords(tableName)
+    await putObjectToS3(bucketName, tableName, records)
     if (i < arr.length - 1) await wait(TABLE_BATCH_DELAY)
   }))()
 }
