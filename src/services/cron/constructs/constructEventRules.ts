@@ -45,17 +45,6 @@ const constructDailyEventRules = (
   dailyReviewRule.addTarget(new targets.LambdaFunction(notifyDaily))
 }
 
-const constructWeeklyEventRules = (
-  scope: cdk.Construct,
-  { notifyWeekly }: Pick<Handlers, 'notifyWeekly'>,
-) => {
-  // Run on Saturday in every week at 15:00 UTC
-  const weeklyReviewRule = new events.Rule(scope, 'WeeklyReviewRule', {
-    schedule: events.Schedule.expression('cron(0 15 ? * 7 *)'),
-  })
-  weeklyReviewRule.addTarget(new targets.LambdaFunction(notifyWeekly))
-}
-
 const constructMonthlyEventRules = (
   scope: cdk.Construct,
   { notifyMonthly }: Pick<Handlers, 'notifyMonthly'>,
@@ -94,7 +83,6 @@ const constructQuarterlyEventRules = (
 type EventRulesArgs = [scope: cdk.Construct, handlers: Handlers]
 const constructEventRules = (...args: EventRulesArgs): void => {
   constructDailyEventRules(...args)
-  constructWeeklyEventRules(...args)
   constructMonthlyEventRules(...args)
   constructQuarterlyEventRules(...args)
 }

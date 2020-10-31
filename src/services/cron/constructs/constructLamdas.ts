@@ -106,7 +106,6 @@ const getDefaultNotifierEnv = (telegramChatId: string) => ({
 
 interface NotificationHandlers {
   notifyDaily: lambda.Function;
-  notifyWeekly: lambda.Function;
   notifyMonthly: lambda.Function;
   notifyQuarterly: lambda.Function;
 }
@@ -122,11 +121,6 @@ const constructNotificationHandlers = (
     handler: 'notifyDaily.handler',
     environment,
   })
-  const notifyWeeklyHandler = new lambda.Function(scope, 'CronNotifierWeekly', {
-    ...defaultInput,
-    handler: 'notifyWeekly.handler',
-    environment,
-  })
   const notifyMonthlyHandler = new lambda.Function(scope, 'CronNotifierMonthly', {
     ...defaultInput,
     handler: 'notifyMonthly.handler',
@@ -139,7 +133,6 @@ const constructNotificationHandlers = (
   })
   return {
     notifyDaily: notifyDailyHandler,
-    notifyWeekly: notifyWeeklyHandler,
     notifyMonthly: notifyMonthlyHandler,
     notifyQuarterly: notifyQuarterlyHandler,
   }
