@@ -5,6 +5,7 @@ import listAllS3Objects from 'simply-utils/dist/AWS/listAllS3Objects'
 
 import getBucketName from '../helpers/getBucketName'
 import AWS from 'src/lib/AWS'
+import fromTableRecordsS3ObjectKey from '../helpers/fromTableRecordsS3ObjectKey'
 
 const s3 = new AWS.S3()
 const TABLE_BATCH_DELAY = 1000
@@ -24,7 +25,8 @@ export const handler: Handler = async () => {
   const objectKeys = await listObjectKeys(bucketName)
   // Manipulation for each table
   await pipeAsync(...objectKeys.map((objectKey, i, arr) => async () => {
-    console.log(i, objectKey)
+    const tableName = fromTableRecordsS3ObjectKey(objectKey)
+    console.log(JSON.stringify({ i, objectKey, tableName }))
     if (i < arr.length - 1) await wait(TABLE_BATCH_DELAY)
   }))()
 }
