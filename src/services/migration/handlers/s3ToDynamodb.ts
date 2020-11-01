@@ -1,5 +1,29 @@
 import { Handler } from 'aws-lambda'
+import pipeAsync from 'simply-utils/dist/async/pipeAsync'
+import wait from 'simply-utils/dist/async/wait'
 
-export const handler: Handler = () => {
-  console.log('I am running!')
+import getBucketName from '../helpers/getBucketName'
+import AWS from 'src/lib/AWS'
+
+const s3 = new AWS.S3()
+const TABLE_BATCH_DELAY = 1000
+
+const listObjectKeys = async (bucketName: string) => {
+  const output = await s3.listObjectsV2({ Bucket: bucketName }).promise()
+  // We know it should have a "Contents" array of objects each of which contains "Key"
+  return output.Contents?.map(({ Key }) => Key) as string[]
+}
+
+/**
+ * Environment:
+ *  - BUCKET_NAME: string (required) - Name of the S3 bucket to get migrated data from
+ */
+export const handler: Handler = async () => {
+  const bucketName = getBucketName()
+  const objectKeys = await listObjectKeys(bucketName)
+  // Manipulation for each table
+  await pipeAsync(...objectKeys.map((objectKey, i, arr) => async () => {
+    console.log(i, objectKey)
+    if (i < arr.length - 1) await wait(TABLE_BATCH_DELAY)
+  }))()
 }
