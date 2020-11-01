@@ -35,7 +35,12 @@ const constructIamRole = (scope: cdk.Construct): iam.Role => {
     actions: [
       's3:PutObject',
       's3:GetObject',
-      's3:ListObjects',
+      's3:ListObjectsV2',
+      /**
+       * The following permission also has to be defined when using s3:ListObjectsV2
+       * Reference: https://aws.amazon.com/premiumsupport/knowledge-center/s3-access-denied-listobjects-sync/
+       */
+      's3:ListBucket',
     ],
   }))
   grantCloudWatchLogGroupAccess(role)
