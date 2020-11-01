@@ -1,0 +1,1 @@
+export const S3_RECORDS_CONTENT_TYPE = 'application/json'

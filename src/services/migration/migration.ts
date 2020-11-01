@@ -35,6 +35,7 @@ const constructIamRole = (scope: cdk.Construct): iam.Role => {
     actions: [
       's3:PutObject',
       's3:GetObject',
+      's3:ListObjectsV2',
     ],
   }))
   grantCloudWatchLogGroupAccess(role)

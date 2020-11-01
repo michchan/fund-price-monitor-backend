@@ -10,6 +10,9 @@ import queryItemsByCompany, { EXP_TIME_SK } from 'src/models/fundPriceRecord/io/
 import AWS from 'src/lib/AWS'
 import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import pipeByCompany from 'src/models/fundPriceRecord/utils/pipeByCompany'
+import { S3_RECORDS_CONTENT_TYPE } from '../constants'
+import toTableRecordsS3ObjectKey from '../helpers/toTableRecordsS3ObjectKey'
+import getBucketName from '../helpers/getBucketName'
 
 const s3 = new AWS.S3()
 const TABLE_BATCH_DELAY = 1000
@@ -42,19 +45,17 @@ const putObjectToS3 = (
   records: AttributeMap[]
 ) => s3.putObject({
   Bucket: bucketName,
-  Key: `${tableName}_${new Date().getTime()}`,
+  Key: toTableRecordsS3ObjectKey(tableName),
   Body: JSON.stringify(records),
-  ContentType: 'application/json',
+  ContentType: S3_RECORDS_CONTENT_TYPE,
 }).promise()
 
 /**
  * Environment:
- *  - BUCKET_NAME: string (required) - S3 bucket name to store migrated data
+ *  - BUCKET_NAME: string (required) - Name of the S3 bucket to store migrated data
  */
 export const handler: Handler = async () => {
-  const bucketName = process.env.BUCKET_NAME
-  if (!bucketName) throw new Error('Environment variable BUCKET_NAME undefined')
-
+  const bucketName = getBucketName()
   // Get list of table names
   const tableNames = await listTables()
   // Manipulation for each table
