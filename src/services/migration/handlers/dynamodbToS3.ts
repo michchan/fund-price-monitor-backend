@@ -44,6 +44,7 @@ const putObjectToS3 = (
   Bucket: bucketName,
   Key: `${tableName}_${new Date().getTime()}`,
   Body: JSON.stringify(records),
+  ContentType: 'application/json',
 }).promise()
 
 /**
