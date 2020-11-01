@@ -29,11 +29,11 @@ export const handler: APIGatewayProxyHandler = async event => {
     const [year, quarter] = exclusiveStartQuarter?.split('.') ?? []
 
     // Query
-    const tableNames = await listAllTables(year, quarter as unknown as Quarter)
+    const { TableNames = [] } = await listAllTables(year, quarter as unknown as Quarter)
     // Create response
     const response: ListResponse<string> = {
       result: true,
-      data: (tableNames ?? [])
+      data: TableNames
         .map(tableName => (tableName.match(/[0-9]{4}_q[1-4]/)?.shift() ?? '').replace(/_q/i, '.'))
         .filter(v => !!v),
     }

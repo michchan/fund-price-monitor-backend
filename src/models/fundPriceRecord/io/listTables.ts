@@ -2,9 +2,10 @@ import { DynamoDB } from 'aws-sdk'
 import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
 
 import { PROJECT_NAMESPACE } from 'src/constants'
-import listAllTables, { Output } from 'src/lib/AWS/dynamodb/listAllTables'
+import listAllTables from 'src/lib/AWS/dynamodb/listAllTables'
 import TableRange from '../TableRange.type'
 
+export type Output = string[]
 /**
  * Return a list of properties of tables that have been created and match the criteria
  */
@@ -22,8 +23,8 @@ const listTables = async (
     return getQuarterOffset(year, quarter, -1)
   })()
   // Send list tables request
-  const results = await listAllTables(exclusiveYear, exclusiveQuarter, limit)
+  const { TableNames = [] } = await listAllTables(exclusiveYear, exclusiveQuarter, limit)
   // Filter out non project-scope tables
-  return results.filter(name => new RegExp(`^${PROJECT_NAMESPACE}`).test(name))
+  return TableNames.filter(name => new RegExp(`^${PROJECT_NAMESPACE}`).test(name))
 }
 export default listTables
