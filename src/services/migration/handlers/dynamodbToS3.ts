@@ -39,7 +39,7 @@ const getRecords = (tableName: string) => pipeByCompany<AttributeMap[]>(input =>
   return [...input, ...companyRecords]
 }, [])
 
-const putObjectToS3 = (
+const saveRecordsAsFile = (
   bucketName: string,
   tableName: string,
   records: AttributeMap[]
@@ -61,7 +61,7 @@ export const handler: Handler = async () => {
   // Manipulation for each table
   await pipeAsync(...tableNames.map((tableName, i, arr) => async () => {
     const records = await getRecords(tableName)
-    await putObjectToS3(bucketName, tableName, records)
+    await saveRecordsAsFile(bucketName, tableName, records)
     if (i < arr.length - 1) await wait(TABLE_BATCH_DELAY)
   }))()
 }
