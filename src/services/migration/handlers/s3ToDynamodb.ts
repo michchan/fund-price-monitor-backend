@@ -12,10 +12,31 @@ import { S3_RECORDS_CONTENT_TYPE } from '../constants'
 const s3 = new AWS.S3()
 const TABLE_BATCH_DELAY = 1000
 
+/**
+ * Get unique objects by table name and
+ * Take the latest ones for the same table
+ */
+const takeLatestObjectKeys = (objectKeys: string[]): string[] => {
+  let prevUniqTable: null | string = null
+  return objectKeys
+    // It will be first sorted by table name,
+    // And then second sorted by timestamp.
+    .sort((a, b) => a > b ? -1 : 1)
+    .filter(objectKey => {
+      const tableName = fromTableRecordsS3ObjectKey(objectKey)
+      if (tableName !== prevUniqTable) {
+        prevUniqTable = tableName
+        return true
+      }
+      return false
+    })
+}
+
 const listObjectKeys = async (bucketName: string) => {
   const output = await listAllS3Objects(s3, bucketName)
   // We know it should have a "Contents" array of objects each of which contains "Key"
-  return output.Contents?.map(({ Key }) => Key) as string[]
+  const objectKeys = output.Contents?.map(({ Key }) => Key) as string[]
+  return takeLatestObjectKeys(objectKeys)
 }
 
 const getRecordsFromFile = async (
