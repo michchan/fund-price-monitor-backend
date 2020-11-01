@@ -1,6 +1,7 @@
 import { Handler } from 'aws-lambda'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 import wait from 'simply-utils/dist/async/wait'
+import listAllS3Objects from 'simply-utils/dist/AWS/listAllS3Objects'
 
 import getBucketName from '../helpers/getBucketName'
 import AWS from 'src/lib/AWS'
@@ -9,7 +10,7 @@ const s3 = new AWS.S3()
 const TABLE_BATCH_DELAY = 1000
 
 const listObjectKeys = async (bucketName: string) => {
-  const output = await s3.listObjectsV2({ Bucket: bucketName }).promise()
+  const output = await listAllS3Objects(s3, bucketName)
   // We know it should have a "Contents" array of objects each of which contains "Key"
   return output.Contents?.map(({ Key }) => Key) as string[]
 }
