@@ -17,7 +17,7 @@ import getBucketName from '../helpers/getBucketName'
 const s3 = new AWS.S3()
 const TABLE_BATCH_DELAY = 1000
 
-const getCompanyManipulator = (tableName: string) => async (company: CompanyType) => {
+const getRecordsGetter = (tableName: string) => async (company: CompanyType) => {
   const output = await queryItemsByCompany(company, {
     shouldQueryAll: true,
     at: fromTableName(tableName),
@@ -35,7 +35,7 @@ const getCompanyManipulator = (tableName: string) => async (company: CompanyType
 }
 
 const getRecords = (tableName: string) => pipeByCompany<AttributeMap[]>(input => async company => {
-  const companyRecords = await getCompanyManipulator(tableName)(company)
+  const companyRecords = await getRecordsGetter(tableName)(company)
   return [...input, ...companyRecords]
 }, [])
 
