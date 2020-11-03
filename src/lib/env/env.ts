@@ -8,6 +8,7 @@ export interface EnvValues {
   TELEGRAM_BOT_API_KEY_PARAMETER_VERSION: number;
   TELEGRAM_CHAT_ID_PARAMETER_NAME: string;
   GENERAL_LOG_SUBSCRIPTION_EMAIL: string;
+  AWS_DEFAULT_REGION: string;
 }
 
 const keys: (keyof EnvValues)[] = [
@@ -15,6 +16,7 @@ const keys: (keyof EnvValues)[] = [
   'TELEGRAM_BOT_API_KEY_PARAMETER_VERSION',
   'TELEGRAM_CHAT_ID_PARAMETER_NAME',
   'GENERAL_LOG_SUBSCRIPTION_EMAIL',
+  'AWS_DEFAULT_REGION',
 ]
 const values: EnvValues = pick(process.env, keys) as unknown as EnvValues
 

@@ -2,8 +2,9 @@
  * Script to configure and export AWS sdk instance
  */
 import AWS = require('aws-sdk')
+import env from '../env'
 
 // Update configs
-AWS.config.update({ region: 'ap-east-1' })
+AWS.config.update({ region: env.values.AWS_DEFAULT_REGION })
 
 export default AWS
