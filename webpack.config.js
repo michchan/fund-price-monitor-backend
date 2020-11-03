@@ -63,6 +63,9 @@ const createConfig = (handlersPath, name, index) => ({
       /**
        * Use file loader to move chromnium .br files into /bin
        * @link https://github.com/alixaxel/chrome-aws-lambda/issues/80
+       *
+       * This is for correctly bundling the chromnium instance required by 'chrome-aws-lambda',
+       * from the helper 'launchPuppeteerBrowserSession' of 'simply-utils'.
        */
       {
         test: /chrome\-aws\-lambda\/bin\/(.+)\.br$/,
