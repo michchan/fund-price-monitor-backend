@@ -72,7 +72,7 @@ const constructLamdas = (
   const s3ToDynamodbHandler = new lambda.Function(scope, 'MigrateS3ToDynamodb', {
     ...defaultInput,
     handler: 's3ToDynamodb.handler',
-    timeout: cdk.Duration.millis(WRITE_ITEMS_HANDLER_TIMEOUT_MINS),
+    timeout: cdk.Duration.minutes(WRITE_ITEMS_HANDLER_TIMEOUT_MINS),
   })
 
   return {
