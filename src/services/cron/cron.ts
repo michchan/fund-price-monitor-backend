@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core'
 import * as ssm from '@aws-cdk/aws-ssm'
 
-import env from 'src/lib/env'
+import env from 'src/lib/buildEnv'
 import constructIamRole from './constructs/constructIamRole'
 import constructLamdas, { Handlers } from './constructs/constructLamdas'
 import constructEventRules from './constructs/constructEventRules'

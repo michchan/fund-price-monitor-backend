@@ -26,7 +26,7 @@ const values: EnvValues = pick(process.env, keys) as unknown as EnvValues
 (() => {
   for (const key of keys) {
     const value = values[key]
-    if (value === undefined) throw new Error(`${key} is undefined but required in .env file`)
+    if (value === undefined) throw new Error(`${key} is undefined but required in environment`)
   }
 })()
 

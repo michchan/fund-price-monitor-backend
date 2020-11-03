@@ -3,7 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import * as iam from '@aws-cdk/aws-iam'
 import * as fs from 'fs'
 
-import env from 'src/lib/env'
+import env from 'src/lib/buildEnv'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
 // Common lambda configs for scrape handlers

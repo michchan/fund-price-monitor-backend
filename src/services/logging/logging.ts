@@ -9,7 +9,7 @@ import generateRandomString from 'simply-utils/dist/string/generateRandomString'
 
 import { PROJECT_NAMESPACE } from 'src/constants'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
-import env from 'src/lib/env'
+import env from 'src/lib/buildEnv'
 
 const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
 
