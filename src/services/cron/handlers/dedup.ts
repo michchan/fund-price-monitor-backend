@@ -2,7 +2,6 @@ import { ScheduledHandler } from 'aws-lambda'
 import mapValues from 'lodash/mapValues'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 import wait from 'simply-utils/dist/async/wait'
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import logObj from 'src/helpers/logObj'
@@ -104,8 +103,8 @@ const getBatchRequestSender = (tableRange: TableRange) => (
   arr: ItemEntry[],
 ) => async () => {
   const k = key as keyof ItemsDict
-  type RArgs = [number, Quarter, typeof getCompositeSK]
-  type CArgs = [number, Quarter, typeof getCompositeSKFromChangeRate]
+  type RArgs = [TableRange, typeof getCompositeSK]
+  type CArgs = [TableRange, typeof getCompositeSKFromChangeRate]
 
   const { year, quarter } = tableRange
   const isRecord = k === 'latest' || k === 'record'
@@ -113,8 +112,8 @@ const getBatchRequestSender = (tableRange: TableRange) => (
     ? getCompositeSK
     : getCompositeSKFromChangeRate
 
-  const recordArgs = [year, quarter, getTimeSK] as RArgs
-  const changeRateArgs = [year, quarter, getTimeSK] as CArgs
+  const recordArgs = [{ year, quarter }, getTimeSK] as RArgs
+  const changeRateArgs = [{ year, quarter }, getTimeSK] as CArgs
 
   if (records.length === 0) return
 

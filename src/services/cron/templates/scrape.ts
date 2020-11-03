@@ -14,10 +14,8 @@ const scrapers: GetDataWithPage<FundPriceRecord[]>[] = []
  */
 export const handler: ScheduledHandler = async () => {
   const [year, quarter] = getCurrentYearAndQuarter()
-
   // Scrape records from the site
   const records = await scrapeAll(scrapers)
-
   // Write batch data to the table
-  await batchCreateItems(records, year, quarter, serialize)
+  await batchCreateItems(records, { year, quarter }, serialize)
 }

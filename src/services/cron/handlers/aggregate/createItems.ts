@@ -1,14 +1,13 @@
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import logObj from 'src/helpers/logObj'
 
 import batchCreateItems from 'src/models/fundPriceRecord/io/batchCreateItems'
+import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import serialize from 'src/models/fundPriceRecord/utils/serialize'
 import serializeChangeRate from 'src/models/fundPriceRecord/utils/serializeChangeRate'
 import { Output } from './deriveAggregatedItems'
 
 const createItems = async (
-  year: string | number,
-  quarter: Quarter,
+  tableRange: TableRange,
   ...rest: Output
 ): Promise<void> => {
   const [
@@ -23,7 +22,7 @@ const createItems = async (
 
   // Batch create all aggregation items
   // Create latest records
-  await batchCreateItems(latestItems, year, quarter, serialize)
+  await batchCreateItems(latestItems, tableRange, serialize)
 
   // Log records to insert
   logObj(`weekRateItems to insert (${weekRateItems.length}): `, weekRateItems)
@@ -35,6 +34,6 @@ const createItems = async (
     ...weekRateItems,
     ...monthRateItems,
     ...quarterRateItems,
-  ], year, quarter, serializeChangeRate)
+  ], tableRange, serializeChangeRate)
 }
 export default createItems

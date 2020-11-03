@@ -1,25 +1,25 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
 import { FundPriceChangeRate, FundPriceRecord } from '../FundPriceRecord.type'
 import batchWriteItems, { Output } from 'src/lib/AWS/dynamodb/batchWriteItems'
 import getTableName from '../utils/getTableName'
+import TableRange from '../TableRange.type'
 
 type T = FundPriceRecord | FundPriceChangeRate
+export const DEFUALT_DELAY = 300
 
 /**
  * Return a list of properties of tables that have been created and match the criteria
  */
 function batchCreateItems <Rec extends T> (
   records: Rec[],
-  /** In YYYY format */
-  year: string | number,
-  quarter: Quarter,
+  { year, quarter }: TableRange,
   serialize: (record: Rec) => DocumentClient.AttributeMap,
+  delay: number = DEFUALT_DELAY,
 ): Promise<Output | null> {
   return batchWriteItems(records, getTableName(year, quarter), 'put', {
     serialize,
-    // @TODO: Add delay
+    delay,
   })
 }
 export default batchCreateItems

@@ -38,7 +38,7 @@ const processCompanyRecords = async (
   date: Date,
 ) => {
   // Get year and quarter
-  const { year, quarter } = getDateTimeDictionary(date)
+  const dateTimeDict = getDateTimeDictionary(date)
 
   /** // ! IMPORTANT: All the records retrieved process must be filtered by `insertedItems` */
   function matchInserted (rec: FundPriceRecord | FundPriceChangeRate) {
@@ -51,6 +51,6 @@ const processCompanyRecords = async (
   const aggregatedOutputs = deriveAggregatedItems(insertedItems, date, ...prevOutputs)
 
   /** -------- Send batch requests -------- */
-  await createItems(year, quarter, ...aggregatedOutputs)
-  await deleteItems(year, quarter, ...prevOutputs)
+  await createItems(dateTimeDict, ...aggregatedOutputs)
+  await deleteItems(dateTimeDict, ...prevOutputs)
 }

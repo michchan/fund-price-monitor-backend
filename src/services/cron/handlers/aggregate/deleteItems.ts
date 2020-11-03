@@ -1,14 +1,12 @@
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
-
 import batchDeleteItems from 'src/models/fundPriceRecord/io/batchDeleteItems'
 import getCompositeSK from 'src/models/fundPriceRecord/utils/getCompositeSK'
 import getCompositeSKFromChangeRate from 'src/models/fundPriceRecord/utils/getCompositeSKFromChangeRate'
 import { Output } from './queryPrevItems'
 import logObj from 'src/helpers/logObj'
+import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 
 const deleteItems = async (
-  year: string | number,
-  quarter: Quarter,
+  tableRange: TableRange,
   ...rest: Output
 ): Promise<void> => {
   const [
@@ -22,7 +20,7 @@ const deleteItems = async (
   logObj(`prevLatestItems to remove (${prevLatestItems.length}): `, prevLatestItems)
 
   // Remove previous latest records
-  await batchDeleteItems(prevLatestItems, year, quarter, getCompositeSK)
+  await batchDeleteItems(prevLatestItems, tableRange, getCompositeSK)
 
   // Log records to insert
   logObj(`prevWeekRateItems to remove (${prevWeekRateItems.length}): `, prevWeekRateItems)
@@ -34,6 +32,6 @@ const deleteItems = async (
     ...prevWeekRateItems,
     ...prevMonthRateItems,
     ...prevQuarterRateItems,
-  ], year, quarter, getCompositeSKFromChangeRate)
+  ], tableRange, getCompositeSKFromChangeRate)
 }
 export default deleteItems
