@@ -8,7 +8,7 @@ import getBucketName from '../helpers/getBucketName'
 import AWS from 'src/lib/AWS'
 import fromTableRecordsS3ObjectKey from '../helpers/fromTableRecordsS3ObjectKey'
 import { S3_RECORDS_CONTENT_TYPE } from '../constants'
-// ! import batchWriteItems from 'src/lib/AWS/dynamodb/batchWriteItems'
+import batchWriteItems from 'src/lib/AWS/dynamodb/batchWriteItems'
 
 const s3 = new AWS.S3()
 const TABLE_BATCH_DELAY = 1000
@@ -53,12 +53,10 @@ const getRecordsFromFile = async (
   return JSON.parse((output.Body ?? '[]') as string) as AttributeMap[]
 }
 
-/* !
- const insertIntoTables = (
+const insertIntoTables = (
   tableName: string,
   records: AttributeMap[]
 ) => batchWriteItems(records, tableName, 'put')
- */
 
 /**
  * Environment:
@@ -71,8 +69,7 @@ export const handler: Handler = async () => {
   await pipeAsync(...objectKeys.map((objectKey, i, arr) => async () => {
     const records = await getRecordsFromFile(bucketName, objectKey)
     const tableName = fromTableRecordsS3ObjectKey(objectKey)
-    console.log(tableName, records.length)
-    // ! await insertIntoTables(tableName, records)
+    await insertIntoTables(tableName, records)
     if (i < arr.length - 1) await wait(TABLE_BATCH_DELAY)
   }))()
 }
