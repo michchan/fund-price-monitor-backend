@@ -14,6 +14,8 @@ const createTableAndDetails = async (year: number | string, quarter: Quarter) =>
   // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
   // To map as dynamodb stream target function
   const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
+  if (!aggregationHandlerArn) throw new Error('Environment variable AGGREGATION_HANDLER_ARN undefined')
+
   // Create one if it doesn't exist
   await createTable(year, quarter, aggregationHandlerArn)
   // Create table detail row
