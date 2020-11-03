@@ -46,8 +46,8 @@ const deleteLambdaStreamEventSourceMapping = async (year: number | string, quart
 
 const updateTableThroughputsAndDisableStream = async (
   describeTableOutput: DescribeTableResult,
-  prevYear: string | number,
-  prevQuarter: Quarter,
+  year: string | number,
+  quarter: Quarter,
   {
     WriteCapacityUnits,
     ReadCapacityUnits,
@@ -66,7 +66,7 @@ const updateTableThroughputsAndDisableStream = async (
     || throughput?.WriteCapacityUnits !== WriteCapacityUnits
   ) {
     // Send update table request
-    await updateTable(prevYear, prevQuarter, {
+    await updateTable(year, quarter, {
       // Update the throughput of the table
       ProvisionedThroughput: {
         ReadCapacityUnits,
@@ -80,7 +80,7 @@ const updateTableThroughputsAndDisableStream = async (
   if (isStreamEnabled) {
     // Disable table stream, AWS requires the update to be separate:
     // "You cannot modify stream status while updating table IOPS"
-    await updateTable(prevYear, prevQuarter, {
+    await updateTable(year, quarter, {
       // Disable stream
       StreamSpecification: { StreamEnabled: false },
     })
@@ -92,20 +92,20 @@ export type EventDetail = Partial<TableRange & {
 }> | undefined
 
 /**
- * Adjust the provisioned throughput of table for previous prevQuarter.
+ * Adjust the provisioned throughput of table for previous quarter.
  *
- * To run this function with customized prevQuarter,
- * pass "prevYear" and "prevQuarter" in `event.detail` as an object.
+ * To run this function with customized quarter,
+ * pass "year" and "quarter" in `event.detail` as an object.
  * Specify `ProvisionedThroughput` to customize the throughput to update.
  */
 export const handler: ScheduledHandler<EventDetail> = async event => {
   const [currentYear, currentQuarter] = getCurrentYearAndQuarter()
-  const [defaultPrevYear, defaultPrevQuarter] = getQuarterOffset(currentYear, currentQuarter, -1)
+  const [prevYear, prevQuarter] = getQuarterOffset(currentYear, currentQuarter, -1)
 
   // Get passed params and assign default with PREVIOUS quarter
   const {
-    year: prevYear = defaultPrevYear,
-    quarter: prevQuarter = defaultPrevQuarter,
+    year = prevYear,
+    quarter = prevQuarter,
   } = event.detail ?? {}
   const {
     // Default to 1 for both RCU and WCU
@@ -114,12 +114,12 @@ export const handler: ScheduledHandler<EventDetail> = async event => {
   } = event.detail?.ProvisionedThroughput ?? {}
 
   // Check table existence of previous quarter
-  const hasExistingPrevTable = await checkTableExistence(prevYear, prevQuarter)
+  const hasExistingPrevTable = await checkTableExistence(year, quarter)
 
   // Do update if the table exists
   if (hasExistingPrevTable) {
-    const describeTableOutput = await deleteLambdaStreamEventSourceMapping(prevYear, prevQuarter)
-    await updateTableThroughputsAndDisableStream(describeTableOutput, prevYear, prevQuarter, {
+    const describeTableOutput = await deleteLambdaStreamEventSourceMapping(year, quarter)
+    await updateTableThroughputsAndDisableStream(describeTableOutput, year, quarter, {
       ReadCapacityUnits,
       WriteCapacityUnits,
     })
