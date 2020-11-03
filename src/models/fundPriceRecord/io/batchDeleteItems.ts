@@ -2,7 +2,6 @@ import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 
 import { FundPriceChangeRate, FundPriceRecord } from '../FundPriceRecord.type'
 import batchWriteItems, { Output } from 'src/lib/AWS/dynamodb/batchWriteItems'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import attributeNames from '../constants/attributeNames'
 import getTableName from '../utils/getTableName'
 
@@ -18,11 +17,9 @@ function batchDeleteItems <Rec extends T> (
   quarter: Quarter,
   getTimeSK: (record: Rec) => string,
 ): Promise<Output | null> {
-  return batchWriteItems<Rec, DocumentClient.DeleteRequest>(records, getTableName(year, quarter), 'delete', rec => ({
-    Key: {
-      [attributeNames.COMPANY_CODE]: `${rec.company}_${rec.code}`,
-      [attributeNames.TIME_SK]: getTimeSK(rec),
-    },
+  return batchWriteItems<Rec>(records, getTableName(year, quarter), 'delete', rec => ({
+    [attributeNames.COMPANY_CODE]: `${rec.company}_${rec.code}`,
+    [attributeNames.TIME_SK]: getTimeSK(rec),
   }))
 }
 export default batchDeleteItems

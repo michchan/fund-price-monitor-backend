@@ -6,17 +6,16 @@ import batchWriteItems, { Output } from 'src/lib/AWS/dynamodb/batchWriteItems'
 import getTableName from '../utils/getTableName'
 
 type T = FundPriceRecord | FundPriceChangeRate
-type R = DocumentClient.PutRequest | DocumentClient.DeleteRequest
 
 /**
  * Return a list of properties of tables that have been created and match the criteria
  */
-function batchCreateItems <Rec extends T, Req extends R> (
+function batchCreateItems <Rec extends T> (
   records: Rec[],
   /** In YYYY format */
   year: string | number,
   quarter: Quarter,
-  serializer: (record: Rec) => Req,
+  serializer: (record: Rec) => DocumentClient.AttributeMap,
 ): Promise<Output | null> {
   return batchWriteItems(records, getTableName(year, quarter), 'put', serializer)
 }

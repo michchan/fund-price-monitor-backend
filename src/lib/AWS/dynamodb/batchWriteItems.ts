@@ -9,18 +9,15 @@ import AWS from 'src/lib/AWS'
 // Initialize
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
-type PT = DynamoDB.DocumentClient.PutRequest
-type DT = DynamoDB.DocumentClient.DeleteRequest
-
-const REQUESTS_MODE: Opts<unknown, PT | DT>['requestsMode'] = 'pipe'
+const REQUESTS_MODE: Opts<unknown>['requestsMode'] = 'pipe'
 
 export type Output = BatchWriteDynamoDBItemsResult
 
-function batchWriteItems <T, RT extends PT | DT> (
+function batchWriteItems <T> (
   records: T[],
   tableName: string,
   mode: 'put' | 'delete',
-  serialize?: (item: T) => RT,
+  serialize?: (item: T) => DynamoDB.DocumentClient.AttributeMap,
 ): Promise<Output | null> {
   return batchWriteDynamodbItems({
     docClient,

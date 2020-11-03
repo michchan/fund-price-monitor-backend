@@ -7,7 +7,7 @@ import getCompositeSKFromChangeRate from './getCompositeSKFromChangeRate'
 /**
  * Serilize a FundPriceChangeRate to dynamodb item
  */
-const serializeChangeRate = (record: FundPriceChangeRate): DynamoDB.DocumentClient.PutRequest => {
+const serializeChangeRate = (record: FundPriceChangeRate): DynamoDB.DocumentClient.AttributeMap => {
   const {
     company,
     code,
@@ -21,17 +21,15 @@ const serializeChangeRate = (record: FundPriceChangeRate): DynamoDB.DocumentClie
   } = record
 
   return {
-    Item: {
-      [attr.COMPANY_CODE]: `${company}_${code}`,
-      [attr.TIME_SK]: getCompositeSKFromChangeRate(record),
-      [attr.PERIOD]: `${recordType}_${company}_${period}`,
-      [attr.COMPANY]: company,
-      [attr.NAME]: name,
-      [attr.UPDATED_DATE]: updatedDate,
-      [attr.PRICE]: price,
-      [attr.PRICE_CHANGE_RATE]: priceChangeRate,
-      [attr.PRICE_LIST]: priceList,
-    },
+    [attr.COMPANY_CODE]: `${company}_${code}`,
+    [attr.TIME_SK]: getCompositeSKFromChangeRate(record),
+    [attr.PERIOD]: `${recordType}_${company}_${period}`,
+    [attr.COMPANY]: company,
+    [attr.NAME]: name,
+    [attr.UPDATED_DATE]: updatedDate,
+    [attr.PRICE]: price,
+    [attr.PRICE_CHANGE_RATE]: priceChangeRate,
+    [attr.PRICE_LIST]: priceList,
   }
 }
 
