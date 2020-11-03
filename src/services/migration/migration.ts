@@ -12,6 +12,7 @@ const commonIamStatementInput = {
   resources: ['*'],
   effect: iam.Effect.ALLOW,
 }
+const WRITE_ITEMS_HANDLER_TIMEOUT_MINS = 15
 
 const constructIamRole = (scope: cdk.Construct): iam.Role => {
   // Create IAM roles for handlers
@@ -71,6 +72,7 @@ const constructLamdas = (
   const s3ToDynamodbHandler = new lambda.Function(scope, 'MigrateS3ToDynamodb', {
     ...defaultInput,
     handler: 's3ToDynamodb.handler',
+    timeout: cdk.Duration.millis(WRITE_ITEMS_HANDLER_TIMEOUT_MINS),
   })
 
   return {
