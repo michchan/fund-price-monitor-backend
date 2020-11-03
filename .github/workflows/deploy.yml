@@ -15,6 +15,15 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      TELEGRAM_BOT_API_KEY_PARAMETER_NAME: ${{ secrets.TELEGRAM_BOT_API_KEY_PARAMETER_NAME }}
+      TELEGRAM_BOT_API_KEY_PARAMETER_VERSION: 1
+      TELEGRAM_CHAT_ID_PARAMETER_NAME: ${{ secrets.TELEGRAM_CHAT_ID_PARAMETER_NAME }}
+      GENERAL_LOG_SUBSCRIPTION_EMAIL: ${{ secrets.GENERAL_LOG_SUBSCRIPTION_EMAIL }}
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checkout master branch
@@ -44,18 +53,7 @@ jobs:
       # Build
       - name: Build
         run: npm run build
-        env:
-          # The SDK needs this
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
       # CDK Deploy 
       - name: cdk deploy
         run: npm run deploy
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          TELEGRAM_BOT_API_KEY_PARAMETER_NAME: ${{ secrets.TELEGRAM_BOT_API_KEY_PARAMETER_NAME }}
-          TELEGRAM_BOT_API_KEY_PARAMETER_VERSION: 1
-          TELEGRAM_CHAT_ID_PARAMETER_NAME: ${{ secrets.TELEGRAM_CHAT_ID_PARAMETER_NAME }}
-          GENERAL_LOG_SUBSCRIPTION_EMAIL: ${{ secrets.GENERAL_LOG_SUBSCRIPTION_EMAIL }}
