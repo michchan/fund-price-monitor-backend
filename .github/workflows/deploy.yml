@@ -44,6 +44,9 @@ jobs:
       # Build
       - name: Build
         run: npm run build
+        env:
+          # The SDK needs this
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
       # CDK Deploy 
       - name: cdk deploy
