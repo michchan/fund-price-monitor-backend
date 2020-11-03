@@ -4,11 +4,11 @@ import pick from 'lodash/pick'
 require('dotenv').config()
 
 export interface EnvValues {
-  AWS_DEFAULT_REGION: string;
+  AWS_RUNTIME_REGION: string;
 }
 
 const keys: (keyof EnvValues)[] = [
-  'AWS_DEFAULT_REGION',
+  'AWS_RUNTIME_REGION',
 ]
 const values: EnvValues = pick(process.env, keys) as unknown as EnvValues
 
