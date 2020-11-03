@@ -59,7 +59,7 @@
     "lodash": "^4.17.20",
     "puppeteer-core": "5.3.1",
     "puppeteer": "5.3.1",
-    "simply-utils": "0.48.0",
+    "simply-utils": "0.49.0",
     "source-map-support": "^0.5.19"
   }
 }
