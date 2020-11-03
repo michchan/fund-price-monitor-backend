@@ -17,9 +17,12 @@ function batchDeleteItems <Rec extends T> (
   quarter: Quarter,
   getTimeSK: (record: Rec) => string,
 ): Promise<Output | null> {
-  return batchWriteItems<Rec>(records, getTableName(year, quarter), 'delete', rec => ({
-    [attributeNames.COMPANY_CODE]: `${rec.company}_${rec.code}`,
-    [attributeNames.TIME_SK]: getTimeSK(rec),
-  }))
+  return batchWriteItems<Rec>(records, getTableName(year, quarter), 'delete', {
+    serialize: rec => ({
+      [attributeNames.COMPANY_CODE]: `${rec.company}_${rec.code}`,
+      [attributeNames.TIME_SK]: getTimeSK(rec),
+    }),
+    // @TODO: Add delay
+  })
 }
 export default batchDeleteItems

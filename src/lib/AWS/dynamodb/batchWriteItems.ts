@@ -11,13 +11,20 @@ const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
 const REQUESTS_MODE: Opts<unknown>['requestsMode'] = 'pipe'
 
+export interface Options <T> {
+  serialize?: (item: T) => DynamoDB.DocumentClient.AttributeMap;
+  delay?: number;
+}
 export type Output = BatchWriteDynamoDBItemsResult
 
 function batchWriteItems <T> (
   records: T[],
   tableName: string,
   mode: 'put' | 'delete',
-  serialize?: (item: T) => DynamoDB.DocumentClient.AttributeMap,
+  {
+    serialize,
+    delay,
+  }: Options<T> = {},
 ): Promise<Output | null> {
   return batchWriteDynamodbItems({
     docClient,
@@ -26,6 +33,7 @@ function batchWriteItems <T> (
     mode,
     serialize,
     requestsMode: REQUESTS_MODE,
+    delay,
   })
 }
 export default batchWriteItems

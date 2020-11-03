@@ -53,10 +53,11 @@ const getRecordsFromFile = async (
   return JSON.parse((output.Body ?? '[]') as string) as AttributeMap[]
 }
 
+const BATCH_DELAY_MS = 500
 const insertIntoTables = (
   tableName: string,
   records: AttributeMap[]
-) => batchWriteItems(records, tableName, 'put')
+) => batchWriteItems(records, tableName, 'put', { delay: BATCH_DELAY_MS })
 
 /**
  * Environment:

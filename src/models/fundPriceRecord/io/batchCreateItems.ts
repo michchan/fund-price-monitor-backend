@@ -15,8 +15,11 @@ function batchCreateItems <Rec extends T> (
   /** In YYYY format */
   year: string | number,
   quarter: Quarter,
-  serializer: (record: Rec) => DocumentClient.AttributeMap,
+  serialize: (record: Rec) => DocumentClient.AttributeMap,
 ): Promise<Output | null> {
-  return batchWriteItems(records, getTableName(year, quarter), 'put', serializer)
+  return batchWriteItems(records, getTableName(year, quarter), 'put', {
+    serialize,
+    // @TODO: Add delay
+  })
 }
 export default batchCreateItems
