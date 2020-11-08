@@ -12,13 +12,32 @@ import parse from './parse'
 type RT = FundPriceRecord<FundType, 'record'>
 type LT = FundPriceRecord<FundType, 'latest'>
 
-const takeOrganicAttribute = <T extends RT | LT> (record: T): Omit<T, 'time'> => omit(record, 'time')
+type NonKeyAttribute =
+| 'time'
+| 'fundType'
+| 'recordType'
+| 'launchedDate'
+| 'priceChangeRate'
+| 'initialPrice'
+| 'riskLevel'
+const takeKeyAttributes = <T extends RT | LT> (
+  record: T
+): Omit<T, NonKeyAttribute> => omit(record, [
+  'time',
+  'fundType',
+  'recordType',
+  'launchedDate',
+  'priceChangeRate',
+  'initialPrice',
+  'riskLevel',
+])
+
 const hasChanges = (
   basedRecord: RT | LT,
   comparedRecord: RT | LT
 ): boolean => !isEqual(
-  takeOrganicAttribute(basedRecord),
-  takeOrganicAttribute(comparedRecord)
+  takeKeyAttributes(basedRecord),
+  takeKeyAttributes(comparedRecord)
 )
 
 const takeUpdatedRecords = async (records: RT[]): Promise<RT[]> => {
