@@ -8,7 +8,7 @@ import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
 // Common lambda configs for scrape handlers
 const getDefaultScrapersInput = () => {
-  const MEMORY_SIZE_MB = 700
+  const MEMORY_SIZE_MB = 800
   const TIMEOUT_MINS = 15
   return {
     // Extra memory is needed for running the headless browser instance
