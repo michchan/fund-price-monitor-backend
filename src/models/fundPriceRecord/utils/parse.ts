@@ -1,12 +1,14 @@
 import { DynamoDB } from 'aws-sdk'
 
-import { FundPriceRecord, RecordType } from '../FundPriceRecord.type'
+import { FundPriceRecord, FundType, RecordType } from '../FundPriceRecord.type'
 import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames'
 
 /**
  * Parse a dynamodb item to FundPriceRecord
  */
-const parse = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundPriceRecord => {
+const parse = <FT extends FundType, RT extends RecordType> (
+  attributeMap: DynamoDB.DocumentClient.AttributeMap
+): FundPriceRecord<FT, RT> => {
   const {
     [attr.COMPANY_CODE]: company_code,
     [attr.TIME_SK]: timeSK,
@@ -19,7 +21,7 @@ const parse = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundPriceRec
     [attr.INITIAL_PRICE]: initialPrice,
     [attr.LAUNCHED_DATE]: launchedDate,
     [attr.PRICE_CHANGE_RATE]: priceChangeRate,
-  } = attributeMap as unknown as FundPriceRecordAttributeMap
+  } = attributeMap as unknown as FundPriceRecordAttributeMap<FT>
 
   const timeSKSegments = timeSK.split('_')
 
@@ -37,7 +39,7 @@ const parse = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundPriceRec
     time: timeSKSegments.pop() || '',
     fundType,
     // Get the first composite segment of `timeSK`
-    recordType: timeSKSegments.shift() as RecordType,
+    recordType: timeSKSegments.shift() as RT,
     priceChangeRate,
   }
 }

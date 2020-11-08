@@ -2,19 +2,19 @@ import { DynamoDBStreamEvent } from 'aws-lambda'
 import omitBy from 'lodash/omitBy'
 import isEmpty from 'lodash/isEmpty'
 
-import { CompanyType, FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { CompanyType, FundPriceRecord, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import AWS from 'src/lib/AWS'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import parse from 'src/models/fundPriceRecord/utils/parse'
 
-export type Groups = { [company in CompanyType]: FundPriceRecord[] }
-
+type T = FundPriceRecord<FundType, 'record'>
+export type Groups = { [company in CompanyType]: T[] }
 /**
  * Process event records
  */
-const groupEventRecordsByCompany = (event: DynamoDBStreamEvent): [Groups, FundPriceRecord[]] => {
+const groupEventRecordsByCompany = (event: DynamoDBStreamEvent): [Groups, T[]] => {
   // Map and normalize items
-  const records: FundPriceRecord[] = event.Records
+  const records: T[] = event.Records
     // Filter inserted records and records with `NewImage` defined
     .filter(record => (
       // If it is an insert event

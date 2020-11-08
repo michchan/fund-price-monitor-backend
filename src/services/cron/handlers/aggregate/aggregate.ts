@@ -4,6 +4,7 @@ import {
   CompanyType,
   FundPriceChangeRate,
   FundPriceRecord,
+  FundType,
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import groupEventRecordsByCompany from './groupEventRecordsByCompany'
@@ -34,7 +35,7 @@ export const handler: DynamoDBStreamHandler = async event => {
  */
 const processCompanyRecords = async (
   company: CompanyType,
-  insertedItems: FundPriceRecord[],
+  insertedItems: FundPriceRecord<FundType, 'record'>[],
   date: Date,
 ) => {
   // Get year and quarter

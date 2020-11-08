@@ -23,7 +23,10 @@ export type RecordType =
 /**
  * A scrape recrod of the fundprice
  */
-export interface FundPriceRecord {
+export interface FundPriceRecord <
+  FT extends FundType = FundType,
+  RT extends RecordType = RecordType
+> {
   company: CompanyType;
   /** Fund code/ID */
   code: string;
@@ -41,21 +44,24 @@ export interface FundPriceRecord {
   riskLevel: RiskLevel;
   /** Record time in ISO timestamp */
   time: string;
-  fundType: FundType;
-  recordType: RecordType;
+  fundType: FT;
+  recordType: RT;
 }
 
-export interface FundPriceChangeRate extends Pick<FundPriceRecord,
-| 'company'
-| 'code'
-| 'name'
-| 'price'
-| 'time'
-| 'updatedDate'
-> {
+export interface FundPriceChangeRate <
+  FT extends FundType = FundType,
+  RT extends AggregatedRecordType = AggregatedRecordType
+> extends Pick<FundPriceRecord<FT>,
+  | 'company'
+  | 'code'
+  | 'name'
+  | 'price'
+  | 'time'
+  | 'updatedDate'
+  > {
   /** In `YYYY-MM_[nth week]` , `YYYY-MM` or `YYYY.[nth quarter]` */
   period: string;
-  recordType: AggregatedRecordType;
+  recordType: RT;
   /** --------- Aggregated fields --------- */
   priceChangeRate: number;
   priceList: number[];

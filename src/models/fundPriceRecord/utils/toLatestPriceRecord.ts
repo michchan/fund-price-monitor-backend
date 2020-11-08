@@ -1,11 +1,11 @@
-import { FundPriceRecord } from '../FundPriceRecord.type'
+import { FundPriceRecord, FundType, RecordType } from '../FundPriceRecord.type'
 import calculatePriceChangeRate from './calculatePriceChangeRate'
 
-const toLatestPriceRecord = (
-  record: FundPriceRecord,
+const toLatestPriceRecord = <FT extends FundType> (
+  record: FundPriceRecord<FT, 'record'>,
   date?: Date,
-  prevRecord?: FundPriceRecord,
-): FundPriceRecord => ({
+  prevRecord?: FundPriceRecord<FT, RecordType>,
+): FundPriceRecord<FT, 'latest'> => ({
   ...record,
   time: date ? date.toISOString() : record.time,
   recordType: 'latest',

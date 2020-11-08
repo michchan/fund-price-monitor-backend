@@ -43,14 +43,14 @@ export type NumberListAttrNameKey = keyof Pick<AttrName,
 | 'PRICE_LIST'
 >
 
-export type FundPriceRecordAttributeMap = {
+export type FundPriceRecordAttributeMap <FT extends FundType = FundType> = {
   [key in AttrName[StringAttrNameKey]]: string
 } & {
   [key in AttrName[NumberAttrNameKey]]: number
 } & {
   [key in AttrName[NumberListAttrNameKey]]: number[]
 } & {
-  [key in AttrName['FUND_TYPE']]: FundType
+  [key in AttrName['FUND_TYPE']]: FT
 } & {
   [key in AttrName['RISK_LEVEL']]: RiskLevel
 } & {

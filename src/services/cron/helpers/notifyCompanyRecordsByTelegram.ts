@@ -4,6 +4,7 @@ import {
   CompanyType,
   FundPriceChangeRate,
   FundPriceRecord,
+  FundType,
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import sendMessage from 'src/lib/telegram/sendMessage'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
@@ -41,9 +42,12 @@ const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date:
   }
 }
 
+type Parser =
+  | FundPriceChangeRate<FundType>
+  | FundPriceRecord<FundType>
 const getItemParser = (scheduleType: ScheduleType) => (
   item: DocumentClient.AttributeMap
-): FundPriceChangeRate | FundPriceRecord => {
+): Parser => {
   switch (scheduleType) {
     case 'quarterly':
     case 'monthly':

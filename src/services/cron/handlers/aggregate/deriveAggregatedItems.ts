@@ -2,6 +2,7 @@ import {
   AggregatedRecordType,
   FundPriceChangeRate,
   FundPriceRecord,
+  FundType,
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import getChangeRate from 'src/models/fundPriceRecord/utils/getChangeRate'
 import toLatestPriceRecord from 'src/models/fundPriceRecord/utils/toLatestPriceRecord'
@@ -10,7 +11,7 @@ import { Output as Input } from './queryPrevItems'
 export type Output = Input
 
 const deriveAggregatedItems = (
-  insertedItems: FundPriceRecord[],
+  insertedItems: FundPriceRecord<FundType, 'record'>[],
   date: Date,
   ...rest: Output
 ): Output => {

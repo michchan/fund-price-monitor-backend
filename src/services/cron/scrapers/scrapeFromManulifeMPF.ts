@@ -8,15 +8,16 @@ import {
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import retryWithDelay from '../helpers/retryWithDelay'
 
+type T = FundPriceRecord<'mpf', 'record'>
 interface RiskLevlIndicatorImageNameMap {
-  [key: string]: FundPriceRecord['riskLevel'];
+  [key: string]: T['riskLevel'];
 }
 
 // Have to be same scope
 // eslint-disable-next-line max-lines-per-function
-const evaluatePage = (): FundPriceRecord[] => {
+const evaluatePage = (): T[] => {
   // Map gif name to risk level
-  const riskLevelIndicatorImageNameMap: { [key: string]: FundPriceRecord['riskLevel'] } = {
+  const riskLevelIndicatorImageNameMap: { [key: string]: T['riskLevel'] } = {
     'v.gif': 'veryLow',
     'w.gif': 'low',
     'x.gif': 'neutral',
@@ -34,18 +35,13 @@ const evaluatePage = (): FundPriceRecord[] => {
   const getMapRowToRecord = (
     riskLevelIndicatorImageNameMap: RiskLevlIndicatorImageNameMap,
     time: string,
-  ) => (row: HTMLTableRowElement): FundPriceRecord => {
+  ) => (row: HTMLTableRowElement): T => {
     // Get table cells list
     const dataCells = row.children as HTMLCollectionOf<HTMLTableDataCellElement>
-    // Define company type
     const company: CompanyType = 'manulife'
-    // Define fundType
     const fundType: FundType = 'mpf'
-    // Define record type
     const recordType: RecordType = 'record'
-    // Get code
     const code = dataCells[0].innerText.trim().replace(/\s|_/g, '')
-
     return {
       company,
       code,
@@ -82,14 +78,14 @@ const evaluatePage = (): FundPriceRecord[] => {
     }
   }
 
-  // Map table rows data to FundPriceRecord[]
+  // Map table rows data to T[]
   return Array.from(tableRows).map(getMapRowToRecord(riskLevelIndicatorImageNameMap, time))
 }
 
 /**
  * Helpers to query data from html
  */
-const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
+const getDataFromHTML = async (page: puppeteer.Page): Promise<T[]> => {
   // Wait for the elements we want
   const viewId = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
   await retryWithDelay(() => page.waitForSelector(
@@ -102,7 +98,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<FundPriceRecord[]>
 }
 
 const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_HK'
-const scrapeFromManulifeMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
+const scrapeFromManulifeMPF = async (page: puppeteer.Page): Promise<T[]> => {
   await page.goto(PAGE_URL)
   return getDataFromHTML(page)
 }

@@ -14,6 +14,8 @@ const PRICES_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundpric
 const PERFORMANCE_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundperf.jspa?mt=MT3&lang=zh_TW'
 const DETAILS_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/funddetails.jspa?mt=MT3&lang=zh_TW'
 
+type T = FundPriceRecord<FundType, 'record'>
+
 // Define company type
 const company: CompanyType = 'aia'
 // Define fundType
@@ -21,9 +23,9 @@ const fundType: FundType = 'mpf'
 // Define record type
 const recordType: RecordType = 'record'
 
-const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]> => {
+const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<T[]> => {
   // Define time
-  const time: FundPriceRecord['time'] = new Date().toISOString()
+  const time: T['time'] = new Date().toISOString()
 
   // Scrape prices data page
   await page.goto(PRICES_PAGE_URL)
@@ -38,7 +40,7 @@ const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<FundPriceRecord[]
   const detailsData = await getDetailsData(page)
 
   // Aggregate data based on prices data
-  const records: FundPriceRecord[] = pricesData.map(({ code, name, price, updatedDate }) => {
+  const records: T[] = pricesData.map(({ code, name, price, updatedDate }) => {
     const perfItem = perfData.find(eachItem => eachItem.code === code)
     const detailsItem = detailsData.find(eachItem => eachItem.name.trim() === name.trim())
     return {

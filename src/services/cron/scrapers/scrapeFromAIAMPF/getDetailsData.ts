@@ -3,7 +3,7 @@ import puppeteer = require('puppeteer')
 import { FundPriceRecord, RiskLevel } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import retryWithDelay from '../../helpers/retryWithDelay'
 
-export interface DetailsDataRecord extends Pick<FundPriceRecord,
+export interface DetailsDataRecord extends Pick<FundPriceRecord<'mpf', 'record'>,
 | 'name'
 | 'riskLevel'
 > {}
