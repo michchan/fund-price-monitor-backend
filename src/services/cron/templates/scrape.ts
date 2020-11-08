@@ -2,7 +2,7 @@ import { ScheduledHandler } from 'aws-lambda'
 import { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 
 import { FundPriceRecord, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
-import scrapeAll from 'src/services/cron/helpers/scrapeAll'
+import scrapeAndReduce from 'src/services/cron/helpers/scrapeAndReduce'
 import batchCreateItems from 'src/models/fundPriceRecord/io/batchCreateItems'
 import serialize from 'src/models/fundPriceRecord/utils/serialize'
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
@@ -15,7 +15,7 @@ const scrapers: GetDataWithPage<FundPriceRecord<FundType, 'record'>[]>[] = []
 export const handler: ScheduledHandler = async () => {
   const [year, quarter] = getCurrentYearAndQuarter()
   // Scrape records from the site
-  const records = await scrapeAll(scrapers)
+  const records = await scrapeAndReduce(scrapers)
   // Write batch data to the table
   await batchCreateItems(records, { year, quarter }, serialize)
 }
