@@ -20,6 +20,7 @@ const attributeNames = {
   /** Table-level fields (table details items) */
   COMPANIES: 'companies',
   FUND_TYPES: 'fundTypes',
+  SCRAPE_META: 'scrapeMeta',
 } as const
 export default attributeNames
 

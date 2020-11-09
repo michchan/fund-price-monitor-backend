@@ -67,6 +67,22 @@ export interface FundPriceChangeRate <
   priceList: number[];
 }
 
+export interface CompanyScrapeMeta {
+  /**
+   * ISOtimestamp. The timestamp to indicate the time after scraped data and before aggregation.
+   */
+  time: string;
+  /**
+   * The size of the scraped records across batches.
+   */
+  size: number;
+}
+/**
+ * Store the metadata of the latest scrape window for each company.
+ */
+export type ScrapeMeta = {
+  [company in CompanyType]: CompanyScrapeMeta;
+}
 export interface FundPriceTableDetails {
   /** ISO timestamp */
   time: string;
@@ -74,4 +90,5 @@ export interface FundPriceTableDetails {
   companies: CompanyType[];
   /** Order not preserved */
   fundTypes: FundType[];
+  scrapeMeta: ScrapeMeta;
 }
