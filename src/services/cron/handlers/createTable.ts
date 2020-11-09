@@ -23,6 +23,7 @@ const createTableAndDetails = async (year: number | string, quarter: Quarter) =>
     time: new Date().toISOString(),
     companies: [],
     fundTypes: [],
+    scrapeMeta: {},
   }, year, quarter)
 }
 

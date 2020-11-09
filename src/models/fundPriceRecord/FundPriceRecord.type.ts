@@ -81,7 +81,7 @@ export interface CompanyScrapeMeta {
  * Store the metadata of the latest scrape window for each company.
  */
 export type ScrapeMeta = {
-  [company in CompanyType]: CompanyScrapeMeta;
+  [company in CompanyType]?: CompanyScrapeMeta;
 }
 export interface FundPriceTableDetails {
   /** ISO timestamp */
