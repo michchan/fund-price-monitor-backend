@@ -30,7 +30,7 @@ const granteIamReadTablePermission = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
-  sid: 'CronAlterTablePermission',
+  sid: 'CronReadTablePermission',
   actions: [
     'dynamodb:ListTables',
     // For `waitFor` operation
@@ -52,7 +52,7 @@ const grantLambdaStreamMappingAccess = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
-  sid: 'LambdaStreamMapping',
+  sid: 'CronLambdaStreamMapping',
   actions: [
     'lambda:CreateEventSourceMapping',
     'lambda:DeleteEventSourceMapping',
@@ -69,7 +69,7 @@ const grantSSNParameterStoreAccess = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
-  sid: 'SSMParameterStore',
+  sid: 'CronSSMParameterStore',
   actions: [
     'ssm:GetParameter',
   ],
@@ -78,7 +78,7 @@ const grantSfnExecutionAccess = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
-  sid: 'SfnExecution',
+  sid: 'CronSfnExecution',
   actions: [
     'states:StartExecution',
   ],
