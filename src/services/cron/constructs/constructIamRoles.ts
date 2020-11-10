@@ -119,7 +119,7 @@ const constructItemsAltererRole = (scope: cdk.Construct): iam.Role => {
   return role
 }
 const constructAggregatorRole = (scope: cdk.Construct): iam.Role => {
-  const role = new iam.Role(scope, 'CronAltererRole', {
+  const role = new iam.Role(scope, 'CronAggregatorRole', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
   granteIamTableReadItemsPermission(role)
