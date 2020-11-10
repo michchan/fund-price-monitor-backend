@@ -9,8 +9,8 @@ import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks'
 
 import { Handlers } from './constructLamdas'
 
-// Scrape every two hour
-const SCRAPE_INTERVAL_HOUR = 2
+// Scrape every four hour
+const SCRAPE_INTERVAL_HOUR = 4
 const SCRAPER_DELAY_MS = 3000
 
 const constructDailyEventRules = (
