@@ -36,7 +36,7 @@ const constructDailyEventRules = (
   scrapers.forEach(scraper => scraper.grantInvoke(stateMachine.role))
   // Define event rule
   const hourlyScrapeRule = new events.Rule(scope, 'HourlyScrapeRule', {
-    schedule: events.Schedule.expression(`cron(${SCRAPE_INTERVAL_HOUR} hours)`),
+    schedule: events.Schedule.expression(`rate(${SCRAPE_INTERVAL_HOUR} hours)`),
   })
   hourlyScrapeRule.addTarget(new targets.SfnStateMachine(stateMachine))
 }
