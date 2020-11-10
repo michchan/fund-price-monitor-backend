@@ -182,7 +182,7 @@ const constructPostAggregateSfnStateMachine = (
     outputPath: IS_LAST_BATCH_OUTPUT_PATH,
   })
   // Define tasks for jobs
-  const waitTask = new sfn.Wait(scope, 'Wait task', {
+  const waitTask = new sfn.Wait(scope, 'CronPostScrapeWaitTask', {
     time: sfn.WaitTime.duration(cdk.Duration.millis(STEP_FUNC_INTERVAL_MS)),
   })
   const dedupTask = new sfnTasks.LambdaInvoke(scope, 'Dedup task', {

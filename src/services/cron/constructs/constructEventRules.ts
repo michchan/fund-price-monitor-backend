@@ -22,7 +22,7 @@ const constructDailyEventRules = (
     const id = `CronScrapeTask${i}`
     return new sfnTasks.LambdaInvoke(scope, id, { lambdaFunction: scraper })
   })
-  const waitTask = new sfn.Wait(scope, 'Wait task', {
+  const waitTask = new sfn.Wait(scope, 'CronScrapeWaitTask', {
     time: sfn.WaitTime.duration(cdk.Duration.millis(SCRAPER_DELAY_MS)),
   })
   const definition = tasks.reduce<sfn.Chain>(
