@@ -205,10 +205,11 @@ const constructPostAggregateSfnStateMachine = (
   const notifyOnUpdateTask = new sfnTasks.LambdaInvoke(scope, 'Notify on update task', {
     lambdaFunction: notifyOnUpdate,
   })
+  console.log(notifyOnUpdateTask.id)
   // Create job chain
   const jobsChain = dedupTask
     .next(waitTask)
-    .next(notifyOnUpdateTask)
+    // .next(notifyOnUpdateTask)
 
   /** -------------- State machine -------------- */
   // Create chain with start condition
