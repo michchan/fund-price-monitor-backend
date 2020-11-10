@@ -182,12 +182,15 @@ const constructLamdas = (
   }: Options,
 ): Handlers => {
   const defaultInput = getDefaultLambdaInput(role, servicePathname)
+  const notificationHandlers = constructNotificationHandlers(scope, defaultInput, telegramChatId)
+  const cleanupHandlers = constructCleanupHandlers(scope, defaultInput)
   const scrapingHandlers = constructScrapingHandlers(scope, serviceDirname, defaultInput)
+  const tableHandlers = constructTableHandlers(scope, defaultInput, scrapingHandlers.aggregation)
   return {
     ...scrapingHandlers,
-    ...constructTableHandlers(scope, defaultInput, scrapingHandlers.aggregation),
-    ...constructNotificationHandlers(scope, defaultInput, telegramChatId),
-    ...constructCleanupHandlers(scope, defaultInput),
+    ...notificationHandlers,
+    ...tableHandlers,
+    ...cleanupHandlers,
   }
 }
 export default constructLamdas

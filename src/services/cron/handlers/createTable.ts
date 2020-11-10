@@ -24,6 +24,7 @@ const createTableAndDetails = async (year: number | string, quarter: Quarter) =>
     companies: [],
     fundTypes: [],
     scrapeMeta: {},
+    testScrapeMeta: {},
   }, year, quarter)
 }
 

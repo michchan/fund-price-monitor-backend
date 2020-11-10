@@ -21,6 +21,7 @@ const attributeNames = {
   COMPANIES: 'companies',
   FUND_TYPES: 'fundTypes',
   SCRAPE_META: 'scrapeMeta',
+  TEST_SCRAPE_META: 'testScrapeMeta',
 } as const
 export default attributeNames
 

@@ -91,4 +91,5 @@ export interface FundPriceTableDetails {
   /** Order not preserved */
   fundTypes: FundType[];
   scrapeMeta: ScrapeMeta;
+  testScrapeMeta: ScrapeMeta;
 }

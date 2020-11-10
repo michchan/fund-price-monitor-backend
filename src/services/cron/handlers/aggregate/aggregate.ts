@@ -54,4 +54,5 @@ const processCompanyRecords = async (
   /** -------- Send batch requests -------- */
   await createItems(dateTimeDict, ...aggregatedOutputs)
   await deleteItems(dateTimeDict, ...prevOutputs)
+  /** -------- Trigger state machine -------- */
 }
