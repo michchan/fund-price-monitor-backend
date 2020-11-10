@@ -1,5 +1,6 @@
 import mapKeys from 'lodash/mapKeys'
 import mapValues from 'lodash/mapValues'
+import isEmpty from 'lodash/isEmpty'
 
 import updateTableDetails, { Input as I, Output as O } from 'src/models/fundPriceRecord/io/updateTableDetails'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
@@ -16,7 +17,9 @@ const saveScrapeMetadata = (
   scrapeMeta: ScrapeMeta,
   tableRange: TableRange,
   isTest?: boolean,
-): Promise<O> => {
+): Promise<O | null> => {
+  if (isEmpty(scrapeMeta)) return Promise.resolve(null)
+
   // Map expression names
   const comExpNames = mapKeys(
     mapValues(scrapeMeta, (val, company) => company),

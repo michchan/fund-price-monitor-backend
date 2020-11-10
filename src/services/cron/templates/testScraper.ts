@@ -1,7 +1,6 @@
 import { ScheduledHandler } from 'aws-lambda'
 import { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
-import logObj from 'src/helpers/logObj'
 
 import { FundPriceRecord, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import saveScrapeMetadata from 'src/models/fundPriceRecord/utils/saveScrapeMetadata'
@@ -19,6 +18,5 @@ export const handler: ScheduledHandler = async () => {
   // Scrape records from the site
   const records = await scrapeAndReduce(scrapers)
   const scrapeMeta = reduceScrapeMetadata(records)
-  logObj('Scrape meta', scrapeMeta)
   await saveScrapeMetadata(scrapeMeta, tableRange, true)
 }
