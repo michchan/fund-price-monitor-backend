@@ -40,7 +40,7 @@ const constructScrapingHandlers = (
       POST_AGGREGATE_STATE_MACHINE_ARN: postAggregateStateMachine.stateMachineArn,
     },
   })
-  postAggregateStateMachine.grantExecution(aggregationHandler)
+  postAggregateStateMachine.grantExecution(aggregationHandler, 'states:StartExecution')
 
   /** ---------- Scrape Handlers ---------- */
 
