@@ -17,6 +17,7 @@ const constructDailyEventRules = (
   scope: cdk.Construct,
   { scrapers }: Pick<Handlers, 'scrapers'>,
 ) => {
+  // Create step functions
   const startTask = new sfn.Pass(scope, 'CronScrapeTaskStart')
   const tasks = scrapers.map((scraper, i) => {
     const id = `CronScrapeTask${i}`
@@ -31,6 +32,9 @@ const constructDailyEventRules = (
     startTask as unknown as sfn.Chain
   )
   const stateMachine = new sfn.StateMachine(scope, 'CronScrapeStateMachine', { definition })
+  // Grant execution
+  scrapers.forEach(scraper => scraper.grantInvoke(stateMachine.role))
+  // Define event rule
   const hourlyScrapeRule = new events.Rule(scope, 'HourlyScrapeRule', {
     schedule: events.Schedule.expression(`cron(${SCRAPE_INTERVAL_HOUR} hours)`),
   })
