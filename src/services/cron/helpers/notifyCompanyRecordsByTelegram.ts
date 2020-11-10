@@ -18,7 +18,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 const priceChangeRateQueryInput = { shouldQueryAll: true }
 
-export type ScheduleType = 'daily' | 'weekly' | 'monthly' | 'quarterly'
+export type ScheduleType = 'onUpdate' | 'weekly' | 'monthly' | 'quarterly'
 const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date: Date) => {
   switch (scheduleType) {
     case 'quarterly': {
@@ -33,7 +33,7 @@ const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date:
       const period = getPeriodByRecordType('week', date)
       return queryPeriodPriceChangeRate(company, 'week', period, priceChangeRateQueryInput)
     }
-    case 'daily':
+    case 'onUpdate':
     default:
       return queryItemsByCompany(company, {
         shouldQueryAll: true,
@@ -53,7 +53,7 @@ const getItemParser = (scheduleType: ScheduleType) => (
     case 'monthly':
     case 'weekly':
       return parseChangeRate(item)
-    case 'daily':
+    case 'onUpdate':
     default:
       return parse(item)
   }
