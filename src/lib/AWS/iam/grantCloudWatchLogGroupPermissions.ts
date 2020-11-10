@@ -6,7 +6,7 @@ const commonIamStatementInput = {
 }
 
 // Grant cloudwatch log group access
-const grantCloudWatchLogGroupAccess = (
+const grantCloudWatchLogGroupPermissions = (
   role: iam.Role
 ): iam.Role => {
   role.addToPolicy(new iam.PolicyStatement({
@@ -20,4 +20,4 @@ const grantCloudWatchLogGroupAccess = (
   }))
   return role
 }
-export default grantCloudWatchLogGroupAccess
+export default grantCloudWatchLogGroupPermissions

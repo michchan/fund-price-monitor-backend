@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
 import * as lambda from '@aws-cdk/aws-lambda'
 
-import grantCloudWatchLogGroupAccess from 'src/lib/AWS/iam/grantCloudWatchLogGroupAccess'
+import grantCloudWatchLogGroupPermissions from 'src/lib/AWS/iam/grantCloudWatchLogGroupPermissions'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 
 const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
@@ -44,7 +44,7 @@ const constructIamRole = (scope: cdk.Construct): iam.Role => {
       's3:ListBucket',
     ],
   }))
-  grantCloudWatchLogGroupAccess(role)
+  grantCloudWatchLogGroupPermissions(role)
   return role
 }
 

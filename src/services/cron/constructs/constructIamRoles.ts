@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
-import grantCloudWatchLogGroupAccess from 'src/lib/AWS/iam/grantCloudWatchLogGroupAccess'
+import grantCloudWatchLogGroupPermissions from 'src/lib/AWS/iam/grantCloudWatchLogGroupPermissions'
 
 const commonIamStatementInput = {
   resources: ['*'],
@@ -99,7 +99,7 @@ const constructTableHandlerRole = (scope: cdk.Construct): iam.Role => {
   granteIamReadTablePermissions(role)
   granteIamAlterTablePermissions(role)
   granteIamTableAlterItemsPermissions(role)
-  grantCloudWatchLogGroupAccess(role)
+  grantCloudWatchLogGroupPermissions(role)
   grantLambdaEventSourceMappingPermissions(role)
   grantDynamoDBStreamPermissions(role)
   return role
@@ -111,7 +111,7 @@ const constructItemsReaderRole = (scope: cdk.Construct): iam.Role => {
   })
   granteIamReadTablePermissions(role)
   granteIamTableReadItemsPermissions(role)
-  grantCloudWatchLogGroupAccess(role)
+  grantCloudWatchLogGroupPermissions(role)
   // For notifiers getting telegram credentials
   grantSSNParameterStorePermissions(role)
   return role
@@ -124,7 +124,7 @@ const constructItemsAltererRole = (scope: cdk.Construct): iam.Role => {
   granteIamReadTablePermissions(role)
   granteIamTableReadItemsPermissions(role)
   granteIamTableAlterItemsPermissions(role)
-  grantCloudWatchLogGroupAccess(role)
+  grantCloudWatchLogGroupPermissions(role)
   return role
 }
 const constructAggregatorRole = (scope: cdk.Construct): iam.Role => {
@@ -134,7 +134,7 @@ const constructAggregatorRole = (scope: cdk.Construct): iam.Role => {
   grantDynamoDBStreamPermissions(role)
   granteIamTableReadItemsPermissions(role)
   granteIamTableAlterItemsPermissions(role)
-  grantCloudWatchLogGroupAccess(role)
+  grantCloudWatchLogGroupPermissions(role)
   grantSfnExecutionPermissions(role)
   return role
 }

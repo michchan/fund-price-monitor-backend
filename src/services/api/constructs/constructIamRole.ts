@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
-import grantCloudWatchLogGroupAccess from 'src/lib/AWS/iam/grantCloudWatchLogGroupAccess'
+import grantCloudWatchLogGroupPermissions from 'src/lib/AWS/iam/grantCloudWatchLogGroupPermissions'
 
 const ROLE_ID = 'ApiRole'
 const commonIamStatementInput = {
@@ -25,7 +25,7 @@ const constructIamRole = (scope: cdk.Construct): iam.Role => {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
   grantIamDBAccess(role)
-  grantCloudWatchLogGroupAccess(role)
+  grantCloudWatchLogGroupPermissions(role)
   return role
 }
 export default constructIamRole
