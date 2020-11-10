@@ -163,14 +163,20 @@ const STEP_FUNC_INTERVAL_MS = 3000
 const STEP_FUNC_TIMEOUT_MINS = 10
 const IS_LAST_BATCH_OUTPUT_PATH = '$.isLastBatch'
 
-interface PostScrapeHandlers extends
+interface PostScrapeInputHandlers extends
   Pick<CleanupHandlers, 'dedup'>,
   Pick<NotificationHandlers, 'notifyOnUpdate'> {}
+interface PostScrapeOutputHandlers {
+  checkLastBatchHandler: lambda.Function;
+}
+interface PostScrapeOutput extends PostScrapeOutputHandlers {
+  stateMachine: sfn.StateMachine;
+}
 const constructPostAggregateSfnStateMachine = (
   scope: cdk.Construct,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
-  { dedup, notifyOnUpdate }: PostScrapeHandlers,
-): sfn.StateMachine => {
+  { dedup, notifyOnUpdate }: PostScrapeInputHandlers,
+): PostScrapeOutput => {
   // Define tasks for condition
   const checkLastBatchHandler = new lambda.Function(scope, 'CronPostAggLastBatchChecker', {
     ...defaultInput,
@@ -208,7 +214,8 @@ const constructPostAggregateSfnStateMachine = (
   checkLastBatchHandler.grantInvoke(stateMachine.role)
   dedup.grantInvoke(stateMachine.role)
   notifyOnUpdate.grantInvoke(stateMachine.role)
-  return stateMachine
+
+  return { stateMachine, checkLastBatchHandler }
 }
 
 // Common input for lambda Definition
@@ -225,7 +232,8 @@ const getDefaultLambdaInput = (role: iam.Role, servicePathname: string) => {
 export interface Handlers extends ScrapingHandlers,
   TableHandlers,
   NotificationHandlers,
-  CleanupHandlers {}
+  CleanupHandlers,
+  PostScrapeOutputHandlers {}
 export interface Options {
   servicePathname: string;
   serviceDirname: string;
@@ -243,7 +251,10 @@ const constructLamdas = (
   const defaultInput = getDefaultLambdaInput(role, servicePathname)
   const notificationHandlers = constructNotificationHandlers(scope, defaultInput, telegramChatId)
   const cleanupHandlers = constructCleanupHandlers(scope, defaultInput)
-  const postAggregateStateMachine = constructPostAggregateSfnStateMachine(scope, defaultInput, {
+  const {
+    stateMachine,
+    checkLastBatchHandler,
+  } = constructPostAggregateSfnStateMachine(scope, defaultInput, {
     dedup: cleanupHandlers.dedup,
     notifyOnUpdate: notificationHandlers.notifyOnUpdate,
   })
@@ -251,10 +262,11 @@ const constructLamdas = (
     scope,
     serviceDirname,
     defaultInput,
-    postAggregateStateMachine
+    stateMachine
   )
   const tableHandlers = constructTableHandlers(scope, defaultInput, scrapingHandlers.aggregation)
   return {
+    checkLastBatchHandler,
     ...scrapingHandlers,
     ...notificationHandlers,
     ...tableHandlers,
