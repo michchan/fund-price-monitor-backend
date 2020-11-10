@@ -6,49 +6,61 @@ const commonIamStatementInput = {
   resources: ['*'],
   effect: iam.Effect.ALLOW,
 }
-const granteIamTableReadItemsPermission = (
+const granteIamTableReadItemsPermissions = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
-  sid: 'CronTableReadItemPermission',
+  sid: 'CronTableReadItemPermissions',
   actions: [
     'dynamodb:Query',
   ],
 }))
-const granteIamTableAlterItemsPermission = (
+const granteIamTableAlterItemsPermissions = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
-  sid: 'CronTableAlterItemPermission',
+  sid: 'CronTableAlterItemPermissions',
   actions: [
     'dynamodb:BatchWriteItem',
     'dynamodb:PutItem',
     'dynamodb:UpdateItem',
   ],
 }))
-const granteIamReadTablePermission = (
+const granteIamReadTablePermissions = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
-  sid: 'CronReadTablePermission',
+  sid: 'CronReadTablePermissions',
   actions: [
     'dynamodb:ListTables',
     // For `waitFor` operation
     'dynamodb:DescribeTable',
   ],
 }))
-const granteIamAlterTablePermission = (
+const granteIamAlterTablePermissions = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
-  sid: 'CronAlterTablePermission',
+  sid: 'CronAlterTablePermissions',
   actions: [
     'dynamodb:CreateTable',
     'dynamodb:UpdateTable',
   ],
 }))
 
-const grantLambdaStreamMappingAccess = (
+const grantDynamoDBStreamPermissions = (
+  role: iam.Role
+) => role.addToPolicy(new iam.PolicyStatement({
+  ...commonIamStatementInput,
+  sid: 'CronDynamoDBStream',
+  actions: [
+    'dynamodb:DescribeStream',
+    'dynamodb:GetRecords',
+    'dynamodb:GetShardIterator',
+    'dynamodb:ListStreams',
+  ],
+}))
+const grantLambdaEventSourceMappingPermissions = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
@@ -59,13 +71,9 @@ const grantLambdaStreamMappingAccess = (
     'lambda:ListEventSourceMappings',
     // For `waitFor` operation
     'lambda:GetFunctionConfiguration',
-    'dynamodb:DescribeStream',
-    'dynamodb:GetRecords',
-    'dynamodb:GetShardIterator',
-    'dynamodb:ListStreams',
   ],
 }))
-const grantSSNParameterStoreAccess = (
+const grantSSNParameterStorePermissions = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
@@ -74,7 +82,7 @@ const grantSSNParameterStoreAccess = (
     'ssm:GetParameter',
   ],
 }))
-const grantSfnExecutionAccess = (
+const grantSfnExecutionPermissions = (
   role: iam.Role
 ) => role.addToPolicy(new iam.PolicyStatement({
   ...commonIamStatementInput,
@@ -88,11 +96,12 @@ const constructTableHandlerRole = (scope: cdk.Construct): iam.Role => {
   const role = new iam.Role(scope, 'CronTableHandlerRole', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
-  granteIamReadTablePermission(role)
-  granteIamAlterTablePermission(role)
-  granteIamTableAlterItemsPermission(role)
+  granteIamReadTablePermissions(role)
+  granteIamAlterTablePermissions(role)
+  granteIamTableAlterItemsPermissions(role)
   grantCloudWatchLogGroupAccess(role)
-  grantLambdaStreamMappingAccess(role)
+  grantLambdaEventSourceMappingPermissions(role)
+  grantDynamoDBStreamPermissions(role)
   return role
 }
 
@@ -100,11 +109,11 @@ const constructItemsReaderRole = (scope: cdk.Construct): iam.Role => {
   const role = new iam.Role(scope, 'CronNotifierRole', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
-  granteIamReadTablePermission(role)
-  granteIamTableReadItemsPermission(role)
+  granteIamReadTablePermissions(role)
+  granteIamTableReadItemsPermissions(role)
   grantCloudWatchLogGroupAccess(role)
   // For notifiers getting telegram credentials
-  grantSSNParameterStoreAccess(role)
+  grantSSNParameterStorePermissions(role)
   return role
 }
 
@@ -112,9 +121,9 @@ const constructItemsAltererRole = (scope: cdk.Construct): iam.Role => {
   const role = new iam.Role(scope, 'CronAltererRole', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
-  granteIamReadTablePermission(role)
-  granteIamTableReadItemsPermission(role)
-  granteIamTableAlterItemsPermission(role)
+  granteIamReadTablePermissions(role)
+  granteIamTableReadItemsPermissions(role)
+  granteIamTableAlterItemsPermissions(role)
   grantCloudWatchLogGroupAccess(role)
   return role
 }
@@ -122,10 +131,11 @@ const constructAggregatorRole = (scope: cdk.Construct): iam.Role => {
   const role = new iam.Role(scope, 'CronAggregatorRole', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
-  granteIamTableReadItemsPermission(role)
-  granteIamTableAlterItemsPermission(role)
+  grantDynamoDBStreamPermissions(role)
+  granteIamTableReadItemsPermissions(role)
+  granteIamTableAlterItemsPermissions(role)
   grantCloudWatchLogGroupAccess(role)
-  grantSfnExecutionAccess(role)
+  grantSfnExecutionPermissions(role)
   return role
 }
 
