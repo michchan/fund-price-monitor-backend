@@ -4,7 +4,7 @@ import launchPuppeteerBrowserSession, {
 
 import logObj from 'src/helpers/logObj'
 import { FundPriceRecord, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
-// ! import takeUpdatedRecords from 'src/models/fundPriceRecord/utils/takeUpdatedRecords'
+import takeUpdatedRecords from 'src/models/fundPriceRecord/utils/takeUpdatedRecords'
 
 type RT = FundPriceRecord<FundType, 'record'>
 
@@ -20,8 +20,7 @@ const reduceRecords = (batches: RT[][]): Promise<RT[]> => {
   // Flatten records (Array.flat())
   const records = batches.reduce((acc, curr) => [...acc, ...curr], [])
   logObj(`Records scraped (${records.length}): `, records)
-  return Promise.resolve(records)
-  // ! return takeUpdatedRecords(records)
+  return takeUpdatedRecords(records)
 }
 
 async function scrapeAndReduce (scrapers: GetDataWithPage<RT[]>[]): Promise<RT[]> {
