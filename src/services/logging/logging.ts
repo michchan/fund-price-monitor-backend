@@ -99,7 +99,7 @@ const constructSubscriptions = (
   const allLogGroups = [...logGroups, mockErrorLog.logGroup]
   // Create subscription filters for each log group
   allLogGroups.forEach((logGroup, i) => {
-    const id = `LambdaErrorLogsSubscription${i}}`
+    const id = `LambdaErrLogs${i}}`
     return new logs.SubscriptionFilter(scope, id, {
       logGroup,
       destination: subsDestination,
