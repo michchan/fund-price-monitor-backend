@@ -5,7 +5,6 @@ import * as logs from '@aws-cdk/aws-logs'
 import * as sns from '@aws-cdk/aws-sns'
 import * as subs from '@aws-cdk/aws-sns-subscriptions'
 import { LambdaDestination } from '@aws-cdk/aws-logs-destinations'
-import generateRandomString from 'simply-utils/dist/string/generateRandomString'
 
 import { PROJECT_NAMESPACE } from 'src/constants'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
@@ -100,7 +99,7 @@ const constructSubscriptions = (
   const allLogGroups = [...logGroups, mockErrorLog.logGroup]
   // Create subscription filters for each log group
   allLogGroups.forEach((logGroup, i) => {
-    const id = `LambdaErrorLogsSubscription${i}${generateRandomString()}`
+    const id = `LambdaErrorLogsSubscription${i}${logGroup.logGroupName}}`
     return new logs.SubscriptionFilter(scope, id, {
       logGroup,
       destination: subsDestination,
