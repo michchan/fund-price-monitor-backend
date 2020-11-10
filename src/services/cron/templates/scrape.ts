@@ -6,6 +6,8 @@ import scrapeAndReduce from 'src/services/cron/helpers/scrapeAndReduce'
 import batchCreateItems from 'src/models/fundPriceRecord/io/batchCreateItems'
 import serialize from 'src/models/fundPriceRecord/utils/serialize'
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
+import reduceScrapeMetadata from 'src/models/fundPriceRecord/utils/reduceScrapeMetadata'
+import saveScrapeMetadata from 'src/models/fundPriceRecord/utils/saveScrapeMetadata'
 
 // Create list of scrapers
 const scrapers: GetDataWithPage<FundPriceRecord<FundType, 'record'>[]>[] = []
@@ -17,6 +19,8 @@ export const handler: ScheduledHandler = async () => {
   const tableRange = { year, quarter }
   // Scrape records from the site
   const records = await scrapeAndReduce(scrapers)
+  const scrapeMeta = reduceScrapeMetadata(records)
+  await saveScrapeMetadata(scrapeMeta, tableRange, true)
   // Write batch data to the table
   await batchCreateItems(records, tableRange, serialize)
 }
