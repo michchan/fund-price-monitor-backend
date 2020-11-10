@@ -3,10 +3,13 @@ import getQuarter from 'simply-utils/dist/dateTime/getQuarter'
 import queryAllItems, { Input } from 'src/lib/AWS/dynamodb/queryAllItems'
 import TableRange from '../TableRange.type'
 import getTableName from '../utils/getTableName'
-import { CompanyType, FundPriceTableDetails, FundType } from '../FundPriceRecord.type'
+import { CompanyType, FundPriceTableDetails, FundType, ScrapeMeta } from '../FundPriceRecord.type'
 import attrs from '../constants/attributeNames'
 import topLevelKeysValues from '../constants/topLevelKeysValues'
 import { DynamoDB } from 'aws-sdk'
+
+type SS = DynamoDB.DocumentClient.StringSet
+type MapV = DynamoDB.DocumentClient.MapAttributeValue
 
 const EXP_PK = ':pk'
 const EXP_SK = ':sk'
@@ -39,14 +42,18 @@ const getTableDetails = async (
   const [item] = (output.Items || [])
   if (!item) throw new Error(`tableDetails row is not defined for table: ${TableName}`)
 
-  const companiesSet = item[attrs.COMPANIES] as DynamoDB.DocumentClient.StringSet | undefined
-  const fundTypesSet = item[attrs.FUND_TYPES] as DynamoDB.DocumentClient.StringSet | undefined
+  const companiesSet = item[attrs.COMPANIES] as SS | undefined
+  const fundTypesSet = item[attrs.FUND_TYPES] as SS | undefined
+  const scrapeMetaMap = item[attrs.SCRAPE_META] as MapV | undefined
+  const testScrapeMetaMap = item[attrs.TEST_SCRAPE_META] as MapV | undefined
 
   return {
     time: item[attrs.TIME_SK].split('@').pop(),
     // Parse sets to array
     companies: companiesSet ? companiesSet.values as CompanyType[] : [],
     fundTypes: fundTypesSet ? fundTypesSet.values as FundType[] : [],
+    scrapeMeta: scrapeMetaMap ? scrapeMetaMap as ScrapeMeta : {},
+    testScrapeMeta: testScrapeMetaMap ? testScrapeMetaMap as ScrapeMeta : {},
   }
 }
 
