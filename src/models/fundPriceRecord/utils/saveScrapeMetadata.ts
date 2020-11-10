@@ -29,7 +29,7 @@ const saveScrapeMetadata = (
   const comExpValues = mapKeys(scrapeMeta, (val, company) => getCompanyExpValue(company))
   // Map expression string pairs
   const updateExpPairs = Object.values(comExpNames).reduce((acc, comp) => {
-    const exp = `${getCompanyExpName(comp)} = ${getCompanyExpValue(comp)}`
+    const exp = `${EXP_NAME_SCRAPE_META}.${getCompanyExpName(comp)} = ${getCompanyExpValue(comp)}`
     return [...acc, exp]
   }, [] as string[])
 
