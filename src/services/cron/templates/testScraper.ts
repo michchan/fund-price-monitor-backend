@@ -18,5 +18,5 @@ export const handler: ScheduledHandler = async () => {
   // Scrape records from the site
   const records = await scrapeAndReduce(scrapers)
   const scrapeMeta = reduceScrapeMetadata(records)
-  await saveScrapeMetadata(scrapeMeta, tableRange, true)
+  await saveScrapeMetadata(scrapeMeta, tableRange, 'test')
 }

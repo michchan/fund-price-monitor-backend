@@ -16,7 +16,7 @@ const getCompanyExpValue = (company: CompanyType | string) => `:${company}`
 const saveScrapeMetadata = (
   scrapeMeta: ScrapeMeta,
   tableRange: TableRange,
-  isTest?: boolean,
+  metadataMode: 'test' | 'live' = 'live',
 ): Promise<O | null> => {
   if (isEmpty(scrapeMeta)) return Promise.resolve(null)
 
@@ -37,7 +37,7 @@ const saveScrapeMetadata = (
     UpdateExpression: `SET ${updateExpPairs.join(', ')}`,
     ExpressionAttributeNames: {
       ...comExpNames,
-      [EXP_NAME_SCRAPE_META]: isTest ? attrs.TEST_SCRAPE_META : attrs.SCRAPE_META,
+      [EXP_NAME_SCRAPE_META]: metadataMode === 'test' ? attrs.TEST_SCRAPE_META : attrs.SCRAPE_META,
     },
     ExpressionAttributeValues: comExpValues,
   }
