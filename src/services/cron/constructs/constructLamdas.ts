@@ -2,6 +2,8 @@ import * as cdk from '@aws-cdk/core'
 import * as lambda from '@aws-cdk/aws-lambda'
 import * as iam from '@aws-cdk/aws-iam'
 import * as fs from 'fs'
+import * as sfn from '@aws-cdk/aws-stepfunctions'
+import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks'
 
 import env from 'src/lib/buildEnv'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
@@ -27,13 +29,18 @@ const constructScrapingHandlers = (
   scope: cdk.Construct,
   serviceDirname: string,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  postAggregateStateMachine: sfn.StateMachine,
 ): ScrapingHandlers => {
   /** ---------- Aggregation Handlers ---------- */
   // Handler for aggregating top-level items of records
   const aggregationHandler = new lambda.Function(scope, 'CronAggregator', {
     ...defaultInput,
     handler: 'aggregate.handler',
+    environment: {
+      POST_AGGREGATE_STATE_MACHINE_ARN: postAggregateStateMachine.stateMachineArn,
+    },
   })
+  postAggregateStateMachine.grantExecution(aggregationHandler)
 
   /** ---------- Scrape Handlers ---------- */
 
@@ -105,7 +112,7 @@ const getDefaultNotifierEnv = (telegramChatId: string) => ({
 })
 
 interface NotificationHandlers {
-  notifyDaily: lambda.Function;
+  notifyOnUpdate: lambda.Function;
   notifyMonthly: lambda.Function;
   notifyQuarterly: lambda.Function;
 }
@@ -116,9 +123,9 @@ const constructNotificationHandlers = (
 ): NotificationHandlers => {
   const environment = getDefaultNotifierEnv(telegramChatId)
 
-  const notifyDailyHandler = new lambda.Function(scope, 'CronNotifierDaily', {
+  const notifyOnUpdateHandler = new lambda.Function(scope, 'CronNotifierOnUpdate', {
     ...defaultInput,
-    handler: 'notifyDaily.handler',
+    handler: 'notifyOnUpdate.handler',
     environment,
   })
   const notifyMonthlyHandler = new lambda.Function(scope, 'CronNotifierMonthly', {
@@ -132,7 +139,7 @@ const constructNotificationHandlers = (
     environment,
   })
   return {
-    notifyDaily: notifyDailyHandler,
+    notifyOnUpdate: notifyOnUpdateHandler,
     notifyMonthly: notifyMonthlyHandler,
     notifyQuarterly: notifyQuarterlyHandler,
   }
@@ -153,6 +160,59 @@ const constructCleanupHandlers = (
   return { dedup: dedupHandler }
 }
 
+const STEP_FUNC_INTERVAL_MS = 3000
+const STEP_FUNC_TIMEOUT_MINS = 10
+const IS_LAST_BATCH_OUTPUT_PATH = '$.isLastBatch'
+
+interface PostScrapeHandlers extends
+  Pick<CleanupHandlers, 'dedup'>,
+  Pick<NotificationHandlers, 'notifyOnUpdate'> {}
+const constructPostAggregateSfnStateMachine = (
+  scope: cdk.Construct,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  { dedup, notifyOnUpdate }: PostScrapeHandlers,
+): sfn.StateMachine => {
+  // Define tasks for condition
+  const checkLastBatchHandler = new lambda.Function(scope, 'CronPostAggLastBatchChecker', {
+    ...defaultInput,
+    handler: 'checkLastBatchPostAggregate.handler',
+  })
+  const checkLastBatchTask = new sfnTasks.LambdaInvoke(scope, 'Check if it is the last batch', {
+    lambdaFunction: checkLastBatchHandler,
+    outputPath: IS_LAST_BATCH_OUTPUT_PATH,
+  })
+  // Define tasks for jobs
+  const waitTask = new sfn.Wait(scope, 'Wait task', {
+    time: sfn.WaitTime.duration(cdk.Duration.millis(STEP_FUNC_INTERVAL_MS)),
+  })
+  const dedupTask = new sfnTasks.LambdaInvoke(scope, 'Dedup task', {
+    lambdaFunction: dedup,
+  })
+  const notifyOnUpdateTask = new sfnTasks.LambdaInvoke(scope, 'Notify on update task', {
+    lambdaFunction: notifyOnUpdate,
+  })
+  // Create job chain
+  const jobsChain = waitTask
+    .next(dedupTask)
+    .next(waitTask)
+    .next(notifyOnUpdateTask)
+  // Create condition to start the jobs
+  const startChoice = new sfn.Choice(scope, 'Is last batch?')
+  const startCondition = sfn.Condition.booleanEquals(IS_LAST_BATCH_OUTPUT_PATH, true)
+  // Create chain with start condition
+  const definition = checkLastBatchTask.next(startChoice.when(startCondition, jobsChain))
+  // Create state machine
+  const stateMachine = new sfn.StateMachine(scope, 'CronPostAggStateMachine', {
+    definition,
+    timeout: cdk.Duration.minutes(STEP_FUNC_TIMEOUT_MINS),
+  })
+  // Grant lambda execution roles
+  checkLastBatchHandler.grantInvoke(stateMachine.role)
+  dedup.grantInvoke(stateMachine.role)
+  notifyOnUpdate.grantInvoke(stateMachine.role)
+  return stateMachine
+}
+
 // Common input for lambda Definition
 const getDefaultLambdaInput = (role: iam.Role, servicePathname: string) => {
   const MEMORY_SIZE_MB = 250
@@ -163,6 +223,7 @@ const getDefaultLambdaInput = (role: iam.Role, servicePathname: string) => {
     role,
   }
 }
+
 export interface Handlers extends ScrapingHandlers,
   TableHandlers,
   NotificationHandlers,
@@ -184,7 +245,16 @@ const constructLamdas = (
   const defaultInput = getDefaultLambdaInput(role, servicePathname)
   const notificationHandlers = constructNotificationHandlers(scope, defaultInput, telegramChatId)
   const cleanupHandlers = constructCleanupHandlers(scope, defaultInput)
-  const scrapingHandlers = constructScrapingHandlers(scope, serviceDirname, defaultInput)
+  const postAggregateStateMachine = constructPostAggregateSfnStateMachine(scope, defaultInput, {
+    dedup: cleanupHandlers.dedup,
+    notifyOnUpdate: notificationHandlers.notifyOnUpdate,
+  })
+  const scrapingHandlers = constructScrapingHandlers(
+    scope,
+    serviceDirname,
+    defaultInput,
+    postAggregateStateMachine
+  )
   const tableHandlers = constructTableHandlers(scope, defaultInput, scrapingHandlers.aggregation)
   return {
     ...scrapingHandlers,

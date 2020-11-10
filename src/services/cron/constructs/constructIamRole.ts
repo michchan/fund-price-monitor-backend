@@ -53,6 +53,15 @@ const grantSSNParameterStoreAccess = (
     'ssm:GetParameter',
   ],
 }))
+const grantSfnExecutionAccess = (
+  role: iam.Role
+) => role.addToPolicy(new iam.PolicyStatement({
+  ...commonIamStatementInput,
+  sid: 'SfnExecution',
+  actions: [
+    'states:StartExecution',
+  ],
+}))
 
 const constructIamRole = (scope: cdk.Construct): iam.Role => {
   // Create IAM roles for cron handlers
@@ -63,6 +72,7 @@ const constructIamRole = (scope: cdk.Construct): iam.Role => {
   grantCloudWatchLogGroupAccess(role)
   grantLambdaStreamMappingAccess(role)
   grantSSNParameterStoreAccess(role)
+  grantSfnExecutionAccess(role)
   return role
 }
 export default constructIamRole

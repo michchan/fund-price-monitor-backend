@@ -4,45 +4,36 @@
 import * as cdk from '@aws-cdk/core'
 import * as events from '@aws-cdk/aws-events'
 import * as targets from '@aws-cdk/aws-events-targets'
+import * as sfn from '@aws-cdk/aws-stepfunctions'
+import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks'
 
 import { Handlers } from './constructLamdas'
 
-const TOTAL_HOURS = 24
-const SCRAPE_START_HOUR = 18
-/** Offset to prevent burst of DynamoDB provisioned throughputs */
-const EACH_SCRAPE_OFFSET_MINS = 15
-const SCRAPE_CLEANUP_GAP_HOUR = 6
-const DAILY_CLEANUP_HOUR = (SCRAPE_START_HOUR + SCRAPE_CLEANUP_GAP_HOUR) % TOTAL_HOURS
-const CLEANUP_REVIEW_GAP_HOUR = 2
-const DAILY_REVIEW_HOUR = (DAILY_CLEANUP_HOUR + CLEANUP_REVIEW_GAP_HOUR) % TOTAL_HOURS
+// Scrape every two hour
+const SCRAPE_INTERVAL_HOUR = 2
+const SCRAPER_DELAY_MS = 300
 
 const constructDailyEventRules = (
   scope: cdk.Construct,
-  { scrapers, notifyDaily, dedup }: Pick<Handlers, 'scrapers' | 'notifyDaily' | 'dedup'>,
+  { scrapers }: Pick<Handlers, 'scrapers'>,
 ) => {
-  // Add target for each scraper
-  scrapers.forEach((handler, i) => {
-    const basedTimeNum = Number(`${SCRAPE_START_HOUR}00`)
-    const scrapeTime = `${basedTimeNum + (i * EACH_SCRAPE_OFFSET_MINS)}`
-    const hr = Number(scrapeTime.substr(0, Math.floor(scrapeTime.length / 2)))
-    const min = Number(scrapeTime.substr(scrapeTime.length - 2))
-    // Run every day upon 18:00 UTC
-    // See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
-    const eachDailyScrapeRule = new events.Rule(scope, `DailyScrapeRule${i}`, {
-      schedule: events.Schedule.expression(`cron(${min} ${hr} * * ? *)`),
-    })
-    eachDailyScrapeRule.addTarget(new targets.LambdaFunction(handler))
+  const startTask = new sfn.Pass(scope, 'CronScrapeTaskStart')
+  const tasks = scrapers.map((scraper, i) => {
+    const id = `CronScrapeTask${i}`
+    return new sfnTasks.LambdaInvoke(scope, id, { lambdaFunction: scraper })
   })
-
-  const dailyCleanupRule = new events.Rule(scope, 'DailyCleanupRule', {
-    schedule: events.Schedule.expression(`cron(0 ${DAILY_CLEANUP_HOUR} * * ? *)`),
+  const waitTask = new sfn.Wait(scope, 'Wait task', {
+    time: sfn.WaitTime.duration(cdk.Duration.millis(SCRAPER_DELAY_MS)),
   })
-  dailyCleanupRule.addTarget(new targets.LambdaFunction(dedup))
-
-  const dailyReviewRule = new events.Rule(scope, 'DailyReviewRule', {
-    schedule: events.Schedule.expression(`cron(0 ${DAILY_REVIEW_HOUR} * * ? *)`),
+  const definition = tasks.reduce<sfn.Chain>(
+    (chain, task) => chain.next(task).next(waitTask),
+    startTask as unknown as sfn.Chain
+  )
+  const stateMachine = new sfn.StateMachine(scope, 'CronScrapeStateMachine', { definition })
+  const hourlyScrapeRule = new events.Rule(scope, 'HourlyScrapeRule', {
+    schedule: events.Schedule.expression(`cron(${SCRAPE_INTERVAL_HOUR} hours)`),
   })
-  dailyReviewRule.addTarget(new targets.LambdaFunction(notifyDaily))
+  hourlyScrapeRule.addTarget(new targets.SfnStateMachine(stateMachine))
 }
 
 const constructMonthlyEventRules = (
