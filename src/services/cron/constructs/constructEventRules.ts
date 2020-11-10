@@ -11,7 +11,7 @@ import { Handlers } from './constructLamdas'
 
 // Scrape every two hour
 const SCRAPE_INTERVAL_HOUR = 2
-const SCRAPER_DELAY_MS = 300
+const SCRAPER_DELAY_MS = 3000
 
 const constructDailyEventRules = (
   scope: cdk.Construct,
