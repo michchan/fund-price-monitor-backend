@@ -1,0 +1,1 @@
+export const ARE_ALL_BATCHES_AGGREGATED = 'areAllBatchesAggregated'

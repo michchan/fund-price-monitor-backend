@@ -8,6 +8,7 @@ import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks'
 import env from 'src/lib/buildEnv'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 import { CronRoles } from './constructIamRoles'
+import { ARE_ALL_BATCHES_AGGREGATED } from '../constants'
 
 // Common lambda configs for scrape handlers
 const getDefaultScrapersInput = () => {
@@ -166,7 +167,7 @@ const constructCleanupHandlers = (
 
 const STEP_FUNC_INTERVAL_MS = 3000
 const STEP_FUNC_TIMEOUT_MINS = 10
-const IS_LAST_BATCH_OUTPUT_PATH = '$.areAllBatchesAggregated'
+const ARE_ALL_BATCHES_AGGREGATED_PATH = `$.${ARE_ALL_BATCHES_AGGREGATED}`
 
 interface PostScrapeInputHandlers extends
   Pick<CleanupHandlers, 'dedup'>,
@@ -189,7 +190,7 @@ const constructPostAggregateSfnStateMachine = (
   })
   const checkLastBatchTask = new sfnTasks.LambdaInvoke(scope, 'Check if it is the last batch', {
     lambdaFunction: checkLastBatchHandler,
-    outputPath: IS_LAST_BATCH_OUTPUT_PATH,
+    outputPath: ARE_ALL_BATCHES_AGGREGATED_PATH,
   })
   // Define tasks for jobs
   const waitTask = new sfn.Wait(scope, 'CronPostScrapeWaitTask', {
@@ -206,8 +207,8 @@ const constructPostAggregateSfnStateMachine = (
     .next(waitTask)
     .next(notifyOnUpdateTask)
   // Create condition to start the jobs
-  const startChoice = new sfn.Choice(scope, 'Is last batch?')
-  const startCondition = sfn.Condition.booleanEquals(IS_LAST_BATCH_OUTPUT_PATH, true)
+  const startChoice = new sfn.Choice(scope, 'Are all batches aggregated?')
+  const startCondition = sfn.Condition.booleanEquals(ARE_ALL_BATCHES_AGGREGATED_PATH, true)
   // Create chain with start condition
   const definition = checkLastBatchTask.next(startChoice.when(startCondition, jobsChain))
   // Create state machine
