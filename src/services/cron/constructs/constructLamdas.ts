@@ -4,7 +4,6 @@ import * as iam from '@aws-cdk/aws-iam'
 import * as fs from 'fs'
 import * as sfn from '@aws-cdk/aws-stepfunctions'
 import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks'
-
 import env from 'src/lib/buildEnv'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
 import { CronRoles } from './constructIamRoles'
@@ -166,7 +165,7 @@ const constructCleanupHandlers = (
 
 const STEP_FUNC_INTERVAL_MS = 3000
 const STEP_FUNC_TIMEOUT_MINS = 10
-const ARE_ALL_BATCHES_AGGREGATED_PATH = '$.areAllBatchesAggregated'
+const STEP_FUNC_RESULT_PATH = '$.Payload'
 
 interface PostScrapeInputHandlers extends
   Pick<CleanupHandlers, 'dedup'>,
@@ -182,6 +181,7 @@ const constructPostAggregateSfnStateMachine = (
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
   { dedup, notifyOnUpdate }: PostScrapeInputHandlers,
 ): PostScrapeOutput => {
+  /** -------------- Start Condition -------------- */
   // Define tasks for condition
   const checkLastBatchHandler = new lambda.Function(scope, 'CronPostAggLastBatchChecker', {
     ...defaultInput,
@@ -189,8 +189,13 @@ const constructPostAggregateSfnStateMachine = (
   })
   const checkLastBatchTask = new sfnTasks.LambdaInvoke(scope, 'Check if it is the last batch', {
     lambdaFunction: checkLastBatchHandler,
-    resultPath: ARE_ALL_BATCHES_AGGREGATED_PATH,
+    resultPath: STEP_FUNC_RESULT_PATH,
   })
+  // Create condition to start the jobs
+  const startChoice = new sfn.Choice(scope, 'Are all batches aggregated?')
+  const startCondition = sfn.Condition.booleanEquals(STEP_FUNC_RESULT_PATH, true)
+
+  /** -------------- Job Chain -------------- */
   // Define tasks for jobs
   const waitTask = new sfn.Wait(scope, 'CronPostScrapeWaitTask', {
     time: sfn.WaitTime.duration(cdk.Duration.millis(STEP_FUNC_INTERVAL_MS)),
@@ -205,9 +210,8 @@ const constructPostAggregateSfnStateMachine = (
   const jobsChain = dedupTask
     .next(waitTask)
     .next(notifyOnUpdateTask)
-  // Create condition to start the jobs
-  const startChoice = new sfn.Choice(scope, 'Are all batches aggregated?')
-  const startCondition = sfn.Condition.booleanEquals(ARE_ALL_BATCHES_AGGREGATED_PATH, true)
+
+  /** -------------- State machine -------------- */
   // Create chain with start condition
   const definition = checkLastBatchTask.next(startChoice.when(startCondition, jobsChain))
   // Create state machine
