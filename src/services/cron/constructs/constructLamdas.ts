@@ -7,6 +7,7 @@ import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks'
 
 import env from 'src/lib/buildEnv'
 import defaultLambdaInput from 'src/common/defaultLambdaInput'
+import { CronRoles } from './constructIamRoles'
 
 // Common lambda configs for scrape handlers
 const getDefaultScrapersInput = () => {
@@ -20,8 +21,26 @@ const getDefaultScrapersInput = () => {
   }
 }
 
-interface ScrapingHandlers {
+interface Aggregators {
   aggregation: lambda.Function;
+}
+const constructAggregators = (
+  scope: cdk.Construct,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  postAggregateStateMachine: sfn.StateMachine,
+): Aggregators => {
+  // Handler for aggregating top-level items of records
+  const aggregation = new lambda.Function(scope, 'CronAggregator', {
+    ...defaultInput,
+    handler: 'aggregate.handler',
+    environment: {
+      POST_AGGREGATE_STATE_MACHINE_ARN: postAggregateStateMachine.stateMachineArn,
+    },
+  })
+  return { aggregation }
+}
+
+interface ScrapingHandlers {
   scrapers: lambda.Function[];
   testScrapers: lambda.Function[];
 }
@@ -29,20 +48,7 @@ const constructScrapingHandlers = (
   scope: cdk.Construct,
   serviceDirname: string,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
-  postAggregateStateMachine: sfn.StateMachine,
 ): ScrapingHandlers => {
-  /** ---------- Aggregation Handlers ---------- */
-  // Handler for aggregating top-level items of records
-  const aggregationHandler = new lambda.Function(scope, 'CronAggregator', {
-    ...defaultInput,
-    handler: 'aggregate.handler',
-    environment: {
-      POST_AGGREGATE_STATE_MACHINE_ARN: postAggregateStateMachine.stateMachineArn,
-    },
-  })
-
-  /** ---------- Scrape Handlers ---------- */
-
   // Read handlers directory
   const handlers = fs.readdirSync(`${serviceDirname}/handlers`)
   /** Scraper creator */
@@ -66,7 +72,6 @@ const constructScrapingHandlers = (
     .map(getScraperCreator(/^testScrapeFrom/i, 'CronTestScraper'))
 
   return {
-    aggregation: aggregationHandler,
     scrapers: scrapeHandlers,
     testScrapers: testScrapeHandlers,
   }
@@ -230,6 +235,7 @@ const getDefaultLambdaInput = (role: iam.Role, servicePathname: string) => {
 }
 
 export interface Handlers extends ScrapingHandlers,
+  Aggregators,
   TableHandlers,
   NotificationHandlers,
   CleanupHandlers,
@@ -241,36 +247,50 @@ export interface Options {
 }
 const constructLamdas = (
   scope: cdk.Construct,
-  role: iam.Role,
+  {
+    tableHandler,
+    itemsReader,
+    itemsAlterer,
+    aggregator,
+  }: CronRoles,
   {
     servicePathname,
     serviceDirname,
     telegramChatId,
   }: Options,
 ): Handlers => {
-  const defaultInput = getDefaultLambdaInput(role, servicePathname)
-  const notificationHandlers = constructNotificationHandlers(scope, defaultInput, telegramChatId)
-  const cleanupHandlers = constructCleanupHandlers(scope, defaultInput)
+  const getDefaultInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)
+  const notificationHandlers = constructNotificationHandlers(
+    scope,
+    getDefaultInput(itemsReader),
+    telegramChatId
+  )
+  const cleanupHandlers = constructCleanupHandlers(scope, getDefaultInput(itemsAlterer))
   const {
     stateMachine,
     checkLastBatchHandler,
-  } = constructPostAggregateSfnStateMachine(scope, defaultInput, {
+  } = constructPostAggregateSfnStateMachine(scope, getDefaultInput(itemsReader), {
     dedup: cleanupHandlers.dedup,
     notifyOnUpdate: notificationHandlers.notifyOnUpdate,
   })
   const scrapingHandlers = constructScrapingHandlers(
     scope,
     serviceDirname,
-    defaultInput,
-    stateMachine
+    getDefaultInput(itemsAlterer),
   )
-  const tableHandlers = constructTableHandlers(scope, defaultInput, scrapingHandlers.aggregation)
+  const aggregators = constructAggregators(scope, getDefaultInput(aggregator), stateMachine)
+  const tableHandlers = constructTableHandlers(
+    scope,
+    getDefaultInput(tableHandler),
+    aggregators.aggregation
+  )
   return {
     checkLastBatchHandler,
     ...scrapingHandlers,
     ...notificationHandlers,
     ...tableHandlers,
     ...cleanupHandlers,
+    ...aggregators,
   }
 }
 export default constructLamdas

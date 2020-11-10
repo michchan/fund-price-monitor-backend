@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core'
 import * as ssm from '@aws-cdk/aws-ssm'
 
 import env from 'src/lib/buildEnv'
-import constructIamRole from './constructs/constructIamRole'
+import constructIamRoles from './constructs/constructIamRoles'
 import constructLamdas, { Handlers } from './constructs/constructLamdas'
 import constructEventRules from './constructs/constructEventRules'
 
@@ -22,10 +22,10 @@ export interface Output {
   handlers: Handlers;
 }
 function construct (scope: cdk.Construct): Output {
-  const role = constructIamRole(scope)
+  const roles = constructIamRoles(scope)
   // Get non-secure string paramters from parameter store
   const { telegramChatId } = getSecrets(scope)
-  const handlers = constructLamdas(scope, role, {
+  const handlers = constructLamdas(scope, roles, {
     servicePathname: SERVICE_PATHNAME,
     serviceDirname: __dirname,
     telegramChatId,
