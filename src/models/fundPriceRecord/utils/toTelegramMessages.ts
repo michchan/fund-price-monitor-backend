@@ -1,5 +1,6 @@
 import zeroPadding from 'simply-utils/dist/number/zeroPadding'
 import capitalize from 'lodash/capitalize'
+import startCase from 'lodash/startCase'
 
 import { CompanyType, FundPriceChangeRate, FundPriceRecord } from '../FundPriceRecord.type'
 import { ScheduleType } from 'src/services/cron/helpers/notifyCompanyRecordsByTelegram'
@@ -22,7 +23,7 @@ const toTelegramMessages = (
 
   // Derive title line
   const titleLine = (() => {
-    const S = capitalize(scheduleType)
+    const S = startCase(scheduleType)
     const C = capitalize(company)
     const Y = year
     const M = month
