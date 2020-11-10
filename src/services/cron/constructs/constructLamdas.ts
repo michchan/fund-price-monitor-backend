@@ -189,7 +189,6 @@ const constructPostAggregateSfnStateMachine = (
   })
   const checkLastBatchTask = new sfnTasks.LambdaInvoke(scope, 'Check if it is the last batch', {
     lambdaFunction: checkLastBatchHandler,
-    resultPath: STEP_FUNC_RESULT_PATH,
   })
   // Create condition to start the jobs
   const startChoice = new sfn.Choice(scope, 'Are all batches aggregated?')
