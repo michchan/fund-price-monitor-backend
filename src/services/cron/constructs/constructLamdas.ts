@@ -161,7 +161,7 @@ const constructCleanupHandlers = (
 
 const STEP_FUNC_INTERVAL_MS = 3000
 const STEP_FUNC_TIMEOUT_MINS = 10
-const IS_LAST_BATCH_OUTPUT_PATH = '$.isLastBatch'
+const IS_LAST_BATCH_OUTPUT_PATH = '$.areAllBatchesAggregated'
 
 interface PostScrapeInputHandlers extends
   Pick<CleanupHandlers, 'dedup'>,

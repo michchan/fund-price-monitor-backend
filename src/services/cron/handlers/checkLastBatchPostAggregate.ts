@@ -4,7 +4,7 @@ import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompa
 import parse from 'src/models/fundPriceRecord/utils/parse'
 
 export const handler: Handler<any, boolean> = async () => {
-  const isLastBatch = await (async () => {
+  const areAllBatchesAggregated = await (async () => {
     const { companies, scrapeMeta } = await getTableDetails()
     for (const company of companies) {
       const output = await queryItemsByCompany(company, {
@@ -26,6 +26,6 @@ export const handler: Handler<any, boolean> = async () => {
     // All batches of companies of records have been aggregated successfully after scraped
     return true
   })()
-  console.log('isLastBatch:', isLastBatch)
-  return isLastBatch
+  console.log('areAllBatchesAggregated:', areAllBatchesAggregated)
+  return areAllBatchesAggregated
 }
