@@ -192,8 +192,7 @@ const constructPostAggregateSfnStateMachine = (
     lambdaFunction: notifyOnUpdate,
   })
   // Create job chain
-  const jobsChain = waitTask
-    .next(dedupTask)
+  const jobsChain = dedupTask
     .next(waitTask)
     .next(notifyOnUpdateTask)
   // Create condition to start the jobs
