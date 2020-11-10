@@ -5,6 +5,7 @@ const isSKEqual = <T extends FundPriceRecord | FundPriceChangeRate> (
   compared: T,
 ): boolean => {
   if (based.recordType === 'latest' && compared.recordType === 'latest') return true
+  // Supposed the fund price record is updated daily
   if (based.recordType === 'record' && compared.recordType === 'record')
     return based.time.split('T').shift() === compared.time.split('T').shift()
 
