@@ -1,4 +1,3 @@
-import uniq from 'lodash/uniq'
 import omit from 'lodash/omit'
 import isEqual from 'lodash/isEqual'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
@@ -8,6 +7,7 @@ import queryItemsByCompany from '../io/queryItemsByCompany'
 import isPKEqual from './isPKEqual'
 import logObj from 'src/helpers/logObj'
 import parse from './parse'
+import getCompaniesFromRecords from './getCompaniesFromRecords'
 
 type RT = FundPriceRecord<FundType, 'record'>
 type LT = FundPriceRecord<FundType, 'latest'>
@@ -42,7 +42,7 @@ const hasChanges = (
 
 const takeUpdatedRecords = async (records: RT[]): Promise<RT[]> => {
   // Get companies from records
-  const companies = uniq(records.map(({ company }) => company))
+  const companies = getCompaniesFromRecords(records)
   // Get latest records by company
   const latestRecords = await pipeAsync<LT[]>(
     ...companies.map(company => async (acc: LT[] = []) => {
