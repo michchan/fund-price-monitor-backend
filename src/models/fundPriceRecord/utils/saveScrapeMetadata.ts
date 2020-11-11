@@ -62,7 +62,7 @@ const saveScrapeMetadata = (
   }
   let expAttrValues: I['ExpressionAttributeValues'] = {}
 
-  if (info) {
+  if (info && !isDeepEmpty(info)) {
     const [setExp, expN, expV] = mapInfoInput(info, setExpressions, expAttrNames, expAttrValues)
     expAttrNames = { ...expN, [EXP_NAME_INFO]: 'info' }
     expAttrValues = expV
