@@ -85,6 +85,7 @@ export interface ScrapeMeta {
   info: {
     [company in CompanyType]?: CompanyScrapeMeta;
   };
+  status: ScrapeStatus;
 }
 export interface FundPriceTableDetails {
   /** ISO timestamp */

@@ -4,17 +4,17 @@ import getCompaniesFromRecords from 'src/models/fundPriceRecord/utils/getCompani
 
 type RT = FundPriceRecord<FundType, 'record'>
 
-const reduceScrapeMetadata = (records: RT[], status: ScrapeStatus): ScrapeMeta => {
+const reduceScrapeMetaInfo = (records: RT[], status: ScrapeStatus): ScrapeMeta['info'] => {
   const companies = getCompaniesFromRecords(records)
-  const scrapeMeta = companies.reduce((acc, comp) => {
+  const info = companies.reduce((acc, comp) => {
     const isSameCompany = (rec: RT) => rec.company === comp
     const meta: CompanyScrapeMeta = {
       size: records.filter(isSameCompany).length,
       status,
     }
     return { ...acc, [comp]: meta }
-  }, {} as ScrapeMeta)
-  logObj('Scrape meta', scrapeMeta)
-  return scrapeMeta
+  }, {} as ScrapeMeta['info'])
+  logObj('Scrape meta', info)
+  return info
 }
-export default reduceScrapeMetadata
+export default reduceScrapeMetaInfo

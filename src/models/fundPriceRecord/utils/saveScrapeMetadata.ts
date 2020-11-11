@@ -9,37 +9,77 @@ import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import logObj from 'src/helpers/logObj'
 
 const EXP_NAME_SCRAPE_META = '#__scrapeMeta'
+const EXP_VAL_STATUS = ':__status'
+const EXP_VAL_TIME = ':__time'
 
 const getCompanyExpName = (company: CompanyType | string) => `#${company}`
 const getCompanyExpValue = (company: CompanyType | string) => `:${company}`
 
+type MapIO = [
+  setExpressions: string[],
+  expAttrNames: I['ExpressionAttributeNames'],
+  expAttrValues: I['ExpressionAttributeValues']
+]
+const mapInfoInput = (
+  info: ScrapeMeta['info'],
+  ...[setExpressions, expAttrNames, expAttrValues]: MapIO
+): MapIO => {
+  // Map expression names
+  const comExpNames = mapKeys(
+    mapValues(info, (val, company) => company),
+    (val, company) => getCompanyExpName(company)
+  ) as Record<string, string>
+  // Map expression values
+  const comExpValues = mapKeys(info, (val, company) => getCompanyExpValue(company))
+  // Map expression string pairs
+  const updateExpPairs = Object.values(comExpNames).reduce((acc, comp) => {
+    const name = getCompanyExpName(comp)
+    const value = getCompanyExpValue(comp)
+    const exp = `${EXP_NAME_SCRAPE_META}.info.${name} = ${value}`
+    return [...acc, exp]
+  }, [] as string[])
+
+  return [
+    [...setExpressions, ...updateExpPairs],
+    { ...expAttrNames, ...comExpNames },
+    { ...expAttrValues, comExpValues },
+  ]
+}
+
 const saveScrapeMetadata = (
-  scrapeMeta: ScrapeMeta,
+  scrapeMeta: Partial<ScrapeMeta>,
   tableRange: TableRange,
   metadataMode: 'test' | 'live' = 'live',
 ): Promise<O | null> => {
   if (isEmpty(scrapeMeta)) return Promise.resolve(null)
 
-  // Map expression names
-  const comExpNames = mapKeys(
-    mapValues(scrapeMeta, (val, company) => company),
-    (val, company) => getCompanyExpName(company)
-  ) as Record<string, string>
-  // Map expression values
-  const comExpValues = mapKeys(scrapeMeta, (val, company) => getCompanyExpValue(company))
-  // Map expression string pairs
-  const updateExpPairs = Object.values(comExpNames).reduce((acc, comp) => {
-    const exp = `${EXP_NAME_SCRAPE_META}.${getCompanyExpName(comp)} = ${getCompanyExpValue(comp)}`
-    return [...acc, exp]
-  }, [] as string[])
+  const { time, info, status } = scrapeMeta
+
+  let setExpressions: string[] = []
+  let expAttrNames: I['ExpressionAttributeNames'] = {
+    [EXP_NAME_SCRAPE_META]: metadataMode === 'test' ? attrs.TEST_SCRAPE_META : attrs.SCRAPE_META,
+  }
+  let expAttrValues: I['ExpressionAttributeValues'] = {}
+
+  if (info) {
+    const [setExp, expN, expV] = mapInfoInput(info, setExpressions, expAttrNames, expAttrValues)
+    setExpressions = setExp
+    expAttrNames = expN
+    expAttrValues = expV
+  }
+  if (time) {
+    expAttrValues = { ...expAttrValues, [EXP_VAL_TIME]: time }
+    setExpressions.push(`${EXP_NAME_SCRAPE_META}.time = ${EXP_VAL_TIME}`)
+  }
+  if (status) {
+    expAttrValues = { ...expAttrValues, [EXP_VAL_STATUS]: status }
+    setExpressions.push(`${EXP_NAME_SCRAPE_META}.status = ${EXP_VAL_STATUS}`)
+  }
 
   const input: I = {
-    UpdateExpression: `SET ${updateExpPairs.join(', ')}`,
-    ExpressionAttributeNames: {
-      ...comExpNames,
-      [EXP_NAME_SCRAPE_META]: metadataMode === 'test' ? attrs.TEST_SCRAPE_META : attrs.SCRAPE_META,
-    },
-    ExpressionAttributeValues: comExpValues,
+    UpdateExpression: `SET ${setExpressions.join(', ')}`,
+    ExpressionAttributeNames: expAttrNames,
+    ExpressionAttributeValues: expAttrValues,
   }
   logObj('Save scrape meta input', input)
 
