@@ -91,7 +91,7 @@ const constructStateMachine = (
 export interface Output extends ScrapingHandlers {
   stateMachine: sfn.StateMachine;
 }
-const constructScrapingSfnStateMachine = (
+const constructScrapingStateMachine = (
   scope: cdk.Construct,
   serviceDirname: string,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
@@ -100,4 +100,4 @@ const constructScrapingSfnStateMachine = (
   const stateMachine = constructStateMachine(scope, handlers)
   return { ...handlers, stateMachine }
 }
-export default constructScrapingSfnStateMachine
+export default constructScrapingStateMachine

@@ -3,12 +3,12 @@ import * as iam from '@aws-cdk/aws-iam'
 import * as sfn from '@aws-cdk/aws-stepfunctions'
 
 import { CronRoles } from '../constructIamRoles'
-import constructScrapingSfnStateMachine, { ScrapingHandlers } from './constructScrapingSfnStateMachine'
+import constructScrapingStateMachine, { ScrapingHandlers } from './constructScrapingStateMachine'
 import constructAggregators, { Aggregators } from './constructAggregators'
 import constructTableHandlers, { TableHandlers } from './constructTableHandlers'
 import constructNotificationHandlers, { NotificationHandlers } from './constructNotificationHandlers'
 import constructCleanupHandlers, { CleanupHandlers } from './constructCleanupHandlers'
-import constructPostAggregateSfnStateMachine, { PostScrapeOutputHandlers } from './constructPostAggregateSfnStateMachine'
+import constructPostAggregateStateMachine, { PostScrapeOutputHandlers } from './constructPostAggregateStateMachine'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 export interface Handlers extends ScrapingHandlers,
@@ -48,14 +48,14 @@ const constructLamdas = (
   const {
     stateMachine: postAggregateStateMachine,
     checkLastBatchHandler,
-  } = constructPostAggregateSfnStateMachine(scope, getDefaultInput(itemsReader), {
+  } = constructPostAggregateStateMachine(scope, getDefaultInput(itemsReader), {
     dedup: cleanupHandlers.dedup,
     notifyOnUpdate: notificationHandlers.notifyOnUpdate,
   })
   const {
     stateMachine: scrapeStateMachine,
     ...scrapingHandlers
-  } = constructScrapingSfnStateMachine(scope, serviceDirname, getDefaultInput(itemsAlterer))
+  } = constructScrapingStateMachine(scope, serviceDirname, getDefaultInput(itemsAlterer))
   const aggregators = constructAggregators(
     scope,
     getDefaultInput(aggregator),

@@ -20,7 +20,7 @@ export interface PostScrapeOutputHandlers {
 export interface PostScrapeOutput extends PostScrapeOutputHandlers {
   stateMachine: sfn.StateMachine;
 }
-const constructPostAggregateSfnStateMachine = (
+const constructPostAggregateStateMachine = (
   scope: cdk.Construct,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
   { dedup, notifyOnUpdate }: PostScrapeInputHandlers,
@@ -69,4 +69,4 @@ const constructPostAggregateSfnStateMachine = (
 
   return { stateMachine, checkLastBatchHandler }
 }
-export default constructPostAggregateSfnStateMachine
+export default constructPostAggregateStateMachine
