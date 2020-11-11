@@ -19,8 +19,9 @@ export const handler: ScheduledHandler = async () => {
   const tableRange = { year, quarter }
   // Scrape records from the site
   const records = await scrapeAndReduce(scrapers)
-  const scrapeMeta = reduceScrapeMetadata(records)
-  await saveScrapeMetadata(scrapeMeta, tableRange)
   // Write batch data to the table
   await batchCreateItems(records, tableRange, serialize)
+
+  const scrapeMeta = reduceScrapeMetadata(records)
+  await saveScrapeMetadata(scrapeMeta, tableRange)
 }
