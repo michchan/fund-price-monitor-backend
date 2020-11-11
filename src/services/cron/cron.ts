@@ -25,12 +25,12 @@ function construct (scope: cdk.Construct): Output {
   const roles = constructIamRoles(scope)
   // Get non-secure string paramters from parameter store
   const { telegramChatId } = getSecrets(scope)
-  const handlers = constructLamdas(scope, roles, {
+  const { handlers, stateMachines } = constructLamdas(scope, roles, {
     servicePathname: SERVICE_PATHNAME,
     serviceDirname: __dirname,
     telegramChatId,
   })
-  constructEventRules(scope, handlers)
+  constructEventRules(scope, handlers, stateMachines)
   return { handlers }
 }
 

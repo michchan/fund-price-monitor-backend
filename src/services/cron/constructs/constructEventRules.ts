@@ -4,41 +4,20 @@
 import * as cdk from '@aws-cdk/core'
 import * as events from '@aws-cdk/aws-events'
 import * as targets from '@aws-cdk/aws-events-targets'
-import * as sfn from '@aws-cdk/aws-stepfunctions'
-import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks'
 
-import { Handlers } from './constructLamdas'
+import { StateMachines, Handlers } from './constructLamdas/constructLamdas'
 
 // Scrape every four hour
 const SCRAPE_INTERVAL_HOUR = 4
-const SCRAPER_DELAY_MINS = 3
-
 const constructDailyEventRules = (
   scope: cdk.Construct,
-  { scrapers }: Pick<Handlers, 'scrapers'>,
+  { scrape: scrapeMachine }: Pick<StateMachines, 'scrape'>,
 ) => {
-  // Create step functions
-  const startTask = new sfn.Pass(scope, 'CronScrapeTaskStart')
-  const tasks = scrapers.map((scraper, i) => {
-    const id = `CronScrapeTask${i}`
-    return new sfnTasks.LambdaInvoke(scope, id, { lambdaFunction: scraper })
-  })
-  const definition = tasks.reduce<sfn.Chain>(
-    (chain, task, i) => chain
-      .next(task)
-      .next(new sfn.Wait(scope, `CronScrapeWaitTask${i}`, {
-        time: sfn.WaitTime.duration(cdk.Duration.minutes(SCRAPER_DELAY_MINS)),
-      })),
-    startTask as unknown as sfn.Chain
-  )
-  const stateMachine = new sfn.StateMachine(scope, 'CronScrapeStateMachine', { definition })
-  // Grant execution
-  scrapers.forEach(scraper => scraper.grantInvoke(stateMachine.role))
   // Define event rule
   const hourlyScrapeRule = new events.Rule(scope, 'HourlyScrapeRule', {
     schedule: events.Schedule.expression(`rate(${SCRAPE_INTERVAL_HOUR} hours)`),
   })
-  hourlyScrapeRule.addTarget(new targets.SfnStateMachine(stateMachine))
+  hourlyScrapeRule.addTarget(new targets.SfnStateMachine(scrapeMachine))
 }
 
 const constructMonthlyEventRules = (
@@ -76,10 +55,14 @@ const constructQuarterlyEventRules = (
   quarterStartRule.addTarget(new targets.LambdaFunction(updateTable))
 }
 
-type EventRulesArgs = [scope: cdk.Construct, handlers: Handlers]
-const constructEventRules = (...args: EventRulesArgs): void => {
-  constructDailyEventRules(...args)
-  constructMonthlyEventRules(...args)
-  constructQuarterlyEventRules(...args)
+type EventRulesArgs = [
+  scope: cdk.Construct,
+  handlers: Handlers,
+  stateMachines: Pick<StateMachines, 'scrape'>
+]
+const constructEventRules = (...[scope, handlers, stateMachines]: EventRulesArgs): void => {
+  constructDailyEventRules(scope, stateMachines)
+  constructMonthlyEventRules(scope, handlers)
+  constructQuarterlyEventRules(scope, handlers)
 }
 export default constructEventRules
