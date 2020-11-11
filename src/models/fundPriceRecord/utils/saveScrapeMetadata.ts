@@ -9,6 +9,8 @@ import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import logObj from 'src/helpers/logObj'
 
 const EXP_NAME_SCRAPE_META = '#__scrapeMeta'
+const EXP_NAME_INFO = '#__info'
+const EXP_NAME_TIME = '#__time'
 const EXP_VAL_TIME = ':__time'
 
 const getCompanyExpName = (company: CompanyType | string) => `#${company}`
@@ -34,7 +36,7 @@ const mapInfoInput = (
   const updateExpPairs = Object.values(comExpNames).reduce((acc, comp) => {
     const name = getCompanyExpName(comp)
     const value = getCompanyExpValue(comp)
-    const exp = `${EXP_NAME_SCRAPE_META}.info.${name} = ${value}`
+    const exp = `${EXP_NAME_SCRAPE_META}.${EXP_NAME_INFO}.${name} = ${value}`
     return [...acc, exp]
   }, [] as string[])
 
@@ -62,13 +64,14 @@ const saveScrapeMetadata = (
 
   if (info) {
     const [setExp, expN, expV] = mapInfoInput(info, setExpressions, expAttrNames, expAttrValues)
-    setExpressions = setExp
-    expAttrNames = expN
+    expAttrNames = { ...expN, [EXP_NAME_INFO]: 'info' }
     expAttrValues = expV
+    setExpressions = setExp
   }
   if (time) {
+    expAttrNames = { ...expAttrNames, [EXP_NAME_TIME]: 'time' }
     expAttrValues = { ...expAttrValues, [EXP_VAL_TIME]: time }
-    setExpressions.push(`${EXP_NAME_SCRAPE_META}.time = ${EXP_VAL_TIME}`)
+    setExpressions.push(`${EXP_NAME_SCRAPE_META}.${EXP_NAME_TIME} = ${EXP_VAL_TIME}`)
   }
 
   const input: I = {
