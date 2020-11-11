@@ -1,9 +1,7 @@
 import { DynamoDBStreamHandler } from 'aws-lambda'
 
-import {
+import FundPriceRecord, {
   CompanyType,
-  FundPriceChangeRate,
-  FundPriceRecord,
   FundType,
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
@@ -14,6 +12,7 @@ import deriveAggregatedItems from './deriveAggregatedItems'
 import createItems from './createItems'
 import deleteItems from './deleteItems'
 import AWS from 'src/lib/AWS'
+import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
 
 const stepfunctions = new AWS.StepFunctions()
 const executePostStepFunctions = (stateMachineArn: string) => stepfunctions.startExecution({

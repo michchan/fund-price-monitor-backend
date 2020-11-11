@@ -1,6 +1,7 @@
 import logObj from 'src/helpers/logObj'
-import { CompanyScrapeMeta, FundPriceRecord, FundType, ScrapeMeta, ScrapeStatus } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import getCompaniesFromRecords from 'src/models/fundPriceRecord/utils/getCompaniesFromRecords'
+import { CompanyScrapeMeta, ScrapeMeta, ScrapeStatus } from '../FundPriceTableDetails.type'
 
 type RT = FundPriceRecord<FundType, 'record'>
 

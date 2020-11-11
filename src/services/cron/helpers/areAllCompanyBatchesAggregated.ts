@@ -1,5 +1,6 @@
 import logObj from 'src/helpers/logObj'
-import { CompanyType, FundPriceTableDetails } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceTableDetails from 'src/models/fundPriceRecord/FundPriceTableDetails.type'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import parse from 'src/models/fundPriceRecord/utils/parse'
 

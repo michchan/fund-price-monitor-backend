@@ -11,11 +11,6 @@ export type RiskLevel =
   | 'high'
   | 'veryHigh'
 
-export type AggregatedRecordType =
-  | 'week'
-  | 'month'
-  | 'quarter'
-
 export type RecordType =
   | 'latest'
   | 'record'
@@ -23,7 +18,7 @@ export type RecordType =
 /**
  * A scrape recrod of the fundprice
  */
-export interface FundPriceRecord <
+interface FundPriceRecord <
   FT extends FundType = FundType,
   RT extends RecordType = RecordType
 > {
@@ -47,52 +42,4 @@ export interface FundPriceRecord <
   fundType: FT;
   recordType: RT;
 }
-
-export interface FundPriceChangeRate <
-  FT extends FundType = FundType,
-  RT extends AggregatedRecordType = AggregatedRecordType
-> extends Pick<FundPriceRecord<FT>,
-  | 'company'
-  | 'code'
-  | 'name'
-  | 'price'
-  | 'time'
-  | 'updatedDate'
-  > {
-  /** In `YYYY-MM_[nth week]` , `YYYY-MM` or `YYYY.[nth quarter]` */
-  period: string;
-  recordType: RT;
-  /** --------- Aggregated fields --------- */
-  priceChangeRate: number;
-  priceList: number[];
-}
-
-export type ScrapeStatus = 'pending' | 'success' | 'failed'
-export interface CompanyScrapeMeta {
-  /**
-   * The size of the scraped records across batches.
-   */
-  size: number;
-  /** Default to 'pending' */
-  status: ScrapeStatus;
-}
-/**
- * Store the metadata of the latest scrape window for each company.
- */
-export interface ScrapeMeta {
-  /** The timestamp of start time of the latest scrape session */
-  time: null | string;
-  info: {
-    [company in CompanyType]?: CompanyScrapeMeta;
-  };
-}
-export interface FundPriceTableDetails {
-  /** ISO timestamp */
-  time: string;
-  /** Order not preserved */
-  companies: CompanyType[];
-  /** Order not preserved */
-  fundTypes: FundType[];
-  scrapeMeta: ScrapeMeta;
-  testScrapeMeta: ScrapeMeta;
-}
+export default FundPriceRecord

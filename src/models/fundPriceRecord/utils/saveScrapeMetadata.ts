@@ -4,9 +4,10 @@ import isDeepEmpty from 'simply-utils/dist/object/isDeepEmpty'
 
 import updateTableDetails, { Input as I, Output as O } from 'src/models/fundPriceRecord/io/updateTableDetails'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
-import { CompanyType, ScrapeMeta } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import logObj from 'src/helpers/logObj'
+import { ScrapeMeta } from '../FundPriceTableDetails.type'
 
 const EXP_NAME_SCRAPE_META = '#__scrapeMeta'
 const EXP_NAME_INFO = '#__info'

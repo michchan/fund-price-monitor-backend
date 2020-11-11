@@ -3,7 +3,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import queryItems, { Output as O } from './queryItems'
 import attrs from '../constants/attributeNames'
-import { CompanyType, FundPriceRecord } from '../FundPriceRecord.type'
+import FundPriceRecord, { CompanyType } from '../FundPriceRecord.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import between from 'src/lib/AWS/dynamodb/expressionFunctions/between'

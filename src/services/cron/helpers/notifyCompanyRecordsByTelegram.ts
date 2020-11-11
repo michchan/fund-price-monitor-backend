@@ -1,11 +1,10 @@
 import callPromiseWithDelay from 'simply-utils/dist/async/callPromiseWithDelay'
 
-import {
+import FundPriceRecord, {
   CompanyType,
-  FundPriceChangeRate,
-  FundPriceRecord,
   FundType,
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
 import sendMessage from 'src/lib/telegram/sendMessage'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'

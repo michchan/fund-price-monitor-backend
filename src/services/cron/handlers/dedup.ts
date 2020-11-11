@@ -8,7 +8,7 @@ import logObj from 'src/helpers/logObj'
 import forEachCompany from 'src/models/fundPriceRecord/utils/forEachCompany'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
-import { CompanyType, FundPriceChangeRate, FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import batchDeleteItems from 'src/models/fundPriceRecord/io/batchDeleteItems'
 import queryItemsByCompany, {
   Output as QueryItemsOutput,
@@ -20,15 +20,19 @@ import getCompositeSKFromChangeRate from 'src/models/fundPriceRecord/utils/getCo
 import isDuplicated from 'src/models/fundPriceRecord/utils/isDuplicated'
 import parse from 'src/models/fundPriceRecord/utils/parse'
 import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
+import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
 
 const EXP_TIME_SK_PREFIX = ':timeSK' as string
 
+type FRec = FundPriceRecord
+type FCRate = FundPriceChangeRate
+
 interface ItemsDict {
-  record: FundPriceRecord[];
-  latest: FundPriceRecord[];
-  week: FundPriceChangeRate[];
-  month: FundPriceChangeRate[];
-  quarter: FundPriceChangeRate[];
+  record: FRec[];
+  latest: FRec[];
+  week: FCRate[];
+  month: FCRate[];
+  quarter: FCRate[];
 }
 const getItems = async (company: CompanyType, tableRange: TableRange): Promise<ItemsDict> => {
   const commonInput = {
@@ -78,7 +82,7 @@ const getItems = async (company: CompanyType, tableRange: TableRange): Promise<I
   }
 }
 
-const getDupedRecords = <T extends FundPriceRecord | FundPriceChangeRate> (records: T[]): T[] => {
+const getDupedRecords = <T extends FRec | FCRate> (records: T[]): T[] => {
   const uniqItems: T[] = []
   return records.reduce((acc: T[], record: T) => {
     const hasSameItem = uniqItems.some(uniqRec => isDuplicated(record, uniqRec))
@@ -88,7 +92,7 @@ const getDupedRecords = <T extends FundPriceRecord | FundPriceChangeRate> (recor
   }, [])
 }
 
-type TRecs = FundPriceRecord[] | FundPriceChangeRate[]
+type TRecs = FRec[] | FCRate[]
 type ObjIteratee = (records: ItemsDict[keyof ItemsDict]) => typeof records
 const getAllDuped = (itemsDict: ItemsDict) => mapValues<ItemsDict, TRecs>(
   itemsDict,
@@ -117,8 +121,8 @@ const getBatchRequestSender = (tableRange: TableRange) => (
 
   if (records.length === 0) return
 
-  if (isRecord) await batchDeleteItems(records as FundPriceRecord[], ...recordArgs)
-  else await batchDeleteItems(records as FundPriceChangeRate[], ...changeRateArgs)
+  if (isRecord) await batchDeleteItems(records as FRec[], ...recordArgs)
+  else await batchDeleteItems(records as FCRate[], ...changeRateArgs)
 
   if (i < arr.length - 1) await wait(REQUEST_DELAY)
 }

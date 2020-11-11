@@ -1,4 +1,4 @@
-import { AggregatedRecordType } from '../FundPriceRecord.type'
+import { AggregatedRecordType } from '../FundPriceChangeRate.type'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 
 const getPeriodByRecordType = (

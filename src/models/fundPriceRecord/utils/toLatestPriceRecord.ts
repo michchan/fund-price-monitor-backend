@@ -1,4 +1,4 @@
-import { FundPriceRecord, FundType, RecordType } from '../FundPriceRecord.type'
+import FundPriceRecord, { FundType, RecordType } from '../FundPriceRecord.type'
 import calculatePriceChangeRate from './calculatePriceChangeRate'
 
 const toLatestPriceRecord = <FT extends FundType> (

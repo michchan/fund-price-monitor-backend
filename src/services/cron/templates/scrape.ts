@@ -1,7 +1,7 @@
 import { ScheduledHandler } from 'aws-lambda'
 import { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 
-import { FundPriceRecord, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import scrapeAndReduce from 'src/services/cron/helpers/scrapeAndReduce'
 import batchCreateItems from 'src/models/fundPriceRecord/io/batchCreateItems'
 import serialize from 'src/models/fundPriceRecord/utils/serialize'

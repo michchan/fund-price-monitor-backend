@@ -1,6 +1,7 @@
-import { AggregatedRecordType, FundPriceChangeRate, FundPriceRecord } from '../FundPriceRecord.type'
+import FundPriceRecord from '../FundPriceRecord.type'
 import getPeriodByRecordType from './getPeriodByRecordType'
 import calculatePriceChangeRate from './calculatePriceChangeRate'
+import FundPriceChangeRate, { AggregatedRecordType } from '../FundPriceChangeRate.type'
 
 export interface Options {
   prevPriceList: number[];

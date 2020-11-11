@@ -1,9 +1,10 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import { FundPriceChangeRate, FundPriceRecord } from '../FundPriceRecord.type'
+import FundPriceRecord from '../FundPriceRecord.type'
 import batchWriteItems, { Output } from 'src/lib/AWS/dynamodb/batchWriteItems'
 import getTableName from '../utils/getTableName'
 import TableRange from '../TableRange.type'
+import FundPriceChangeRate from '../FundPriceChangeRate.type'
 
 type T = FundPriceRecord | FundPriceChangeRate
 export const DEFUALT_DELAY = 300

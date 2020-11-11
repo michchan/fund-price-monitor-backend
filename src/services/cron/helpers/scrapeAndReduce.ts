@@ -3,7 +3,7 @@ import launchPuppeteerBrowserSession, {
 } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 
 import logObj from 'src/helpers/logObj'
-import { FundPriceRecord, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import takeUpdatedRecords from 'src/models/fundPriceRecord/utils/takeUpdatedRecords'
 
 type RT = FundPriceRecord<FundType, 'record'>

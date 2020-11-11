@@ -2,7 +2,7 @@ import { ScheduledHandler } from 'aws-lambda'
 import { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 
-import { FundPriceRecord, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import saveScrapeMetadata from 'src/models/fundPriceRecord/utils/saveScrapeMetadata'
 import scrapeAndReduce from 'src/services/cron/helpers/scrapeAndReduce'
 import reduceScrapeMetaInfo from '../../../models/fundPriceRecord/utils/reduceScrapeMetaInfo'

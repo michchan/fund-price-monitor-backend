@@ -3,7 +3,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import mapValues from 'lodash/mapValues'
 
 import { ListResponse } from '../Responses.type'
-import { FundPriceRecord } from '../../../models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import createReadResponse from '../helpers/createReadResponse'
 import { StructuredQuery } from '../StructuredQuery.type'
 import parseQuery from '../helpers/parseQuery'

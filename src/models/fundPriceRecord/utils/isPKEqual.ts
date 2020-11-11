@@ -1,4 +1,5 @@
-import { FundPriceChangeRate, FundPriceRecord } from '../FundPriceRecord.type'
+import FundPriceChangeRate from '../FundPriceChangeRate.type'
+import FundPriceRecord from '../FundPriceRecord.type'
 
 type T = FundPriceRecord | FundPriceChangeRate
 const isPKEqual = (

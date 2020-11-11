@@ -3,9 +3,8 @@ import mapValues from 'lodash/mapValues'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { ListResponse } from '../Responses.type'
-import {
+import FundPriceRecord, {
   CompanyType,
-  FundPriceRecord,
   RiskLevel,
 } from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'

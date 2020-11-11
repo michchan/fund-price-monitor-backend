@@ -1,4 +1,5 @@
-import { FundPriceChangeRate, FundPriceRecord } from '../FundPriceRecord.type'
+import FundPriceRecord from '../FundPriceRecord.type'
+import FundPriceChangeRate from '../FundPriceChangeRate.type'
 import batchWriteItems, { Output } from 'src/lib/AWS/dynamodb/batchWriteItems'
 import attributeNames from '../constants/attributeNames'
 import getTableName from '../utils/getTableName'

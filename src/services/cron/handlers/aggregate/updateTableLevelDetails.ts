@@ -1,7 +1,7 @@
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import uniq from 'lodash/uniq'
 
-import { FundPriceRecord } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import { Groups } from './groupEventRecordsByCompany'
 import updateTableDetails from 'src/models/fundPriceRecord/io/updateTableDetails'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'

@@ -1,7 +1,8 @@
 import { DynamoDB } from 'aws-sdk'
 
-import { AggregatedRecordType, CompanyType, FundPriceChangeRate } from '../FundPriceRecord.type'
+import { CompanyType } from '../FundPriceRecord.type'
 import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames'
+import FundPriceChangeRate, { AggregatedRecordType } from '../FundPriceChangeRate.type'
 
 /**
  * Parse a dynamodb item to FundPriceChangeRate

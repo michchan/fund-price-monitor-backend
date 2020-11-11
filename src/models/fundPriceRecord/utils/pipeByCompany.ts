@@ -1,6 +1,7 @@
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 import wait from 'simply-utils/dist/async/wait'
-import { CompanyType, FundPriceTableDetails } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceTableDetails from 'src/models/fundPriceRecord/FundPriceTableDetails.type'
 
 import getTableDetails from 'src/models/fundPriceRecord/io/getTableDetails'
 

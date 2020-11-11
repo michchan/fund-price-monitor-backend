@@ -2,7 +2,7 @@ import { DynamoDBStreamEvent } from 'aws-lambda'
 import omitBy from 'lodash/omitBy'
 import isEmpty from 'lodash/isEmpty'
 
-import { CompanyType, FundPriceRecord, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { CompanyType, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import AWS from 'src/lib/AWS'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import parse from 'src/models/fundPriceRecord/utils/parse'

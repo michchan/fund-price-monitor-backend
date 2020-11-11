@@ -1,4 +1,4 @@
-import { FundPriceRecord } from '../FundPriceRecord.type'
+import FundPriceRecord from '../FundPriceRecord.type'
 
 const SEVEN_DAYS_IN_MS = 604800000
 const THIRTY_DAYS_IN_MS = 2592000000

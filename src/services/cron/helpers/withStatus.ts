@@ -1,4 +1,5 @@
-import { FundPriceRecord, FundType, ScrapeStatus } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { ScrapeStatus } from 'src/models/fundPriceRecord/FundPriceTableDetails.type'
 
 type RT = FundPriceRecord<FundType, 'record'>
 export type Output = [

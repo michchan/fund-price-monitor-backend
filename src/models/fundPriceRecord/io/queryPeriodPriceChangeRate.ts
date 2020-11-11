@@ -4,8 +4,9 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import TableRange from '../TableRange.type'
 import queryItems, { Output as O } from './queryItems'
 import indexNames from '../constants/indexNames'
-import { AggregatedRecordType, CompanyType } from '../FundPriceRecord.type'
+import { CompanyType } from '../FundPriceRecord.type'
 import attributeNames from '../constants/attributeNames'
+import { AggregatedRecordType } from '../FundPriceChangeRate.type'
 
 const EXP_TIME_SK = ':timeSK' as string
 export type Input = Omit<DocumentClient.QueryInput, 'TableName'>

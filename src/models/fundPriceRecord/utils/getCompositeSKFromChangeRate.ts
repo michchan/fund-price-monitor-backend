@@ -1,4 +1,4 @@
-import { FundPriceChangeRate } from '../FundPriceRecord.type'
+import FundPriceChangeRate from '../FundPriceChangeRate.type'
 
 const getCompositeSKFromChangeRate = ({
   recordType,

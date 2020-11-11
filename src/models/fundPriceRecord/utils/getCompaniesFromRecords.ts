@@ -1,5 +1,5 @@
 import uniq from 'lodash/uniq'
-import { CompanyType, FundPriceRecord, FundType } from '../FundPriceRecord.type'
+import FundPriceRecord, { CompanyType, FundType } from '../FundPriceRecord.type'
 
 type RT = FundPriceRecord<FundType, 'record'>
 const getCompaniesFromRecords = (records: RT[]): CompanyType[] => uniq(

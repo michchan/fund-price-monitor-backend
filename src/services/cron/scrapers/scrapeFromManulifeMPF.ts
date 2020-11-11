@@ -1,8 +1,7 @@
 import puppeteer = require('puppeteer')
 
-import {
+import FundPriceRecord, {
   CompanyType,
-  FundPriceRecord,
   FundType,
   RecordType,
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
