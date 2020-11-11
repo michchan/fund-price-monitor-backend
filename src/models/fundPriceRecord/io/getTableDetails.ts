@@ -7,6 +7,7 @@ import { CompanyType, FundPriceTableDetails, FundType, ScrapeMeta } from '../Fun
 import attrs from '../constants/attributeNames'
 import topLevelKeysValues from '../constants/topLevelKeysValues'
 import { DynamoDB } from 'aws-sdk'
+import defaultScrapeMeta from '../constants/defaultScrapeMeta'
 
 type SS = DynamoDB.DocumentClient.StringSet
 type MapV = DynamoDB.DocumentClient.MapAttributeValue
@@ -52,8 +53,8 @@ const getTableDetails = async (
     // Parse sets to array
     companies: companiesSet ? companiesSet.values as CompanyType[] : [],
     fundTypes: fundTypesSet ? fundTypesSet.values as FundType[] : [],
-    scrapeMeta: scrapeMetaMap ? scrapeMetaMap as ScrapeMeta : {},
-    testScrapeMeta: testScrapeMetaMap ? testScrapeMetaMap as ScrapeMeta : {},
+    scrapeMeta: scrapeMetaMap ? scrapeMetaMap as ScrapeMeta : defaultScrapeMeta,
+    testScrapeMeta: testScrapeMetaMap ? testScrapeMetaMap as ScrapeMeta : defaultScrapeMeta,
   }
 }
 

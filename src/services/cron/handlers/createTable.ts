@@ -7,6 +7,7 @@ import createTable from 'src/models/fundPriceRecord/io/createTable'
 import createTableDetails from 'src/models/fundPriceRecord/io/createTableDetails'
 import checkTableExistence from '../helpers/checkTableExistence'
 import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
+import defaultScrapeMeta from 'src/models/fundPriceRecord/constants/defaultScrapeMeta'
 
 export type EventDetail = TableRange | undefined
 
@@ -23,8 +24,8 @@ const createTableAndDetails = async (year: number | string, quarter: Quarter) =>
     time: new Date().toISOString(),
     companies: [],
     fundTypes: [],
-    scrapeMeta: {},
-    testScrapeMeta: {},
+    scrapeMeta: defaultScrapeMeta,
+    testScrapeMeta: defaultScrapeMeta,
   }, year, quarter)
 }
 
