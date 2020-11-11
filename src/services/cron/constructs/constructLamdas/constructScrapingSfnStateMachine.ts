@@ -75,10 +75,15 @@ const constructStateMachine = (
     return new sfnTasks.LambdaInvoke(scope, id, { lambdaFunction: scraper })
   })
   const definition = tasks.reduce<sfn.Chain>(
-    (chain, task, i) => chain
+    (chain, task, i, arr) => chain
       .next(task)
       .next(new sfn.Wait(scope, `CronScrapeWaitTask${i}`, {
-        time: sfn.WaitTime.duration(cdk.Duration.minutes(SCRAPER_DELAY_MINS)),
+        time: sfn.WaitTime.duration(
+          // Do not wait too long if it is the last item
+          i + 1 === arr.length
+            ? cdk.Duration.seconds(1)
+            : cdk.Duration.minutes(SCRAPER_DELAY_MINS)
+        ),
       })),
     startTask as unknown as sfn.Chain
   )
