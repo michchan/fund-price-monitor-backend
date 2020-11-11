@@ -19,15 +19,15 @@ export const handler: ScheduledHandler = async () => {
   const [year, quarter] = getCurrentYearAndQuarter()
   const tableRange = { year, quarter }
 
-  const [status, err, records] = await withStatus(async () => {
+  const [status, err, records, companies] = await withStatus(async () => {
     // Scrape records from the site
-    const records = await scrapeAndReduce(scrapers)
+    const [records, companies] = await scrapeAndReduce(scrapers)
     // Write batch data to the table
     await batchCreateItems(records, tableRange, serialize)
-    return records
+    return [records, companies]
   })
 
-  const info = reduceScrapeMetaInfo(records, status)
+  const info = reduceScrapeMetaInfo(records, status, companies)
   await saveScrapeMetadata({ info }, tableRange)
 
   if (err) throw err

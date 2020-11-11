@@ -3,7 +3,8 @@ import launchPuppeteerBrowserSession, {
 } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 
 import logObj from 'src/helpers/logObj'
-import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { CompanyType, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import getCompaniesFromRecords from 'src/models/fundPriceRecord/utils/getCompaniesFromRecords'
 import takeUpdatedRecords from 'src/models/fundPriceRecord/utils/takeUpdatedRecords'
 
 type RT = FundPriceRecord<FundType, 'record'>
@@ -16,19 +17,23 @@ const validateRecords = (records: RT[]): void => {
   }
 }
 
-const reduceRecords = (batches: RT[][]): Promise<RT[]> => {
+export type Output = [RT[], CompanyType[]]
+const reduceRecords = async (batches: RT[][]): Promise<Output> => {
   // Flatten records (Array.flat())
   const records = batches.reduce((acc, curr) => [...acc, ...curr], [])
+  const companies = getCompaniesFromRecords(records)
   logObj(`Records scraped (${records.length}): `, records)
-  return takeUpdatedRecords(records)
+  logObj(`Companies scraped (${companies.length}): `, companies)
+  const takenRecords = await takeUpdatedRecords(records)
+  return [takenRecords, companies]
 }
 
-async function scrapeAndReduce (scrapers: GetDataWithPage<RT[]>[]): Promise<RT[]> {
+async function scrapeAndReduce (scrapers: GetDataWithPage<RT[]>[]): Promise<Output> {
   // Scrape records from the site
   const batches = await launchPuppeteerBrowserSession<RT[]>(scrapers)
-  const records = await reduceRecords(batches)
+  const [records, companies] = await reduceRecords(batches)
   validateRecords(records)
   logObj(`Records to insert (${records.length}): `, records)
-  return records
+  return [records, companies]
 }
 export default scrapeAndReduce

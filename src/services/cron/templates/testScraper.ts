@@ -17,9 +17,9 @@ export const handler: ScheduledHandler = async () => {
   const [year, quarter] = getCurrentYearAndQuarter()
   const tableRange = { year, quarter }
 
-  const [status, err, records] = await withStatus(() => scrapeAndReduce(scrapers))
+  const [status, err, records, companies] = await withStatus(() => scrapeAndReduce(scrapers))
 
-  const info = reduceScrapeMetaInfo(records, status)
+  const info = reduceScrapeMetaInfo(records, status, companies)
   await saveScrapeMetadata({ info }, tableRange, 'test')
 
   if (err) throw err

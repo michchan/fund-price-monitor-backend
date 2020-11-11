@@ -9,7 +9,8 @@ const notifyByTelegram = async (scheduleType: ScheduleType): Promise<void> => {
   await forEachCompany(async (company, i, arr, tableDetails) => {
     const { scrapeMeta } = tableDetails
     const info = scrapeMeta.info[company]
-    if (info?.status === 'success') {
+    // * Pick only success case and non-empty case
+    if (info?.status === 'success' && Number(info?.size) > 0) {
       const areAllBatchesAggregated = await areAllCompanyBatchesAggregated(tableDetails, company)
       if (areAllBatchesAggregated)
         await notifyCompanyRecordsByTelegram(chatId, apiKey, company, scheduleType)
