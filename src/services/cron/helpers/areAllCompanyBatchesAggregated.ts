@@ -7,6 +7,7 @@ import parse from 'src/models/fundPriceRecord/utils/parse'
 const areAllCompanyBatchesAggregated = async (
   tableDetails: FundPriceTableDetails,
   company: CompanyType,
+  shouldRegardAsAggregatedForEmptyScrape: boolean = true,
 ): Promise<boolean> => {
   const { scrapeMeta } = tableDetails
   const { time } = scrapeMeta
@@ -19,11 +20,20 @@ const areAllCompanyBatchesAggregated = async (
     logObj(`Some scrape metadata are not ready for company: ${company}`, scrapeMeta)
     return false
   }
-  const { status } = info
+  const { status, size } = info
   if (status !== 'success') {
     logObj(`Scrape status is not "success" for company: ${company}`, scrapeMeta)
     return false
   }
+  if (size === 0 && status === 'success') {
+    const isAggregated = shouldRegardAsAggregatedForEmptyScrape
+    logObj(
+      `Scrape successful but size empty for company: ${company} (result: ${isAggregated})`,
+      scrapeMeta
+    )
+    return isAggregated
+  }
+
   const output = await queryItemsByCompany(company, {
     shouldQueryLatest: true,
     shouldQueryAll: true,
@@ -34,7 +44,7 @@ const areAllCompanyBatchesAggregated = async (
     .filter(item => new Date(item.time).getTime() >= new Date(time).getTime())
     .length
   // * Return false to indicate that there are some items still being processed
-  if (aggregatedSize >= info.size) return true
+  if (aggregatedSize >= size) return true
   return false
 }
 export default areAllCompanyBatchesAggregated

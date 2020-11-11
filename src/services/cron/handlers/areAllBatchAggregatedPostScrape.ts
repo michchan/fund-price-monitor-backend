@@ -8,9 +8,11 @@ export const handler: Handler<any, boolean> = async () => {
   await forEachCompany(async (company, i, arr, tableDetails) => {
     const { scrapeMeta } = tableDetails
     const info = scrapeMeta.info[company]
-    // * Skip failed case and empty case
-    if (info?.status !== 'failed' && Number(info?.size) > 0)
-      results.push(await areAllCompanyBatchesAggregated(tableDetails, company))
+    // * Skip failed case
+    if (info?.status !== 'failed') {
+      // Pass 'true' to consider empty size (but successful) case truthy
+      results.push(await areAllCompanyBatchesAggregated(tableDetails, company, true))
+    }
   }, DELAY)
   const areAllBatchesAggregated = results.every(isAggregated => isAggregated)
   console.log('Are all batches aggregated:', areAllBatchesAggregated)
