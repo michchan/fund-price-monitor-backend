@@ -41,7 +41,7 @@ const mapInfoInput = (
   return [
     [...setExpressions, ...updateExpPairs],
     { ...expAttrNames, ...comExpNames },
-    { ...expAttrValues, comExpValues },
+    { ...expAttrValues, ...comExpValues },
   ]
 }
 
@@ -50,7 +50,7 @@ const saveScrapeMetadata = (
   tableRange: TableRange,
   metadataMode: 'test' | 'live' = 'live',
 ): Promise<O | null> => {
-  if (isEmpty(scrapeMeta)) return Promise.resolve(null)
+  if (isEmpty(scrapeMeta) && isEmpty(scrapeMeta?.info)) return Promise.resolve(null)
 
   const { time, info } = scrapeMeta
 
