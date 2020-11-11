@@ -1,6 +1,6 @@
 import mapKeys from 'lodash/mapKeys'
 import mapValues from 'lodash/mapValues'
-import isEmpty from 'lodash/isEmpty'
+import isDeepEmpty from 'simply-utils/dist/object/isDeepEmpty'
 
 import updateTableDetails, { Input as I, Output as O } from 'src/models/fundPriceRecord/io/updateTableDetails'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
@@ -50,7 +50,7 @@ const saveScrapeMetadata = (
   tableRange: TableRange,
   metadataMode: 'test' | 'live' = 'live',
 ): Promise<O | null> => {
-  if (isEmpty(scrapeMeta) && isEmpty(scrapeMeta?.info)) return Promise.resolve(null)
+  if (isDeepEmpty(scrapeMeta)) return Promise.resolve(null)
 
   const { time, info } = scrapeMeta
 
