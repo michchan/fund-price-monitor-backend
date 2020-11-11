@@ -50,9 +50,9 @@ const createChainWithStartCondition = (
   checkLastBatchHandler: lambda.Function
 ] => {
   // Define tasks for condition
-  const checkLastBatchHandler = new lambda.Function(scope, 'CronPostAggLastBatchChecker', {
+  const checkLastBatchHandler = new lambda.Function(scope, 'CronAreAllBatchAggregatedPostScrape', {
     ...defaultInput,
-    handler: 'checkLastBatchPostAggregate.handler',
+    handler: 'areAllBatchAggregatedPostScrape.handler',
   })
   const checkLastBatchTask = new sfnTasks.LambdaInvoke(scope, 'Check if it is the last batch', {
     lambdaFunction: checkLastBatchHandler,
