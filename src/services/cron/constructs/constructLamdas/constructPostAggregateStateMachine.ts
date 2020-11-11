@@ -20,12 +20,35 @@ export interface PostScrapeOutputHandlers {
 export interface PostScrapeOutput extends PostScrapeOutputHandlers {
   stateMachine: sfn.StateMachine;
 }
-const constructPostAggregateStateMachine = (
+
+const createJobsChain = (
+  scope: cdk.Construct,
+  { dedup, notifyOnUpdate }: PostScrapeInputHandlers,
+): sfn.Chain => {
+  // Define tasks for jobs
+  const waitTask = new sfn.Wait(scope, 'CronPostScrapeWaitTask', {
+    time: sfn.WaitTime.duration(cdk.Duration.millis(STEP_FUNC_INTERVAL_MS)),
+  })
+  const dedupTask = new sfnTasks.LambdaInvoke(scope, 'Dedup task', {
+    lambdaFunction: dedup,
+  })
+  const notifyOnUpdateTask = new sfnTasks.LambdaInvoke(scope, 'Notify on update task', {
+    lambdaFunction: notifyOnUpdate,
+  })
+  // Create job chain
+  return dedupTask
+    .next(waitTask)
+    .next(notifyOnUpdateTask)
+}
+
+const createChainWithStartCondition = (
   scope: cdk.Construct,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
-  { dedup, notifyOnUpdate }: PostScrapeInputHandlers,
-): PostScrapeOutput => {
-  /** -------------- Start Condition -------------- */
+  jobsChain: sfn.Chain
+): [
+  chain: sfn.IChainable,
+  checkLastBatchHandler: lambda.Function
+] => {
   // Define tasks for condition
   const checkLastBatchHandler = new lambda.Function(scope, 'CronPostAggLastBatchChecker', {
     ...defaultInput,
@@ -38,25 +61,29 @@ const constructPostAggregateStateMachine = (
   const startChoice = new sfn.Choice(scope, 'Are all batches aggregated?')
   const startCondition = sfn.Condition.booleanEquals(STEP_FUNC_RESULT_PATH, true)
 
-  /** -------------- Job Chain -------------- */
-  // Define tasks for jobs
-  const waitTask = new sfn.Wait(scope, 'CronPostScrapeWaitTask', {
-    time: sfn.WaitTime.duration(cdk.Duration.millis(STEP_FUNC_INTERVAL_MS)),
-  })
-  const dedupTask = new sfnTasks.LambdaInvoke(scope, 'Dedup task', {
-    lambdaFunction: dedup,
-  })
-  const notifyOnUpdateTask = new sfnTasks.LambdaInvoke(scope, 'Notify on update task', {
-    lambdaFunction: notifyOnUpdate,
-  })
-  // Create job chain
-  const jobsChain = dedupTask
-    .next(waitTask)
-    .next(notifyOnUpdateTask)
+  // Create chain with start condition
+  const chain = checkLastBatchTask.next(
+    startChoice
+      .when(startCondition, jobsChain)
+      .otherwise(new sfn.Succeed(scope, 'Jobs chain not executed'))
+  )
+
+  return [chain, checkLastBatchHandler]
+}
+
+const constructPostAggregateStateMachine = (
+  scope: cdk.Construct,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  handlers: PostScrapeInputHandlers,
+): PostScrapeOutput => {
+  const { dedup, notifyOnUpdate } = handlers
+  const jobsChain = createJobsChain(scope, handlers)
+  const [
+    definition,
+    checkLastBatchHandler,
+  ] = createChainWithStartCondition(scope, defaultInput, jobsChain)
 
   /** -------------- State machine -------------- */
-  // Create chain with start condition
-  const definition = checkLastBatchTask.next(startChoice.when(startCondition, jobsChain))
   // Create state machine
   const stateMachine = new sfn.StateMachine(scope, 'CronPostAggStateMachine', {
     definition,
