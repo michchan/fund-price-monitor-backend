@@ -11,7 +11,7 @@ import { Handlers } from './constructLamdas'
 
 // Scrape every four hour
 const SCRAPE_INTERVAL_HOUR = 4
-const SCRAPER_DELAY_MS = 3000
+const SCRAPER_DELAY_MINS = 3
 
 const constructDailyEventRules = (
   scope: cdk.Construct,
@@ -27,7 +27,7 @@ const constructDailyEventRules = (
     (chain, task, i) => chain
       .next(task)
       .next(new sfn.Wait(scope, `CronScrapeWaitTask${i}`, {
-        time: sfn.WaitTime.duration(cdk.Duration.millis(SCRAPER_DELAY_MS)),
+        time: sfn.WaitTime.duration(cdk.Duration.minutes(SCRAPER_DELAY_MINS)),
       })),
     startTask as unknown as sfn.Chain
   )
