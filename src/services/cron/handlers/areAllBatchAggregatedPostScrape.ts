@@ -13,6 +13,6 @@ export const handler: Handler<any, boolean> = async () => {
       results.push(await areAllCompanyBatchesAggregated(tableDetails, company))
   }, DELAY)
   const areAllBatchesAggregated = results.every(isAggregated => isAggregated)
-  console.log('areAllBatchesAggregated:', areAllBatchesAggregated)
+  console.log('Are all batches aggregated:', areAllBatchesAggregated)
   return areAllBatchesAggregated
 }
