@@ -81,11 +81,10 @@ export interface CompanyScrapeMeta {
  */
 export interface ScrapeMeta {
   /** The timestamp of start time of the latest scrape session */
-  time: string;
+  time: null | string;
   info: {
     [company in CompanyType]?: CompanyScrapeMeta;
   };
-  status: ScrapeStatus;
 }
 export interface FundPriceTableDetails {
   /** ISO timestamp */

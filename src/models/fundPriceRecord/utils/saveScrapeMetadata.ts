@@ -9,7 +9,6 @@ import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import logObj from 'src/helpers/logObj'
 
 const EXP_NAME_SCRAPE_META = '#__scrapeMeta'
-const EXP_VAL_STATUS = ':__status'
 const EXP_VAL_TIME = ':__time'
 
 const getCompanyExpName = (company: CompanyType | string) => `#${company}`
@@ -53,7 +52,7 @@ const saveScrapeMetadata = (
 ): Promise<O | null> => {
   if (isEmpty(scrapeMeta)) return Promise.resolve(null)
 
-  const { time, info, status } = scrapeMeta
+  const { time, info } = scrapeMeta
 
   let setExpressions: string[] = []
   let expAttrNames: I['ExpressionAttributeNames'] = {
@@ -70,10 +69,6 @@ const saveScrapeMetadata = (
   if (time) {
     expAttrValues = { ...expAttrValues, [EXP_VAL_TIME]: time }
     setExpressions.push(`${EXP_NAME_SCRAPE_META}.time = ${EXP_VAL_TIME}`)
-  }
-  if (status) {
-    expAttrValues = { ...expAttrValues, [EXP_VAL_STATUS]: status }
-    setExpressions.push(`${EXP_NAME_SCRAPE_META}.status = ${EXP_VAL_STATUS}`)
   }
 
   const input: I = {

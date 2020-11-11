@@ -5,7 +5,7 @@ import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import { FundPriceRecord, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import saveScrapeMetadata from 'src/models/fundPriceRecord/utils/saveScrapeMetadata'
 import scrapeAndReduce from 'src/services/cron/helpers/scrapeAndReduce'
-import reduceScrapeMetadata from '../../../models/fundPriceRecord/utils/reduceScrapeMetadata'
+import reduceScrapeMetaInfo from '../../../models/fundPriceRecord/utils/reduceScrapeMetaInfo'
 import withStatus from '../helpers/withStatus'
 
 // Create list of scrapers
@@ -19,8 +19,8 @@ export const handler: ScheduledHandler = async () => {
 
   const [status, err, records] = await withStatus(() => scrapeAndReduce(scrapers))
 
-  const scrapeMeta = reduceScrapeMetadata(records, status)
-  await saveScrapeMetadata(scrapeMeta, tableRange, 'test')
+  const info = reduceScrapeMetaInfo(records, status)
+  await saveScrapeMetadata({ info }, tableRange, 'test')
 
   if (err) throw err
 }
