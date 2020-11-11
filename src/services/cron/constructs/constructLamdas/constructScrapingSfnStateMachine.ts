@@ -20,6 +20,7 @@ const getDefaultScrapersInput = () => {
 export interface ScrapingHandlers {
   scrapers: lambda.Function[];
   testScrapers: lambda.Function[];
+  startScrapeSession: lambda.Function;
 }
 const constructScrapingHandlers = (
   scope: cdk.Construct,
@@ -48,19 +49,27 @@ const constructScrapingHandlers = (
     .filter(fileName => /^testScrapeFrom/i.test(fileName))
     .map(getScraperCreator(/^testScrapeFrom/i, 'CronTestScraper'))
 
+  const startScrapeSessionHandler = new lambda.Function(scope, 'CronStartScrapeSession', {
+    ...defaultInput,
+    handler: 'startScrapeSession.handler',
+  })
+
   return {
     scrapers: scrapeHandlers,
     testScrapers: testScrapeHandlers,
+    startScrapeSession: startScrapeSessionHandler,
   }
 }
 
 const SCRAPER_DELAY_MINS = 3
 const constructStateMachine = (
   scope: cdk.Construct,
-  scrapers: ScrapingHandlers['scrapers'],
+  { scrapers, startScrapeSession }: Pick<ScrapingHandlers, 'scrapers' | 'startScrapeSession'>,
 ): sfn.StateMachine => {
   // Create step functions
-  const startTask = new sfn.Pass(scope, 'CronScrapeTaskStart')
+  const startTask = new sfnTasks.LambdaInvoke(scope, 'CronScrapeTaskStart', {
+    lambdaFunction: startScrapeSession,
+  })
   const tasks = scrapers.map((scraper, i) => {
     const id = `CronScrapeTask${i}`
     return new sfnTasks.LambdaInvoke(scope, id, { lambdaFunction: scraper })
@@ -87,16 +96,8 @@ const constructScrapingSfnStateMachine = (
   serviceDirname: string,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
 ): Output => {
-  const {
-    scrapers,
-    ...restHandlers
-  } = constructScrapingHandlers(scope, serviceDirname, defaultInput)
-  const stateMachine = constructStateMachine(scope, scrapers)
-
-  return {
-    stateMachine,
-    scrapers,
-    ...restHandlers,
-  }
+  const handlers = constructScrapingHandlers(scope, serviceDirname, defaultInput)
+  const stateMachine = constructStateMachine(scope, handlers)
+  return { ...handlers, stateMachine }
 }
 export default constructScrapingSfnStateMachine
