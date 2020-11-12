@@ -50,7 +50,7 @@ const saveMetaAfterNotify = async (
   }, tableRange)
 }
 
-const notifyByTelegram = async (scheduleType: ScheduleType, isForced?: boolean): Promise<void> => {
+const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<void> => {
   // Get credentials for sending notifications
   const { chatId, apiKey } = await getTelegramApiCredentials()
   await forEachCompany(async (company, i, arr, tableDetails) => {
@@ -68,4 +68,4 @@ const notifyByTelegram = async (scheduleType: ScheduleType, isForced?: boolean):
   })
 }
 
-export default notifyByTelegram
+export default notify

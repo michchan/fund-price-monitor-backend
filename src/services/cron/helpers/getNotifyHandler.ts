@@ -1,6 +1,6 @@
 import { ScheduledHandler } from 'aws-lambda'
 import { ScheduleType } from '../helpers/notifyCompanyRecordsByTelegram'
-import notifyByTelegram from '../helpers/notifyByTelegram'
+import notify from '../helpers/notify'
 
 export interface EventDetail {
   isForced?: boolean;
@@ -9,6 +9,6 @@ const getNotifyHandler = (
   scheduleType: ScheduleType
 ): ScheduledHandler<EventDetail> => async event => {
   const { isForced } = event.detail
-  await notifyByTelegram(scheduleType, isForced)
+  await notify(scheduleType, isForced)
 }
 export default getNotifyHandler
