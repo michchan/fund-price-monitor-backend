@@ -11,10 +11,11 @@ interface FundPriceChangeRate <
 > extends Pick<FundPriceRecord<FT>,
   | 'company'
   | 'code'
-  | 'name'
   | 'price'
   | 'time'
   | 'updatedDate'
+  // @TODO: Deprecate. Use FundDetails.
+  | 'name'
   > {
   /** In `YYYY-MM_[nth week]` , `YYYY-MM` or `YYYY.[nth quarter]` */
   period: string;
