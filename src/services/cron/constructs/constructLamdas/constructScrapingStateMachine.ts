@@ -27,8 +27,10 @@ const constructScrapingHandlers = (
   serviceDirname: string,
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
 ): ScrapingHandlers => {
+  const serviceName = serviceDirname.split('/').pop()
+  const serviceBundlesDir = serviceDirname.replace(/src.+/i, `bundles/${serviceName}`)
   // Read handlers directory
-  const handlers = fs.readdirSync(`${serviceDirname}/handlers`)
+  const handlers = fs.readdirSync(`${serviceBundlesDir}/handlers`)
   /** Scraper creator */
   const getScraperCreator = (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
     const name = fileName
