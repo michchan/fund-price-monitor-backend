@@ -7,12 +7,20 @@ const notifyByTelegram = async (scheduleType: ScheduleType, isForced?: boolean):
   // Get credentials for sending notifications
   const { chatId, apiKey } = await getTelegramApiCredentials()
   await forEachCompany(async (company, i, arr, tableDetails) => {
-    const shouldNotify = (
+    const comMeta = (tableDetails.scrapeMeta?.info ?? {})[company]
+    const shouldSkipCheck = (
       isForced
       // Always pass to execute notification for any scheduleType except 'onUpdate'
       || scheduleType !== 'onUpdate'
+    )
+    const shouldNotify = (
+      shouldSkipCheck
       // Pass 'false' to discard empty size (but successful) case
-      || await areAllCompanyBatchesAggregated(tableDetails, company, false)
+      || (
+        // Make sure it has not been notified for that changes
+        !comMeta?.isNotified
+        && await areAllCompanyBatchesAggregated(tableDetails, company, false)
+      )
     )
     if (shouldNotify) await notifyCompanyRecordsByTelegram(chatId, apiKey, company, scheduleType)
   })

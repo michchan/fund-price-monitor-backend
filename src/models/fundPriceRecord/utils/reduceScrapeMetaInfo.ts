@@ -16,6 +16,7 @@ const reduceScrapeMetaInfo = (
     const meta: CompanyScrapeMeta = {
       size: records.filter(isSameCompany).length,
       status,
+      isNotified: false,
     }
     return { ...acc, [comp]: meta }
   }, {} as ScrapeMeta['info'])

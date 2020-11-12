@@ -8,6 +8,8 @@ export interface CompanyScrapeMeta {
   size: number;
   /** Default to 'pending' */
   status: ScrapeStatus;
+  /** Whether it has been notified for that changes */
+  isNotified: boolean;
 }
 /**
  * Store the metadata of the latest scrape window for each company.
