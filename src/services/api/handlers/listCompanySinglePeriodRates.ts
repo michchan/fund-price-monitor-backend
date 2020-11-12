@@ -14,6 +14,7 @@ import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.
 import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
+import logObj from 'src/helpers/logObj'
 
 export type Res = ListResponse<FundPriceChangeRate>
 
@@ -86,6 +87,8 @@ export const handler: APIGatewayProxyHandler = async event => {
     /** ----------- Query ----------- */
     // Get table range
     const tableRange = yearQuarter ? yearQuarterToTableRange(yearQuarter) : undefined
+
+    logObj('Params and input: ', { periodType, period, yearQuarter, tableRange, exclusiveStartKey })
     // Query
     const output = await queryPeriodPriceChangeRate(company, periodType, period, {
       shouldQueryAll: false,
