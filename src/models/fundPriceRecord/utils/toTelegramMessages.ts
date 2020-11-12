@@ -3,7 +3,7 @@ import capitalize from 'lodash/capitalize'
 import startCase from 'lodash/startCase'
 
 import FundPriceRecord, { CompanyType } from '../FundPriceRecord.type'
-import { ScheduleType } from 'src/services/cron/helpers/sendNotificationByTelegram'
+import { ScheduleType } from 'src/services/cron/helpers/queryItemsBySchedule'
 import parseLinesToChunks from 'src/lib/telegram/parseLinesToChunks'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import FundPriceChangeRate from '../FundPriceChangeRate.type'
