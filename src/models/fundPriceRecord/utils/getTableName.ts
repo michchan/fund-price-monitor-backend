@@ -2,6 +2,7 @@ import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
 
 import { PROJECT_NAMESPACE } from 'src/constants'
+import logObj from 'src/helpers/logObj'
 import stringify from 'src/helpers/stringify'
 
 const getTableName = (
@@ -15,7 +16,9 @@ const getTableName = (
   if (!yr || !qt || yr < 0 || qt < 0)
     throw new Error(`Cannot get table name: ${stringify({ yr, qt })}`)
 
-  return `${PROJECT_NAMESPACE}.FundPriceRecords_${yr}_q${qt}`
+  const tableName = `${PROJECT_NAMESPACE}.FundPriceRecords_${yr}_q${qt}`
+  logObj('Get table name: ', { yr, qt, tableName })
+  return tableName
 }
 
 export default getTableName
