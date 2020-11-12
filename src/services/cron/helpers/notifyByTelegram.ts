@@ -8,6 +8,7 @@ const notifyByTelegram = async (scheduleType: ScheduleType): Promise<void> => {
   const { chatId, apiKey } = await getTelegramApiCredentials()
   await forEachCompany(async (company, i, arr, tableDetails) => {
     const shouldNotify = (
+      // Always pass to execute notification for any scheduleType except 'onUpdate'
       scheduleType !== 'onUpdate'
       // Pass 'false' to discard empty size (but successful) case
       || await areAllCompanyBatchesAggregated(tableDetails, company, false)
