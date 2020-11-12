@@ -1,28 +1,70 @@
+import isISOTimestamp from 'simply-utils/dist/dateTime/isISOTimestamp'
+
 import notifyCompanyRecordsByTelegram, { ScheduleType } from './notifyCompanyRecordsByTelegram'
 import getTelegramApiCredentials from 'src/helpers/getTelegramApiCredentials'
 import forEachCompany from 'src/models/fundPriceRecord/utils/forEachCompany'
 import areAllCompanyBatchesAggregated from './areAllCompanyBatchesAggregated'
+import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
+import saveScrapeMetadata from 'src/models/fundPriceRecord/utils/saveScrapeMetadata'
+import FundPriceTableDetails, { CompanyScrapeMeta, ScrapeMeta } from 'src/models/fundPriceRecord/FundPriceTableDetails.type'
+import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { defaultCompanyScrapeMeta } from 'src/models/fundPriceRecord/constants/defaultScrapeMeta'
+
+interface ShouldNotifyOptions {
+  isNotified?: boolean;
+  time?: ScrapeMeta['time'];
+  isForced?: boolean;
+}
+const shouldNotify = (
+  scheduleType: ScheduleType,
+  company: CompanyType,
+  tableDetails: FundPriceTableDetails,
+  { isNotified, time, isForced }: ShouldNotifyOptions = {},
+) => {
+  const shouldSkipCheck = (
+    isForced
+    // Always pass to execute notification for any scheduleType except 'onUpdate'
+    || scheduleType !== 'onUpdate'
+  )
+  return (
+    shouldSkipCheck
+    // Pass 'false' to discard empty size (but successful) case
+    || (
+      // Make sure it has not been notified for that changes
+      !isNotified
+      && isISOTimestamp(time ?? '')
+      && areAllCompanyBatchesAggregated(tableDetails, company, false)
+    )
+  )
+}
+
+const saveMetaAfterNotify = async (
+  company: CompanyType,
+  companyScrapeMeta: CompanyScrapeMeta,
+  time?: ScrapeMeta['time'],
+) => {
+  const date = time ? new Date(time) : new Date()
+  const tableRange = getDateTimeDictionary(date)
+  await saveScrapeMetadata({
+    info: { [company]: { ...companyScrapeMeta, isNotified: true } },
+  }, tableRange)
+}
 
 const notifyByTelegram = async (scheduleType: ScheduleType, isForced?: boolean): Promise<void> => {
   // Get credentials for sending notifications
   const { chatId, apiKey } = await getTelegramApiCredentials()
   await forEachCompany(async (company, i, arr, tableDetails) => {
-    const comMeta = (tableDetails.scrapeMeta?.info ?? {})[company]
-    const shouldSkipCheck = (
-      isForced
-      // Always pass to execute notification for any scheduleType except 'onUpdate'
-      || scheduleType !== 'onUpdate'
-    )
-    const shouldNotify = (
-      shouldSkipCheck
-      // Pass 'false' to discard empty size (but successful) case
-      || (
-        // Make sure it has not been notified for that changes
-        !comMeta?.isNotified
-        && await areAllCompanyBatchesAggregated(tableDetails, company, false)
-      )
-    )
-    if (shouldNotify) await notifyCompanyRecordsByTelegram(chatId, apiKey, company, scheduleType)
+    const { scrapeMeta } = tableDetails
+    const companyScrapeMeta = (scrapeMeta?.info ?? {})[company]
+    if (await shouldNotify(scheduleType, company, tableDetails, {
+      isNotified: companyScrapeMeta?.isNotified,
+      time: scrapeMeta?.time,
+      isForced,
+    })) {
+      await notifyCompanyRecordsByTelegram(chatId, apiKey, company, scheduleType)
+      const meta = companyScrapeMeta ?? defaultCompanyScrapeMeta
+      await saveMetaAfterNotify(company, meta, scrapeMeta?.time)
+    }
   })
 }
 
