@@ -7,7 +7,7 @@
   "scripts": {
     "analyze": "webpack-bundle-analyzer",
     "build": "npm run build:scrapers && tsc && webpack",
-    "build:scrapers": "node scripts/buildScrapers",
+    "build:scrapers": "ts-node scripts/buildScrapers",
     "cdk": "cdk",
     "clearbuildcache": "rm -rf ./build && rm -rf ./bundles",
     "deploy": "cdk deploy FundPriceMonitorBackendStack --require-approval never",

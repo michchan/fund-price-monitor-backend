@@ -1,1 +1,1 @@
-export { default } from './scrapeFromAIAMPF'
+export * from './scrapeFromAIAMPF'

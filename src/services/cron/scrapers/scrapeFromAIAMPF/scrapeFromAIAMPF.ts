@@ -22,7 +22,7 @@ const fundType: FundType = 'mpf'
 // Define record type
 const recordType: RecordType = 'record'
 
-const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<T[]> => {
+export const scrapeRecords = async (page: puppeteer.Page): Promise<T[]> => {
   // Define time
   const time: T['time'] = new Date().toISOString()
 
@@ -59,4 +59,3 @@ const scrapeFromAIAMPF = async (page: puppeteer.Page): Promise<T[]> => {
 
   return records
 }
-export default scrapeFromAIAMPF

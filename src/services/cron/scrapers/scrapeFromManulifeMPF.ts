@@ -99,8 +99,8 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<T[]> => {
 }
 
 const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_TW'
-const scrapeFromManulifeMPF = async (page: puppeteer.Page): Promise<T[]> => {
+
+export const scrapeRecords = async (page: puppeteer.Page): Promise<T[]> => {
   await page.goto(PAGE_URL)
   return getDataFromHTML(page)
 }
-export default scrapeFromManulifeMPF
