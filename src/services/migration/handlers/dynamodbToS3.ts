@@ -6,7 +6,7 @@ import omit from 'lodash/omit'
 
 import listTables from 'src/models/fundPriceRecord/io/listTables'
 import fromTableName from 'src/models/fundPriceRecord/utils/fromTableName'
-import queryItemsByCompany, { EXP_TIME_SK } from 'src/models/fundPriceRecord/io/queryItemsByCompany'
+import queryItemsByCompany, { EXP_TIME_SK_PFX } from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import AWS from 'src/lib/AWS'
 import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import pipeByCompany from 'src/models/fundPriceRecord/utils/pipeByCompany'
@@ -27,7 +27,7 @@ const getRecordsGetter = (tableName: string) => async (company: CompanyType) => 
       // Remove unused values
       ExpressionAttributeValues: omit(
         defaultInput.ExpressionAttributeValues,
-        EXP_TIME_SK
+        EXP_TIME_SK_PFX
       ),
     }),
   })
