@@ -39,7 +39,7 @@ const getItems = async (company: CompanyType, tableRange: TableRange): Promise<I
     shouldQueryAll: true,
     at: tableRange,
   }
-  const normalizer = (output: QueryItemsOutput) => (output.Items || []).map(rec => parseRecords(rec))
+  const normalizer = (output: QueryItemsOutput) => (output.Items || []).map(parseRecords)
   const changeRateNormalizer = (output: QueryItemsOutput) => (output.Items || [])
     .map(rec => parseChangeRate(rec))
 
