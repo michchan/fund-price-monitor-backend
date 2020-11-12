@@ -14,6 +14,7 @@
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "eslint:fix": "npm run eslint -- --fix",
     "invoke": "npm run template && sam local invoke",
+    "rm:scrapers": "ts-node scripts/removeScrapersCache",
     "template": "npm run build && cdk synth --no-staging > template.yaml",
     "test": "jest",
     "watch": "tsc --watch --noemit"
