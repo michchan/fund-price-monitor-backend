@@ -1,6 +1,6 @@
 import isISOTimestamp from 'simply-utils/dist/dateTime/isISOTimestamp'
 
-import sendNotificationByTelegram, { ScheduleType } from './sendNotificationByTelegram'
+import sendNotificationByTelegram from './sendNotificationByTelegram'
 import getTelegramApiCredentials from 'src/helpers/getTelegramApiCredentials'
 import forEachCompany from 'src/models/fundPriceRecord/utils/forEachCompany'
 import areAllCompanyBatchesAggregated from './areAllCompanyBatchesAggregated'
@@ -9,6 +9,7 @@ import saveScrapeMetadata from 'src/models/fundPriceRecord/utils/saveScrapeMetad
 import FundPriceTableDetails, { CompanyScrapeMeta, ScrapeMeta } from 'src/models/fundPriceRecord/FundPriceTableDetails.type'
 import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import { defaultCompanyScrapeMeta } from 'src/models/fundPriceRecord/constants/defaultScrapeMeta'
+import queryItemsBySchedule, { ScheduleType } from './queryItemsBySchedule'
 
 interface ShouldNotifyOptions {
   isNotified?: boolean;
@@ -52,7 +53,7 @@ const saveMetaAfterNotify = async (
 
 const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<void> => {
   // Get credentials for sending notifications
-  const { chatId, apiKey } = await getTelegramApiCredentials()
+  const credentials = await getTelegramApiCredentials()
   await forEachCompany(async (company, i, arr, tableDetails) => {
     const { scrapeMeta } = tableDetails
     const companyScrapeMeta = (scrapeMeta?.info ?? {})[company]
@@ -61,7 +62,8 @@ const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<v
       time: scrapeMeta?.time,
       isForced,
     })) {
-      await sendNotificationByTelegram(chatId, apiKey, company, scheduleType)
+      const items = await queryItemsBySchedule(company, scheduleType)
+      await sendNotificationByTelegram(credentials, company, scheduleType, items)
       const meta = companyScrapeMeta ?? defaultCompanyScrapeMeta
       await saveMetaAfterNotify(company, meta, scrapeMeta?.time)
     }
