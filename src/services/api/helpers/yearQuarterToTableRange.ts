@@ -6,7 +6,7 @@ const yearQuarterToTableRange = (yearQuarter: string): TableRange => {
   const [year, quarter] = yearQuarter?.split('.')
   return {
     year,
-    quarter: quarter as unknown as Quarter,
+    quarter: Number(quarter) as unknown as Quarter,
   }
 }
 export default yearQuarterToTableRange
