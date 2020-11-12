@@ -26,6 +26,32 @@ export interface Options {
   endTime?: string;
   input?: PartialInput | ((defaultInput: Input) => PartialInput);
 }
+
+const getTimeSKValues = (
+  company: CompanyType,
+  prefix: string,
+  startTime?: string,
+  endTime?: string,
+) => {
+  if (startTime || endTime) {
+    const startDate = startTime ? new Date(startTime) : new Date()
+    const endDate = endTime ? new Date(endTime) : new Date()
+    const buf: Input['ExpressionAttributeValues'] = {}
+
+    if (startTime) buf[EXP_TIME_SK_START] = `${prefix}_${company}_${startDate.toISOString()}`
+    if (endTime) buf[EXP_TIME_SK_END] = `${prefix}_${company}_${endDate.toISOString()}`
+    return buf
+  }
+  return { [EXP_TIME_SK_PFX]: prefix }
+}
+
+const getTimeSKExpression = (startTime?: string, endTime?: string) => {
+  if (startTime && endTime) return between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END)
+  if (startTime) return `${attrs.TIME_SK} >= ${EXP_TIME_SK_START}`
+  if (endTime) return `${attrs.TIME_SK} <= ${EXP_TIME_SK_END}`
+  return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
+}
+
 const querySingleFundRecords = (
   company: CompanyType,
   code: FundPriceRecord['code'],
@@ -38,28 +64,14 @@ const querySingleFundRecords = (
   }: Options = {},
 ): Promise<Output> => {
   const startDate = startTime ? new Date(startTime) : new Date()
-  const endDate = endTime ? new Date(endTime) : new Date()
   // Get table from
   const from = getDateTimeDictionary(startDate)
   // Construct TIME SK query
   const timeSKPfx = shouldQueryLatest ? 'shouldQueryLatest' : 'record'
   // Derive timeSK expression values based on conditions
-  const timeSKValues = (() => {
-    if (startTime || endTime) {
-      const buf: Input['ExpressionAttributeValues'] = {}
-      if (startTime) buf[EXP_TIME_SK_START] = `${timeSKPfx}_${company}_${startDate.toISOString()}`
-      if (endTime) buf[EXP_TIME_SK_END] = `${timeSKPfx}_${company}_${endDate.toISOString()}`
-      return buf
-    }
-    return { [EXP_TIME_SK_PFX]: timeSKPfx }
-  })()
+  const timeSKValues = getTimeSKValues(company, timeSKPfx, startTime, endTime)
   // Derive timeSK expression based on conditions
-  const timeSKExpression = (() => {
-    if (startTime && endTime) return between(attrs.TIME_SK, EXP_TIME_SK_START, EXP_TIME_SK_END)
-    if (startTime) return `${attrs.TIME_SK} >= ${EXP_TIME_SK_START}`
-    if (endTime) return `${attrs.TIME_SK} <= ${EXP_TIME_SK_END}`
-    return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
-  })()
+  const timeSKExpression = getTimeSKExpression(startTime, endTime)
 
   const defaultInput: Input = {
     ExpressionAttributeValues: {
