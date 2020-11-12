@@ -59,7 +59,7 @@ const getItemParser = (scheduleType: ScheduleType) => (
 }
 
 const MESSAGES_INTERVAL = 5000
-const notifyCompanyRecordsByTelegram = async (
+const sendNotificationByTelegram = async (
   chatId: string,
   apiKey: string,
   company: CompanyType,
@@ -101,4 +101,4 @@ const notifyCompanyRecordsByTelegram = async (
   }
 }
 
-export default notifyCompanyRecordsByTelegram
+export default sendNotificationByTelegram

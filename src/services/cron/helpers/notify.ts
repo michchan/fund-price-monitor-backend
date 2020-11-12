@@ -1,6 +1,6 @@
 import isISOTimestamp from 'simply-utils/dist/dateTime/isISOTimestamp'
 
-import notifyCompanyRecordsByTelegram, { ScheduleType } from './notifyCompanyRecordsByTelegram'
+import sendNotificationByTelegram, { ScheduleType } from './sendNotificationByTelegram'
 import getTelegramApiCredentials from 'src/helpers/getTelegramApiCredentials'
 import forEachCompany from 'src/models/fundPriceRecord/utils/forEachCompany'
 import areAllCompanyBatchesAggregated from './areAllCompanyBatchesAggregated'
@@ -61,7 +61,7 @@ const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<v
       time: scrapeMeta?.time,
       isForced,
     })) {
-      await notifyCompanyRecordsByTelegram(chatId, apiKey, company, scheduleType)
+      await sendNotificationByTelegram(chatId, apiKey, company, scheduleType)
       const meta = companyScrapeMeta ?? defaultCompanyScrapeMeta
       await saveMetaAfterNotify(company, meta, scrapeMeta?.time)
     }

@@ -1,5 +1,5 @@
 import { ScheduledHandler } from 'aws-lambda'
-import { ScheduleType } from '../helpers/notifyCompanyRecordsByTelegram'
+import { ScheduleType } from '../helpers/sendNotificationByTelegram'
 import notify from '../helpers/notify'
 
 export interface EventDetail {
