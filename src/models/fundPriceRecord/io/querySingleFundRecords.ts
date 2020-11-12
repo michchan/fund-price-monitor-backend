@@ -3,11 +3,12 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import queryItems, { Output as O } from './queryItems'
 import attrs from '../constants/attributeNames'
-import FundPriceRecord, { CompanyType } from '../FundPriceRecord.type'
+import FundPriceRecord, { CompanyType, RecordType } from '../FundPriceRecord.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import between from 'src/lib/AWS/dynamodb/expressionFunctions/between'
 import getCompanyCodePK from '../utils/getCompanyCodePK'
+import getCompositeSK from '../utils/getCompositeSK'
 
 const EXP_COM_CODE_PK = ':company_code' as string
 const EXP_TIME_SK_PFX = ':time_SK' as string
@@ -29,20 +30,21 @@ export interface Options {
 
 const getTimeSKValues = (
   company: CompanyType,
-  prefix: string,
+  recordType: RecordType,
   startTime?: string,
   endTime?: string,
 ) => {
   if (startTime || endTime) {
-    const startDate = startTime ? new Date(startTime) : new Date()
-    const endDate = endTime ? new Date(endTime) : new Date()
+    const thisStartTime = (startTime ? new Date(startTime) : new Date()).toISOString()
+    const thisEndTime = (endTime ? new Date(endTime) : new Date()).toISOString()
     const buf: Input['ExpressionAttributeValues'] = {}
 
-    if (startTime) buf[EXP_TIME_SK_START] = `${prefix}_${company}_${startDate.toISOString()}`
-    if (endTime) buf[EXP_TIME_SK_END] = `${prefix}_${company}_${endDate.toISOString()}`
+    const input = { recordType, company }
+    if (startTime) buf[EXP_TIME_SK_START] = getCompositeSK({ ...input, time: thisStartTime })
+    if (endTime) buf[EXP_TIME_SK_END] = getCompositeSK({ ...input, time: thisEndTime })
     return buf
   }
-  return { [EXP_TIME_SK_PFX]: prefix }
+  return { [EXP_TIME_SK_PFX]: recordType }
 }
 
 const getTimeSKExpression = (startTime?: string, endTime?: string) => {
@@ -67,9 +69,9 @@ const querySingleFundRecords = (
   // Get table from
   const from = getDateTimeDictionary(startDate)
   // Construct TIME SK query
-  const timeSKPfx = shouldQueryLatest ? 'shouldQueryLatest' : 'record'
+  const recordType: RecordType = shouldQueryLatest ? 'latest' : 'record'
   // Derive timeSK expression values based on conditions
-  const timeSKValues = getTimeSKValues(company, timeSKPfx, startTime, endTime)
+  const timeSKValues = getTimeSKValues(company, recordType, startTime, endTime)
   // Derive timeSK expression based on conditions
   const timeSKExpression = getTimeSKExpression(startTime, endTime)
 
