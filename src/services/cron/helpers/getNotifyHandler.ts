@@ -8,7 +8,7 @@ export interface EventDetail {
 const getNotifyHandler = (
   scheduleType: ScheduleType
 ): ScheduledHandler<EventDetail> => async event => {
-  const { isForced } = event.detail
+  const { isForced } = event?.detail ?? {}
   await notify(scheduleType, isForced)
 }
 export default getNotifyHandler
