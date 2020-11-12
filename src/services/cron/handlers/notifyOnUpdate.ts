@@ -1,9 +1,3 @@
-import { ScheduledHandler } from 'aws-lambda'
-import notifyByTelegram from '../helpers/notifyByTelegram'
+import getNotifyHandler from '../helpers/getNotifyHandler'
 
-/**
- * Send notification messages upon data updates
- */
-export const handler: ScheduledHandler = async () => {
-  await notifyByTelegram('onUpdate')
-}
+export const handler = getNotifyHandler('onUpdate')
