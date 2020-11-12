@@ -41,6 +41,17 @@ const evaluatePage = (): T[] => {
     const fundType: FundType = 'mpf'
     const recordType: RecordType = 'record'
     const code = dataCells[0].innerText.trim().replace(/\s|_/g, '')
+    const price = (() => {
+      const text = dataCells[3].innerText.trim()
+      return Number(text.replace(/HKD|↵|\n/gim, ''))
+    })()
+    const riskLevel = (() => {
+      const riskIndicatorImg = dataCells[4].querySelector('img')
+      // Find risk level key
+      const key = Object.keys(riskLevelIndicatorImageNameMap)
+        .find(name => riskIndicatorImg?.src.includes(name)) as keyof RiskLevlIndicatorImageNameMap
+      return riskLevelIndicatorImageNameMap[key]
+    })()
     return {
       company,
       code,
@@ -48,10 +59,12 @@ const evaluatePage = (): T[] => {
       // Replace 'slashes' with 'hyphens'
       updatedDate: dataCells[2].innerText.trim().replace(/\//g, '-'),
       // Derive price
-      price: (() => {
-        const text = dataCells[3].innerText.trim()
-        return Number(text.replace(/HKD|↵|\n/gim, ''))
-      })(),
+      price,
+      // Derive riskLevel
+      riskLevel,
+      time,
+      fundType,
+      recordType,
       // Derive initialPrice and launchedDate
       ...(() => {
         const text = dataCells[5].innerText.trim()
@@ -63,17 +76,6 @@ const evaluatePage = (): T[] => {
           launchedDate: date.trim().replace(/\//g, '-'),
         }
       })(),
-      // Derive riskLevel
-      riskLevel: (() => {
-        const riskIndicatorImg = dataCells[4].querySelector('img')
-        // Find risk level key
-        const key = Object.keys(riskLevelIndicatorImageNameMap)
-          .find(name => riskIndicatorImg?.src.includes(name)) as keyof RiskLevlIndicatorImageNameMap
-        return riskLevelIndicatorImageNameMap[key]
-      })(),
-      time,
-      fundType,
-      recordType,
     }
   }
 
