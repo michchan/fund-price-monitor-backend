@@ -2,7 +2,7 @@ import logObj from 'src/helpers/logObj'
 import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import FundPriceTableDetails from 'src/models/fundPriceRecord/FundPriceTableDetails.type'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
-import parse from 'src/models/fundPriceRecord/utils/parse'
+import parseRecords from 'src/models/fundPriceRecord/utils/parseRecords'
 
 const areAllCompanyBatchesAggregated = async (
   tableDetails: FundPriceTableDetails,
@@ -38,7 +38,7 @@ const areAllCompanyBatchesAggregated = async (
     shouldQueryLatest: true,
     shouldQueryAll: true,
   })
-  const latestItems = (output.Items ?? []).map(parse)
+  const latestItems = (output.Items ?? []).map(parseRecords)
   const aggregatedSize = latestItems
     // The latest aggregated items are supposed to be create later than the scrapeMeta.time
     .filter(item => new Date(item.time).getTime() >= new Date(time).getTime())

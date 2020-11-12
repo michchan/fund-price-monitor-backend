@@ -5,7 +5,7 @@ import isEmpty from 'lodash/isEmpty'
 import FundPriceRecord, { CompanyType, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import AWS from 'src/lib/AWS'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
-import parse from 'src/models/fundPriceRecord/utils/parse'
+import parseRecords from 'src/models/fundPriceRecord/utils/parseRecords'
 
 type T = FundPriceRecord<FundType, 'record'>
 export type Groups = { [company in CompanyType]: T[] }
@@ -24,7 +24,7 @@ const groupEventRecordsByCompany = (event: DynamoDBStreamEvent): [Groups, T[]] =
         AWS.DynamoDB.Converter.unmarshall(record.dynamodb?.NewImage || {})[attrs.TIME_SK] ?? ''
       )
     ))
-    .map(record => parse(AWS.DynamoDB.Converter.unmarshall(
+    .map(record => parseRecords(AWS.DynamoDB.Converter.unmarshall(
       record.dynamodb?.NewImage as unknown as AWS.DynamoDB.AttributeMap
     )))
 

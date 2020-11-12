@@ -5,7 +5,7 @@ import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompa
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
-import parse from 'src/models/fundPriceRecord/utils/parse'
+import parseRecords from 'src/models/fundPriceRecord/utils/parseRecords'
 import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
 
 type ItemOutput = FundPriceRecord[]
@@ -22,7 +22,7 @@ const queryPrevLatestItems = async (
   })
   const prevLatestItems = (prevLatestRecords.Items || [])
     // Parse records
-    .map(rec => parse(rec))
+    .map(rec => parseRecords(rec))
     // Filters by insertedItems
     .filter(matchInserted)
 

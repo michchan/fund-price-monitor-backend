@@ -18,7 +18,7 @@ import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import getCompositeSK from 'src/models/fundPriceRecord/utils/getCompositeSK'
 import getCompositeSKFromChangeRate from 'src/models/fundPriceRecord/utils/getCompositeSKFromChangeRate'
 import isDuplicated from 'src/models/fundPriceRecord/utils/isDuplicated'
-import parse from 'src/models/fundPriceRecord/utils/parse'
+import parseRecords from 'src/models/fundPriceRecord/utils/parseRecords'
 import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
 import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
 
@@ -39,7 +39,7 @@ const getItems = async (company: CompanyType, tableRange: TableRange): Promise<I
     shouldQueryAll: true,
     at: tableRange,
   }
-  const normalizer = (output: QueryItemsOutput) => (output.Items || []).map(rec => parse(rec))
+  const normalizer = (output: QueryItemsOutput) => (output.Items || []).map(rec => parseRecords(rec))
   const changeRateNormalizer = (output: QueryItemsOutput) => (output.Items || [])
     .map(rec => parseChangeRate(rec))
 

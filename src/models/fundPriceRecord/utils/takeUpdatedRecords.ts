@@ -6,7 +6,7 @@ import FundPriceRecord, { FundType } from '../FundPriceRecord.type'
 import queryItemsByCompany from '../io/queryItemsByCompany'
 import isPKEqual from './isPKEqual'
 import logObj from 'src/helpers/logObj'
-import parse from './parse'
+import parseRecords from './parseRecords'
 import getCompaniesFromRecords from './getCompaniesFromRecords'
 
 type RT = FundPriceRecord<FundType, 'record'>
@@ -50,7 +50,7 @@ const takeUpdatedRecords = async (records: RT[]): Promise<RT[]> => {
         shouldQueryLatest: true,
         shouldQueryAll: true,
       })
-      const items = (records.Items ?? []).map(v => parse<FundType, 'latest'>(v))
+      const items = (records.Items ?? []).map(v => parseRecords<FundType, 'latest'>(v))
       return [...acc, ...items]
     })
   )([])

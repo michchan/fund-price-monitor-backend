@@ -7,7 +7,7 @@ import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPerio
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
-import parse from 'src/models/fundPriceRecord/utils/parse'
+import parseRecords from 'src/models/fundPriceRecord/utils/parseRecords'
 import getSorterByCode from 'src/models/fundPriceRecord/utils/getSorterByCode'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
@@ -50,7 +50,7 @@ const getItemParser = (scheduleType: ScheduleType) => (
       return parseChangeRate(item)
     case 'onUpdate':
     default:
-      return parse(item)
+      return parseRecords(item)
   }
 }
 

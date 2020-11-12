@@ -6,7 +6,7 @@ import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames'
 /**
  * Parse a dynamodb item to FundPriceRecord
  */
-const parse = <FT extends FundType, RT extends RecordType> (
+const parseRecords = <FT extends FundType, RT extends RecordType> (
   attributeMap: DynamoDB.DocumentClient.AttributeMap
 ): FundPriceRecord<FT, RT> => {
   const {
@@ -44,4 +44,4 @@ const parse = <FT extends FundType, RT extends RecordType> (
   }
 }
 
-export default parse
+export default parseRecords
