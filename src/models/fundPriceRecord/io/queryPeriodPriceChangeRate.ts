@@ -7,8 +7,9 @@ import indexNames from '../constants/indexNames'
 import { CompanyType } from '../FundPriceRecord.type'
 import attributeNames from '../constants/attributeNames'
 import { AggregatedRecordType } from '../FundPriceChangeRate.type'
+import getCompositePeriod from '../utils/getCompositePeriod'
 
-const EXP_TIME_SK = ':timeSK' as string
+const EXP_PERIOD = ':period' as string
 export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
@@ -31,8 +32,10 @@ const queryPeriodPriceChangeRate = (
 ): Promise<Output> => {
   const defaultInput: Input = {
     IndexName: indexNames.PERIOD_PRICE_CHANGE_RATE,
-    ExpressionAttributeValues: { [EXP_TIME_SK]: `${recordType}_${company}_${period}` },
-    KeyConditionExpression: `${attributeNames.PERIOD} = ${EXP_TIME_SK}`,
+    ExpressionAttributeValues: {
+      [EXP_PERIOD]: getCompositePeriod({ recordType, company, period }),
+    },
+    KeyConditionExpression: `${attributeNames.PERIOD} = ${EXP_PERIOD}`,
   }
   return queryItems({
     ...defaultInput,

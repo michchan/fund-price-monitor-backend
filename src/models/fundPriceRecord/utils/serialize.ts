@@ -3,6 +3,7 @@ import { DynamoDB } from 'aws-sdk'
 import FundPriceRecord from '../FundPriceRecord.type'
 import attr from '../constants/attributeNames'
 import getCompositeSK from './getCompositeSK'
+import getCompanyCodePK from './getCompanyCodePK'
 
 /**
  * Serilize a FundPriceRecord to dynamodb item
@@ -22,7 +23,7 @@ const serialize = (record: FundPriceRecord): DynamoDB.DocumentClient.AttributeMa
   } = record
 
   return {
-    [attr.COMPANY_CODE]: `${company}_${code}`,
+    [attr.COMPANY_CODE]: getCompanyCodePK({ company, code }),
     [attr.TIME_SK]: getCompositeSK(record),
     [attr.COMPANY]: company,
     [attr.NAME]: name,

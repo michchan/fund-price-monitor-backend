@@ -5,6 +5,7 @@ import attributeNames from '../constants/attributeNames'
 import getTableName from '../utils/getTableName'
 import TableRange from '../TableRange.type'
 import { DEFAULT_DELAY } from '../utils/pipeByCompany'
+import getCompanyCodePK from '../utils/getCompanyCodePK'
 
 type T = FundPriceRecord | FundPriceChangeRate
 export const DEFUALT_DELAY = 300
@@ -20,7 +21,7 @@ function batchDeleteItems <Rec extends T> (
 ): Promise<Output | null> {
   return batchWriteItems<Rec>(records, getTableName(year, quarter), 'delete', {
     serialize: rec => ({
-      [attributeNames.COMPANY_CODE]: `${rec.company}_${rec.code}`,
+      [attributeNames.COMPANY_CODE]: getCompanyCodePK(rec),
       [attributeNames.TIME_SK]: getTimeSK(rec),
     }),
     delay,

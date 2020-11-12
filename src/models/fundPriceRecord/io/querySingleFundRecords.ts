@@ -7,6 +7,7 @@ import FundPriceRecord, { CompanyType } from '../FundPriceRecord.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import between from 'src/lib/AWS/dynamodb/expressionFunctions/between'
+import getCompanyCodePK from '../utils/getCompanyCodePK'
 
 const EXP_COM_CODE_PK = ':company_code' as string
 const EXP_TIME_SK_PFX = ':time_SK' as string
@@ -63,7 +64,7 @@ const querySingleFundRecords = (
   const defaultInput: Input = {
     ExpressionAttributeValues: {
       ...timeSKValues,
-      [EXP_COM_CODE_PK]: `${company}_${code}`,
+      [EXP_COM_CODE_PK]: getCompanyCodePK({ company, code }),
     },
     KeyConditionExpression: [
       `${attrs.COMPANY_CODE} = ${EXP_COM_CODE_PK}`,

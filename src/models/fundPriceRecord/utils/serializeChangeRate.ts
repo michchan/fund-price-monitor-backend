@@ -3,6 +3,8 @@ import { DynamoDB } from 'aws-sdk'
 import FundPriceChangeRate from '../FundPriceChangeRate.type'
 import attr from '../constants/attributeNames'
 import getCompositeSKFromChangeRate from './getCompositeSKFromChangeRate'
+import getCompanyCodePK from './getCompanyCodePK'
+import getCompositePeriod from './getCompositePeriod'
 
 /**
  * Serilize a FundPriceChangeRate to dynamodb item
@@ -21,9 +23,9 @@ const serializeChangeRate = (record: FundPriceChangeRate): DynamoDB.DocumentClie
   } = record
 
   return {
-    [attr.COMPANY_CODE]: `${company}_${code}`,
+    [attr.COMPANY_CODE]: getCompanyCodePK({ company, code }),
     [attr.TIME_SK]: getCompositeSKFromChangeRate(record),
-    [attr.PERIOD]: `${recordType}_${company}_${period}`,
+    [attr.PERIOD]: getCompositePeriod({ recordType, company, period }),
     [attr.COMPANY]: company,
     [attr.NAME]: name,
     [attr.UPDATED_DATE]: updatedDate,
