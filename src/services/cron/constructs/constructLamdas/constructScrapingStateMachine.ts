@@ -43,13 +43,13 @@ const constructScrapingHandlers = (
   }
   // Handlers for scraping data and saving data
   const scrapeHandlers = handlers
-    .filter(fileName => /^__scraper__/i.test(fileName))
-    .map(getScraperCreator(/^__scraper__/i, 'CronScraper'))
+    .filter(fileName => /^__recordScraper__/i.test(fileName))
+    .map(getScraperCreator(/^__recordScraper__/i, 'CronRecordScraper'))
 
   /** @DEBUG * Testing handlers for scrapers */
   const testScrapeHandlers = handlers
-    .filter(fileName => /^__testScraper__/i.test(fileName))
-    .map(getScraperCreator(/^__testScraper__/i, 'CronTestScraper'))
+    .filter(fileName => /^__testRecordScraper__/i.test(fileName))
+    .map(getScraperCreator(/^__testRecordScraper__/i, 'CronTestRecordScraper'))
 
   const startScrapeSessionHandler = new lambda.Function(scope, 'CronStartScrapeSession', {
     ...defaultInput,
