@@ -14,8 +14,8 @@
  * `GetDataWithPage<FundPriceRecord<FundType, 'record'>[]>`.
  *
  * and the following files under "templateDir":
- * - scrape.ts
- * - testScrapers.ts
+ * - scrapeRecords.ts
+ * - testScraperRecords.ts
  *
  * The following handler files will be generated under "handlersDir":
  * - handleScrapeFromAIAMPF.ts
