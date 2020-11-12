@@ -48,10 +48,11 @@ const mapInfoInput = (
   ]
 }
 
+export type MetadataMode = 'test' | 'live'
 const saveScrapeMetadata = (
   scrapeMeta: Partial<ScrapeMeta>,
   tableRange: TableRange,
-  metadataMode: 'test' | 'live' = 'live',
+  metadataMode: MetadataMode = 'live',
 ): Promise<O | null> => {
   if (isDeepEmpty(scrapeMeta)) return Promise.resolve(null)
 
