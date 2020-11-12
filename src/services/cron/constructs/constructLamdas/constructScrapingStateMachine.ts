@@ -31,29 +31,30 @@ const constructScrapingHandlers = (
   const handlers = fs.readdirSync(`${serviceDirname}/handlers`)
   /** Scraper creator */
   const getScraperCreator = (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
-    const name = fileName.replace(nameRegExp, '').replace(/\.ts$/i, '')
+    const name = fileName
+      .replace(nameRegExp, '')
+      .replace(/\.ts$/i, '')
+      .replace(/^(scrapeFrom|scrape)/i, '')
     return new lambda.Function(scope, `${namePrefix}${name}`, {
       ...defaultInput,
       ...getDefaultScrapersInput(),
       handler: `${fileName.replace(/\.ts$/i, '')}.handler`,
     })
   }
-
   // Handlers for scraping data and saving data
   const scrapeHandlers = handlers
-    .filter(fileName => /^handleScrapeFrom/i.test(fileName))
-    .map(getScraperCreator(/^handleScrapeFrom/i, 'CronScraper'))
+    .filter(fileName => /^__scraper__/i.test(fileName))
+    .map(getScraperCreator(/^__scraper__/i, 'CronScraper'))
 
   /** @DEBUG * Testing handlers for scrapers */
   const testScrapeHandlers = handlers
-    .filter(fileName => /^testScrapeFrom/i.test(fileName))
-    .map(getScraperCreator(/^testScrapeFrom/i, 'CronTestScraper'))
+    .filter(fileName => /^__testScraper__/i.test(fileName))
+    .map(getScraperCreator(/^__testScraper__/i, 'CronTestScraper'))
 
   const startScrapeSessionHandler = new lambda.Function(scope, 'CronStartScrapeSession', {
     ...defaultInput,
     handler: 'startScrapeSession.handler',
   })
-
   return {
     scrapers: scrapeHandlers,
     testScrapers: testScrapeHandlers,

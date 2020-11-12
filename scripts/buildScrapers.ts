@@ -69,9 +69,8 @@ const buildByTemplate = (templateName: string, scraperNames: string[]) => {
     const linesText = linesWithScraper.join('\n')
 
     // Write each handler file
-    const filePrefix = /test/i.test(templateName) ? 'test' : 'handle'
-    const nameCapitalized = name.charAt(0).toUpperCase() + name.slice(1)
-    const fileName = `${filePrefix}${nameCapitalized}.ts`
+    const filePrefix = /test/i.test(templateName) ? '__testScraper__' : '__scraper__'
+    const fileName = `${filePrefix}${name}.ts`
 
     fs.writeFileSync(`${handlersDirAbs}/${fileName}`, linesText)
   })
