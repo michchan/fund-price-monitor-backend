@@ -3,7 +3,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import mapValues from 'lodash/mapValues'
 
 import { ListResponse } from '../Responses.type'
-import FundPriceRecord from '../../../models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { RecordType } from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import createReadResponse from '../helpers/createReadResponse'
 import { StructuredQuery } from '../StructuredQuery.type'
 import parseQuery from '../helpers/parseQuery'
@@ -60,13 +60,14 @@ export const handler: APIGatewayProxyHandler = async event => {
     // Get table range
     const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
 
+    const recordType: RecordType = shouldQueryLatest ? 'latest' : 'record'
     // Query
     const output = await scanItems({
       ExclusiveStartKey: exclusiveStartKey,
       ExpressionAttributeNames: expNames,
       ExpressionAttributeValues: {
         ...expValues,
-        [EXP_TIME_SK_PFX]: shouldQueryLatest ? 'latest' : 'record',
+        [EXP_TIME_SK_PFX]: recordType,
       },
       FilterExpression: [
         beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),

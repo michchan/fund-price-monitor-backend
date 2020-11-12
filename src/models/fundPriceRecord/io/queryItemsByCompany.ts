@@ -4,12 +4,12 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import indexNames from '../constants/indexNames'
 import queryItems, { Output as O } from './queryItems'
 import attrs from '../constants/attributeNames'
-import { CompanyType } from '../FundPriceRecord.type'
+import { CompanyType, RecordType } from '../FundPriceRecord.type'
 import TableRange from '../TableRange.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 
 export const EXP_COM_PK = ':company' as string
-export const EXP_TIME_SK = ':timeSK' as string
+export const EXP_TIME_SK_PFX = ':timeSK' as string
 
 export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
@@ -31,14 +31,15 @@ const queryItemsByCompany = (
     input = {},
   }: Options = {},
 ): Promise<Output> => {
+  const recordType: RecordType = shouldQueryLatest ? 'latest' : 'record'
   const defaultInput: Input = {
     IndexName: indexNames.RECORDS_BY_COMPANY,
     ExpressionAttributeValues: {
       [EXP_COM_PK]: company,
-      [EXP_TIME_SK]: shouldQueryLatest ? 'latest' : 'record',
+      [EXP_TIME_SK_PFX]: recordType,
     },
     KeyConditionExpression: `${attrs.COMPANY} = ${EXP_COM_PK}`,
-    FilterExpression: beginsWith(attrs.TIME_SK, EXP_TIME_SK),
+    FilterExpression: beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),
   }
   return queryItems({
     ...defaultInput,
