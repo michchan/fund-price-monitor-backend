@@ -40,7 +40,7 @@ const constructScrapingHandlers = (
     return new lambda.Function(scope, `${namePrefix}${name}`, {
       ...defaultInput,
       ...getDefaultScrapersInput(),
-      handler: `${fileName.replace(/\.ts$/i, '')}.handler`,
+      handler: `${fileName.replace(/(\.js|\.ts)$/i, '')}.handler`,
     })
   }
   // Handlers for scraping data and saving data
