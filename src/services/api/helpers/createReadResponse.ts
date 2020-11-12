@@ -14,6 +14,7 @@ export type Output =
 function createReadResponse <T> (
   error: null | AWSError,
   output?: Output,
+  parser?: (item: DocumentClient.AttributeMap) => T,
 ): APIGatewayProxyResult {
   if (error) {
     console.log('ERROR: ', stringify(error))
@@ -27,9 +28,10 @@ function createReadResponse <T> (
     }
   }
 
+  const items = output?.Items ?? []
   const body: ListResponse<T> = {
     result: true,
-    data: (output?.Items ?? []) as T[],
+    data: parser ? items.map(parser) : items as T[],
     lastEvaluatedKey: output?.LastEvaluatedKey ?? null,
   }
   return {

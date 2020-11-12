@@ -11,6 +11,7 @@ import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPerio
 import validateYearQuarter from '../validators/validateYearQuarter'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
 import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
+import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
 
 export type Res = ListResponse<FundPriceChangeRate>
 
@@ -69,7 +70,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     })
 
     // Send back successful response
-    return createReadResponse(null, output)
+    return createReadResponse(null, output, parseChangeRate)
   } catch (error) {
     // Send back failed response
     return createReadResponse(error)

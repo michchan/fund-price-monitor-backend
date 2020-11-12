@@ -11,6 +11,7 @@ import validateTimestamp from '../validators/validateTimestamp'
 import querySingleFundRecords from 'src/models/fundPriceRecord/io/querySingleFundRecords'
 import validateCode from '../validators/validateCode'
 import validateTimestampRange from '../validators/validateTimestampRange'
+import parse from 'src/models/fundPriceRecord/utils/parse'
 
 export type Res = ListResponse<FundPriceRecord>
 
@@ -70,7 +71,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     })
 
     // Send back successful response
-    return createReadResponse(null, output)
+    return createReadResponse(null, output, parse)
   } catch (error) {
     // Send back failed response
     return createReadResponse(error)
