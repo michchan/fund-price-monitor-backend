@@ -22,7 +22,7 @@ const removeScrapersCache = () => {
   fs.readdirSync(handlersDirAbs)
     .filter(name => regexes.some(regex => regex.test(name)))
     .forEach(name => fs.unlinkSync(`${handlersDirAbs}/${name}`))
-  console.log('Scrape handlers cache removed!')
+  console.log('Scrape handlers cache REMOVED!')
 }
 
 // Run script
