@@ -1,11 +1,11 @@
 import { CompanyType } from './FundPriceRecord.type'
 
-export type Locales = 'en' | 'zh_HK'
+export type Languages = 'en' | 'zh_HK'
 
 interface FundDetails {
   company: CompanyType;
   code: string;
-  name: { [key in Locales]: string };
+  name: { [key in Languages]: string };
   initialPrice: number;
   launchedDate: string;
 }
