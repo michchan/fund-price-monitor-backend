@@ -3,6 +3,7 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import * as sfn from '@aws-cdk/aws-stepfunctions'
 import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks'
 import * as fs from 'fs'
+import upperFirst from 'lodash/upperFirst'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 // Common lambda configs for scrape handlers
@@ -35,9 +36,9 @@ const constructScrapingHandlers = (
   const getScraperCreator = (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
     const name = fileName
       .replace(nameRegExp, '')
-      .replace(/\.ts$/i, '')
-      .replace(/^(scrapeFrom|scrape)/i, '')
-    return new lambda.Function(scope, `${namePrefix}${name}`, {
+      .replace(/\.(ts|js)$/i, '')
+      .replace(/(scrapeFrom|scrape|scraper|scrapers)/i, '')
+    return new lambda.Function(scope, `${namePrefix}${upperFirst(name)}`, {
       ...defaultInput,
       ...getDefaultScrapersInput(),
       handler: `${fileName.replace(/(\.js|\.ts)$/i, '')}.handler`,

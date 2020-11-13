@@ -91,7 +91,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<T[]> => {
   const viewId = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
   await retryWithDelay(() => page.waitForSelector(
     `${viewId}_\\:mainContent\\:datat\\:tbody_element > tr:last-child > td > img`
-  ), 'scrapeFromManulifeMPF')
+  ), 'manulifeMPFScrapers')
 
   // Query DOM data
   // * Constants/variables must be inside the scope of the callback function
