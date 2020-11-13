@@ -8,7 +8,7 @@ import getCompanyCodePK from './getCompanyCodePK'
 /**
  * Serilize a FundPriceRecord to dynamodb item
  */
-const serialize = (record: FundPriceRecord): DynamoDB.DocumentClient.AttributeMap => {
+const serializeRecord = (record: FundPriceRecord): DynamoDB.DocumentClient.AttributeMap => {
   const {
     company,
     code,
@@ -37,4 +37,4 @@ const serialize = (record: FundPriceRecord): DynamoDB.DocumentClient.AttributeMa
   }
 }
 
-export default serialize
+export default serializeRecord
