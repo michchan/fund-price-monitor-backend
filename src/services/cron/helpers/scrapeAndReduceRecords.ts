@@ -28,7 +28,7 @@ const reduceRecords = async (batches: RT[][]): Promise<Output> => {
   return [takenRecords, companies]
 }
 
-async function scrapeAndReduce (scrapers: GetDataWithPage<RT[]>[]): Promise<Output> {
+async function scrapeAndReduceRecords (scrapers: GetDataWithPage<RT[]>[]): Promise<Output> {
   // Scrape records from the site
   const batches = await launchPuppeteerBrowserSession<RT[]>(scrapers)
   const [records, companies] = await reduceRecords(batches)
@@ -36,4 +36,4 @@ async function scrapeAndReduce (scrapers: GetDataWithPage<RT[]>[]): Promise<Outp
   logObj(`Records to insert (${records.length}): `, records)
   return [records, companies]
 }
-export default scrapeAndReduce
+export default scrapeAndReduceRecords

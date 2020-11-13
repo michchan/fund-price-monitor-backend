@@ -1,23 +1,26 @@
 /**
  * Dynamically generate lambda handlers of scrapers.
  *
- * This script will take "scrapers" from "scrapersDir" directory,
- * and build lambda 'handlers' under `handlersDir` directory,
+ * This script will take "scrapers" from <scrapersDir> directory,
+ * and build lambda 'handlers' under <handlersDir> directory,
  * based on 'templates' under "templateDir" directory.
  *
  * For example:
- * Given there are following files under "scrapersDir":
- * - scrapeFromAIAMPF.ts
- * - scrapeFromManulifeMPF.ts
- * Each of the above scraper files should export
- * a function "recordsHandlerName" in the module, of type:
- * `GetDataWithPage<FundPriceRecord<FundType, 'record'>[]>`.
+ * Given there are following files under <scrapersDir>:
+ * - aiaMPFScrapers.ts
+ * - manulifeMPFScrapers.ts
  *
- * and the following files under "templateDir":
+ * Each of the above scraper files should export the following functions:
+ *  - Records scraper: a function named with <recordsHandlerName> in the module, of type:
+ * `GetDataWithPage<FundPriceRecord<FundType, 'record'>[]>`.
+ *  - Details scraper: a function named with <detailsHandlerName> in th e module, of type:
+ * `GetDataWithPage<FundDetails[]>`.
+ *
+ * and the following files under <templateDir>:
  * - scrapeRecords.ts
  * - testScraperRecords.ts
  *
- * The following handler files will be generated under "handlersDir":
+ * The following handler files will be generated under <handlersDir>:
  * - handleScrapeFromAIAMPF.ts
  * - handleScrapeFromManulifeMPF.ts
  * - testScrapeFromAIAMPF.ts
@@ -33,6 +36,7 @@ const templateDirAbs = `${rootDir}/${templateDir}`
 const handlersDir = 'src/services/cron/handlers'
 const handlersDirAbs = `${rootDir}/${handlersDir}`
 const recordsHandlerName = 'scrapeRecords'
+// ! const detailsHandlerName = 'scrapeDetails'
 
 const removePathExtension = (path: string) => path.replace(/\.(ts|js)/i, '')
 

@@ -6,16 +6,16 @@ import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceR
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import reduceScrapeMetaInfo from 'src/models/fundPriceRecord/utils/reduceScrapeMetaInfo'
 import saveScrapeMetadata, { MetadataMode } from 'src/models/fundPriceRecord/utils/saveScrapeMetadata'
-import scrapeAndReduce, { Output as ScrapeAndReduceOutput } from './scrapeAndReduce'
+import scrapeAndReduceRecords, { Output as ScrapeAndReduceRecordOutput } from './scrapeAndReduceRecords'
 import withStatus from './withStatus'
 
 type TRec = FundPriceRecord<FundType, 'record'>
 export type Callback <T = void> = (
   tableRange: TableRange,
-  ...args: ScrapeAndReduceOutput
+  ...args: ScrapeAndReduceRecordOutput
 ) => T | Promise<T>
 
-const getScraperTemplateHandler = <T = void> (
+const getRecordsScraperTemplateHandler = <T = void> (
   scrapers: GetDataWithPage<TRec[]>[],
   metadataMode: MetadataMode,
   callback?: Callback<T>,
@@ -25,7 +25,7 @@ const getScraperTemplateHandler = <T = void> (
 
   const [status, err, records, companies] = await withStatus(async () => {
     // Scrape records from the site
-    const output = await scrapeAndReduce(scrapers)
+    const output = await scrapeAndReduceRecords(scrapers)
     // Callback to do something with records like saving it into database
     if (callback) await callback(tableRange, ...output)
     return output
@@ -36,4 +36,4 @@ const getScraperTemplateHandler = <T = void> (
 
   if (err) throw err
 }
-export default getScraperTemplateHandler
+export default getRecordsScraperTemplateHandler
