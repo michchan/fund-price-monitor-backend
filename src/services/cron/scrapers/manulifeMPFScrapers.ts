@@ -155,7 +155,11 @@ export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]
     const prevIndex = acc.findIndex(item => getCompanyCodePK(item) === getCompanyCodePK(curr))
     if (prevIndex) {
       const prev = acc[prevIndex]
-      const next: FundDetails = { ...prev, name: { ...prev.name, ...curr.name } }
+      const next: FundDetails = {
+        ...prev,
+        ...curr,
+        name: { ...prev.name, ...curr.name },
+      }
       const nextAcc = [...acc]
       nextAcc[prevIndex] = next
       return nextAcc
