@@ -100,6 +100,7 @@ const getDataFromHTML = async (page: puppeteer.Page): Promise<T[]> => {
 
 const PAGE_URL = 'https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=zh_TW'
 
+/** The name 'scrapeRecords' is required by scripts/buildScrapers */
 export const scrapeRecords = async (page: puppeteer.Page): Promise<T[]> => {
   await page.goto(PAGE_URL)
   return getDataFromHTML(page)

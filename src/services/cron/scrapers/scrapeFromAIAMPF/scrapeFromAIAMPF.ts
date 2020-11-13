@@ -22,6 +22,7 @@ const fundType: FundType = 'mpf'
 // Define record type
 const recordType: RecordType = 'record'
 
+/** The name 'scrapeRecords' is required by scripts/buildScrapers */
 export const scrapeRecords = async (page: puppeteer.Page): Promise<T[]> => {
   // Define time
   const time: T['time'] = new Date().toISOString()
