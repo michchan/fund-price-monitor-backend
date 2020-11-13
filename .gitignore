@@ -29,3 +29,5 @@ bundles
 # Ignore dynamically created scrape handlers
 **/cron/handlers/__recordScraper__*.ts
 **/cron/handlers/__testRecordScraper__*.ts
+**/cron/handlers/__detailScraper__*.ts
+**/cron/handlers/__testDetailScraper__*.ts

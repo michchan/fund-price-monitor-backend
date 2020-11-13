@@ -13,7 +13,9 @@ const handlersDirAbs = `${rootDir}/${handlersDir}`
 
 const regexes = [
   /^__recordScraper__/i,
+  /^__detailScraper__/i,
   /^__testRecordScraper__/i,
+  /^__testDetailScraper__/i,
 ]
 
 const removeScrapersCache = () => {
