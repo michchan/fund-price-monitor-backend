@@ -7,7 +7,7 @@ import FundPriceRecord, {
   FundType,
   RecordType,
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
-import getCompanyCodePK from 'src/models/fundPriceRecord/utils/getCompanyCodePK'
+import mapAndReduceFundDetailsBatches from '../helpers/mapAndReduceFundDetailsBatches'
 import retryWithDelay from '../helpers/retryWithDelay'
 
 type TRec = FundPriceRecord<'mpf', 'record'>
@@ -134,14 +134,11 @@ const locales: { [lng in Languages]: string } = {
   en: 'en',
   zh_HK: 'zh_TW',
 }
-const getPageUrl = (lng: Languages) => {
-  const locale = locales[lng]
-  return `https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=${locale}`
-}
+const getPageUrl = (lng: Languages) => `https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=${locales[lng]}`
 
 /** The name 'scrapeRecords' is required by scripts/buildScrapers */
 export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
-  await page.goto(getPageUrl('en'))
+  await page.goto(getPageUrl('zh_HK'))
   return evaluateData(page, getRecords)
 }
 
@@ -150,20 +147,5 @@ export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]
     await page.goto(getPageUrl(lng))
     return evaluateData(page, getDetailsGetter(lng))
   }))
-  const records = batches.reduce((acc, curr) => [...acc, ...curr], [])
-  return records.reduce((acc, curr) => {
-    const prevIndex = acc.findIndex(item => getCompanyCodePK(item) === getCompanyCodePK(curr))
-    if (prevIndex) {
-      const prev = acc[prevIndex]
-      const next: FundDetails = {
-        ...prev,
-        ...curr,
-        name: { ...prev.name, ...curr.name },
-      }
-      const nextAcc = [...acc]
-      nextAcc[prevIndex] = next
-      return nextAcc
-    }
-    return [...acc, curr]
-  }, [] as FundDetails[])
+  return mapAndReduceFundDetailsBatches(batches)
 }

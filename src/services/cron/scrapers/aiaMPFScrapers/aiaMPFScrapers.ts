@@ -5,15 +5,28 @@ import FundPriceRecord, {
   FundType,
   RecordType,
 } from 'src/models/fundPriceRecord/FundPriceRecord.type'
-import getPricesData from './getPricesData'
-import getPerformanceData from './getPerformanceData'
-import getDetailsData from './getDetailsData'
+import getPricesData, { PriceDataRecord } from './getPricesData'
+import getPerformanceData, { PerfDataRecord } from './getPerformanceData'
+import getDetailsData, { DetailsDataRecord } from './getDetailsData'
+import FundDetails, { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
+import languages from 'src/models/fundPriceRecord/constants/languages'
+import mapAndReduceFundDetailsBatches from '../../helpers/mapAndReduceFundDetailsBatches'
 
-const PRICES_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundprices.jspa?mt=MT3&lang=zh_TW'
-const PERFORMANCE_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/fundperf.jspa?mt=MT3&lang=zh_TW'
-const DETAILS_PAGE_URL = 'https://www3.aia-pt.com.hk/mpf/public/fundperf/funddetails.jspa?mt=MT3&lang=zh_TW'
+const locales: { [lng in Languages]: string } = {
+  en: 'en',
+  zh_HK: 'zh_TW',
+}
+const getPricesPageUrl = (lng: Languages) => `https://www3.aia-pt.com.hk/mpf/public/fundperf/fundprices.jspa?mt=MT3&lang=${locales[lng]}`
+const getPerformancePageUrl = (lng: Languages) => `https://www3.aia-pt.com.hk/mpf/public/fundperf/fundperf.jspa?mt=MT3&lang=${locales[lng]}`
+const getDetailsPageUrl = (lng: Languages) => `https://www3.aia-pt.com.hk/mpf/public/fundperf/funddetails.jspa?mt=MT3&lang=${locales[lng]}`
 
-type T = FundPriceRecord<FundType, 'record'>
+type TRec = FundPriceRecord<FundType, 'record'>
+type RecordMapper <T> = (
+  priceData: PriceDataRecord,
+  perfData: PerfDataRecord,
+  detailsData: DetailsDataRecord,
+  time: string,
+) => T
 
 // Define company type
 const company: CompanyType = 'aia'
@@ -22,41 +35,68 @@ const fundType: FundType = 'mpf'
 // Define record type
 const recordType: RecordType = 'record'
 
-/** The name 'scrapeRecords' is required by scripts/buildScrapers */
-export const scrapeRecords = async (page: puppeteer.Page): Promise<T[]> => {
-  // Define time
-  const time: T['time'] = new Date().toISOString()
-
+const evaluateData = async <T> (
+  page: puppeteer.Page,
+  lng: Languages,
+  mapRecord: RecordMapper<T>,
+): Promise<T[]> => {
   // Scrape prices data page
-  await page.goto(PRICES_PAGE_URL)
+  await page.goto(getPricesPageUrl(lng))
   const pricesData = await getPricesData(page)
 
   // Scrape performance data page
-  await page.goto(PERFORMANCE_PAGE_URL)
+  await page.goto(getPerformancePageUrl(lng))
   const perfData = await getPerformanceData(page)
 
   // Scrape details page
-  await page.goto(DETAILS_PAGE_URL)
+  await page.goto(getDetailsPageUrl(lng))
   const detailsData = await getDetailsData(page)
 
-  // Aggregate data based on prices data
-  const records: T[] = pricesData.map(({ code, name, price, updatedDate }) => {
-    const perfItem = perfData.find(eachItem => eachItem.code === code)
-    const detailsItem = detailsData.find(eachItem => eachItem.name.trim() === name.trim())
-    return {
-      company,
-      code,
-      price,
-      name,
-      updatedDate,
-      launchedDate: perfItem?.launchedDate ?? '0000-00-00',
-      initialPrice: Number(price) / (1 + (perfItem?.priceChangeRateSinceLaunch ?? 1)),
-      riskLevel: detailsItem?.riskLevel ?? 'neutral',
-      fundType,
-      recordType,
-      time,
-    }
-  })
+  // Define time
+  const time = new Date().toISOString()
 
-  return records
+  // Aggregate data based on prices data
+  return pricesData.map(priceAttrs => {
+    const { name, code } = priceAttrs
+    const perfAttrs = perfData.find(eachItem => eachItem.code === code) as PerfDataRecord
+    const detailsAttrs = detailsData
+      .find(eachItem => eachItem.name.trim() === name.trim()) as DetailsDataRecord
+    return mapRecord(priceAttrs, perfAttrs, detailsAttrs, time)
+  })
+}
+
+/** The name 'scrapeRecords' is required by scripts/buildScrapers */
+export const scrapeRecords = (
+  page: puppeteer.Page
+): Promise<TRec[]> => evaluateData(page, 'zh_HK', (priceAttrs, perfAttrs, detailsAttrs, time): TRec => {
+  const { code, name, price, updatedDate } = priceAttrs
+  return {
+    company,
+    code,
+    price,
+    name,
+    updatedDate,
+    launchedDate: perfAttrs?.launchedDate ?? '0000-00-00',
+    initialPrice: Number(price) / (1 + (perfAttrs?.priceChangeRateSinceLaunch ?? 1)),
+    riskLevel: detailsAttrs?.riskLevel ?? 'neutral',
+    fundType,
+    recordType,
+    time,
+  }
+})
+
+export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]> => {
+  const batches = await Promise.all(
+    languages.map(lng => evaluateData(page, lng, (priceAttrs, perfAttrs): FundDetails => {
+      const { code, name, price } = priceAttrs
+      return {
+        code,
+        company,
+        name: { [lng]: name } as FundDetails['name'],
+        launchedDate: perfAttrs?.launchedDate ?? '0000-00-00',
+        initialPrice: Number(price) / (1 + (perfAttrs?.priceChangeRateSinceLaunch ?? 1)),
+      }
+    }))
+  )
+  return mapAndReduceFundDetailsBatches(batches)
 }
