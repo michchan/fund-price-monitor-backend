@@ -21,8 +21,27 @@ const getDefaultScrapersInput = () => {
 export interface ScrapingHandlers {
   scrapers: lambda.Function[];
   testScrapers: lambda.Function[];
+  detailsScrapers: lambda.Function[];
+  testDetailsScrapers: lambda.Function[];
   startScrapeSession: lambda.Function;
 }
+
+/** Scraper creator */
+const getScraperCreatorGetter = (
+  scope: cdk.Construct,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+) => (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
+  const name = fileName
+    .replace(nameRegExp, '')
+    .replace(/\.(ts|js)$/i, '')
+    .replace(/(scrapeFrom|scrape|scraper|scrapers)/i, '')
+  return new lambda.Function(scope, `${namePrefix}${upperFirst(name)}`, {
+    ...defaultInput,
+    ...getDefaultScrapersInput(),
+    handler: `${fileName.replace(/(\.js|\.ts)$/i, '')}.handler`,
+  })
+}
+
 const constructScrapingHandlers = (
   scope: cdk.Construct,
   serviceDirname: string,
@@ -32,19 +51,9 @@ const constructScrapingHandlers = (
   const serviceBundlesDir = serviceDirname.replace(/src.+/i, `bundles/${serviceName}`)
   // Read handlers directory
   const handlers = fs.readdirSync(`${serviceBundlesDir}/handlers`)
-  /** Scraper creator */
-  const getScraperCreator = (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
-    const name = fileName
-      .replace(nameRegExp, '')
-      .replace(/\.(ts|js)$/i, '')
-      .replace(/(scrapeFrom|scrape|scraper|scrapers)/i, '')
-    return new lambda.Function(scope, `${namePrefix}${upperFirst(name)}`, {
-      ...defaultInput,
-      ...getDefaultScrapersInput(),
-      handler: `${fileName.replace(/(\.js|\.ts)$/i, '')}.handler`,
-    })
-  }
-  // Handlers for scraping data and saving data
+  const getScraperCreator = getScraperCreatorGetter(scope, defaultInput)
+
+  // Handlers for scraping records and saving records
   const scrapeHandlers = handlers
     .filter(fileName => /^__recordScraper__/i.test(fileName))
     .map(getScraperCreator(/^__recordScraper__/i, 'CronRecordScraper'))
@@ -54,6 +63,16 @@ const constructScrapingHandlers = (
     .filter(fileName => /^__testRecordScraper__/i.test(fileName))
     .map(getScraperCreator(/^__testRecordScraper__/i, 'CronTestRecordScraper'))
 
+  // Handlers for scraping details
+  const detailsScrapeHandlers = handlers
+    .filter(fileName => /^__detailScraper__/i.test(fileName))
+    .map(getScraperCreator(/^__detailScraper__/i, 'CronDetailsScraper'))
+
+  /** @DEBUG * Testing handlers for details scrapers */
+  const testDetailsScrapeHandlers = handlers
+    .filter(fileName => /^__testDetailScraper__/i.test(fileName))
+    .map(getScraperCreator(/^__testDetailScraper__/i, 'CronTestDetailsScraper'))
+
   const startScrapeSessionHandler = new lambda.Function(scope, 'CronStartScrapeSession', {
     ...defaultInput,
     handler: 'startScrapeSession.handler',
@@ -62,6 +81,8 @@ const constructScrapingHandlers = (
     scrapers: scrapeHandlers,
     testScrapers: testScrapeHandlers,
     startScrapeSession: startScrapeSessionHandler,
+    detailsScrapers: detailsScrapeHandlers,
+    testDetailsScrapers: testDetailsScrapeHandlers,
   }
 }
 
