@@ -1,5 +1,5 @@
 import topLevelKeysValues from '../constants/topLevelKeysValues'
-import FundPriceRecord, { CompanyType } from '../FundPriceRecord.type'
+import FundPriceRecord from '../FundPriceRecord.type'
 
 export interface Options extends Pick<FundPriceRecord, 'code' | 'company'> {}
 const getRecordDetailsSK = ({
