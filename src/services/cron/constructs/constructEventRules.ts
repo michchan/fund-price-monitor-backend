@@ -23,12 +23,14 @@ const constructDailyEventRules = (
 const constructMonthlyEventRules = (
   scope: cdk.Construct,
   { notifyMonthly }: Pick<Handlers, 'notifyMonthly'>,
+  { scrapeDetails }: Pick<StateMachines, 'scrapeDetails'>,
 ) => {
   // Run on the 28th day in every month at 15:00 UTC
   const monthlyReviewRule = new events.Rule(scope, 'MonthlyReviewRule', {
     schedule: events.Schedule.expression('cron(0 15 28 * ? *)'),
   })
   monthlyReviewRule.addTarget(new targets.LambdaFunction(notifyMonthly))
+  monthlyReviewRule.addTarget(new targets.SfnStateMachine(scrapeDetails))
 }
 
 const constructQuarterlyEventRules = (
@@ -58,11 +60,11 @@ const constructQuarterlyEventRules = (
 type EventRulesArgs = [
   scope: cdk.Construct,
   handlers: Handlers,
-  stateMachines: Pick<StateMachines, 'scrape'>
+  stateMachines: Pick<StateMachines, 'scrape' | 'scrapeDetails'>
 ]
 const constructEventRules = (...[scope, handlers, stateMachines]: EventRulesArgs): void => {
   constructDailyEventRules(scope, stateMachines)
-  constructMonthlyEventRules(scope, handlers)
+  constructMonthlyEventRules(scope, handlers, stateMachines)
   constructQuarterlyEventRules(scope, handlers)
 }
 export default constructEventRules

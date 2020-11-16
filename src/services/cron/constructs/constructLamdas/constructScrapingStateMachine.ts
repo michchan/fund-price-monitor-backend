@@ -89,20 +89,18 @@ const constructScrapingHandlers = (
 const SCRAPER_DELAY_MINS = 3
 const constructStateMachine = (
   scope: cdk.Construct,
-  { scrapers, startScrapeSession }: Pick<ScrapingHandlers, 'scrapers' | 'startScrapeSession'>,
-): sfn.StateMachine => {
-  // Create step functions
-  const startTask = new sfnTasks.LambdaInvoke(scope, 'CronScrapeTaskStart', {
-    lambdaFunction: startScrapeSession,
-  })
-  const tasks = scrapers.map((scraper, i) => {
-    const id = `CronScrapeTask${i}`
+  handlers: lambda.Function[],
+  startTask: sfn.Chain | sfnTasks.LambdaInvoke | sfn.Pass,
+  idPrefix: string,
+) => {
+  const tasks = handlers.map((scraper, i) => {
+    const id = `${idPrefix}Task${i}`
     return new sfnTasks.LambdaInvoke(scope, id, { lambdaFunction: scraper })
   })
   const definition = tasks.reduce<sfn.Chain>(
     (chain, task, i, arr) => chain
       .next(task)
-      .next(new sfn.Wait(scope, `CronScrapeWaitTask${i}`, {
+      .next(new sfn.Wait(scope, `${idPrefix}WaitTask${i}`, {
         time: sfn.WaitTime.duration(
           // Do not wait too long if it is the last item
           i + 1 === arr.length
@@ -112,14 +110,37 @@ const constructStateMachine = (
       })),
     startTask as unknown as sfn.Chain
   )
-  const stateMachine = new sfn.StateMachine(scope, 'CronScrapeStateMachine', { definition })
+  const stateMachine = new sfn.StateMachine(scope, `${idPrefix}StateMachine`, { definition })
   // Grant execution
-  scrapers.forEach(scraper => scraper.grantInvoke(stateMachine.role))
+  handlers.forEach(scraper => scraper.grantInvoke(stateMachine.role))
   return stateMachine
 }
 
+const constructRecordsScrapingStateMachine = (
+  scope: cdk.Construct,
+  { scrapers, startScrapeSession }: Pick<ScrapingHandlers, 'scrapers' | 'startScrapeSession'>,
+): sfn.StateMachine => {
+  // Create step functions
+  const startTask = new sfnTasks.LambdaInvoke(scope, 'CronRecScrapeTaskStart', {
+    lambdaFunction: startScrapeSession,
+  })
+  return constructStateMachine(scope, scrapers, startTask, 'CronRecScrape')
+}
+
+const constructDetailsScrapingStateMachine = (
+  scope: cdk.Construct,
+  { detailsScrapers }: Pick<ScrapingHandlers, 'detailsScrapers'>,
+): sfn.StateMachine => {
+  // Create step functions
+  const startTask = new sfn.Pass(scope, 'CronDetailsScrapeStartTask')
+  return constructStateMachine(scope, detailsScrapers, startTask, 'CronDetailsScrape')
+}
+
 export interface Output extends ScrapingHandlers {
-  stateMachine: sfn.StateMachine;
+  stateMachines: {
+    scrape: sfn.StateMachine;
+    scrapeDetails: sfn.StateMachine;
+  };
 }
 const constructScrapingStateMachine = (
   scope: cdk.Construct,
@@ -127,7 +148,14 @@ const constructScrapingStateMachine = (
   defaultInput: ReturnType<typeof getDefaultLambdaInput>,
 ): Output => {
   const handlers = constructScrapingHandlers(scope, serviceDirname, defaultInput)
-  const stateMachine = constructStateMachine(scope, handlers)
-  return { ...handlers, stateMachine }
+  const scrapeRecordsStateMachine = constructRecordsScrapingStateMachine(scope, handlers)
+  const scrapeDetailsStateMachine = constructDetailsScrapingStateMachine(scope, handlers)
+  return {
+    ...handlers,
+    stateMachines: {
+      scrape: scrapeRecordsStateMachine,
+      scrapeDetails: scrapeDetailsStateMachine,
+    },
+  }
 }
 export default constructScrapingStateMachine

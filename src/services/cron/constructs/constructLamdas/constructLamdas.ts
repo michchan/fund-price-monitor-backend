@@ -20,6 +20,7 @@ export interface Handlers extends ScrapingHandlers,
 
 export interface StateMachines {
   scrape: sfn.StateMachine;
+  scrapeDetails: sfn.StateMachine;
   postAggregate: sfn.StateMachine;
 }
 
@@ -62,7 +63,7 @@ const constructSideComponents = (
 }
 
 interface ScrapingComponentsHandlers extends ScrapingHandlers, Aggregators {}
-interface ScrapingStateMachines extends Pick<StateMachines, 'scrape'> {}
+interface ScrapingStateMachines extends Pick<StateMachines, 'scrape' | 'scrapeDetails'> {}
 interface ScrapingComponents {
   handlers: ScrapingComponentsHandlers;
   stateMachines: ScrapingStateMachines;
@@ -75,7 +76,7 @@ const constructScrapingComponents = (
 ): ScrapingComponents => {
   const getInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)
   const {
-    stateMachine: scrapeStateMachine,
+    stateMachines,
     ...scrapingHandlers
   } = constructScrapingStateMachine(scope, serviceDirname, getInput(itemsAlterer))
   const aggregators = constructAggregators(scope, getInput(aggregator), postAggregate)
@@ -84,9 +85,7 @@ const constructScrapingComponents = (
       ...scrapingHandlers,
       aggregation: aggregators.aggregation,
     },
-    stateMachines: {
-      scrape: scrapeStateMachine,
-    },
+    stateMachines,
   }
 }
 
