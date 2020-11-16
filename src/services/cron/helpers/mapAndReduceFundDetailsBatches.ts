@@ -6,7 +6,7 @@ const mapAndReduceFundDetailsBatches = (batches: FD[][]): FD[] => {
   const records = batches.reduce((acc, curr) => [...acc, ...curr], [])
   return records.reduce((acc, curr) => {
     const prevIndex = acc.findIndex(item => getCompanyCodePK(item) === getCompanyCodePK(curr))
-    if (prevIndex) {
+    if (prevIndex >= 0) {
       const prev = acc[prevIndex]
       const next: FD = {
         ...prev,

@@ -1,5 +1,6 @@
 import puppeteer = require('puppeteer')
 import languages from 'src/models/fundPriceRecord/constants/languages'
+import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 
 import FundDetails, { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
 import FundPriceRecord, {
@@ -86,7 +87,7 @@ const getRecords = (): TRec[] => {
   return Array.from(tableRows).map(getRowMapper(riskLevelIndicatorImageNameMap, time))
 }
 
-const getDetailsGetter = (lng: Languages) => (): FundDetails[] => {
+const getDetails = (lng: Languages): FundDetails[] => {
   const company: CompanyType = 'manulife'
   // Query table rows nodes
   const viewId = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
@@ -117,7 +118,8 @@ const getDetailsGetter = (lng: Languages) => (): FundDetails[] => {
 
 const evaluateData = async <T extends TRec | FundDetails> (
   page: puppeteer.Page,
-  evaluateCallback: () => T[],
+  evaluateCallback: (lng: Languages) => T[],
+  lng: Languages,
 ): Promise<T[]> => {
   // Wait for the elements we want
   const viewId = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
@@ -127,25 +129,46 @@ const evaluateData = async <T extends TRec | FundDetails> (
 
   // Query DOM data
   // * Constants/variables must be inside the scope of the callback function
-  return page.evaluate(evaluateCallback)
+  return page.evaluate(evaluateCallback, lng)
 }
 
+// Locales recognized by the Manulife website
 const locales: { [lng in Languages]: string } = {
   en: 'en',
   zh_HK: 'zh_TW',
 }
+
 const getPageUrl = (lng: Languages) => `https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=${locales[lng]}`
+
+const langCookieKeys = [
+  'ManulifeLang',
+  'com.ibm.wps.state.preprocessors.locale.LanguageCookie',
+]
+const COOKIE_DOMAIN = 'fundprice.manulife.com.hk'
+
+const navigateToPage = async (page: puppeteer.Page, lng: Languages) => {
+  await page.setCookie(...langCookieKeys.map(name => ({
+    name,
+    value: locales[lng],
+    domain: COOKIE_DOMAIN,
+  })))
+  return page.goto(getPageUrl(lng))
+}
 
 /** The name 'scrapeRecords' is required by scripts/buildScrapers */
 export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
-  await page.goto(getPageUrl('zh_HK'))
-  return evaluateData(page, getRecords)
+  const lng: Languages = 'zh_HK'
+  await navigateToPage(page, lng)
+  return evaluateData(page, getRecords, lng)
 }
 
 export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]> => {
-  const batches = await Promise.all(languages.map(async lng => {
-    await page.goto(getPageUrl(lng))
-    return evaluateData(page, getDetailsGetter(lng))
-  }))
+  const batches = await pipeAsync<FundDetails[][]>(
+    ...languages.map(lng => async (input: FundDetails[][] = []) => {
+      await navigateToPage(page, lng)
+      const records = await evaluateData(page, getDetails, lng)
+      return [...input, records]
+    })
+  )([])
   return mapAndReduceFundDetailsBatches(batches)
 }

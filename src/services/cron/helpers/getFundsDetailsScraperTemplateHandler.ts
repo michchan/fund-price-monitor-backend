@@ -2,6 +2,7 @@ import { ScheduledHandler } from 'aws-lambda'
 import launchPuppeteerBrowserSession, { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
+import logObj from 'src/helpers/logObj'
 import FundDetails from 'src/models/fundPriceRecord/FundDetails.type'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 
@@ -25,6 +26,7 @@ const getFundsDetailsScraperTemplateHandler = <T = void> (
   const tableRange = { year, quarter }
 
   const records = await scrapeAndReduce(scrapers)
+  logObj(`Details records (${records.length})`, records)
   if (callback) await callback(tableRange, records)
 }
 export default getFundsDetailsScraperTemplateHandler

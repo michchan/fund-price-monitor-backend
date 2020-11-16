@@ -1,4 +1,5 @@
 import puppeteer = require('puppeteer')
+import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 
 import FundPriceRecord, {
   CompanyType,
@@ -12,6 +13,7 @@ import FundDetails, { Languages } from 'src/models/fundPriceRecord/FundDetails.t
 import languages from 'src/models/fundPriceRecord/constants/languages'
 import mapAndReduceFundDetailsBatches from '../../helpers/mapAndReduceFundDetailsBatches'
 
+// Locales recognized by the AIA website
 const locales: { [lng in Languages]: string } = {
   en: 'en',
   zh_HK: 'zh_TW',
@@ -86,17 +88,20 @@ export const scrapeRecords = (
 })
 
 export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]> => {
-  const batches = await Promise.all(
-    languages.map(lng => evaluateData(page, lng, (priceAttrs, perfAttrs): FundDetails => {
-      const { code, name, price } = priceAttrs
-      return {
-        code,
-        company,
-        name: { [lng]: name } as FundDetails['name'],
-        launchedDate: perfAttrs?.launchedDate ?? '0000-00-00',
-        initialPrice: Number(price) / (1 + (perfAttrs?.priceChangeRateSinceLaunch ?? 1)),
-      }
-    }))
-  )
+  const batches = await pipeAsync<FundDetails[][]>(
+    ...languages.map(lng => async (input: FundDetails[][] = []) => {
+      const records = await evaluateData(page, lng, (priceAttrs, perfAttrs): FundDetails => {
+        const { code, name, price } = priceAttrs
+        return {
+          code,
+          company,
+          name: { [lng]: name } as FundDetails['name'],
+          launchedDate: perfAttrs?.launchedDate ?? '0000-00-00',
+          initialPrice: Number(price) / (1 + (perfAttrs?.priceChangeRateSinceLaunch ?? 1)),
+        }
+      })
+      return [...input, records]
+    })
+  )([])
   return mapAndReduceFundDetailsBatches(batches)
 }
