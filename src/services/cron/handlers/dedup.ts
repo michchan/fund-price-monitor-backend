@@ -9,7 +9,7 @@ import forEachCompany from 'src/models/fundPriceRecord/utils/forEachCompany'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import FundPriceRecord, { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
-import batchDeleteItems from 'src/models/fundPriceRecord/io/batchDeleteItems'
+import batchDelete from 'src/models/fundPriceRecord/io/batchDelete'
 import queryItemsByCompany, {
   Output as QueryItemsOutput,
   Input as QueryItemsInput,
@@ -121,8 +121,8 @@ const getBatchRequestSender = (tableRange: TableRange) => (
 
   if (records.length === 0) return
 
-  if (isRecord) await batchDeleteItems(records as FRec[], ...recordArgs)
-  else await batchDeleteItems(records as FCRate[], ...changeRateArgs)
+  if (isRecord) await batchDelete(records as FRec[], ...recordArgs)
+  else await batchDelete(records as FCRate[], ...changeRateArgs)
 
   if (i < arr.length - 1) await wait(REQUEST_DELAY)
 }

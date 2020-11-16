@@ -13,7 +13,7 @@ export const DEFUALT_DELAY = 300
 /**
  * Return a list of properties of tables that have been created and match the criteria
  */
-function batchDeleteItems <Rec extends T> (
+function batchDelete <Rec extends T> (
   records: Rec[],
   { year, quarter }: TableRange,
   getTimeSK: (record: Rec) => string,
@@ -27,4 +27,4 @@ function batchDeleteItems <Rec extends T> (
     delay,
   })
 }
-export default batchDeleteItems
+export default batchDelete

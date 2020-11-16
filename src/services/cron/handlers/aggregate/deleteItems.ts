@@ -1,4 +1,4 @@
-import batchDeleteItems from 'src/models/fundPriceRecord/io/batchDeleteItems'
+import batchDelete from 'src/models/fundPriceRecord/io/batchDelete'
 import getCompositeSK from 'src/models/fundPriceRecord/utils/getCompositeSK'
 import getCompositeSKFromChangeRate from 'src/models/fundPriceRecord/utils/getCompositeSKFromChangeRate'
 import { Output } from './queryPrevItems'
@@ -20,7 +20,7 @@ const deleteItems = async (
   logObj(`prevLatestItems to remove (${prevLatestItems.length}): `, prevLatestItems)
 
   // Remove previous latest records
-  await batchDeleteItems(prevLatestItems, tableRange, getCompositeSK)
+  await batchDelete(prevLatestItems, tableRange, getCompositeSK)
 
   // Log records to insert
   logObj(`prevWeekRateItems to remove (${prevWeekRateItems.length}): `, prevWeekRateItems)
@@ -28,7 +28,7 @@ const deleteItems = async (
   logObj(`prevQuarterRateItems to remove (${prevQuarterRateItems.length}): `, prevQuarterRateItems)
 
   // Remove previous change rates
-  await batchDeleteItems([
+  await batchDelete([
     ...prevWeekRateItems,
     ...prevMonthRateItems,
     ...prevQuarterRateItems,
