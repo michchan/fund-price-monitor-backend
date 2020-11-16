@@ -1,3 +1,5 @@
+import FundDetails from './FundDetails.type'
+
 export type FundType = 'mpf'
 
 export type CompanyType =
@@ -37,10 +39,13 @@ interface FundPriceRecord <
   time: string;
   fundType: FT;
   recordType: RT;
-
-  // @TODO: Deprecate. Use FundDetails.
-  name: string;
-  launchedDate: string;
-  initialPrice: number;
 }
+
+export interface FundPriceRecordWithDetails <
+  FT extends FundType = FundType,
+  RT extends RecordType = RecordType
+> extends
+  FundPriceRecord<FT, RT>,
+  Omit<FundDetails, 'company' | 'code'> {}
+
 export default FundPriceRecord

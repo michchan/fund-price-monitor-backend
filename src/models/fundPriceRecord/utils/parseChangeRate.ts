@@ -13,7 +13,6 @@ const parseChangeRate = (
   const {
     [attr.COMPANY_CODE]: company_code,
     [attr.TIME_SK]: timeSK,
-    [attr.NAME]: name,
     [attr.PRICE]: price,
     [attr.PRICE_LIST]: priceList = [],
     [attr.PRICE_CHANGE_RATE]: priceChangeRate,
@@ -27,7 +26,6 @@ const parseChangeRate = (
     company,
     // Get the last composite segment of `company_code`
     code,
-    name,
     price,
     priceChangeRate,
     priceList: priceList.map(li => li),

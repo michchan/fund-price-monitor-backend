@@ -19,7 +19,7 @@ import validateCompany from '../validators/validateCompany'
 import validateYearQuarter from '../validators/validateYearQuarter'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
-import parseRecords from 'src/models/fundPriceRecord/utils/parseRecords'
+import parseRecord from 'src/models/fundPriceRecord/utils/parseRecord'
 
 const EXP_COM = ':com_code'
 
@@ -122,7 +122,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     })
 
     // Send back successful response
-    return createReadResponse(null, output, parseRecords)
+    return createReadResponse(null, output, parseRecord)
   } catch (error) {
     // Send back failed response
     return createReadResponse(error)

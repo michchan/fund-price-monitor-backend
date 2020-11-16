@@ -71,15 +71,12 @@ const evaluateData = async <T> (
 export const scrapeRecords = (
   page: puppeteer.Page
 ): Promise<TRec[]> => evaluateData(page, 'zh_HK', (priceAttrs, perfAttrs, detailsAttrs, time): TRec => {
-  const { code, name, price, updatedDate } = priceAttrs
+  const { code, price, updatedDate } = priceAttrs
   return {
     company,
     code,
     price,
-    name,
     updatedDate,
-    launchedDate: perfAttrs?.launchedDate ?? '0000-00-00',
-    initialPrice: Number(price) / (1 + (perfAttrs?.priceChangeRateSinceLaunch ?? 1)),
     riskLevel: detailsAttrs?.riskLevel ?? 'neutral',
     fundType,
     recordType,

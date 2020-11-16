@@ -41,7 +41,6 @@ const getChangeRate = (
     period: getPeriodByRecordType(recordType, date),
     company: basedRecord.company,
     code: basedRecord.code,
-    name: basedRecord.name,
     updatedDate: basedRecord.updatedDate,
     price: latestPrice,
     priceChangeRate,

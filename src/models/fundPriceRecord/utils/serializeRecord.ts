@@ -12,12 +12,9 @@ const serializeRecord = (record: FundPriceRecord): DynamoDB.DocumentClient.Attri
   const {
     company,
     code,
-    name,
     updatedDate,
     price,
     priceChangeRate,
-    initialPrice,
-    launchedDate,
     riskLevel,
     fundType,
   } = record
@@ -26,14 +23,11 @@ const serializeRecord = (record: FundPriceRecord): DynamoDB.DocumentClient.Attri
     [attr.COMPANY_CODE]: getCompanyCodePK({ company, code }),
     [attr.TIME_SK]: getCompositeSK(record),
     [attr.COMPANY]: company,
-    [attr.NAME]: name,
     [attr.PRICE]: price,
     [attr.PRICE_CHANGE_RATE]: priceChangeRate,
     [attr.UPDATED_DATE]: updatedDate,
     [attr.RISK_LEVEL]: riskLevel,
     [attr.FUND_TYPE]: fundType,
-    [attr.INITIAL_PRICE]: initialPrice,
-    [attr.LAUNCHED_DATE]: launchedDate,
   }
 }
 

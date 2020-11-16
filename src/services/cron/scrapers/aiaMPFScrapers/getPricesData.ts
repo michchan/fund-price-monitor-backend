@@ -5,10 +5,11 @@ import retryWithDelay from '../../helpers/retryWithDelay'
 
 export interface PriceDataRecord extends Pick<FundPriceRecord<'mpf', 'record'>,
 | 'code'
-| 'name'
 | 'price'
 | 'updatedDate'
-> {}
+> {
+  name: string;
+}
 
 const evaluatePage = (): PriceDataRecord[] => {
   const ZERO_PADDING_UPPER_LIMIT = 10

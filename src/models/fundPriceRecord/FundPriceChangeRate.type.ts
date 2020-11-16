@@ -1,3 +1,4 @@
+import FundDetails from './FundDetails.type'
 import FundPriceRecord, { FundType } from './FundPriceRecord.type'
 
 export type AggregatedRecordType =
@@ -14,8 +15,6 @@ interface FundPriceChangeRate <
   | 'price'
   | 'time'
   | 'updatedDate'
-  // @TODO: Deprecate. Use FundDetails.
-  | 'name'
   > {
   /** In `YYYY-MM_[nth week]` , `YYYY-MM` or `YYYY.[nth quarter]` */
   period: string;
@@ -24,4 +23,12 @@ interface FundPriceChangeRate <
   priceChangeRate: number;
   priceList: number[];
 }
+
+export interface FundPriceChangeRateWithDetails <
+  FT extends FundType = FundType,
+  RT extends AggregatedRecordType = AggregatedRecordType
+> extends
+  FundPriceChangeRate<FT, RT>,
+  Omit<FundDetails, 'company' | 'code'> {}
+
 export default FundPriceChangeRate

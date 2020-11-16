@@ -11,7 +11,14 @@ import FundPriceChangeRate from '../FundPriceChangeRate.type'
 const PADDING = 2
 const PRECISION = 2
 
-export interface Item extends Pick<FundPriceRecord, 'code' | 'price' | 'name' | 'updatedDate'>, Partial<Pick<FundPriceChangeRate, 'priceChangeRate'>> {}
+export interface Item extends
+  Pick<FundPriceRecord,
+  | 'code'
+  | 'price'
+  | 'updatedDate'>,
+  Partial<Pick<FundPriceChangeRate, 'priceChangeRate'>> {
+  name: string;
+}
 
 const toTelegramMessages = (
   company: CompanyType,

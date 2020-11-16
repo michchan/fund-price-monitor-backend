@@ -15,7 +15,7 @@ import createParameterErrMsg from '../helpers/createParameterErrMsg'
 import mapQueryToFilterExpressions from '../helpers/mapQueryToFilterExpressions'
 import validateYearQuarter from '../validators/validateYearQuarter'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
-import parseRecords from 'src/models/fundPriceRecord/utils/parseRecords'
+import parseRecord from 'src/models/fundPriceRecord/utils/parseRecord'
 
 const EXP_TIME_SK_PFX = ':timeSK_prefix' as string
 
@@ -76,7 +76,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     }, false, tableRange)
 
     // Send back successful response
-    return createReadResponse(null, output, parseRecords)
+    return createReadResponse(null, output, parseRecord)
   } catch (error) {
     // Send back failed response
     return createReadResponse(error)

@@ -59,7 +59,6 @@ const getRecords = (): TRec[] => {
     return {
       company,
       code,
-      name: dataCells[1].innerText.trim(),
       // Replace 'slashes' with 'hyphens'
       updatedDate: dataCells[2].innerText.trim().replace(/\//g, '-'),
       // Derive price
@@ -69,17 +68,6 @@ const getRecords = (): TRec[] => {
       time,
       fundType,
       recordType,
-      // Derive initialPrice and launchedDate
-      ...(() => {
-        const text = dataCells[5].innerText.trim()
-        const textWithoutDollarSign = text.replace(/^HKD(↵|\n)/gim, '')
-        const [price, date] = textWithoutDollarSign.split(/↵|\n/)
-        return {
-          initialPrice: Number(price),
-          // Replace 'slashes' with 'hyphens'
-          launchedDate: date.trim().replace(/\//g, '-'),
-        }
-      })(),
     }
   }
 

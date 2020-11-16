@@ -1,3 +1,4 @@
+import FundDetails from '../FundDetails.type'
 import { CompanyType, FundType, RiskLevel } from '../FundPriceRecord.type'
 
 const attributeNames = {
@@ -6,13 +7,14 @@ const attributeNames = {
   // Based table sort key
   TIME_SK: 'timeSK',
   COMPANY: 'company',
-  NAME: 'name',
   RISK_LEVEL: 'riskLevel',
   PRICE: 'price',
   UPDATED_DATE: 'updatedDate',
+  FUND_TYPE: 'fundType',
+  /** Details fields (aggregate items) */
+  NAME: 'name',
   LAUNCHED_DATE: 'launchedDate',
   INITIAL_PRICE: 'initialPrice',
-  FUND_TYPE: 'fundType',
   /** Top-level fields (aggregate items) */
   PERIOD: 'period',
   PRICE_CHANGE_RATE: 'priceChangeRate',
@@ -57,4 +59,6 @@ export type FundPriceRecordAttributeMap <FT extends FundType = FundType> = {
   [key in AttrName['RISK_LEVEL']]: RiskLevel
 } & {
   [key in AttrName['COMPANY']]: CompanyType
+} & {
+  [key in AttrName['NAME']]: FundDetails['name'];
 }
