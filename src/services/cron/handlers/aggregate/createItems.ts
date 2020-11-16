@@ -1,6 +1,6 @@
 import logObj from 'src/helpers/logObj'
 
-import batchCreateItems from 'src/models/fundPriceRecord/io/batchCreateItems'
+import batchCreate from 'src/models/fundPriceRecord/io/batchCreate'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import serializeRecord from 'src/models/fundPriceRecord/utils/serializeRecord'
 import serializeChangeRate from 'src/models/fundPriceRecord/utils/serializeChangeRate'
@@ -22,7 +22,7 @@ const createItems = async (
 
   // Batch create all aggregation items
   // Create latest records
-  await batchCreateItems(latestItems, tableRange, serializeRecord)
+  await batchCreate(latestItems, tableRange, serializeRecord)
 
   // Log records to insert
   logObj(`weekRateItems to insert (${weekRateItems.length}): `, weekRateItems)
@@ -30,7 +30,7 @@ const createItems = async (
   logObj(`quarterRateItems to insert (${weekRateItems.length}): `, quarterRateItems)
 
   // Create change rates
-  await batchCreateItems([
+  await batchCreate([
     ...weekRateItems,
     ...monthRateItems,
     ...quarterRateItems,

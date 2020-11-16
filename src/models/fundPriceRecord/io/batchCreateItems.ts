@@ -13,7 +13,7 @@ export const DEFUALT_DELAY = 300
 /**
  * Return a list of properties of tables that have been created and match the criteria
  */
-function batchCreateItems <Rec extends T> (
+function batchCreate <Rec extends T> (
   records: Rec[],
   { year, quarter }: TableRange,
   serialize: (record: Rec) => DocumentClient.AttributeMap,
@@ -24,4 +24,4 @@ function batchCreateItems <Rec extends T> (
     delay,
   })
 }
-export default batchCreateItems
+export default batchCreate
