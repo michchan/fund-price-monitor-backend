@@ -10,6 +10,9 @@ import FundPriceTableDetails, { CompanyScrapeMeta, ScrapeMeta } from 'src/models
 import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import { defaultCompanyScrapeMeta } from 'src/models/fundPriceRecord/constants/defaultScrapeMeta'
 import queryItemsBySchedule, { ScheduleType } from './queryItemsBySchedule'
+import queryDetailsByCompany from 'src/models/fundPriceRecord/io/queryDetailsByCompany'
+import { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
+import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 
 interface ShouldNotifyOptions {
   isNotified?: boolean;
@@ -51,6 +54,7 @@ const saveMetaAfterNotify = async (
   }, tableRange)
 }
 
+const LNG: Languages = 'zh_HK'
 const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<void> => {
   // Get credentials for sending notifications
   const credentials = await getTelegramApiCredentials()
@@ -63,7 +67,13 @@ const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<v
       isForced,
     })) {
       const items = await queryItemsBySchedule(company, scheduleType)
-      await sendNotificationByTelegram(credentials, company, scheduleType, items)
+      const { parsedItems: detailsItems } = await queryDetailsByCompany(company, {
+        shouldQueryAll: true,
+      })
+      const itemsWithDetails = mergeItemsWithDetails(items, detailsItems)
+        .map(item => ({ ...item, name: item.name[LNG] }))
+
+      await sendNotificationByTelegram(credentials, company, scheduleType, itemsWithDetails)
       const meta = companyScrapeMeta ?? defaultCompanyScrapeMeta
       await saveMetaAfterNotify(company, meta, scrapeMeta?.time)
     }

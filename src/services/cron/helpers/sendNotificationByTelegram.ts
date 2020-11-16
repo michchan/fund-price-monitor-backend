@@ -1,17 +1,25 @@
 import callPromiseWithDelay from 'simply-utils/dist/async/callPromiseWithDelay'
 
-import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import FundPriceRecord, { CompanyType, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import sendMessage from 'src/lib/telegram/sendMessage'
 import toTelegramMessages from 'src/models/fundPriceRecord/utils/toTelegramMessages'
-import { ItemType, ScheduleType } from './queryItemsBySchedule'
+import { ScheduleType } from './queryItemsBySchedule'
 import { Output as CredentialOutput } from 'src/helpers/getTelegramApiCredentials'
+import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
+
+interface ItemDetails {
+  name: string;
+}
+export type Item =
+  | (FundPriceChangeRate<FundType> & ItemDetails)
+  | (FundPriceRecord<FundType> & ItemDetails)
 
 const MESSAGES_INTERVAL = 5000
 const sendNotificationByTelegram = async (
   { apiKey, chatId }: CredentialOutput,
   company: CompanyType,
   scheduleType: ScheduleType,
-  items: ItemType[],
+  items: Item[],
 ): Promise<void> => {
   // Abort if no items found
   if (items.length === 0) {
