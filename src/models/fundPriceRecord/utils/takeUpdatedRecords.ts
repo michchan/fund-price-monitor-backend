@@ -1,4 +1,4 @@
-import omit from 'lodash/omit'
+import pick from 'lodash/pick'
 import isEqual from 'lodash/isEqual'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 
@@ -12,32 +12,23 @@ import getCompaniesFromRecords from './getCompaniesFromRecords'
 type RT = FundPriceRecord<FundType, 'record'>
 type LT = FundPriceRecord<FundType, 'latest'>
 
-type NonKeyAttribute =
-| 'time'
-| 'fundType'
-| 'recordType'
-| 'launchedDate'
-| 'priceChangeRate'
-| 'initialPrice'
-| 'riskLevel'
-const takeKeyAttributes = <T extends RT | LT> (
+type PeriodicallyChangedAttributes = keyof Pick<RT,
+| 'updatedDate'
+| 'price'>
+
+const takePeriodicallyChangedAttributes = <T extends RT | LT> (
   record: T
-): Omit<T, NonKeyAttribute> => omit(record, [
-  'time',
-  'fundType',
-  'recordType',
-  'launchedDate',
-  'priceChangeRate',
-  'initialPrice',
-  'riskLevel',
+): Pick<T, PeriodicallyChangedAttributes> => pick(record, [
+  'updatedDate',
+  'price',
 ])
 
 const hasChanges = (
   basedRecord: RT | LT,
   comparedRecord: RT | LT
 ): boolean => !isEqual(
-  takeKeyAttributes(basedRecord),
-  takeKeyAttributes(comparedRecord)
+  takePeriodicallyChangedAttributes(basedRecord),
+  takePeriodicallyChangedAttributes(comparedRecord)
 )
 
 const takeUpdatedRecords = async (records: RT[]): Promise<RT[]> => {
