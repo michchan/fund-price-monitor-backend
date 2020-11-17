@@ -58,8 +58,10 @@ const getItemFilterPredicate = (
   scheduleType: ScheduleType,
   time: FundPriceTableDetails['time'],
 ) => (item: ItemType): boolean => {
+  // Only take changed records for 'onUpdate' notification
   if (scheduleType === 'onUpdate')
     return new Date(item.time).getTime() >= new Date(time).getTime()
+  // Preserve all items for schedule except 'onUpdate'
   return true
 }
 
