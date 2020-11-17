@@ -9,6 +9,7 @@ import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import between from 'src/lib/AWS/dynamodb/expressionFunctions/between'
 import getCompanyCodePK from '../utils/getCompanyCodePK'
 import getCompositeSK from '../utils/getCompositeSK'
+import FundPriceChangeRate from '../FundPriceChangeRate.type'
 
 const EXP_COM_CODE_PK = ':company_code' as string
 const EXP_TIME_SK_PFX = ':time_SK' as string
@@ -18,14 +19,19 @@ const EXP_TIME_SK_END = ':timeSK_end' as string
 export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
-export interface Output extends O {}
-export interface Options {
+type TVariants = FundPriceRecord | FundPriceChangeRate
+export interface Output <T extends TVariants = FundPriceRecord> extends O {
+  parsedItems: T[];
+}
+export interface Options <T extends TVariants = FundPriceRecord> {
   shouldQueryLatest?: boolean;
   shouldQueryAll?: boolean;
   /** ISO Timestamp */
   startTime?: string;
   endTime?: string;
   input?: PartialInput | ((defaultInput: Input) => PartialInput);
+  /** Default to parseRecord */
+  parser?: ((attributes: DocumentClient.AttributeMap) => T);
 }
 
 const getTimeSKValues = (
@@ -54,7 +60,7 @@ const getTimeSKExpression = (startTime?: string, endTime?: string) => {
   return beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX)
 }
 
-const querySingleFundRecords = (
+const querySingleFundRecords = async <T extends TVariants = FundPriceRecord> (
   company: CompanyType,
   code: FundPriceRecord['code'],
   {
@@ -63,8 +69,10 @@ const querySingleFundRecords = (
     startTime,
     endTime,
     input = {},
-  }: Options = {},
-): Promise<Output> => {
+    // @ts-expect-error: @TODO: Fix type
+    parser = parseRecord,
+  }: Options<T> = {},
+): Promise<Output<T>> => {
   const startDate = startTime ? new Date(startTime) : new Date()
   // Get table from
   const from = getDateTimeDictionary(startDate)
@@ -85,10 +93,15 @@ const querySingleFundRecords = (
       timeSKExpression,
     ].join(' AND '),
   }
-  return queryItems({
+  const output = await queryItems({
     ...defaultInput,
     ...isFunction(input) ? input(defaultInput) : input,
   }, shouldQueryAll, from)
+
+  return {
+    ...output,
+    parsedItems: (output?.Items ?? []).map(parser),
+  }
 }
 
 export default querySingleFundRecords

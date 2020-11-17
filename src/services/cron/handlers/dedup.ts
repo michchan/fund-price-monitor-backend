@@ -10,10 +10,7 @@ import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import FundPriceRecord, { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import batchDelete from 'src/models/fundPriceRecord/io/batchDelete'
-import queryItemsByCompany, {
-  Output as QueryItemsOutput,
-  Input as QueryItemsInput,
-} from 'src/models/fundPriceRecord/io/queryItemsByCompany'
+import queryItemsByCompany, { Input as QueryItemsInput } from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import getCompositeSK from 'src/models/fundPriceRecord/utils/getCompositeSK'
 import getCompositeSKFromChangeRate from 'src/models/fundPriceRecord/utils/getCompositeSKFromChangeRate'
@@ -39,10 +36,6 @@ const getItems = async (company: CompanyType, tableRange: TableRange): Promise<I
     shouldQueryAll: true,
     at: tableRange,
   }
-  const normalizer = (output: QueryItemsOutput) => (output.Items || []).map(parseRecord)
-  const changeRateNormalizer = (output: QueryItemsOutput) => (output.Items || [])
-    .map(rec => parseChangeRate(rec))
-
   const getInputMerger = (timeSKPrefix: string) => (defaultInput: QueryItemsInput) => ({
     ...defaultInput,
     ExpressionAttributeValues: {
@@ -55,23 +48,30 @@ const getItems = async (company: CompanyType, tableRange: TableRange): Promise<I
     ].join(' AND '),
   })
 
-  const recordItems = await queryItemsByCompany(company, commonInput).then(normalizer)
-  const latestItems = await queryItemsByCompany(company, {
+  const { parsedItems: recordItems } = await queryItemsByCompany(company, {
+    ...commonInput,
+    parser: parseRecord,
+  })
+  const { parsedItems: latestItems } = await queryItemsByCompany(company, {
     ...commonInput,
     shouldQueryLatest: true,
-  }).then(normalizer)
-  const weekRates = await queryItemsByCompany(company, {
+    parser: parseRecord,
+  })
+  const { parsedItems: weekRates } = await queryItemsByCompany(company, {
     ...commonInput,
     input: getInputMerger('week'),
-  }).then(changeRateNormalizer)
-  const monthRates = await queryItemsByCompany(company, {
+    parser: parseChangeRate,
+  })
+  const { parsedItems: monthRates } = await queryItemsByCompany(company, {
     ...commonInput,
     input: getInputMerger('month'),
-  }).then(changeRateNormalizer)
-  const quarterRates = await queryItemsByCompany(company, {
+    parser: parseChangeRate,
+  })
+  const { parsedItems: quarterRates } = await queryItemsByCompany(company, {
     ...commonInput,
     input: getInputMerger('quarter'),
-  }).then(changeRateNormalizer)
+    parser: parseChangeRate,
+  })
 
   return {
     record: recordItems,

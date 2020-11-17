@@ -6,21 +6,24 @@ import queryItems, { Output as O } from './queryItems'
 import indexNames from '../constants/indexNames'
 import { CompanyType } from '../FundPriceRecord.type'
 import attributeNames from '../constants/attributeNames'
-import { AggregatedRecordType } from '../FundPriceChangeRate.type'
+import FundPriceChangeRate, { AggregatedRecordType } from '../FundPriceChangeRate.type'
 import getCompositePeriod from '../utils/getCompositePeriod'
+import parseChangeRate from '../utils/parseChangeRate'
 
 const EXP_PERIOD = ':period' as string
 export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
-export interface Output extends O {}
+export interface Output extends O {
+  parsedItems: FundPriceChangeRate[];
+}
 export interface Options {
   shouldQueryAll?: boolean;
   /** Default to current quarter of the current year */
   at?: TableRange;
   input?: PartialInput | ((defaultInput: Input) => PartialInput);
 }
-const queryPeriodPriceChangeRate = (
+const queryPeriodPriceChangeRate = async (
   company: CompanyType,
   recordType: AggregatedRecordType,
   period: string,
@@ -37,10 +40,14 @@ const queryPeriodPriceChangeRate = (
     },
     KeyConditionExpression: `${attributeNames.PERIOD} = ${EXP_PERIOD}`,
   }
-  return queryItems({
+  const output = await queryItems({
     ...defaultInput,
     ...isFunction(input) ? input(defaultInput) : input,
   }, shouldQueryAll, at)
+  return {
+    ...output,
+    parsedItems: (output?.Items ?? []).map(parseChangeRate),
+  }
 }
 
 export default queryPeriodPriceChangeRate

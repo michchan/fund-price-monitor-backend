@@ -6,14 +6,16 @@ import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
-import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
-import parseRecord from 'src/models/fundPriceRecord/utils/parseRecord'
 import getSorterByCode from 'src/models/fundPriceRecord/utils/getSorterByCode'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 const priceChangeRateQueryInput = { shouldQueryAll: true }
 
 export type ScheduleType = 'onUpdate' | 'weekly' | 'monthly' | 'quarterly'
+
+export type ItemType =
+  | FundPriceChangeRate<FundType>
+  | FundPriceRecord<FundType>
+
 const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date: Date) => {
   switch (scheduleType) {
     case 'quarterly': {
@@ -37,23 +39,6 @@ const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date:
   }
 }
 
-export type ItemType =
-  | FundPriceChangeRate<FundType>
-  | FundPriceRecord<FundType>
-const getItemParser = (scheduleType: ScheduleType) => (
-  item: DocumentClient.AttributeMap
-): ItemType => {
-  switch (scheduleType) {
-    case 'quarterly':
-    case 'monthly':
-    case 'weekly':
-      return parseChangeRate(item)
-    case 'onUpdate':
-    default:
-      return parseRecord(item)
-  }
-}
-
 const queryItemsBySchedule = async (
   company: CompanyType,
   scheduleType: ScheduleType,
@@ -61,10 +46,9 @@ const queryItemsBySchedule = async (
   // Create date of latest item
   const date = new Date()
   // Query records to be sent in notification
-  const queryOutput = await queryBySchedule(scheduleType, company, date)
+  const { parsedItems } = await queryBySchedule(scheduleType, company, date)
   // Parse items
-  return (queryOutput.Items || [])
-    .map(getItemParser(scheduleType))
+  return parsedItems
     // Sort by code in ascending order
     .sort(getSorterByCode())
 }

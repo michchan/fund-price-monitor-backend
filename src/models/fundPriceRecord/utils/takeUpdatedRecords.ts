@@ -6,7 +6,6 @@ import FundPriceRecord, { FundType } from '../FundPriceRecord.type'
 import queryItemsByCompany from '../io/queryItemsByCompany'
 import isPKEqual from './isPKEqual'
 import logObj from 'src/helpers/logObj'
-import parseRecord from './parseRecord'
 import getCompaniesFromRecords from './getCompaniesFromRecords'
 
 type RT = FundPriceRecord<FundType, 'record'>
@@ -37,12 +36,11 @@ const takeUpdatedRecords = async (records: RT[]): Promise<RT[]> => {
   // Get latest records by company
   const latestRecords = await pipeAsync<LT[]>(
     ...companies.map(company => async (acc: LT[] = []) => {
-      const records = await queryItemsByCompany(company, {
+      const { parsedItems } = await queryItemsByCompany<LT>(company, {
         shouldQueryLatest: true,
         shouldQueryAll: true,
       })
-      const items = (records.Items ?? []).map(v => parseRecord<FundType, 'latest'>(v))
-      return [...acc, ...items]
+      return [...acc, ...parsedItems]
     })
   )([])
   logObj(`Latest records (${latestRecords.length}): `, latestRecords)

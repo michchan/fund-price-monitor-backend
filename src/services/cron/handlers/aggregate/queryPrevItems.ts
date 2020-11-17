@@ -5,8 +5,6 @@ import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompa
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
-import parseRecord from 'src/models/fundPriceRecord/utils/parseRecord'
-import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
 
 type ItemOutput = FundPriceRecord[]
 const queryPrevLatestItems = async (
@@ -15,18 +13,12 @@ const queryPrevLatestItems = async (
   tableRange: TableRange,
 ): Promise<ItemOutput> => {
   /** Query previous latest records */
-  const prevLatestRecords = await queryItemsByCompany(company, {
+  const { parsedItems: prevLatestItems } = await queryItemsByCompany(company, {
     shouldQueryAll: true,
     shouldQueryLatest: true,
     at: tableRange,
   })
-  const prevLatestItems = (prevLatestRecords.Items || [])
-    // Parse records
-    .map(rec => parseRecord(rec))
-    // Filters by insertedItems
-    .filter(matchInserted)
-
-  return prevLatestItems
+  return prevLatestItems.filter(matchInserted)
 }
 
 type ChangeRateOutput = [
@@ -34,17 +26,17 @@ type ChangeRateOutput = [
   FundPriceChangeRate[],
   FundPriceChangeRate[]
 ]
-const priceChangeRateQueryInput = { shouldQueryAll: true }
 const queryPrevChangeRateItems = async (
   company: CompanyType,
   matchInserted: (rec: FundPriceRecord | FundPriceChangeRate) => boolean,
   date: Date,
 ): Promise<ChangeRateOutput> => {
+  const priceChangeRateQueryInput = { shouldQueryAll: true }
   // Query week price change rate
   const [
-    prevWeekRateRecords,
-    prevMonthRateRecords,
-    prevQuarterRateRecords,
+    { parsedItems: prevWeekRateItems },
+    { parsedItems: prevMonthRateItems },
+    { parsedItems: prevQuarterRateItems },
   ] = await Promise.all([
     // Week query
     queryPeriodPriceChangeRate(company, 'week', getPeriodByRecordType('week', date), priceChangeRateQueryInput),
@@ -53,22 +45,10 @@ const queryPrevChangeRateItems = async (
     // Quarter query
     queryPeriodPriceChangeRate(company, 'quarter', getPeriodByRecordType('quarter', date), priceChangeRateQueryInput),
   ])
-
-  // Parse previous records
-  const prevWeekRateItems = (prevWeekRateRecords.Items ?? [])
-    .map(rec => parseChangeRate(rec))
-    .filter(matchInserted)
-  const prevMonthRateItems = (prevMonthRateRecords.Items ?? [])
-    .map(rec => parseChangeRate(rec))
-    .filter(matchInserted)
-  const prevQuarterRateItems = (prevQuarterRateRecords.Items ?? [])
-    .map(rec => parseChangeRate(rec))
-    .filter(matchInserted)
-
   return [
-    prevWeekRateItems,
-    prevMonthRateItems,
-    prevQuarterRateItems,
+    prevWeekRateItems.filter(matchInserted),
+    prevMonthRateItems.filter(matchInserted),
+    prevQuarterRateItems.filter(matchInserted),
   ]
 }
 
