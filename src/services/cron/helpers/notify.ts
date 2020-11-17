@@ -9,7 +9,7 @@ import saveScrapeMetadata from 'src/models/fundPriceRecord/utils/saveScrapeMetad
 import FundPriceTableDetails, { CompanyScrapeMeta, ScrapeMeta } from 'src/models/fundPriceRecord/FundPriceTableDetails.type'
 import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import { defaultCompanyScrapeMeta } from 'src/models/fundPriceRecord/constants/defaultScrapeMeta'
-import queryItemsBySchedule, { ScheduleType } from './queryItemsBySchedule'
+import queryItemsBySchedule, { ItemType, ScheduleType } from './queryItemsBySchedule'
 import queryDetailsByCompany from 'src/models/fundPriceRecord/io/queryDetailsByCompany'
 import { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
@@ -54,7 +54,17 @@ const saveMetaAfterNotify = async (
   }, tableRange)
 }
 
+const getItemFilterPredicate = (
+  scheduleType: ScheduleType,
+  time: FundPriceTableDetails['time'],
+) => (item: ItemType): boolean => {
+  if (scheduleType === 'onUpdate')
+    return new Date(item.time).getTime() >= new Date(time).getTime()
+  return true
+}
+
 const LNG: Languages = 'zh_HK'
+
 const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<void> => {
   // Get credentials for sending notifications
   const credentials = await getTelegramApiCredentials()
@@ -71,7 +81,11 @@ const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<v
         shouldQueryAll: true,
       })
       const itemsWithDetails = mergeItemsWithDetails(items, detailsItems)
-        .map(item => ({ ...item, name: item.name[LNG] }))
+        .filter(getItemFilterPredicate(scheduleType, tableDetails.time))
+        .map(item => ({
+          ...item,
+          name: item.name[LNG],
+        }))
 
       await sendNotificationByTelegram(credentials, company, scheduleType, itemsWithDetails)
       const meta = companyScrapeMeta ?? defaultCompanyScrapeMeta
