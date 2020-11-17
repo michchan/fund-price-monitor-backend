@@ -13,6 +13,7 @@ import queryItemsBySchedule, { ItemType, ScheduleType } from './queryItemsBySche
 import queryDetailsByCompany from 'src/models/fundPriceRecord/io/queryDetailsByCompany'
 import { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
+import logObj from 'src/helpers/logObj'
 
 interface ShouldNotifyOptions {
   isNotified?: boolean;
@@ -88,6 +89,13 @@ const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<v
           ...item,
           name: item.name[LNG],
         }))
+
+      if (itemsWithDetails.length === 0) {
+        logObj('Items: ', items)
+        logObj('Items with details: ', itemsWithDetails)
+        logObj('Details: ', { scheduleType, company, tableDetails })
+        throw new Error('Item array is empty.')
+      }
 
       await sendNotificationByTelegram(credentials, company, scheduleType, itemsWithDetails)
       const meta = companyScrapeMeta ?? defaultCompanyScrapeMeta
