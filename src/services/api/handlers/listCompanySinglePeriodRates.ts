@@ -11,7 +11,6 @@ import validatePeriod, { PeriodType } from '../validators/validatePeriod'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
 import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
-import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import logObj from 'src/helpers/logObj'
@@ -97,7 +96,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     })
 
     // Send back successful response
-    return createReadResponse(null, output, parseChangeRate)
+    return createReadResponse(null, output)
   } catch (error) {
     // Send back failed response
     return createReadResponse(error)

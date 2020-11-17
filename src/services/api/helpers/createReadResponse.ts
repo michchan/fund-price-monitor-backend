@@ -7,14 +7,17 @@ import statusCodes from 'http-status-codes'
 import { ListResponse } from '../Responses.type'
 import stringify from 'src/helpers/stringify'
 
-export type Output =
+type BasedOutput =
   | DocumentClient.QueryOutput
   | DocumentClient.ScanOutput
 
+export type Output <T> = BasedOutput & {
+  parsedItems: T[];
+}
+
 function createReadResponse <T> (
   error: null | AWSError,
-  output?: Output,
-  parser?: (item: DocumentClient.AttributeMap) => T,
+  output?: Output<T>,
 ): APIGatewayProxyResult {
   if (error) {
     console.log('ERROR: ', stringify(error))
@@ -28,10 +31,9 @@ function createReadResponse <T> (
     }
   }
 
-  const items = output?.Items ?? []
   const body: ListResponse<T> = {
     result: true,
-    data: parser ? items.map(parser) : items as T[],
+    data: output?.parsedItems ?? [],
     lastEvaluatedKey: output?.LastEvaluatedKey ?? null,
   }
   return {

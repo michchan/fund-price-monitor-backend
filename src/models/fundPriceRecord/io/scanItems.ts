@@ -1,17 +1,27 @@
 import getQuarter from 'simply-utils/dist/dateTime/getQuarter'
 
-import scanAllItems, { Input, Output } from 'src/lib/AWS/dynamodb/scanAllItems'
+import scanAllItems, { Input, Output as O } from 'src/lib/AWS/dynamodb/scanAllItems'
 import TableRange from '../TableRange.type'
 import getTableName from '../utils/getTableName'
 import scanPageItems from 'src/lib/AWS/dynamodb/scanItems'
+import FundPriceRecord from '../FundPriceRecord.type'
+import FundPriceChangeRate from '../FundPriceChangeRate.type'
+import parseRecord from '../utils/parseRecord'
 
-const scanItems = (
+type TVariants = FundPriceRecord | FundPriceChangeRate
+export interface Output <T extends TVariants = FundPriceRecord> extends O {
+  parsedItems: T[];
+}
+const scanItems = async <T extends TVariants = FundPriceRecord> (
   input: Omit<Input, 'TableName'>,
   /** Scan all items regardless of page limits */
   shouldScanAll?: boolean,
   /** Default to current quarter of the current year */
   at?: TableRange,
-): Promise<Output> => {
+  /** Default to parseRecord */
+  // @ts-expect-error: @TODO: Fix type
+  parser: ((attributes: DocumentClient.AttributeMap) => T) = parseRecord,
+): Promise<Output<T>> => {
   // Normalize params
   const { year, quarter } = at || {
     year: new Date().getFullYear(),
@@ -19,10 +29,15 @@ const scanItems = (
   }
   const query = shouldScanAll ? scanAllItems : scanPageItems
 
-  return query({
+  const output = await query({
     ...input,
     TableName: getTableName(year, quarter),
   })
+
+  return {
+    ...output,
+    parsedItems: (output?.Items ?? []).map(parser),
+  }
 }
 
 export default scanItems
