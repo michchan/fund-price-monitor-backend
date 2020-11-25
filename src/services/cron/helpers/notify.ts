@@ -92,6 +92,7 @@ const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<v
 
       if (itemsWithDetails.length === 0) {
         logObj('Items: ', items)
+        logObj('detailsItems', detailsItems)
         logObj('Items with details: ', itemsWithDetails)
         logObj('Details: ', { scheduleType, company, tableDetails })
         throw new Error('Item array is empty.')
