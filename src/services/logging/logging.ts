@@ -108,19 +108,24 @@ const constructSubscriptions = (
   })
 }
 
+export interface ReturnType {
+  handlers: Handlers;
+}
 export interface InitOptions {
   logGroups: logs.ILogGroup[];
 }
 /**
  * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
  */
-function construct (scope: cdk.Construct, options: InitOptions) {
+function construct (scope: cdk.Construct, options: InitOptions): ReturnType {
   const { logGroups } = options
 
   const role = constructIamRole(scope)
   const generalLogTopic = constructSNSTopics(scope)
   const handlers = constructLambdas(scope, role, SERVICE_PATHNAME, generalLogTopic)
   constructSubscriptions(scope, handlers, logGroups)
+
+  return { handlers }
 }
 
 const logging = { construct } as const

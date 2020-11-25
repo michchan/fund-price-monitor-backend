@@ -48,11 +48,11 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
       apiHandlers,
       migrationHandlers,
     })
-    bindRuntimeEnvVars(handlers)
-
     // Initialize logging service
-    logging.construct(this, {
+    const { handlers: logHandlers } = logging.construct(this, {
       logGroups: handlers.map(lambda => lambda.logGroup),
     })
+    // Bind runtime environment variable
+    bindRuntimeEnvVars([...handlers, ...Object.values(logHandlers)])
   }
 }
