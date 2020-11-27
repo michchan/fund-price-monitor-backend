@@ -50,7 +50,7 @@ const getTableDetails = async (
   const testScrapeMetaMap = item[attrs.TEST_SCRAPE_META] as MapV | undefined
 
   return {
-    time: item[attrs.TIME_SK].split('@').pop(),
+    SK: item[attrs.TIME_SK].split('@').pop(),
     // Parse sets to array
     companies: companiesSet ? companiesSet.values as CompanyType[] : [],
     fundTypes: fundTypesSet ? fundTypesSet.values as FundType[] : [],

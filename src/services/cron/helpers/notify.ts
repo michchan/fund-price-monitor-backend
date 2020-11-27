@@ -57,10 +57,10 @@ const saveMetaAfterNotify = async (
 
 const getItemFilterPredicate = (
   scheduleType: ScheduleType,
-  time: FundPriceTableDetails['time'],
+  time: ScrapeMeta['time'],
 ) => (item: ItemType): boolean => {
   // Only take changed records for 'onUpdate' notification
-  if (scheduleType === 'onUpdate')
+  if (scheduleType === 'onUpdate' && time)
     return new Date(item.time).getTime() >= new Date(time).getTime()
   // Preserve all items for schedule except 'onUpdate'
   return true
@@ -84,7 +84,7 @@ const notify = async (scheduleType: ScheduleType, isForced?: boolean): Promise<v
         shouldQueryAll: true,
       })
       const itemsWithDetails = mergeItemsWithDetails(items, detailsItems)
-        .filter(getItemFilterPredicate(scheduleType, tableDetails.time))
+        .filter(getItemFilterPredicate(scheduleType, scrapeMeta.time))
         .map(item => ({
           ...item,
           name: item.name[LNG],

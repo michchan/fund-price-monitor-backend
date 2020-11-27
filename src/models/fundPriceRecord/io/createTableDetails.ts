@@ -12,12 +12,11 @@ const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
 export interface Output extends O {}
 function createTableDetails (
-  details: FundPriceTableDetails,
+  details: Omit<FundPriceTableDetails, 'SK'>,
   year: string | number,
   quarter: Quarter,
 ): Promise<Output> {
-  const { companies, fundTypes } = details
-
+  const { companies, fundTypes, scrapeMeta, testScrapeMeta } = details
   return putItem({
     TableName: getTableName(year, quarter),
     Item: {
@@ -25,6 +24,8 @@ function createTableDetails (
       [attrs.TIME_SK]: topLevelKeysValues.TABLE_DETAILS_SK,
       [attrs.COMPANIES]: companies.length > 0 ? docClient.createSet(companies) : undefined,
       [attrs.FUND_TYPES]: fundTypes.length > 0 ? docClient.createSet(fundTypes) : undefined,
+      [attrs.SCRAPE_META]: scrapeMeta,
+      [attrs.TEST_SCRAPE_META]: testScrapeMeta,
     } as DocumentClient.AttributeValue,
   })
 }

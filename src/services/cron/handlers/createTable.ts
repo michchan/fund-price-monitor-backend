@@ -21,7 +21,6 @@ const createTableAndDetails = async (year: number | string, quarter: Quarter) =>
   await createTable(year, quarter, aggregationHandlerArn)
   // Create table detail row
   await createTableDetails({
-    time: new Date().toISOString(),
     companies: [],
     fundTypes: [],
     scrapeMeta: defaultScrapeMeta,

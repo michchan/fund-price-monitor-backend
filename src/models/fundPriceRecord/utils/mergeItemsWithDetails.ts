@@ -16,6 +16,7 @@ const mergeItemsWithDetails = <T extends Item> (
 ): ResultItem<T>[] => items.map(item => {
   const detailItem = detailItems
     .find(eachItem => getCompanyCodePK(eachItem) === getCompanyCodePK(item))
+
   return {
     ...item,
     name: detailItem?.name ?? {

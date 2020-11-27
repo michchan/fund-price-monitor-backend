@@ -23,7 +23,7 @@ export interface ScrapeMeta {
 }
 interface FundPriceTableDetails {
   /** ISO timestamp */
-  time: string;
+  SK: string;
   /** Order not preserved */
   companies: CompanyType[];
   /** Order not preserved */
