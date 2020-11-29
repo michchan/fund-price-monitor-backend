@@ -15,19 +15,29 @@ export type Item =
   | (FundPriceRecord<FundType> & ItemDetails)
 
 const MESSAGES_INTERVAL = 5000
-const sendNotificationByTelegram = async (
-  { apiKey, chatId }: CredentialOutput,
-  company: CompanyType,
-  scheduleType: ScheduleType,
-  items: Item[],
-): Promise<void> => {
+
+export interface Options {
+  credentials: CredentialOutput;
+  company: CompanyType;
+  scheduleType: ScheduleType;
+  items: Item[];
+  emphasizedItems?: Item['code'][];
+}
+
+const sendNotificationByTelegram = async ({
+  credentials: { apiKey, chatId },
+  company,
+  scheduleType,
+  items,
+  emphasizedItems = [],
+}: Options): Promise<void> => {
   // Abort if no items found
   if (items.length === 0) {
     console.log('No items found')
     return
   }
   // Parse items as telegram messages
-  const messages = toTelegramMessages(company, scheduleType, items)
+  const messages = toTelegramMessages(company, scheduleType, items, emphasizedItems)
   // Send each chunk of messages
   for (let i = 0; i < messages.length; i++) {
     const msg = messages[i]

@@ -23,7 +23,8 @@ export interface Item extends
 const toTelegramMessages = (
   company: CompanyType,
   scheduleType: ScheduleType,
-  items: Item[]
+  items: Item[],
+  emphasizedItems: Item['code'][] = [],
 ): string[] => {
   const date = new Date()
   const { year, month, week, quarter } = getDateTimeDictionary(date)
@@ -43,14 +44,16 @@ const toTelegramMessages = (
   // Derive item lines
   const itemLines = items.map(({ code, name, price, priceChangeRate = 0 }) => {
     const codeTag = `__${code}__`
-    const priceTag = `*$${Number(price).toFixed(PRECISION)}*`
+    const priceTag = `$${Number(price).toFixed(PRECISION)}`
 
     const rate = Number(priceChangeRate)
     const rateTag = Math.abs(rate).toFixed(PRECISION)
     const sign = Number(rate) === 0 ? '' : Number(rate) > 0 ? '+' : '-'
     const priceRateTag = `(${sign}${rateTag}%)`
 
-    return `${codeTag} - ${priceTag} ${priceRateTag} - ${name}`
+    const line = `${codeTag} - ${priceTag} ${priceRateTag} - ${name}`
+    const isEmphasized = emphasizedItems.includes(code)
+    return isEmphasized ? `*${line}*` : line
   })
 
   return parseLinesToChunks([titleLine, '', ...itemLines])

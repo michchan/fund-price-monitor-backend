@@ -7,13 +7,15 @@ import queryDetailsByCompany from 'src/models/fundPriceRecord/io/queryDetailsByC
 import { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 import logObj from 'src/helpers/logObj'
+import getCompanyCodePK from 'src/models/fundPriceRecord/utils/getCompanyCodePK'
 
 const LNG: Languages = 'zh_HK'
+type OvRT = FundPriceRecord<'mpf', 'latest'>
 
 const notifyAll = async (
   scheduleType: ScheduleType,
-  overridingLatestItems: { [company in CompanyType]?: FundPriceRecord[] } = {},
   companyWhitelist?: CompanyType[],
+  overridingItemsDict: { [company in CompanyType]?: OvRT[] } = {},
 ): Promise<void> => {
   // Get credentials for sending notifications
   const credentials = await getTelegramApiCredentials()
@@ -21,8 +23,15 @@ const notifyAll = async (
     // Check whitelist
     if (Array.isArray(companyWhitelist) && !companyWhitelist.includes(company)) return
 
-    const overridingItems = overridingLatestItems[company]
-    const items = overridingItems || await queryItemsBySchedule(company, scheduleType)
+    const overridingItems = overridingItemsDict[company] ?? []
+    const items = (await queryItemsBySchedule(company, scheduleType))
+      .map(item => {
+        const overridingItem = overridingItems.find(
+          eachItem => getCompanyCodePK(eachItem) === getCompanyCodePK(item)
+        )
+        return overridingItem || item
+      })
+
     const { parsedItems: detailsItems } = await queryDetailsByCompany(company, {
       shouldQueryAll: true,
     })
@@ -36,10 +45,19 @@ const notifyAll = async (
     logObj('detailsItems', detailsItems)
     logObj('Items with details: ', itemsWithDetails)
     logObj('Details: ', { scheduleType, company })
+    if (itemsWithDetails.length === 0) {
+      console.error('Item array is empty.')
+      return
+    }
 
-    if (itemsWithDetails.length === 0) throw new Error('Item array is empty.')
-
-    await sendNotificationByTelegram(credentials, company, scheduleType, itemsWithDetails)
+    await sendNotificationByTelegram({
+      credentials,
+      company,
+      scheduleType,
+      items: itemsWithDetails,
+      // @TODO: Only notify changed items and not emphasizing any
+      emphasizedItems: overridingItems.map(({ code }) => code),
+    })
   })
 }
 

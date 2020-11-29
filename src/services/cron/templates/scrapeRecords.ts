@@ -33,7 +33,9 @@ export const handler = getRecordsScraperTemplateHandler(
         return toLatestPriceRecord(item, date, prevItem)
       })
       logObj(`Derived TEMP latestItems for notification: (${latestItems.length}): `, latestItems)
-      await notifyAll('onUpdate', { [company]: latestItems }, [company])
+      const itemsDict = { [company]: latestItems }
+      // @TODO: Always notify changed items only
+      await notifyAll('onUpdate', [company], itemsDict)
     }
   }
 )
