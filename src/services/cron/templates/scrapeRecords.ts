@@ -17,6 +17,7 @@ export const handler = getRecordsScraperTemplateHandler(
   async (tableRange, records, companies) => {
     await batchCreate(records, tableRange, serializeRecord)
 
+    // @TODO: Separate as another lambda function call
     // @TODO: Refractor with aggregate
     // Handle notification
     for (const company of companies) {
