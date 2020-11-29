@@ -130,7 +130,10 @@ const getBatchRequestSender = (tableRange: TableRange) => (
 const manipulateEachCompany = async (company: CompanyType, tableRange: TableRange) => {
   const itemsDict = await getItems(company, tableRange)
   const dupedItemsDict = getAllDuped(itemsDict)
-  logObj(`Duplicates found for ${company}:`, mapValues(dupedItemsDict, val => val.length))
+  const dupedNums = mapValues(dupedItemsDict, val => val.length)
+  logObj(`Duplicates found for ${company}:`, dupedNums)
+  if (Object.values(dupedNums).some(v => v > 0))
+    console.error('Some duplicates found!')
 
   const batchReqSenders = Object
     .entries(dupedItemsDict)
