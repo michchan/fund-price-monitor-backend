@@ -11,11 +11,12 @@ import getCompanyCodePK from 'src/models/fundPriceRecord/utils/getCompanyCodePK'
 
 const LNG: Languages = 'zh_HK'
 type OvRT = FundPriceRecord<'mpf', 'latest'>
+export type OverridingItemsDict = { [company in CompanyType]?: OvRT[] }
 
 const notifyAll = async (
   scheduleType: ScheduleType,
   companyWhitelist?: CompanyType[],
-  overridingItemsDict: { [company in CompanyType]?: OvRT[] } = {},
+  overridingItemsDict: OverridingItemsDict = {},
 ): Promise<void> => {
   // Get credentials for sending notifications
   const credentials = await getTelegramApiCredentials()

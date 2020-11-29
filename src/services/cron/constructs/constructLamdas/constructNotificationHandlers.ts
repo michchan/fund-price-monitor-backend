@@ -17,7 +17,7 @@ export interface NotificationHandlers {
 }
 const constructNotificationHandlers = (
   scope: cdk.Construct,
-  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
   telegramChatId: string,
 ): NotificationHandlers => {
   const environment = getDefaultNotifierEnv(telegramChatId)

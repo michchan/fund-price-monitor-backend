@@ -7,7 +7,7 @@ export interface Aggregators {
 }
 const constructAggregators = (
   scope: cdk.Construct,
-  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
 ): Aggregators => {
   // Handler for aggregating top-level items of records
   const aggregation = new lambda.Function(scope, 'CronAggregator', {

@@ -8,7 +8,7 @@ export interface TableHandlers {
 }
 const constructTableHandlers = (
   scope: cdk.Construct,
-  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
   aggregationHandler: lambda.Function,
 ): TableHandlers => {
   // Common environment variables for table handling

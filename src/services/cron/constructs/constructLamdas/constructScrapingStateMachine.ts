@@ -26,10 +26,14 @@ export interface ScrapingHandlers {
   startScrapeSession: lambda.Function;
 }
 
+export type DefaultInput =
+  & ReturnType<typeof getDefaultLambdaInput>
+  & Partial<lambda.FunctionOptions>
+
 /** Scraper creator */
 const getScraperCreatorGetter = (
   scope: cdk.Construct,
-  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  defaultInput: DefaultInput,
 ) => (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
   const name = fileName
     .replace(nameRegExp, '')
@@ -45,7 +49,7 @@ const getScraperCreatorGetter = (
 const constructScrapingHandlers = (
   scope: cdk.Construct,
   serviceDirname: string,
-  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  defaultInput: DefaultInput,
 ): ScrapingHandlers => {
   const serviceName = serviceDirname.split('/').pop()
   const serviceBundlesDir = serviceDirname.replace(/src.+/i, `bundles/${serviceName}`)
@@ -145,7 +149,7 @@ export interface Output extends ScrapingHandlers {
 const constructScrapingStateMachine = (
   scope: cdk.Construct,
   serviceDirname: string,
-  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  defaultInput: DefaultInput,
 ): Output => {
   const handlers = constructScrapingHandlers(scope, serviceDirname, defaultInput)
   const scrapeRecordsStateMachine = constructRecordsScrapingStateMachine(scope, handlers)

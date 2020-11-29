@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
 import * as sfn from '@aws-cdk/aws-stepfunctions'
+import * as lambda from '@aws-cdk/aws-lambda'
 
 import { CronRoles } from '../constructIamRoles'
 import constructScrapingStateMachine, { ScrapingHandlers } from './constructScrapingStateMachine'
@@ -56,13 +57,23 @@ const constructScrapingComponents = (
   scope: cdk.Construct,
   { itemsAlterer, aggregator }: Pick<CronRoles, 'itemsAlterer' | 'aggregator'>,
   { serviceDirname, servicePathname }: Pick<Options, 'serviceDirname' | 'servicePathname' | 'telegramChatId'>,
+  notifyOnUpdate: lambda.Function,
 ): ScrapingComponents => {
   const getInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)
   const {
     stateMachines,
     ...scrapingHandlers
-  } = constructScrapingStateMachine(scope, serviceDirname, getInput(itemsAlterer))
+  } = constructScrapingStateMachine(scope, serviceDirname, {
+    ...getInput(itemsAlterer),
+    environment: {
+      NOTIFIER_ARN: notifyOnUpdate.functionArn,
+    },
+  })
   const aggregators = constructAggregators(scope, getInput(aggregator))
+
+  // Grant notifier invoke for each scraper
+  scrapingHandlers.scrapers.forEach(scraper => notifyOnUpdate.grantInvoke(scraper))
+
   return {
     handlers: {
       ...scrapingHandlers,
@@ -91,7 +102,12 @@ const constructLamdas = (
   const { servicePathname } = options
 
   const sideComponents = constructSideComponents(scope, roles, options)
-  const scrapingComponents = constructScrapingComponents(scope, roles, options)
+  const scrapingComponents = constructScrapingComponents(
+    scope,
+    roles,
+    options,
+    sideComponents.handlers.notifyOnUpdate
+  )
   const { handlers: { aggregation } } = scrapingComponents
 
   const getInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)

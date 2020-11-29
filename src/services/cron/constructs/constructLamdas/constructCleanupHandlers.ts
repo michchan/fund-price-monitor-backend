@@ -7,7 +7,7 @@ export interface CleanupHandlers {
 }
 const constructCleanupHandlers = (
   scope: cdk.Construct,
-  defaultInput: ReturnType<typeof getDefaultLambdaInput>,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
 ): CleanupHandlers => {
   // Handler for de-duplications of records
   const dedupHandler = new lambda.Function(scope, 'CronDedupHandler', {
