@@ -21,7 +21,8 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.72.0",
-    "@michchan/eslint-config": "1.6.0",
+    "@michchan/eslint-config": "1.6.1",
+    "@michchan/webpack-config-aws-cdk": "^0.2.0",
     "@types/aws-lambda": "^8.10.61",
     "@types/jest": "^26.0.4",
     "@types/lodash": "^4.14.160",

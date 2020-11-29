@@ -1,6 +1,8 @@
 *.js
 !jest.config.js
 !webpack.config.js
+!webpack.*.js
+
 !scripts/*.js
 !.eslintrc.js
 *.d.ts
