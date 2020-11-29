@@ -13,10 +13,9 @@ const reduceScrapeMetaInfo = (
   const thisCompanies = companies.length > 0 ? companies : getCompaniesFromRecords(records)
   const info = thisCompanies.reduce((acc, comp) => {
     const isSameCompany = (rec: RT) => rec.company === comp
-    const meta: CompanyScrapeMeta = {
+    const meta: Partial<CompanyScrapeMeta> = {
       size: records.filter(isSameCompany).length,
       status,
-      isNotified: false,
     }
     return { ...acc, [comp]: meta }
   }, {} as ScrapeMeta['info'])

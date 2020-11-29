@@ -11,6 +11,7 @@ import { StateMachines, Handlers } from './constructLamdas/constructLamdas'
 const SCRAPE_INTERVAL_HOUR = 4
 const constructDailyEventRules = (
   scope: cdk.Construct,
+  { dedup }: Pick<Handlers, 'dedup'>,
   { scrape: scrapeMachine }: Pick<StateMachines, 'scrape'>,
 ) => {
   // Define event rule
@@ -18,6 +19,13 @@ const constructDailyEventRules = (
     schedule: events.Schedule.expression(`rate(${SCRAPE_INTERVAL_HOUR} hours)`),
   })
   hourlyScrapeRule.addTarget(new targets.SfnStateMachine(scrapeMachine))
+
+  // Daily cleanup
+  // Run on everyday 00:00 UTC
+  const dailyDedupRule = new events.Rule(scope, 'DailyCleanupRule', {
+    schedule: events.Schedule.expression('cron(0 0 * * ? *)'),
+  })
+  dailyDedupRule.addTarget(new targets.LambdaFunction(dedup))
 }
 
 const constructMonthlyEventRules = (
@@ -63,7 +71,7 @@ type EventRulesArgs = [
   stateMachines: Pick<StateMachines, 'scrape' | 'scrapeDetails'>
 ]
 const constructEventRules = (...[scope, handlers, stateMachines]: EventRulesArgs): void => {
-  constructDailyEventRules(scope, stateMachines)
+  constructDailyEventRules(scope, handlers, stateMachines)
   constructMonthlyEventRules(scope, handlers, stateMachines)
   constructQuarterlyEventRules(scope, handlers)
 }

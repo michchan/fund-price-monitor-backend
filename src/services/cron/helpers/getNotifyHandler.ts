@@ -1,14 +1,13 @@
 import { ScheduledHandler } from 'aws-lambda'
 import { ScheduleType } from 'src/services/cron/helpers/queryItemsBySchedule'
-import notify from '../helpers/notify'
+import notifyAll from '../helpers/notifyAll'
 
 export interface EventDetail {
   isForced?: boolean;
 }
 const getNotifyHandler = (
   scheduleType: ScheduleType
-): ScheduledHandler<EventDetail> => async event => {
-  const { isForced } = event?.detail ?? {}
-  await notify(scheduleType, isForced)
+): ScheduledHandler<EventDetail> => async () => {
+  await notifyAll(scheduleType)
 }
 export default getNotifyHandler

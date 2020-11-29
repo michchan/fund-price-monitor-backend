@@ -2,14 +2,10 @@ import { CompanyType, FundType } from './FundPriceRecord.type'
 
 export type ScrapeStatus = 'pending' | 'success' | 'failed'
 export interface CompanyScrapeMeta {
-  /**
-   * The size of the scraped records across batches.
-   */
+  /** The size of the scraped records across batches */
   size: number;
   /** Default to 'pending' */
   status: ScrapeStatus;
-  /** Whether it has been notified for that changes */
-  isNotified: boolean;
 }
 /**
  * Store the metadata of the latest scrape window for each company.

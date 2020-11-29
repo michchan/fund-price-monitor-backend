@@ -8,27 +8,22 @@ import constructAggregators, { Aggregators } from './constructAggregators'
 import constructTableHandlers, { TableHandlers } from './constructTableHandlers'
 import constructNotificationHandlers, { NotificationHandlers } from './constructNotificationHandlers'
 import constructCleanupHandlers, { CleanupHandlers } from './constructCleanupHandlers'
-import constructPostAggregateStateMachine, { PostScrapeOutputHandlers } from './constructPostAggregateStateMachine'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 export interface Handlers extends ScrapingHandlers,
   Aggregators,
   TableHandlers,
   NotificationHandlers,
-  CleanupHandlers,
-  PostScrapeOutputHandlers {}
+  CleanupHandlers {}
 
 export interface StateMachines {
   scrape: sfn.StateMachine;
   scrapeDetails: sfn.StateMachine;
-  postAggregate: sfn.StateMachine;
 }
 
-interface SideHandlers extends NotificationHandlers, CleanupHandlers, PostScrapeOutputHandlers {}
-interface SideStateMachines extends Pick<StateMachines, 'postAggregate'> {}
+interface SideHandlers extends NotificationHandlers, CleanupHandlers {}
 interface SideComponents {
   handlers: SideHandlers;
-  stateMachines: SideStateMachines;
 }
 
 const constructSideComponents = (
@@ -43,21 +38,10 @@ const constructSideComponents = (
     telegramChatId
   )
   const cleanupHandlers = constructCleanupHandlers(scope, getInput(itemsAlterer))
-  const {
-    stateMachine: postAggregateStateMachine,
-    checkLastBatchHandler,
-  } = constructPostAggregateStateMachine(scope, getInput(itemsReader), {
-    dedup: cleanupHandlers.dedup,
-    notifyOnUpdate: notificationHandlers.notifyOnUpdate,
-  })
   return {
     handlers: {
       ...cleanupHandlers,
       ...notificationHandlers,
-      checkLastBatchHandler,
-    },
-    stateMachines: {
-      postAggregate: postAggregateStateMachine,
     },
   }
 }
@@ -72,14 +56,13 @@ const constructScrapingComponents = (
   scope: cdk.Construct,
   { itemsAlterer, aggregator }: Pick<CronRoles, 'itemsAlterer' | 'aggregator'>,
   { serviceDirname, servicePathname }: Pick<Options, 'serviceDirname' | 'servicePathname' | 'telegramChatId'>,
-  postAggregate: sfn.StateMachine
 ): ScrapingComponents => {
   const getInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)
   const {
     stateMachines,
     ...scrapingHandlers
   } = constructScrapingStateMachine(scope, serviceDirname, getInput(itemsAlterer))
-  const aggregators = constructAggregators(scope, getInput(aggregator), postAggregate)
+  const aggregators = constructAggregators(scope, getInput(aggregator))
   return {
     handlers: {
       ...scrapingHandlers,
@@ -108,19 +91,14 @@ const constructLamdas = (
   const { servicePathname } = options
 
   const sideComponents = constructSideComponents(scope, roles, options)
-  const { postAggregate } = sideComponents.stateMachines
-
-  const scrapingComponents = constructScrapingComponents(scope, roles, options, postAggregate)
+  const scrapingComponents = constructScrapingComponents(scope, roles, options)
   const { handlers: { aggregation } } = scrapingComponents
 
   const getInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)
   const tableHandlers = constructTableHandlers(scope, getInput(tableHandler), aggregation)
 
   return {
-    stateMachines: {
-      ...sideComponents.stateMachines,
-      ...scrapingComponents.stateMachines,
-    },
+    stateMachines: scrapingComponents.stateMachines,
     handlers: {
       ...sideComponents.handlers,
       ...scrapingComponents.handlers,

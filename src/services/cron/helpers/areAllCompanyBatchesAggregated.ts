@@ -10,6 +10,8 @@ const areAllCompanyBatchesAggregated = async (
 ): Promise<boolean> => {
   const { scrapeMeta } = tableDetails
   const { time } = scrapeMeta
+  logObj(`Examine scrape meta for company (${company}): `, scrapeMeta)
+
   if (!time) {
     logObj('Scrape session not started with time equal to null / undefined', scrapeMeta)
     return false
