@@ -11,6 +11,8 @@ import FundPriceRecord, {
 import mapAndReduceFundDetailsBatches from '../helpers/mapAndReduceFundDetailsBatches'
 import retryWithDelay from '../helpers/retryWithDelay'
 
+const VIEW_ID = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
+
 type TRec = FundPriceRecord<'mpf', 'record'>
 interface RiskLevlIndicatorImageNameMap {
   [key: string]: TRec['riskLevel'];
@@ -18,7 +20,7 @@ interface RiskLevlIndicatorImageNameMap {
 
 // Have to be same scope
 // eslint-disable-next-line max-lines-per-function
-const getRecords = (): TRec[] => {
+const getRecords = (viewId: string): TRec[] => {
   const company: CompanyType = 'manulife'
   const fundType: FundType = 'mpf'
   const recordType: RecordType = 'record'
@@ -34,7 +36,6 @@ const getRecords = (): TRec[] => {
   const time = new Date().toISOString()
 
   // Query table rows nodes
-  const viewId = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
   const tableRows: NodeListOf<HTMLTableRowElement> = document
     .querySelectorAll(`${viewId}_\\:mainContent\\:datat\\:tbody_element > tr`)
 
@@ -70,15 +71,13 @@ const getRecords = (): TRec[] => {
       recordType,
     }
   }
-
   // Map table rows data to TRec[]
   return Array.from(tableRows).map(getRowMapper(riskLevelIndicatorImageNameMap, time))
 }
 
-const getDetails = (lng: Languages): FundDetails[] => {
+const getDetails = (viewId: string, lng: Languages): FundDetails[] => {
   const company: CompanyType = 'manulife'
   // Query table rows nodes
-  const viewId = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
   const tableRows: NodeListOf<HTMLTableRowElement> = document
     .querySelectorAll(`${viewId}_\\:mainContent\\:datat\\:tbody_element > tr`)
   return Array.from(tableRows).map((row: HTMLTableRowElement): FundDetails => {
@@ -106,18 +105,17 @@ const getDetails = (lng: Languages): FundDetails[] => {
 
 const evaluateData = async <T extends TRec | FundDetails> (
   page: puppeteer.Page,
-  evaluateCallback: (lng: Languages) => T[],
+  evaluateCallback: (viewId: string, lng: Languages) => T[],
   lng: Languages,
 ): Promise<T[]> => {
   // Wait for the elements we want
-  const viewId = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
   await retryWithDelay(() => page.waitForSelector(
-    `${viewId}_\\:mainContent\\:datat\\:tbody_element > tr:last-child > td > img`
+    `${VIEW_ID}_\\:mainContent\\:datat\\:tbody_element > tr:last-child > td > img`
   ), 'manulifeMPFScrapers')
 
   // Query DOM data
   // * Constants/variables must be inside the scope of the callback function
-  return page.evaluate(evaluateCallback, lng)
+  return page.evaluate(evaluateCallback, VIEW_ID, lng)
 }
 
 // Locales recognized by the Manulife website
