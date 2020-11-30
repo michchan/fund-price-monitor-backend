@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
-import grantCloudWatchLogGroupPermissions from 'src/lib/AWS/iam/grantCloudWatchLogGroupPermissions'
+import grantCloudWatchLogGroupPermissions from '../../../lib/grantCloudWatchLogGroupPermissions'
 
 const commonIamStatementInput = {
   resources: ['*'],

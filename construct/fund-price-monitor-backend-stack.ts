@@ -5,7 +5,7 @@ import cron, { Output as CronOutput } from './services/cron'
 import api, { Output as ApiOutput } from './services/api'
 import logging from './services/logging'
 import migration, { Output as MigrationOutput } from './services/migration'
-import runtimeEnv from './lib/runtimeEnv'
+import runtimeEnv from '../src/lib/env'
 
 interface GroupAllHandlersOptions {
   apiHandlers: ApiOutput['handlers'];

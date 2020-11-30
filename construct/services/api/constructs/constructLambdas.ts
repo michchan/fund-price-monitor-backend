@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core'
 import * as lambda from '@aws-cdk/aws-lambda'
 import * as iam from '@aws-cdk/aws-iam'
 
-import defaultLambdaInput from 'src/common/defaultLambdaInput'
+import defaultLambdaInput from '../../../common/defaultLambdaInput'
 
 export interface Handlers {
   listSingleFundRecords: lambda.Function;

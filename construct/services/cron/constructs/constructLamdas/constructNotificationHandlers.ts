@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core'
 import * as lambda from '@aws-cdk/aws-lambda'
-import env from 'src/lib/buildEnv'
+import env from '../../../../lib/env'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 const { TELEGRAM_BOT_API_KEY_PARAMETER_NAME } = env.values

@@ -2,11 +2,10 @@ import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
 import * as lambda from '@aws-cdk/aws-lambda'
 
-import grantCloudWatchLogGroupPermissions from 'src/lib/AWS/iam/grantCloudWatchLogGroupPermissions'
-import defaultLambdaInput from 'src/common/defaultLambdaInput'
+import grantCloudWatchLogGroupPermissions from '../lib/grantCloudWatchLogGroupPermissions'
+import defaultLambdaInput from '../common/defaultLambdaInput'
 
-const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
-
+const SERVICE_PATHNAME = 'migration'
 const ROLE_ID = 'MigrationRole'
 const commonIamStatementInput = {
   resources: ['*'],

@@ -32,6 +32,6 @@
     "outDir": "build",
     "baseUrl": "./"
   },
-  "exclude": ["node_modules", "cdk.out"],
-  "include": ["src"]
+  "exclude": ["node_modules", "cdk.out", "construct"],
+  "include": ["src", "construct/lib/grantCloudWatchLogGroupPermissions.ts", "construct/constants.ts", "construct/services/api/index.ts", "construct/services/cron/index.ts", "construct/services/migration/index.ts", "construct/fund-price-monitor-backend-stack.ts"]
 }

@@ -6,12 +6,11 @@ import * as sns from '@aws-cdk/aws-sns'
 import * as subs from '@aws-cdk/aws-sns-subscriptions'
 import { LambdaDestination } from '@aws-cdk/aws-logs-destinations'
 
-import { PROJECT_NAMESPACE } from 'src/constants'
-import defaultLambdaInput from 'src/common/defaultLambdaInput'
-import env from 'src/lib/buildEnv'
+import { PROJECT_NAMESPACE } from '../constants'
+import defaultLambdaInput from '../common/defaultLambdaInput'
+import env from '../lib/env'
 
-const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
-
+const SERVICE_PATHNAME = 'logging'
 const ROLE_ID = 'SubsRole'
 const commonIamStatementInput = {
   resources: ['*'],

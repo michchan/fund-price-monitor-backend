@@ -4,7 +4,7 @@ import constructIamRole from './constructs/constructIamRole'
 import constructLamdas, { Handlers } from './constructs/constructLambdas'
 import constructApiGateway from './constructs/constructApiGateway'
 
-const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
+const SERVICE_PATHNAME = 'api'
 
 export interface Output {
   handlers: Handlers;

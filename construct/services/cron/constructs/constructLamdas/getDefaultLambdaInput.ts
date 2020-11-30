@@ -1,6 +1,6 @@
 import * as lambda from '@aws-cdk/aws-lambda'
 import * as iam from '@aws-cdk/aws-iam'
-import defaultLambdaInput from 'src/common/defaultLambdaInput'
+import defaultLambdaInput from '../../../../common/defaultLambdaInput'
 
 export type Output =
   typeof defaultLambdaInput

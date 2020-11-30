@@ -1,12 +1,13 @@
 import * as cdk from '@aws-cdk/core'
 import * as ssm from '@aws-cdk/aws-ssm'
 
-import env from 'src/lib/buildEnv'
+import env from '../../lib/env'
 import constructIamRoles from './constructs/constructIamRoles'
 import constructLamdas, { Handlers } from './constructs/constructLamdas'
 import constructEventRules from './constructs/constructEventRules'
 
-const SERVICE_PATHNAME = __dirname.split('/').pop() ?? ''
+const SERVICE_DIRNAME = __dirname.replace(/construct/i, 'src')
+const SERVICE_PATHNAME = 'cron'
 
 const getSecrets = (scope: cdk.Construct) => {
   // Retrieve the telegram notification channel's chat ID
@@ -27,7 +28,7 @@ function construct (scope: cdk.Construct): Output {
   const { telegramChatId } = getSecrets(scope)
   const { handlers, stateMachines } = constructLamdas(scope, roles, {
     servicePathname: SERVICE_PATHNAME,
-    serviceDirname: __dirname,
+    serviceDirname: SERVICE_DIRNAME,
     telegramChatId,
   })
   constructEventRules(scope, handlers, stateMachines)
