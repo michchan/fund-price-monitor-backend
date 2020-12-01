@@ -52,18 +52,18 @@
     "@aws-cdk/aws-logs-destinations": "1.72.0",
     "@aws-cdk/aws-sns": "1.72.0",
     "@aws-cdk/aws-sns-subscriptions": "1.72.0",
-    "@aws-cdk/core": "1.72.0",
     "@aws-cdk/aws-stepfunctions": "1.72.0",
     "@aws-cdk/aws-stepfunctions-tasks": "1.72.0",
+    "@aws-cdk/core": "1.72.0",
     "aws-sdk": "2.777.0",
     "axios": "^0.20.0",
     "chrome-aws-lambda": "5.3.1",
     "dotenv": "^8.2.0",
     "http-status-codes": "^2.1.4",
     "lodash": "^4.17.20",
-    "puppeteer-core": "5.3.1",
     "puppeteer": "5.3.1",
-    "simply-utils": "0.50.0",
+    "puppeteer-core": "5.3.1",
+    "simply-utils": "^0.51.0",
     "source-map-support": "^0.5.19"
   }
 }
