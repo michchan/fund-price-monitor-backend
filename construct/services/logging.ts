@@ -68,7 +68,7 @@ const constructLambdas = (
   const notifyErrorLogHandler = new lambda.Function(scope, 'LoggingNotifyErrorLog', {
     ...defaultInput,
     handler: 'notifyErrorLog.handler',
-    environment: { SNS_ARN: generalLogTopic.topicArn },
+    environment: { SNS_TOPIC_ARN: generalLogTopic.topicArn },
   })
   // Grant SNS publish permission
   generalLogTopic.grantPublish(notifyErrorLogHandler)

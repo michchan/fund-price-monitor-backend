@@ -13,8 +13,7 @@ const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) =
   const resourceName = payload.logGroup.split('/').pop()
   const messages = payload.logEvents.map(e => e.message).join('\n')
 
-  const message
-    = `\n${resourceType} Error Summary\n\n`
+  const message = `\n${resourceType} Error Summary\n\n`
     + '------------------------------------------------------\n\n'
     + `# LogGroup name: ${payload.logGroup}\n`
     + `# LogStream: ${payload.logStream}\n`
@@ -37,8 +36,8 @@ export const handler: CloudWatchLogsHandler = async event => {
   const payload = decodeCloudWatchLogEventPayload(event)
   logObj('Payload: ', payload)
 
-  // * Environment variable SNS_ARN is required
-  const snsArn = process.env.SNS_ARN as string
+  // * Environment variable SNS_TOPIC_ARN is required
+  const snsArn = process.env.SNS_TOPIC_ARN as string
   // Must await the service
   await publishMessage(payload, snsArn)
 }
