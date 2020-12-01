@@ -56,8 +56,6 @@ const notifyAll = async (
       company,
       scheduleType,
       items: itemsWithDetails,
-      // @TODO: Only notify changed items and not emphasizing any
-      emphasizedItems: overridingItems.map(({ code }) => code),
     })
   })
 }
