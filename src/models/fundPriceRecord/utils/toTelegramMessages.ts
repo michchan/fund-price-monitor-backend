@@ -43,7 +43,6 @@ const toTelegramMessages = (
   })()
   // Derive item lines
   const itemLines = items.map(({ code, name, price, priceChangeRate = 0 }) => {
-    const codeTag = `__${code}__`
     const priceTag = `$${Number(price).toFixed(PRECISION)}`
 
     const rate = Number(priceChangeRate)
@@ -51,7 +50,7 @@ const toTelegramMessages = (
     const sign = Number(rate) === 0 ? '' : Number(rate) > 0 ? '+' : '-'
     const priceRateTag = `(${sign}${rateTag}%)`
 
-    const line = `${codeTag} - ${priceTag} ${priceRateTag} - ${name}`
+    const line = `${code} - ${priceTag} ${priceRateTag} - ${name}`
     const isEmphasized = emphasizedItems.includes(code)
     return isEmphasized ? `*${line}*` : line
   })
