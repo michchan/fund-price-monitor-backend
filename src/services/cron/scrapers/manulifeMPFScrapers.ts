@@ -19,7 +19,6 @@ interface RiskLevlIndicatorImageNameMap {
 }
 
 // Have to be same scope
-// eslint-disable-next-line max-lines-per-function
 const getRecords = (viewId: string): TRec[] => {
   const company: CompanyType = 'manulife'
   const fundType: FundType = 'mpf'
@@ -32,10 +31,7 @@ const getRecords = (viewId: string): TRec[] => {
     'y.gif': 'high',
     'z.gif': 'veryHigh',
   }
-  // Create a timestamp for current scrape
   const time = new Date().toISOString()
-
-  // Query table rows nodes
   const tableRows: NodeListOf<HTMLTableRowElement> = document
     .querySelectorAll(`${viewId}_\\:mainContent\\:datat\\:tbody_element > tr`)
 
@@ -71,7 +67,6 @@ const getRecords = (viewId: string): TRec[] => {
       recordType,
     }
   }
-  // Map table rows data to TRec[]
   return Array.from(tableRows).map(getRowMapper(riskLevelIndicatorImageNameMap, time))
 }
 
