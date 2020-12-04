@@ -25,7 +25,8 @@ const notifyAll = async (
     if (Array.isArray(companyWhitelist) && !companyWhitelist.includes(company)) return
 
     const overridingItems = overridingItemsDict[company] ?? []
-    const items = (await queryItemsBySchedule(company, scheduleType))
+    const fetchedItems = await queryItemsBySchedule(company, scheduleType)
+    const items = fetchedItems
       .map(item => {
         const overridingItem = overridingItems.find(
           eachItem => getCompanyCodePK(eachItem) === getCompanyCodePK(item)
@@ -42,6 +43,7 @@ const notifyAll = async (
         name: item.name[LNG],
       }))
 
+    logObj('fetchedItems: ', fetchedItems)
     logObj('Items: ', items)
     logObj('detailsItems', detailsItems)
     logObj('Items with details: ', itemsWithDetails)
