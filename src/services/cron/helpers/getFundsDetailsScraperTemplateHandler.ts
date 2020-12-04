@@ -26,7 +26,7 @@ const getFundsDetailsScraperTemplateHandler = <T = void> (
   const tableRange = { year, quarter }
 
   const records = await scrapeAndReduce(scrapers)
-  logObj(`Details records (${records.length})`, records)
+  logObj('Details records', records)
   if (callback) await callback(tableRange, records)
 }
 export default getFundsDetailsScraperTemplateHandler

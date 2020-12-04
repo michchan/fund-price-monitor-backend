@@ -17,15 +17,15 @@ const deleteItems = async (
   ] = rest
 
   // Log records to remove
-  logObj(`prevLatestItems to remove (${prevLatestItems.length}): `, prevLatestItems)
+  logObj('prevLatestItems to remove', prevLatestItems)
 
   // Remove previous latest records
   await batchDelete(prevLatestItems, tableRange, getCompositeSK)
 
   // Log records to insert
-  logObj(`prevWeekRateItems to remove (${prevWeekRateItems.length}): `, prevWeekRateItems)
-  logObj(`prevMonthRateItems to remove (${prevMonthRateItems.length}): `, prevMonthRateItems)
-  logObj(`prevQuarterRateItems to remove (${prevQuarterRateItems.length}): `, prevQuarterRateItems)
+  logObj('prevWeekRateItems to remove', prevWeekRateItems)
+  logObj('prevMonthRateItems to remove', prevMonthRateItems)
+  logObj('prevQuarterRateItems to remove', prevQuarterRateItems)
 
   // Remove previous change rates
   await batchDelete([

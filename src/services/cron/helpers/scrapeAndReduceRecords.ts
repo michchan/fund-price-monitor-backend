@@ -22,8 +22,8 @@ const reduceRecords = async (batches: RT[][]): Promise<Output> => {
   // Flatten records (Array.flat())
   const records = batches.reduce((acc, curr) => [...acc, ...curr], [])
   const companies = getCompaniesFromRecords(records)
-  logObj(`Records scraped (${records.length}): `, records)
-  logObj(`Companies scraped (${companies.length}): `, companies)
+  logObj('Records scraped', records)
+  logObj('Companies derived from scraped records', companies)
   const takenRecords = await takeUpdatedRecords(records)
   return [takenRecords, companies]
 }
@@ -33,7 +33,7 @@ async function scrapeAndReduceRecords (scrapers: GetDataWithPage<RT[]>[]): Promi
   const batches = await launchPuppeteerBrowserSession<RT[]>(scrapers)
   const [records, companies] = await reduceRecords(batches)
   validateRecords(records)
-  logObj(`Records to insert (${records.length}): `, records)
+  logObj('Records to insert', records)
   return [records, companies]
 }
 export default scrapeAndReduceRecords

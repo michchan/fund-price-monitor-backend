@@ -43,7 +43,7 @@ const takeUpdatedRecords = async (records: RT[]): Promise<RT[]> => {
       return [...acc, ...parsedItems]
     })
   )([])
-  logObj(`Latest records (${latestRecords.length}): `, latestRecords)
+  logObj('Latest records', latestRecords)
   return records.filter(record => {
     // Get identical record
     const prevRecord = latestRecords.find(rec => isPKEqual(rec, record))

@@ -18,16 +18,16 @@ const createItems = async (
   ] = rest
 
   // Log records to insert
-  logObj(`latestItems to insert (${latestItems.length}): `, latestItems)
+  logObj('latestItems to insert', latestItems)
 
   // Batch create all aggregation items
   // Create latest records
   await batchCreate(latestItems, tableRange, serializeRecord)
 
   // Log records to insert
-  logObj(`weekRateItems to insert (${weekRateItems.length}): `, weekRateItems)
-  logObj(`monthRateItems to insert (${weekRateItems.length}): `, monthRateItems)
-  logObj(`quarterRateItems to insert (${weekRateItems.length}): `, quarterRateItems)
+  logObj('weekRateItems to insert', weekRateItems)
+  logObj('monthRateItems to insert', monthRateItems)
+  logObj('quarterRateItems to insert', quarterRateItems)
 
   // Create change rates
   await batchCreate([

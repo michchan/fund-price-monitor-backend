@@ -22,7 +22,7 @@ const notifyOnScrape: Callback = async (tableRange, records, companies) => {
       const prevItem = prevLatestItems.find(eachItem => eachItem.code === item.code)
       return toLatestPriceRecord(item, date, prevItem)
     })
-    logObj(`Derived TEMP latestItems for notification: (${latestItems.length}): `, latestItems)
+    logObj('Derived TEMP latestItems for notification', latestItems)
 
     const invokeDetails: EventDetail = {
       companyWhitelist: [company],
