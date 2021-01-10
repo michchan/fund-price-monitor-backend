@@ -26,7 +26,7 @@ function createReadResponse <T> (
       error: pick(error, ['message', 'code']),
     }
     return {
-      statusCode: error.statusCode,
+      statusCode: error.statusCode ?? statusCodes.INTERNAL_SERVER_ERROR,
       body: stringify(body),
     }
   }

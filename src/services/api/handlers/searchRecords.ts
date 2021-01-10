@@ -36,7 +36,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     // Get query params
     const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
       if (key === 'latest') return value === 'true'
-      if (key === 'q') return parseQuery(value)
+      if (key === 'q') return parseQuery(value ?? '')
       return value
     }) as unknown as QueryParams
     const {

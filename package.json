@@ -22,13 +22,14 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.83.0",
     "@michchan/eslint-config": "1.7.0",
-    "@michchan/webpack-config-aws-cdk": "^0.3.0",
-    "@types/aws-lambda": "^8.10.61",
+    "@michchan/webpack-config-aws-cdk": "^0.3.1",
+    "@types/aws-lambda": "^8.10.70",
     "@types/jest": "^26.0.4",
-    "@types/lodash": "^4.14.160",
-    "@types/node": "14.14.2",
-    "@types/puppeteer": "^3.0.1",
+    "@types/lodash": "^4.14.167",
+    "@types/node": "14.14.20",
+    "@types/puppeteer": "^5.4.2",
     "aws-cdk": "1.83.0",
+    "aws-sdk": "2.824.0",
     "aws-lambda-mock-context": "^3.2.1",
     "eslint": "^7.11.0",
     "file-loader": "^6.0.0",
@@ -55,7 +56,6 @@
     "@aws-cdk/aws-stepfunctions": "1.83.0",
     "@aws-cdk/aws-stepfunctions-tasks": "1.83.0",
     "@aws-cdk/core": "1.83.0",
-    "aws-sdk": "2.777.0",
     "axios": "^0.21.1",
     "chrome-aws-lambda": "5.5.0",
     "dotenv": "^8.2.0",
@@ -63,7 +63,7 @@
     "lodash": "^4.17.20",
     "puppeteer": "5.5.0",
     "puppeteer-core": "5.5.0",
-    "simply-utils": "0.54.0",
+    "simply-utils": "0.55.0",
     "source-map-support": "^0.5.19"
   }
 }
