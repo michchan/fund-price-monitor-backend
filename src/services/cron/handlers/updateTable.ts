@@ -36,7 +36,7 @@ const deleteLambdaStreamEventSourceMapping = async (year: number | string, quart
     // Delete all event source mappings found related to this table
     await Promise.all(
       (eventSourceMappings.EventSourceMappings ?? []).map(mapping => {
-        if (!mapping.UUID) return new Promise(resolve => { resolve() })
+        if (!mapping.UUID) return new Promise(resolve => { resolve(null) })
         return lambda.deleteEventSourceMapping({ UUID: mapping.UUID }).promise()
       })
     )
