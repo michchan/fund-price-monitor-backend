@@ -47,7 +47,8 @@ const constructQuarterlyEventRules = (
     notifyQuarterly,
     createTable,
     updateTable,
-  }: Pick<Handlers, 'notifyQuarterly' | 'createTable' | 'updateTable'>,
+    detailsScrapers,
+  }: Pick<Handlers, 'notifyQuarterly' | 'createTable' | 'updateTable' | 'detailsScrapers'>,
 ) => {
   // Run every END of a quarter
   // At 15:00 UTC, on the 28th day, in March, June, September and December
@@ -56,6 +57,13 @@ const constructQuarterlyEventRules = (
   })
   quarterNearEndRule.addTarget(new targets.LambdaFunction(createTable))
   quarterNearEndRule.addTarget(new targets.LambdaFunction(notifyQuarterly))
+  // At 20:00 UTC, on the 28th day, in March, June, September and December
+  const quarterAfterCreateRule = new events.Rule(scope, 'QuarterAfterCreateRule', {
+    schedule: events.Schedule.expression('cron(0 20 28 3,6,9,12 ? *)'),
+  })
+  detailsScrapers.forEach(detailScraper => quarterAfterCreateRule.addTarget(
+    new targets.LambdaFunction(detailScraper)
+  ))
 
   // Run every START of a quarter
   // At 00:00AM UTC, on the 1st day, in January, April, July and October
