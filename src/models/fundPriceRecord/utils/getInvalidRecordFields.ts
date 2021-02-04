@@ -21,18 +21,21 @@ function getInvalidRecordFields <
   return Object.keys(record)
     .filter(key => {
       const value = record[key as K<FT, RT>]
-      switch (key) {
-        case 'company': return isValidCompany(value as string)
-        case 'code': return isStr(value)
-        case 'updatedDate': return isValidDate(value as string)
-        case 'price': return isNum(value)
-        case 'priceChangeRate': return isNullOrUndef(value) || isNum(value)
-        case 'riskLevel': return isValidRiskLevel(value as string)
-        case 'time': return isISOTimestamp(value as string)
-        case 'fundType': return isValidFundType(value as string)
-        default:
-          return true
-      }
+      const isValid = (() => {
+        switch (key) {
+          case 'company': return isValidCompany(value as string)
+          case 'code': return isStr(value)
+          case 'updatedDate': return isValidDate(value as string)
+          case 'price': return isNum(value)
+          case 'priceChangeRate': return isNullOrUndef(value) || isNum(value)
+          case 'riskLevel': return isValidRiskLevel(value as string)
+          case 'time': return isISOTimestamp(value as string)
+          case 'fundType': return isValidFundType(value as string)
+          default:
+            return true
+        }
+      })()
+      return !isValid
     }) as K<FT, RT>[]
 }
 export default getInvalidRecordFields
