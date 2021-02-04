@@ -1,6 +1,7 @@
 import puppeteer = require('puppeteer')
 import languages from 'src/models/fundPriceRecord/constants/languages'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
+import pick from 'lodash/pick'
 
 import FundDetails, { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
 import FundPriceRecord, {
@@ -14,12 +15,14 @@ import retryWithDelay from '../helpers/retryWithDelay'
 const VIEW_ID = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
 
 type TRec = FundPriceRecord<'mpf', 'record'>
+type ScrapedRec = TRec & FundDetails
+
 type RiskLevelIndicatorImageNamesMap = {
   [key in TRec['riskLevel']]: string[]
 }
 
 // Have to be same scope
-const getRecords = (viewId: string): TRec[] => {
+const getRecords = (viewId: string, lng: Languages): ScrapedRec[] => {
   const company: CompanyType = 'manulife'
   const fundType: FundType = 'mpf'
   const recordType: RecordType = 'record'
@@ -35,7 +38,7 @@ const getRecords = (viewId: string): TRec[] => {
   const tableRows: NodeListOf<HTMLTableRowElement> = document
     .querySelectorAll(`${viewId}_\\:mainContent\\:datat\\:tbody_element > tr`)
 
-  const mapRow = (row: HTMLTableRowElement): TRec => {
+  const mapRow = (row: HTMLTableRowElement): ScrapedRec => {
     // Get table cells list
     const dataCells = row.children as HTMLCollectionOf<HTMLTableDataCellElement>
     const code = dataCells[0].innerText.trim().replace(/\s|_/g, '')
@@ -56,30 +59,11 @@ const getRecords = (viewId: string): TRec[] => {
       code,
       // Replace 'slashes' with 'hyphens'
       updatedDate: dataCells[2].innerText.trim().replace(/\//g, '-'),
-      // Derive price
       price,
-      // Derive riskLevel
       riskLevel,
       time,
       fundType,
       recordType,
-    }
-  }
-  return Array.from(tableRows).map(mapRow)
-}
-
-const getDetails = (viewId: string, lng: Languages): FundDetails[] => {
-  const company: CompanyType = 'manulife'
-  // Query table rows nodes
-  const tableRows: NodeListOf<HTMLTableRowElement> = document
-    .querySelectorAll(`${viewId}_\\:mainContent\\:datat\\:tbody_element > tr`)
-  return Array.from(tableRows).map((row: HTMLTableRowElement): FundDetails => {
-    // Get table cells list
-    const dataCells = row.children as HTMLCollectionOf<HTMLTableDataCellElement>
-    const code = dataCells[0].innerText.trim().replace(/\s|_/g, '')
-    return {
-      company,
-      code,
       name: { [lng]: dataCells[1].innerText.trim() } as FundDetails['name'],
       // Derive initialPrice and launchedDate
       ...(() => {
@@ -93,7 +77,8 @@ const getDetails = (viewId: string, lng: Languages): FundDetails[] => {
         }
       })(),
     }
-  })
+  }
+  return Array.from(tableRows).map(mapRow)
 }
 
 const evaluateData = async <T extends TRec | FundDetails> (
@@ -138,15 +123,33 @@ const navigateToPage = async (page: puppeteer.Page, lng: Languages) => {
 export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
   const lng: Languages = 'zh_HK'
   await navigateToPage(page, lng)
-  return evaluateData(page, getRecords, lng)
+  const records = await evaluateData(page, getRecords, lng)
+  return records.map(rec => pick(rec, [
+    'company',
+    'code',
+    'updatedDate',
+    'price',
+    'riskLevel',
+    'time',
+    'fundType',
+    'recordType',
+  ]))
 }
 
 export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]> => {
   const batches = await pipeAsync<FundDetails[][]>(
     ...languages.map(lng => async (input: FundDetails[][] = []) => {
       await navigateToPage(page, lng)
-      const records = await evaluateData(page, getDetails, lng)
-      return [...input, records]
+      const records = await evaluateData(page, getRecords, lng)
+      return [...input, records.map(rec => pick(rec, [
+        'company',
+        'code',
+        'name',
+        'initialPrice',
+        'launchedDate',
+        'riskLevel',
+        'fundType',
+      ]))]
     })
   )([])
   return mapAndReduceFundDetailsBatches(batches)

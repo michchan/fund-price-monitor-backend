@@ -45,6 +45,6 @@ export interface FundPriceRecordWithDetails <
   RT extends RecordType = RecordType
 > extends
   FundPriceRecord<FT, RT>,
-  Omit<FundDetails, 'company' | 'code'> {}
+  Omit<FundDetails<FT>, 'company' | 'code'> {}
 
 export default FundPriceRecord

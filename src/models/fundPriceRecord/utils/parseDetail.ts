@@ -13,6 +13,8 @@ const parseDetail = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundDe
     [attr.NAME]: name,
     [attr.INITIAL_PRICE]: initialPrice,
     [attr.LAUNCHED_DATE]: launchedDate,
+    [attr.FUND_TYPE]: fundType,
+    [attr.RISK_LEVEL]: riskLevel,
   } = attributeMap as unknown as FundPriceRecordAttributeMap
 
   const [company, code] = timeSK.split('_').slice(1) as [CompanyType, string]
@@ -23,6 +25,8 @@ const parseDetail = (attributeMap: DynamoDB.DocumentClient.AttributeMap): FundDe
     name,
     initialPrice,
     launchedDate,
+    fundType,
+    riskLevel,
   }
 }
 
