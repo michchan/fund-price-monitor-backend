@@ -14,8 +14,8 @@ import retryWithDelay from '../helpers/retryWithDelay'
 const VIEW_ID = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
 
 type TRec = FundPriceRecord<'mpf', 'record'>
-interface RiskLevlIndicatorImageNameMap {
-  [key: string]: TRec['riskLevel'];
+type RiskLevelIndicatorImageNamesMap = {
+  [key in TRec['riskLevel']]: string[]
 }
 
 // Have to be same scope
@@ -24,21 +24,18 @@ const getRecords = (viewId: string): TRec[] => {
   const fundType: FundType = 'mpf'
   const recordType: RecordType = 'record'
   // Map gif name to risk level
-  const riskLevelIndicatorImageNameMap: { [key: string]: TRec['riskLevel'] } = {
-    'v.gif': 'veryLow',
-    'w.gif': 'low',
-    'x.gif': 'neutral',
-    'y.gif': 'high',
-    'z.gif': 'veryHigh',
+  const riskLevelIndicatorImageNamesMap: RiskLevelIndicatorImageNamesMap = {
+    veryLow: ['v.gif', 'vc.gif'],
+    low: ['w.gif', 'wc.gif'],
+    neutral: ['x.gif', 'xc.gif'],
+    high: ['y.gif', 'yc.gif'],
+    veryHigh: ['z.gif', 'zc.gif'],
   }
   const time = new Date().toISOString()
   const tableRows: NodeListOf<HTMLTableRowElement> = document
     .querySelectorAll(`${viewId}_\\:mainContent\\:datat\\:tbody_element > tr`)
 
-  const getRowMapper = (
-    riskLevelIndicatorImageNameMap: RiskLevlIndicatorImageNameMap,
-    time: string,
-  ) => (row: HTMLTableRowElement): TRec => {
+  const mapRow = (row: HTMLTableRowElement): TRec => {
     // Get table cells list
     const dataCells = row.children as HTMLCollectionOf<HTMLTableDataCellElement>
     const code = dataCells[0].innerText.trim().replace(/\s|_/g, '')
@@ -49,9 +46,10 @@ const getRecords = (viewId: string): TRec[] => {
     const riskLevel = (() => {
       const riskIndicatorImg = dataCells[4].querySelector('img')
       // Find risk level key
-      const key = Object.keys(riskLevelIndicatorImageNameMap)
-        .find(name => riskIndicatorImg?.src.includes(name)) as keyof RiskLevlIndicatorImageNameMap
-      return riskLevelIndicatorImageNameMap[key]
+      return Object.keys(riskLevelIndicatorImageNamesMap)
+        .find(riskLevel => riskLevelIndicatorImageNamesMap[riskLevel as TRec['riskLevel']].some(
+          val => riskIndicatorImg?.src?.includes(val)
+        )) as keyof RiskLevelIndicatorImageNamesMap
     })()
     return {
       company,
@@ -67,7 +65,7 @@ const getRecords = (viewId: string): TRec[] => {
       recordType,
     }
   }
-  return Array.from(tableRows).map(getRowMapper(riskLevelIndicatorImageNameMap, time))
+  return Array.from(tableRows).map(mapRow)
 }
 
 const getDetails = (viewId: string, lng: Languages): FundDetails[] => {
