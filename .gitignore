@@ -12,6 +12,9 @@ node_modules
 .cdk.staging
 cdk.out
 
+# Ignore AWS-SAM
+.aws-sam/*
+
 # Parcel default cache directory
 .parcel-cache
 
