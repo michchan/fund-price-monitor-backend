@@ -27,7 +27,7 @@
     "deploy": "cdk deploy FundPriceMonitorBackendStack --require-approval never",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "eslint:fix": "npm run eslint -- --fix",
-    "invoke": "npm run template && sam local invoke --profile=$AWS_PROFILE",
+    "invoke": "sam local invoke --profile=$AWS_PROFILE",
     "rm-scrapers-cache": "ts-node scripts/removeScrapersCache",
     "start:api": "sam local start-api --profile=$AWS_PROFILE",
     "template": "npm run build && cdk synth --no-staging > template.yaml --profile=$AWS_PROFILE",
