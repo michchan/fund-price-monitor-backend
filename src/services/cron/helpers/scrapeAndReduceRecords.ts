@@ -5,6 +5,7 @@ import launchPuppeteerBrowserSession, {
 import logObj from 'src/helpers/logObj'
 import FundPriceRecord, { CompanyType, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import getCompaniesFromRecords from 'src/models/fundPriceRecord/utils/getCompaniesFromRecords'
+import getInvalidRecordFields from 'src/models/fundPriceRecord/utils/getInvalidRecordFields'
 import takeUpdatedRecords from 'src/models/fundPriceRecord/utils/takeUpdatedRecords'
 
 type RT = FundPriceRecord<FundType, 'record'>
@@ -12,8 +13,9 @@ type RT = FundPriceRecord<FundType, 'record'>
 const validateRecords = (records: RT[]): void => {
   // Throw an error if any of the fields got undefined (not scraped properly)
   for (const rec of records) {
-    for (const [key, value] of Object.entries(rec))
-      if (value === undefined) throw new Error(`${key} undefined from scraped data`)
+    const invalidFields = getInvalidRecordFields(rec)
+    if (invalidFields.length > 0)
+      throw new Error(`Invalid fields from scraped data: ${invalidFields.join(', ')}`)
   }
 }
 
