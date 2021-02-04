@@ -1,18 +1,26 @@
 {
   "name": "fund-price-monitor-backend",
-  "version": "0.45.4",
+  "version": "0.46.0",
   "bin": {
     "fund-price-monitor-backend": "bin/fund-price-monitor-backend.ts"
   },
   "watch": {
     "build": {
-      "patterns": ["src", "construct", "scripts"],
+      "patterns": [
+        "src",
+        "construct",
+        "scripts"
+      ],
       "extensions": "ts",
       "ignore": "src/services/cron/handlers/__*.ts",
       "quiet": false
     },
     "build:dev": {
-      "patterns": ["src", "construct", "scripts"],
+      "patterns": [
+        "src",
+        "construct",
+        "scripts"
+      ],
       "extensions": "ts",
       "quiet": false
     }
@@ -20,7 +28,7 @@
   "scripts": {
     "analyze": "webpack-bundle-analyzer",
     "build": "npm run build:scrapers && tsc && webpack && npm run rm-scrapers-cache",
-    "build:dev": "tsc && webpack", 
+    "build:dev": "tsc && webpack",
     "build:scrapers": "ts-node scripts/buildScrapers",
     "cdk": "cdk",
     "clear-build-cache": "rm -rf ./build && rm -rf ./bundles",
