@@ -4,21 +4,37 @@
   "bin": {
     "fund-price-monitor-backend": "bin/fund-price-monitor-backend.ts"
   },
+  "watch": {
+    "build": {
+      "patterns": ["src", "construct", "scripts"],
+      "extensions": "ts",
+      "ignore": "src/services/cron/handlers/__*.ts",
+      "quiet": false
+    },
+    "build:dev": {
+      "patterns": ["src", "construct", "scripts"],
+      "extensions": "ts",
+      "quiet": false
+    }
+  },
   "scripts": {
     "analyze": "webpack-bundle-analyzer",
     "build": "npm run build:scrapers && tsc && webpack && npm run rm-scrapers-cache",
+    "build:dev": "tsc && webpack", 
     "build:scrapers": "ts-node scripts/buildScrapers",
     "cdk": "cdk",
     "clear-build-cache": "rm -rf ./build && rm -rf ./bundles",
     "deploy": "cdk deploy FundPriceMonitorBackendStack --require-approval never",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "eslint:fix": "npm run eslint -- --fix",
-    "invoke": "npm run template && sam local invoke",
+    "invoke": "npm run template && sam local invoke --profile=$AWS_PROFILE",
     "rm-scrapers-cache": "ts-node scripts/removeScrapersCache",
-    "start-api": "sam local start-api",
-    "template": "npm run build && cdk synth --no-staging > template.yaml",
+    "start:api": "sam local start-api --profile=$AWS_PROFILE",
+    "template": "npm run build && cdk synth --no-staging > template.yaml --profile=$AWS_PROFILE",
     "test": "jest",
-    "watch": "tsc --watch --noemit"
+    "watch": "npm-watch build:dev",
+    "watch:all": "npm-watch build",
+    "watch:tsc": "tsc --watch --noemit"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.83.0",
@@ -30,11 +46,12 @@
     "@types/node": "14.14.20",
     "@types/puppeteer": "^5.4.2",
     "aws-cdk": "1.83.0",
-    "aws-sdk": "2.824.0",
     "aws-lambda-mock-context": "^3.2.1",
+    "aws-sdk": "2.824.0",
     "eslint": "^7.11.0",
     "file-loader": "^6.0.0",
     "jest": "^26.6.1",
+    "npm-watch": "0.7.0",
     "ts-jest": "^26.4.2",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
