@@ -8,6 +8,7 @@ import FundPriceRecord, { RiskLevel } from '../FundPriceRecord.type'
 import TableRange from '../TableRange.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import FundPriceChangeRate from '../FundPriceChangeRate.type'
+import parseRecord from '../utils/parseRecord'
 
 const EXP_RISK_LEVEL_PK = ':riskLevel' as string
 const EXP_TIME_SK = ':timeSK' as string
@@ -16,6 +17,8 @@ export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
 type TVariants = FundPriceRecord | FundPriceChangeRate
+
+export type Parser<T> = (attributes: DocumentClient.AttributeMap) => T
 export interface Output <T extends TVariants = FundPriceRecord> extends O {
   parsedItems: T[];
 }
@@ -26,7 +29,7 @@ export interface Options <T extends TVariants = FundPriceRecord> {
   at?: TableRange;
   input?: PartialInput | ((defaultInput: Input) => PartialInput);
   /** Default to parseRecord */
-  parser?: ((attributes: DocumentClient.AttributeMap) => T);
+  parser?: Parser<T>;
 }
 const queryItemsByRiskLevel = async <T extends TVariants = FundPriceRecord> (
   riskLevel: RiskLevel,
@@ -35,8 +38,7 @@ const queryItemsByRiskLevel = async <T extends TVariants = FundPriceRecord> (
     shouldQueryAll,
     at,
     input = {},
-    // @ts-expect-error: @TODO: Fix type
-    parser = parseRecord,
+    parser = parseRecord as Parser<T>,
   }: Options<T> = {},
 ): Promise<Output<T>> => {
   const defaultInput: Input = {

@@ -17,6 +17,8 @@ export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
 type TVariants = FundPriceRecord | FundPriceChangeRate
+
+export type Parser<T> = (attributes: DocumentClient.AttributeMap) => T
 export interface Output <T extends TVariants = FundPriceRecord> extends O {
   parsedItems: T[];
 }
@@ -27,7 +29,7 @@ export interface Options <T extends TVariants = FundPriceRecord> {
   at?: TableRange;
   input?: PartialInput | ((defaultInput: Input) => PartialInput);
   /** Default to parseRecord */
-  parser?: ((attributes: DocumentClient.AttributeMap) => T);
+  parser?: Parser<T>;
 }
 const queryItemsByCompany = async <T extends TVariants = FundPriceRecord> (
   company: CompanyType,
@@ -36,8 +38,7 @@ const queryItemsByCompany = async <T extends TVariants = FundPriceRecord> (
     shouldQueryAll,
     at,
     input = {},
-    // @ts-expect-error: @TODO: Fix type
-    parser = parseRecord,
+    parser = parseRecord as Parser<T>,
   }: Options<T> = {},
 ): Promise<Output<T>> => {
   const recordType: RecordType = shouldQueryLatest ? 'latest' : 'record'
