@@ -33,7 +33,6 @@ interface FundPriceRecord <
   price: number;
   /** Change rate compared to previous recorded time */
   priceChangeRate?: number;
-  /** YYYY-MM-DD */
   riskLevel: RiskLevel;
   /** Record time in ISO timestamp */
   time: string;
