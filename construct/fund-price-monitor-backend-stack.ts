@@ -2,22 +2,22 @@ import * as cdk from '@aws-cdk/core'
 import * as lambda from '@aws-cdk/aws-lambda'
 
 import cron, { Output as CronOutput } from './services/cron'
-import api, { Output as ApiOutput } from './services/api'
+import fundprices, { Output as FundpricesOutput } from './services/fundprices'
 import logging from './services/logging'
 import migration, { Output as MigrationOutput } from './services/migration'
 import runtimeEnv from '../src/lib/env'
 
 interface GroupAllHandlersOptions {
-  apiHandlers: ApiOutput['handlers'];
+  fundpricesHandlers: FundpricesOutput['handlers'];
   cronHandlers: CronOutput['handlers'];
   migrationHandlers: MigrationOutput['handlers'];
 }
 const groupAllHandlers = ({
-  apiHandlers,
+  fundpricesHandlers,
   cronHandlers,
   migrationHandlers,
 }: GroupAllHandlersOptions): lambda.Function[] => [
-  ...Object.values(apiHandlers),
+  ...Object.values(fundpricesHandlers),
   ...Object.values(migrationHandlers),
   ...Object.values(cronHandlers)
     .reduce((
@@ -38,14 +38,14 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
 
     // Initialize cron service
     const { handlers: cronHandlers } = cron.construct(this)
-    // Initialize API service
-    const { handlers: apiHandlers } = api.construct(this)
+    // Initialize fundprices service
+    const { handlers: fundpricesHandlers } = fundprices.construct(this)
     // Initialize migration service
     const { handlers: migrationHandlers } = migration.construct(this)
 
     const handlers = groupAllHandlers({
       cronHandlers,
-      apiHandlers,
+      fundpricesHandlers,
       migrationHandlers,
     })
     // Initialize logging service

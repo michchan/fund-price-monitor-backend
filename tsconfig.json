@@ -33,5 +33,5 @@
     "baseUrl": "./"
   },
   "exclude": ["node_modules", "cdk.out", "construct"],
-  "include": ["src", "construct/lib/grantCloudWatchLogGroupPermissions.ts", "construct/constants.ts", "construct/services/api/index.ts", "construct/services/cron/index.ts", "construct/services/migration/index.ts", "construct/fund-price-monitor-backend-stack.ts"]
+  "include": ["src", "construct/lib/grantCloudWatchLogGroupPermissions.ts", "construct/constants.ts", "construct/services/fundprices/index.ts", "construct/services/cron/index.ts", "construct/services/migration/index.ts", "construct/fund-price-monitor-backend-stack.ts"]
 }

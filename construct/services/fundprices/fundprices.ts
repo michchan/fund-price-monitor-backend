@@ -4,7 +4,7 @@ import constructIamRole from './constructs/constructIamRole'
 import constructLamdas, { Handlers } from './constructs/constructLambdas'
 import constructApiGateway from './constructs/constructApiGateway'
 
-const SERVICE_PATHNAME = 'api'
+const SERVICE_PATHNAME = 'fundprices'
 
 export interface Output {
   handlers: Handlers;
@@ -17,5 +17,5 @@ function construct (scope: cdk.Construct): Output {
   return { handlers }
 }
 
-const api = { construct } as const
-export default api
+const fundprices = { construct } as const
+export default fundprices

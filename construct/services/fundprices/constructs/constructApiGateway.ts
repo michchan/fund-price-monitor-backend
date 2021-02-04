@@ -109,8 +109,8 @@ const intergrateResourcesHandlers = (resources: Resources, handlers: Handlers): 
 }
 
 const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => {
-  const api = new RestApi(scope, 'MPFFundPricesApi', {
-    restApiName: 'MPF Fund Prices Service',
+  const api = new RestApi(scope, 'FundPricesApi', {
+    restApiName: 'Fund Prices Service',
   })
   const resources = constructEndpoints(api)
   intergrateResourcesHandlers(resources, handlers)
