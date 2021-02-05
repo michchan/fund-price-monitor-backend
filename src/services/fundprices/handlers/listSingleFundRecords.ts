@@ -11,6 +11,8 @@ import validateTimestamp from '../validators/validateTimestamp'
 import querySingleFundRecords from 'src/models/fundPriceRecord/io/querySingleFundRecords'
 import validateCode from '../validators/validateCode'
 import validateTimestampRange from '../validators/validateTimestampRange'
+import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
+import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 
 export type Res = ListResponse<FundPriceRecord>
 
@@ -50,7 +52,6 @@ export const handler: APIGatewayProxyHandler = async event => {
     } = queryParams
 
     /** ----------- Validations ----------- */
-
     validateCompany(company)
     validateCode(code)
     if (startTime) validateTimestamp(startTime, 'startTime')
@@ -59,18 +60,21 @@ export const handler: APIGatewayProxyHandler = async event => {
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
 
     /** ----------- Query ----------- */
-
-    // Query
-    const output = await querySingleFundRecords(company, code, {
-      shouldQueryLatest,
-      shouldQueryAll: false,
-      startTime,
-      endTime,
-      input: { ExclusiveStartKey: exclusiveStartKey },
-    })
+    const [recordsOutput, detailsOutput] = await Promise.all([
+      querySingleFundRecords(company, code, {
+        shouldQueryLatest,
+        shouldQueryAll: false,
+        startTime,
+        endTime,
+        input: { ExclusiveStartKey: exclusiveStartKey },
+      }),
+      queryDetails({ company, shouldQueryAll: true }),
+    ])
+    // Merge records and details
+    const parsedItems = mergeItemsWithDetails(recordsOutput.parsedItems, detailsOutput.parsedItems)
 
     // Send back successful response
-    return createReadResponse(null, output)
+    return createReadResponse(null, { ...recordsOutput, parsedItems })
   } catch (error) {
     // Send back failed response
     return createReadResponse(error)

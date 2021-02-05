@@ -20,15 +20,16 @@ export interface Output extends O {
   parsedItems: FundDetails[];
 }
 export interface Options {
+  company?: CompanyType;
   shouldQueryAll?: boolean;
   /** Default to current quarter of the current year */
   at?: TableRange;
   input?: PartialInput | ((defaultInput: Input) => PartialInput);
 }
 
-const queryDetailsByCompany = async (
-  company: CompanyType,
+const queryDetails = async (
   {
+    company,
     shouldQueryAll,
     at,
     input = {},
@@ -37,7 +38,7 @@ const queryDetailsByCompany = async (
   const defaultInput: Input = {
     ExpressionAttributeValues: {
       [EXP_COM_CODE_PK]: topLevelKeysValues.DETAILS_PK,
-      [EXP_TIME_SK_PFX]: `${topLevelKeysValues.RECORD_DETAILS_SK_PFX}_${company}`,
+      [EXP_TIME_SK_PFX]: `${topLevelKeysValues.RECORD_DETAILS_SK_PFX}_${company ?? ''}`,
     },
     KeyConditionExpression: [
       `${attrs.COMPANY_CODE} = ${EXP_COM_CODE_PK}`,
@@ -55,4 +56,4 @@ const queryDetailsByCompany = async (
   }
 }
 
-export default queryDetailsByCompany
+export default queryDetails

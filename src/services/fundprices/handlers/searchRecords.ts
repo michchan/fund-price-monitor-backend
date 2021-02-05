@@ -15,6 +15,8 @@ import createParameterErrMsg from '../helpers/createParameterErrMsg'
 import mapQueryToFilterExpressions from '../helpers/mapQueryToFilterExpressions'
 import validateYearQuarter from '../validators/validateYearQuarter'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
+import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
+import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 
 const EXP_TIME_SK_PFX = ':timeSK_prefix' as string
 
@@ -61,21 +63,26 @@ export const handler: APIGatewayProxyHandler = async event => {
 
     const recordType: RecordType = shouldQueryLatest ? 'latest' : 'record'
     // Query
-    const output = await scanItems({
-      ExclusiveStartKey: exclusiveStartKey,
-      ExpressionAttributeNames: expNames,
-      ExpressionAttributeValues: {
-        ...expValues,
-        [EXP_TIME_SK_PFX]: recordType,
-      },
-      FilterExpression: [
-        beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),
-        ...filterExp,
-      ].join(' AND '),
-    }, false, tableRange)
+    const [recordsOutput, detailsOutput] = await Promise.all([
+      scanItems({
+        ExclusiveStartKey: exclusiveStartKey,
+        ExpressionAttributeNames: expNames,
+        ExpressionAttributeValues: {
+          ...expValues,
+          [EXP_TIME_SK_PFX]: recordType,
+        },
+        FilterExpression: [
+          beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),
+          ...filterExp,
+        ].join(' AND '),
+      }, false, tableRange),
+      queryDetails({ shouldQueryAll: true }),
+    ])
+    // Merge records and details
+    const parsedItems = mergeItemsWithDetails(recordsOutput.parsedItems, detailsOutput.parsedItems)
 
     // Send back successful response
-    return createReadResponse(null, output)
+    return createReadResponse(null, { ...recordsOutput, parsedItems })
   } catch (error) {
     // Send back failed response
     return createReadResponse(error)

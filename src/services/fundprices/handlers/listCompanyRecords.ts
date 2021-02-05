@@ -19,6 +19,8 @@ import validateCompany from '../validators/validateCompany'
 import validateYearQuarter from '../validators/validateYearQuarter'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
+import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
+import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 
 const EXP_COM = ':com_code'
 
@@ -112,16 +114,21 @@ export const handler: APIGatewayProxyHandler = async event => {
     // Get table range
     const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
     // Get query handler by conditions
-    const output = await queryByRiskLevel({
-      company,
-      tableRange,
-      exclusiveStartKey,
-      riskLevel,
-      shouldQueryLatest,
-    })
+    const [recordsOutput, detailsOutput] = await Promise.all([
+      queryByRiskLevel({
+        company,
+        tableRange,
+        exclusiveStartKey,
+        riskLevel,
+        shouldQueryLatest,
+      }),
+      queryDetails({ company, shouldQueryAll: true }),
+    ])
+    // Merge records and details
+    const parsedItems = mergeItemsWithDetails(recordsOutput.parsedItems, detailsOutput.parsedItems)
 
     // Send back successful response
-    return createReadResponse(null, output)
+    return createReadResponse(null, { ...recordsOutput, parsedItems })
   } catch (error) {
     // Send back failed response
     return createReadResponse(error)

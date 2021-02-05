@@ -14,6 +14,8 @@ import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import logObj from 'src/helpers/logObj'
+import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
+import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 
 export type Res = ListResponse<FundPriceChangeRate>
 
@@ -89,14 +91,19 @@ export const handler: APIGatewayProxyHandler = async event => {
 
     logObj('Params and input: ', { periodType, period, yearQuarter, tableRange, exclusiveStartKey })
     // Query
-    const output = await queryPeriodPriceChangeRate(company, periodType, period, {
-      shouldQueryAll: false,
-      at: tableRange,
-      input: { ExclusiveStartKey: exclusiveStartKey },
-    })
+    const [recordsOutput, detailsOutput] = await Promise.all([
+      queryPeriodPriceChangeRate(company, periodType, period, {
+        shouldQueryAll: false,
+        at: tableRange,
+        input: { ExclusiveStartKey: exclusiveStartKey },
+      }),
+      queryDetails({ company, shouldQueryAll: true }),
+    ])
+    // Merge records and details
+    const parsedItems = mergeItemsWithDetails(recordsOutput.parsedItems, detailsOutput.parsedItems)
 
     // Send back successful response
-    return createReadResponse(null, output)
+    return createReadResponse(null, { ...recordsOutput, parsedItems })
   } catch (error) {
     // Send back failed response
     return createReadResponse(error)
