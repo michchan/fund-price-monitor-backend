@@ -10,6 +10,7 @@ import between from 'src/lib/AWS/dynamodb/expressionFunctions/between'
 import getCompanyCodePK from '../utils/getCompanyCodePK'
 import getCompositeSK from '../utils/getCompositeSK'
 import FundPriceChangeRate from '../FundPriceChangeRate.type'
+import parseRecord from '../utils/parseRecord'
 
 const EXP_COM_CODE_PK = ':company_code' as string
 const EXP_TIME_SK_PFX = ':time_SK' as string
@@ -20,6 +21,8 @@ export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
 type TVariants = FundPriceRecord | FundPriceChangeRate
+export type Parser <T> = (attributes: DocumentClient.AttributeMap) => T
+
 export interface Output <T extends TVariants = FundPriceRecord> extends O {
   parsedItems: T[];
 }
@@ -31,7 +34,7 @@ export interface Options <T extends TVariants = FundPriceRecord> {
   endTime?: string;
   input?: PartialInput | ((defaultInput: Input) => PartialInput);
   /** Default to parseRecord */
-  parser?: ((attributes: DocumentClient.AttributeMap) => T);
+  parser?: Parser<T>;
 }
 
 const getTimeSKValues = (
@@ -69,8 +72,7 @@ const querySingleFundRecords = async <T extends TVariants = FundPriceRecord> (
     startTime,
     endTime,
     input = {},
-    // @ts-expect-error: @TODO: Fix type
-    parser = parseRecord,
+    parser = parseRecord as Parser<T>,
   }: Options<T> = {},
 ): Promise<Output<T>> => {
   const startDate = startTime ? new Date(startTime) : new Date()
