@@ -22,6 +22,7 @@ interface FundPriceChangeRate <
   /** --------- Aggregated fields --------- */
   priceChangeRate: number;
   priceList: number[];
+  priceTimestampList: string[];
 }
 
 export interface FundPriceChangeRateWithDetails <

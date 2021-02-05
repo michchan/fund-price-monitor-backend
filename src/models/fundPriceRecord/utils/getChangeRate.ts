@@ -5,6 +5,7 @@ import FundPriceChangeRate, { AggregatedRecordType } from '../FundPriceChangeRat
 
 export interface Options {
   prevPriceList: number[];
+  prevPriceTimestampList: string[];
   /** Default to 'prepend' */
   priceListMode: 'append' | 'prepend';
   aggregateDate?: Date;
@@ -15,20 +16,30 @@ const getChangeRate = (
   latestPrice: number,
   {
     prevPriceList = [],
+    prevPriceTimestampList = [],
     priceListMode = 'prepend',
     aggregateDate,
   }: Options,
 ): FundPriceChangeRate => {
   // Get date from basedRecord time
   const date = new Date(basedRecord.time)
+  const time = (aggregateDate ?? new Date()).toISOString()
+
+  const hasNoLatestPrice = !latestPrice || latestPrice <= 0
 
   // Get next price list
   const priceList = (() => {
-    if (!latestPrice || latestPrice <= 0) return prevPriceList
-
+    if (hasNoLatestPrice) return prevPriceList
     return priceListMode === 'prepend'
       ? [...prevPriceList, latestPrice]
       : [latestPrice, ...prevPriceList]
+  })()
+
+  const priceTimestampList = (() => {
+    if (hasNoLatestPrice) return prevPriceTimestampList
+    return priceListMode === 'prepend'
+      ? [...prevPriceTimestampList, time]
+      : [time, ...prevPriceTimestampList]
   })()
 
   const [startPrice] = priceList
@@ -45,7 +56,8 @@ const getChangeRate = (
     price: latestPrice,
     priceChangeRate,
     priceList,
-    time: (aggregateDate ?? new Date()).toISOString(),
+    priceTimestampList,
+    time,
   }
 }
 

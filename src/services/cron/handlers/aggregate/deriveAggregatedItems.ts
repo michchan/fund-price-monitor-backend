@@ -34,6 +34,7 @@ const deriveAggregatedItems = (
     const prevChangeRate = prevItems.find(chRate => chRate.code === item.code)
     const nextChangeRate = getChangeRate(prevChangeRate ?? item, type, item.price, {
       prevPriceList: prevChangeRate?.priceList ?? [],
+      prevPriceTimestampList: prevChangeRate?.priceTimestampList ?? [],
       priceListMode: 'prepend',
       aggregateDate: date,
     })

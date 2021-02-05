@@ -15,6 +15,7 @@ const parseChangeRate = (
     [attr.TIME_SK]: timeSK,
     [attr.PRICE]: price,
     [attr.PRICE_LIST]: priceList = [],
+    [attr.PRICE_TIMESTAMP_LIST]: priceTimestampList = [],
     [attr.PRICE_CHANGE_RATE]: priceChangeRate,
     [attr.PERIOD]: period = '',
     [attr.UPDATED_DATE]: updatedDate,
@@ -29,6 +30,7 @@ const parseChangeRate = (
     price,
     priceChangeRate,
     priceList: priceList.map(li => li),
+    priceTimestampList,
     // Get the last composite segment of `timeSK`
     time: timeSK.split('@').pop() || '',
     updatedDate,

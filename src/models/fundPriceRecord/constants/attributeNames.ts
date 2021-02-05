@@ -19,6 +19,7 @@ const attributeNames = {
   PERIOD: 'period',
   PRICE_CHANGE_RATE: 'priceChangeRate',
   PRICE_LIST: 'priceList',
+  PRICE_TIMESTAMP_LIST: 'priceTimestampList',
   /** Table-level fields (table details items) */
   COMPANIES: 'companies',
   FUND_TYPES: 'fundTypes',
@@ -46,6 +47,9 @@ export type NumberAttrNameKey = keyof Pick<AttrName,
 export type NumberListAttrNameKey = keyof Pick<AttrName,
 | 'PRICE_LIST'
 >
+export type StringListAttrNameKey = keyof Pick<AttrName,
+| 'PRICE_TIMESTAMP_LIST'
+>
 
 export type FundPriceRecordAttributeMap <FT extends FundType = FundType> = {
   [key in AttrName[StringAttrNameKey]]: string
@@ -54,6 +58,8 @@ export type FundPriceRecordAttributeMap <FT extends FundType = FundType> = {
 } & {
   [key in AttrName[NumberListAttrNameKey]]: number[]
 } & {
+  [key in AttrName[StringListAttrNameKey]]: string[]
+}& {
   [key in AttrName['FUND_TYPE']]: FT
 } & {
   [key in AttrName['RISK_LEVEL']]: RiskLevel

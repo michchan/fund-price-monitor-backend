@@ -15,6 +15,7 @@ const serializeChangeRate = (record: FundPriceChangeRate): DynamoDB.DocumentClie
     code,
     price,
     priceList,
+    priceTimestampList,
     priceChangeRate,
     updatedDate,
     period,
@@ -30,6 +31,7 @@ const serializeChangeRate = (record: FundPriceChangeRate): DynamoDB.DocumentClie
     [attr.PRICE]: price,
     [attr.PRICE_CHANGE_RATE]: priceChangeRate,
     [attr.PRICE_LIST]: priceList,
+    [attr.PRICE_TIMESTAMP_LIST]: priceTimestampList,
   }
 }
 

@@ -42,6 +42,7 @@ const priceChangeRateGSI = createInclusiveGSI({
   attrs.PRICE,
   attrs.UPDATED_DATE,
   attrs.PRICE_LIST,
+  attrs.PRICE_TIMESTAMP_LIST,
 ])
 const recordsByCompanyGSI = createInclusiveGSI({
   IndexName: indexNames.RECORDS_BY_COMPANY,
