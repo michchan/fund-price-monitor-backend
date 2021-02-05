@@ -13,6 +13,8 @@ const serializeFundDetails = (record: FundDetails): DynamoDB.DocumentClient.Attr
     name,
     initialPrice,
     launchedDate,
+    riskLevel,
+    fundType,
   } = record
 
   return {
@@ -21,6 +23,8 @@ const serializeFundDetails = (record: FundDetails): DynamoDB.DocumentClient.Attr
     [attr.NAME]: name,
     [attr.INITIAL_PRICE]: initialPrice,
     [attr.LAUNCHED_DATE]: launchedDate,
+    [attr.RISK_LEVEL]: riskLevel,
+    [attr.FUND_TYPE]: fundType,
   }
 }
 
