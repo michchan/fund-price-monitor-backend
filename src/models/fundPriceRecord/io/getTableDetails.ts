@@ -9,7 +9,6 @@ import attrs from '../constants/attributeNames'
 import topLevelKeysValues from '../constants/topLevelKeysValues'
 import { DynamoDB } from 'aws-sdk'
 import defaultScrapeMeta from '../constants/defaultScrapeMeta'
-import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 
 type SS = DynamoDB.DocumentClient.StringSet
 type MapV = DynamoDB.DocumentClient.MapAttributeValue
@@ -38,7 +37,7 @@ const getTableDetails = async (
     },
     KeyConditionExpression: [
       `${attrs.COMPANY_CODE} = ${EXP_PK}`,
-      beginsWith(attrs.TIME_SK, EXP_SK),
+      `${attrs.TIME_SK} = ${EXP_SK}`,
     ].join(' AND '),
   })
 
@@ -51,7 +50,6 @@ const getTableDetails = async (
   const testScrapeMetaMap = item[attrs.TEST_SCRAPE_META] as MapV | undefined
 
   return {
-    time: item[attrs.TIME_SK].split('@').pop(),
     // Parse sets to array
     companies: companiesSet ? companiesSet.values as CompanyType[] : [],
     fundTypes: fundTypesSet ? fundTypesSet.values as FundType[] : [],

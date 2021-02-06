@@ -7,13 +7,12 @@ import attrs from '../constants/attributeNames'
 import topLevelKeysValues from '../constants/topLevelKeysValues'
 import AWS from 'src/lib/AWS'
 import putItem, { Output as O } from 'src/lib/AWS/dynamodb/putItem'
-import createTableDetailsSK from '../utils/createTableDetailsSK'
 
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
 export interface Output extends O {}
 function createTableDetails (
-  details: Omit<FundPriceTableDetails, 'time'>,
+  details: Omit<FundPriceTableDetails, 'SK'>,
   year: string | number,
   quarter: Quarter,
 ): Promise<Output> {
@@ -22,7 +21,7 @@ function createTableDetails (
     TableName: getTableName(year, quarter),
     Item: {
       [attrs.COMPANY_CODE]: topLevelKeysValues.DETAILS_PK,
-      [attrs.TIME_SK]: createTableDetailsSK(),
+      [attrs.TIME_SK]: topLevelKeysValues.TABLE_DETAILS_SK,
       [attrs.COMPANIES]: companies.length > 0 ? docClient.createSet(companies) : undefined,
       [attrs.FUND_TYPES]: fundTypes.length > 0 ? docClient.createSet(fundTypes) : undefined,
       [attrs.SCRAPE_META]: scrapeMeta,

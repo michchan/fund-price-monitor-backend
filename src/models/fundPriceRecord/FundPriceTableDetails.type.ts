@@ -18,8 +18,6 @@ export interface ScrapeMeta {
   };
 }
 interface FundPriceTableDetails {
-  /** Last updated ISO timestamp */
-  time: string;
   /** Order not preserved */
   companies: CompanyType[];
   /** Order not preserved */
