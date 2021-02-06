@@ -18,6 +18,8 @@ const parseRecord = <FT extends FundType, RT extends RecordType> (
     [attr.RISK_LEVEL]: riskLevel,
     [attr.FUND_TYPE]: fundType,
     [attr.PRICE_CHANGE_RATE]: priceChangeRate,
+    [attr.PREVIOUS_PRICE]: previousPrice,
+    [attr.PREVIOUS_TIME]: previousTime,
   } = attributeMap as unknown as FundPriceRecordAttributeMap<FT>
 
   const timeSKSegments = timeSK.split('_')
@@ -35,6 +37,8 @@ const parseRecord = <FT extends FundType, RT extends RecordType> (
     // Get the first composite segment of `timeSK`
     recordType: timeSKSegments.shift() as RT,
     priceChangeRate,
+    previousPrice,
+    previousTime,
   }
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 import FundDetails from '../FundDetails.type'
 import { CompanyType, FundType, RiskLevel } from '../FundPriceRecord.type'
 
@@ -17,6 +18,8 @@ const attributeNames = {
   INITIAL_PRICE: 'initialPrice',
   /** Top-level fields (aggregate items) */
   PERIOD: 'period',
+  PREVIOUS_PRICE: 'previousPrice',
+  PREVIOUS_TIME: 'previousTime',
   PRICE_CHANGE_RATE: 'priceChangeRate',
   PRICE_LIST: 'priceList',
   PRICE_TIMESTAMP_LIST: 'priceTimestampList',
@@ -38,11 +41,13 @@ export type StringAttrNameKey = keyof Pick<AttrName,
 | 'UPDATED_DATE'
 | 'LAUNCHED_DATE'
 | 'PERIOD'
+| 'PREVIOUS_TIME'
 >
 export type NumberAttrNameKey = keyof Pick<AttrName,
 | 'PRICE'
 | 'INITIAL_PRICE'
 | 'PRICE_CHANGE_RATE'
+| 'PREVIOUS_PRICE'
 >
 export type NumberListAttrNameKey = keyof Pick<AttrName,
 | 'PRICE_LIST'

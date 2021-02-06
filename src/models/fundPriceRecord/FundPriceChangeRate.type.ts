@@ -20,6 +20,7 @@ interface FundPriceChangeRate <
   period: string;
   recordType: RT;
   /** --------- Aggregated fields --------- */
+  /** Change rate compared to previous recorded time */
   priceChangeRate: number;
   priceList: number[];
   priceTimestampList: string[];

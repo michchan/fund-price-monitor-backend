@@ -50,6 +50,8 @@ const recordsByCompanyGSI = createInclusiveGSI({
 }, [
   attrs.PRICE,
   attrs.PRICE_CHANGE_RATE,
+  attrs.PREVIOUS_PRICE,
+  attrs.PREVIOUS_TIME,
   attrs.UPDATED_DATE,
 ])
 const recordsByRiskLevelGSI = createInclusiveGSI({
@@ -58,6 +60,8 @@ const recordsByRiskLevelGSI = createInclusiveGSI({
 }, [
   attrs.PRICE,
   attrs.PRICE_CHANGE_RATE,
+  attrs.PREVIOUS_PRICE,
+  attrs.PREVIOUS_TIME,
   attrs.UPDATED_DATE,
 ])
 

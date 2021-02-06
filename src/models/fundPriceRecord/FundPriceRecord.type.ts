@@ -31,13 +31,15 @@ interface FundPriceRecord <
   updatedDate: string;
   /** Unit price in HKD */
   price: number;
-  /** Change rate compared to previous recorded time */
-  priceChangeRate?: number;
   riskLevel: RiskLevel;
   /** Record time in ISO timestamp */
   time: string;
   fundType: FT;
   recordType: RT;
+  /** --------- 'latest' fields --------- */
+  priceChangeRate?: number;
+  previousPrice?: number;
+  previousTime?: string | null;
 }
 
 export interface FundPriceRecordWithDetails <
