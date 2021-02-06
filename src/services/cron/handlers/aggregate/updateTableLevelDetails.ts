@@ -10,7 +10,7 @@ import AWS from 'src/lib/AWS'
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
 const EXP_COMS = ':companies'
-const EXP_FUND_TYPES = ':fundTYpes'
+const EXP_FUND_TYPES = ':fundTypes'
 
 /**
  * Update table details with records
