@@ -17,20 +17,21 @@ export interface NotificationGenericHandlers {
 }
 const createHandlers = (
   scope: cdk.Construct,
+  idPrefix: string,
   defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
   environment: lambda.FunctionOptions['environment'],
 ): NotificationGenericHandlers => {
-  const notifyOnUpdateHandler = new lambda.Function(scope, 'CronNotifierOnUpdate', {
+  const notifyOnUpdateHandler = new lambda.Function(scope, `${idPrefix}OnUpdate`, {
     ...defaultInput,
     handler: 'notifyOnUpdate.handler',
     environment,
   })
-  const notifyMonthlyHandler = new lambda.Function(scope, 'CronNotifierMonthly', {
+  const notifyMonthlyHandler = new lambda.Function(scope, `${idPrefix}Monthly`, {
     ...defaultInput,
     handler: 'notifyMonthly.handler',
     environment,
   })
-  const notifyQuarterlyHandler = new lambda.Function(scope, 'CronNotifierQuarterly', {
+  const notifyQuarterlyHandler = new lambda.Function(scope, `${idPrefix}Quarterly`, {
     ...defaultInput,
     handler: 'notifyQuarterly.handler',
     environment,
@@ -61,8 +62,8 @@ const constructNotificationHandlers = (
   const environment = getDefaultNotifierEnv(telegramChatId)
   const testEnvironment = getDefaultNotifierEnv(telegramTestChatId)
 
-  const handlers = createHandlers(scope, defaultInput, environment)
-  const testHandlers = createHandlers(scope, defaultInput, testEnvironment)
+  const handlers = createHandlers(scope, 'CronNotifier', defaultInput, environment)
+  const testHandlers = createHandlers(scope, 'CronTestNotifier', defaultInput, testEnvironment)
 
   return {
     ...handlers,
