@@ -95,7 +95,10 @@ const constructScrapingComponents = (
   const aggregators = constructAggregators(scope, getInput(aggregator))
 
   // Grant notifier invoke for each scraper
-  scrapingHandlers.scrapers.forEach(scraper => notifyOnUpdate.grantInvoke(scraper))
+  scrapingHandlers.scrapers.forEach(scraper => {
+    notifyOnUpdate.grantInvoke(scraper)
+    testNotifyOnUpdate.grantInvoke(scraper)
+  })
 
   return {
     handlers: {
