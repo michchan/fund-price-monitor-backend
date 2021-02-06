@@ -16,7 +16,7 @@ export type ItemType =
   | FundPriceChangeRate<FundType>
   | FundPriceRecord<FundType>
 
-const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date: Date) => {
+const queryBySchedule = async (scheduleType: ScheduleType, company: CompanyType, date: Date) => {
   switch (scheduleType) {
     case 'quarterly': {
       const period = getPeriodByRecordType('quarter', date)
@@ -31,11 +31,21 @@ const queryBySchedule = (scheduleType: ScheduleType, company: CompanyType, date:
       return queryPeriodPriceChangeRate(company, 'week', period, priceChangeRateQueryInput)
     }
     case 'onUpdate':
-    default:
-      return queryItemsByCompany(company, {
+    default: {
+      const { parsedItems, ...restOutput } = await queryItemsByCompany(company, {
         shouldQueryAll: true,
         shouldQueryLatest: true,
       })
+      return {
+        ...restOutput,
+        parsedItems: parsedItems.map(({ dayPriceChangeRate, priceChangeRate, ...restItem }) => ({
+          ...restItem,
+          // 'priceChangeRate' will be used for notification,
+          // Use 'dayPriceChangeRate' in prior to 'priceChangeRate' for 'onUpdate' schedule.
+          priceChangeRate: dayPriceChangeRate || priceChangeRate,
+        })),
+      }
+    }
   }
 }
 
