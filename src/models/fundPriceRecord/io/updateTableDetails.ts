@@ -5,6 +5,7 @@ import getTableName from '../utils/getTableName'
 import attrs from '../constants/attributeNames'
 import topLevelKeysValues from '../constants/topLevelKeysValues'
 import updateItem, { Input as I, Output as O } from 'src/lib/AWS/dynamodb/updateItem'
+import createTableDetailsSK from '../utils/createTableDetailsSK'
 
 export interface Input extends Omit<I, 'TableName' | 'Key'> {}
 export interface Output extends O {}
@@ -19,7 +20,7 @@ function updateTableDetails (
     TableName: getTableName(year, quarter),
     Key: {
       [attrs.COMPANY_CODE]: `${topLevelKeysValues.DETAILS_PK}`,
-      [attrs.TIME_SK]: `${topLevelKeysValues.TABLE_DETAILS_SK}`,
+      [attrs.TIME_SK]: createTableDetailsSK(),
     } as DocumentClient.AttributeValue,
   })
 }
