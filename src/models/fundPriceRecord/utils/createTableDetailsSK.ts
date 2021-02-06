@@ -1,4 +1,4 @@
-import topLevelKeysValues from "../constants/topLevelKeysValues"
+import topLevelKeysValues from '../constants/topLevelKeysValues'
 
 const createTableDetailsSK = (time?: string): string => [
   topLevelKeysValues.TABLE_DETAILS_SK,

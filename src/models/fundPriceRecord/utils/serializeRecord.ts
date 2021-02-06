@@ -6,7 +6,7 @@ import getCompositeSK from './getCompositeSK'
 import getCompanyCodePK from './getCompanyCodePK'
 
 /**
- * Serilize a FundPriceRecord to dynamodb item
+ * Serialize a FundPriceRecord to dynamodb item
  */
 const serializeRecord = (record: FundPriceRecord): DynamoDB.DocumentClient.AttributeMap => {
   const {
@@ -15,7 +15,9 @@ const serializeRecord = (record: FundPriceRecord): DynamoDB.DocumentClient.Attri
     updatedDate,
     price,
     priceChangeRate,
+    dayPriceChangeRate,
     previousPrice,
+    previousDayPrice,
     previousTime,
     riskLevel,
     fundType,
@@ -30,8 +32,10 @@ const serializeRecord = (record: FundPriceRecord): DynamoDB.DocumentClient.Attri
     [attr.RISK_LEVEL]: riskLevel,
     [attr.FUND_TYPE]: fundType,
     [attr.PRICE_CHANGE_RATE]: priceChangeRate,
+    [attr.DAY_PRICE_CHANGE_RATE]: dayPriceChangeRate,
     [attr.PREVIOUS_PRICE]: previousPrice,
-    [attr.PREVIOUS_PRICE]: previousTime,
+    [attr.PREVIOUS_DAY_PRICE]: previousDayPrice,
+    [attr.PREVIOUS_TIME]: previousTime,
   }
 }
 

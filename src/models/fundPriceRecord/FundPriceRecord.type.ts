@@ -18,7 +18,7 @@ export type RecordType =
   | 'record'
 
 /**
- * A scrape recrod of the fundprice
+ * A scrape record of the fundprice
  */
 interface FundPriceRecord <
   FT extends FundType = FundType,
@@ -38,7 +38,9 @@ interface FundPriceRecord <
   recordType: RT;
   /** --------- 'latest' fields --------- */
   priceChangeRate?: number;
+  dayPriceChangeRate?: number;
   previousPrice?: number;
+  previousDayPrice?: number;
   previousTime?: string | null;
 }
 

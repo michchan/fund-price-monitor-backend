@@ -13,6 +13,22 @@ import stringify from 'src/helpers/stringify'
 const dynamodb = new AWS.DynamoDB()
 const lambda = new AWS.Lambda()
 
+const RECORD_PROJECTED_ATTRS = [
+  attrs.PRICE,
+  attrs.PRICE_CHANGE_RATE,
+  attrs.DAY_PRICE_CHANGE_RATE,
+  attrs.PREVIOUS_PRICE,
+  attrs.PREVIOUS_DAY_PRICE,
+  attrs.PREVIOUS_TIME,
+  attrs.UPDATED_DATE,
+]
+const CHANGE_RATE_PROJECTED_ATTRS = [
+  attrs.PRICE,
+  attrs.UPDATED_DATE,
+  attrs.PRICE_LIST,
+  attrs.PRICE_TIMESTAMP_LIST,
+]
+
 /** Common throughput for GSI */
 const GSI_COMMON_THROUGHPUT: DynamoDB.GlobalSecondaryIndex['ProvisionedThroughput'] = {
   ReadCapacityUnits: 1,
@@ -38,32 +54,15 @@ const priceChangeRateGSI = createInclusiveGSI({
     { AttributeName: attrs.PERIOD, KeyType: 'HASH' },
     { AttributeName: attrs.PRICE_CHANGE_RATE, KeyType: 'RANGE' },
   ],
-}, [
-  attrs.PRICE,
-  attrs.UPDATED_DATE,
-  attrs.PRICE_LIST,
-  attrs.PRICE_TIMESTAMP_LIST,
-])
+}, CHANGE_RATE_PROJECTED_ATTRS)
 const recordsByCompanyGSI = createInclusiveGSI({
   IndexName: indexNames.RECORDS_BY_COMPANY,
   KeySchema: [{ AttributeName: attrs.COMPANY, KeyType: 'HASH' }],
-}, [
-  attrs.PRICE,
-  attrs.PRICE_CHANGE_RATE,
-  attrs.PREVIOUS_PRICE,
-  attrs.PREVIOUS_TIME,
-  attrs.UPDATED_DATE,
-])
+}, RECORD_PROJECTED_ATTRS)
 const recordsByRiskLevelGSI = createInclusiveGSI({
   IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
   KeySchema: [{ AttributeName: attrs.RISK_LEVEL, KeyType: 'HASH' }],
-}, [
-  attrs.PRICE,
-  attrs.PRICE_CHANGE_RATE,
-  attrs.PREVIOUS_PRICE,
-  attrs.PREVIOUS_TIME,
-  attrs.UPDATED_DATE,
-])
+}, RECORD_PROJECTED_ATTRS)
 
 const KeySchema = [
   { AttributeName: attrs.COMPANY_CODE, KeyType: 'HASH' },

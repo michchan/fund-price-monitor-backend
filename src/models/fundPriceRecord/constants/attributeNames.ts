@@ -19,8 +19,10 @@ const attributeNames = {
   /** Top-level fields (aggregate items) */
   PERIOD: 'period',
   PREVIOUS_PRICE: 'previousPrice',
+  PREVIOUS_DAY_PRICE: 'previousDayPrice',
   PREVIOUS_TIME: 'previousTime',
   PRICE_CHANGE_RATE: 'priceChangeRate',
+  DAY_PRICE_CHANGE_RATE: 'dayPriceChangeRate',
   PRICE_LIST: 'priceList',
   PRICE_TIMESTAMP_LIST: 'priceTimestampList',
   /** Table-level fields (table details items) */
@@ -47,7 +49,9 @@ export type NumberAttrNameKey = keyof Pick<AttrName,
 | 'PRICE'
 | 'INITIAL_PRICE'
 | 'PRICE_CHANGE_RATE'
+| 'DAY_PRICE_CHANGE_RATE'
 | 'PREVIOUS_PRICE'
+| 'PREVIOUS_DAY_PRICE'
 >
 export type NumberListAttrNameKey = keyof Pick<AttrName,
 | 'PRICE_LIST'
