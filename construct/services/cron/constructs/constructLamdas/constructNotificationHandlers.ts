@@ -10,18 +10,16 @@ const getDefaultNotifierEnv = (telegramChatId: string) => ({
   TELEGRAM_BOT_API_KEY_PARAMETER_NAME,
 })
 
-export interface NotificationHandlers {
+export interface NotificationGenericHandlers {
   notifyOnUpdate: lambda.Function;
   notifyMonthly: lambda.Function;
   notifyQuarterly: lambda.Function;
 }
-const constructNotificationHandlers = (
+const createHandlers = (
   scope: cdk.Construct,
   defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
-  telegramChatId: string,
-): NotificationHandlers => {
-  const environment = getDefaultNotifierEnv(telegramChatId)
-
+  environment: lambda.FunctionOptions['environment'],
+): NotificationGenericHandlers => {
   const notifyOnUpdateHandler = new lambda.Function(scope, 'CronNotifierOnUpdate', {
     ...defaultInput,
     handler: 'notifyOnUpdate.handler',
@@ -37,10 +35,40 @@ const constructNotificationHandlers = (
     handler: 'notifyQuarterly.handler',
     environment,
   })
+
   return {
     notifyOnUpdate: notifyOnUpdateHandler,
     notifyMonthly: notifyMonthlyHandler,
     notifyQuarterly: notifyQuarterlyHandler,
+  }
+}
+
+export interface NotificationHandlers {
+  notifyOnUpdate: lambda.Function;
+  notifyMonthly: lambda.Function;
+  notifyQuarterly: lambda.Function;
+  testNotifyOnUpdate: lambda.Function;
+  testNotifyMonthly: lambda.Function;
+  testNotifyQuarterly: lambda.Function;
+}
+
+const constructNotificationHandlers = (
+  scope: cdk.Construct,
+  defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
+  telegramChatId: string,
+  telegramTestChatId: string,
+): NotificationHandlers => {
+  const environment = getDefaultNotifierEnv(telegramChatId)
+  const testEnvironment = getDefaultNotifierEnv(telegramTestChatId)
+
+  const handlers = createHandlers(scope, defaultInput, environment)
+  const testHandlers = createHandlers(scope, defaultInput, testEnvironment)
+
+  return {
+    ...handlers,
+    testNotifyOnUpdate: testHandlers.notifyOnUpdate,
+    testNotifyMonthly: testHandlers.notifyMonthly,
+    testNotifyQuarterly: testHandlers.notifyQuarterly,
   }
 }
 export default constructNotificationHandlers

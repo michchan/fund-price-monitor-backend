@@ -30,7 +30,7 @@ const constructDailyEventRules = (
 
 const constructMonthlyEventRules = (
   scope: cdk.Construct,
-  { notifyMonthly }: Pick<Handlers, 'notifyMonthly'>,
+  { notifyMonthly, testNotifyMonthly }: Pick<Handlers, 'notifyMonthly' | 'testNotifyMonthly'>,
   { scrapeDetails }: Pick<StateMachines, 'scrapeDetails'>,
 ) => {
   // Run on the 28th day in every month at 15:00 UTC
@@ -38,6 +38,7 @@ const constructMonthlyEventRules = (
     schedule: events.Schedule.expression('cron(0 15 28 * ? *)'),
   })
   monthlyReviewRule.addTarget(new targets.LambdaFunction(notifyMonthly))
+  monthlyReviewRule.addTarget(new targets.LambdaFunction(testNotifyMonthly))
   monthlyReviewRule.addTarget(new targets.SfnStateMachine(scrapeDetails))
 }
 
@@ -45,10 +46,17 @@ const constructQuarterlyEventRules = (
   scope: cdk.Construct,
   {
     notifyQuarterly,
+    testNotifyQuarterly,
     createTable,
     updateTable,
     detailsScrapers,
-  }: Pick<Handlers, 'notifyQuarterly' | 'createTable' | 'updateTable' | 'detailsScrapers'>,
+  }: Pick<Handlers,
+  | 'notifyQuarterly'
+  | 'testNotifyQuarterly'
+  | 'createTable'
+  | 'updateTable'
+  | 'detailsScrapers'
+  >,
 ) => {
   // Run every END of a quarter
   // At 15:00 UTC, on the 28th day, in March, June, September and December
@@ -57,6 +65,8 @@ const constructQuarterlyEventRules = (
   })
   quarterNearEndRule.addTarget(new targets.LambdaFunction(createTable))
   quarterNearEndRule.addTarget(new targets.LambdaFunction(notifyQuarterly))
+  quarterNearEndRule.addTarget(new targets.LambdaFunction(testNotifyQuarterly))
+
   // At 20:00 UTC, on the 28th day, in March, June, September and December
   const quarterAfterCreateRule = new events.Rule(scope, 'QuarterAfterCreateRule', {
     schedule: events.Schedule.expression('cron(0 20 28 3,6,9,12 ? *)'),

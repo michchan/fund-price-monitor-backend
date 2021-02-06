@@ -30,13 +30,18 @@ interface SideComponents {
 const constructSideComponents = (
   scope: cdk.Construct,
   { itemsReader, itemsAlterer }: Pick<CronRoles, 'itemsReader' | 'itemsAlterer'>,
-  { servicePathname, telegramChatId }: Pick<Options, 'servicePathname' | 'telegramChatId'>,
+  { servicePathname, telegramChatId, telegramTestChatId }: Pick<Options,
+  | 'servicePathname'
+  | 'telegramChatId'
+  | 'telegramTestChatId'
+  >,
 ): SideComponents => {
   const getInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)
   const notificationHandlers = constructNotificationHandlers(
     scope,
     getInput(itemsReader),
-    telegramChatId
+    telegramChatId,
+    telegramTestChatId,
   )
   const cleanupHandlers = constructCleanupHandlers(scope, getInput(itemsAlterer))
   return {
@@ -53,22 +58,40 @@ interface ScrapingComponents {
   handlers: ScrapingComponentsHandlers;
   stateMachines: ScrapingStateMachines;
 }
+interface Notifiers {
+  notifyOnUpdate: lambda.Function;
+  testNotifyOnUpdate: lambda.Function;
+}
+
 const constructScrapingComponents = (
   scope: cdk.Construct,
   { itemsAlterer, aggregator }: Pick<CronRoles, 'itemsAlterer' | 'aggregator'>,
-  { serviceDirname, servicePathname }: Pick<Options, 'serviceDirname' | 'servicePathname' | 'telegramChatId'>,
-  notifyOnUpdate: lambda.Function,
+  { serviceDirname, servicePathname }: Pick<Options,
+  | 'serviceDirname'
+  | 'servicePathname'
+  | 'telegramChatId'
+  | 'telegramTestChatId'
+  >,
+  { notifyOnUpdate, testNotifyOnUpdate }: Notifiers
 ): ScrapingComponents => {
   const getInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)
-  const {
-    stateMachines,
-    ...scrapingHandlers
-  } = constructScrapingStateMachine(scope, serviceDirname, {
+  const defaultInput = {
     ...getInput(itemsAlterer),
     environment: {
       NOTIFIER_ARN: notifyOnUpdate.functionArn,
     },
-  })
+  }
+  const defaultInputTest = {
+    ...defaultInput,
+    environment: {
+      NOTIFIER_ARN: testNotifyOnUpdate.functionArn,
+    },
+  }
+  const {
+    stateMachines,
+    ...scrapingHandlers
+  } = constructScrapingStateMachine(scope, serviceDirname, defaultInput, defaultInputTest)
+
   const aggregators = constructAggregators(scope, getInput(aggregator))
 
   // Grant notifier invoke for each scraper
@@ -92,6 +115,7 @@ export interface Options {
   servicePathname: string;
   serviceDirname: string;
   telegramChatId: string;
+  telegramTestChatId: string;
 }
 const constructLamdas = (
   scope: cdk.Construct,
@@ -102,11 +126,12 @@ const constructLamdas = (
   const { servicePathname } = options
 
   const sideComponents = constructSideComponents(scope, roles, options)
+
   const scrapingComponents = constructScrapingComponents(
     scope,
     roles,
     options,
-    sideComponents.handlers.notifyOnUpdate
+    sideComponents.handlers
   )
   const { handlers: { aggregation } } = scrapingComponents
 

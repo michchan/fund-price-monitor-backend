@@ -31,7 +31,7 @@ export type DefaultInput =
   & Partial<lambda.FunctionOptions>
 
 /** Scraper creator */
-const getScraperCreatorGetter = (
+const getScraperMapperCreator = (
   scope: cdk.Construct,
   defaultInput: DefaultInput,
 ) => (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
@@ -50,32 +50,35 @@ const constructScrapingHandlers = (
   scope: cdk.Construct,
   serviceDirname: string,
   defaultInput: DefaultInput,
+  // For test functions
+  defaultInputTest: DefaultInput,
 ): ScrapingHandlers => {
   const serviceName = serviceDirname.split('/').pop()
   const serviceBundlesDir = serviceDirname.replace(/src.+/i, `bundles/${serviceName}`)
   // Read handlers directory
   const handlers = fs.readdirSync(`${serviceBundlesDir}/handlers`)
-  const getScraperCreator = getScraperCreatorGetter(scope, defaultInput)
+  const createMapper = getScraperMapperCreator(scope, defaultInput)
+  const createTestMapper = getScraperMapperCreator(scope, defaultInputTest)
 
   // Handlers for scraping records and saving records
   const scrapeHandlers = handlers
     .filter(fileName => /^__recordScraper__/i.test(fileName))
-    .map(getScraperCreator(/^__recordScraper__/i, 'CronRecordScraper'))
+    .map(createMapper(/^__recordScraper__/i, 'CronRecordScraper'))
 
   /** @DEBUG * Testing handlers for scrapers */
   const testScrapeHandlers = handlers
     .filter(fileName => /^__testRecordScraper__/i.test(fileName))
-    .map(getScraperCreator(/^__testRecordScraper__/i, 'CronTestRecordScraper'))
+    .map(createTestMapper(/^__testRecordScraper__/i, 'CronTestRecordScraper'))
 
   // Handlers for scraping details
   const detailsScrapeHandlers = handlers
     .filter(fileName => /^__detailScraper__/i.test(fileName))
-    .map(getScraperCreator(/^__detailScraper__/i, 'CronDetailsScraper'))
+    .map(createMapper(/^__detailScraper__/i, 'CronDetailsScraper'))
 
   /** @DEBUG * Testing handlers for details scrapers */
   const testDetailsScrapeHandlers = handlers
     .filter(fileName => /^__testDetailScraper__/i.test(fileName))
-    .map(getScraperCreator(/^__testDetailScraper__/i, 'CronTestDetailsScraper'))
+    .map(createTestMapper(/^__testDetailScraper__/i, 'CronTestDetailsScraper'))
 
   const startScrapeSessionHandler = new lambda.Function(scope, 'CronStartScrapeSession', {
     ...defaultInput,
@@ -150,8 +153,10 @@ const constructScrapingStateMachine = (
   scope: cdk.Construct,
   serviceDirname: string,
   defaultInput: DefaultInput,
+  // For test functions
+  defaultInputTest: DefaultInput,
 ): Output => {
-  const handlers = constructScrapingHandlers(scope, serviceDirname, defaultInput)
+  const handlers = constructScrapingHandlers(scope, serviceDirname, defaultInput, defaultInputTest)
   const scrapeRecordsStateMachine = constructRecordsScrapingStateMachine(scope, handlers)
   const scrapeDetailsStateMachine = constructDetailsScrapingStateMachine(scope, handlers)
   return {
