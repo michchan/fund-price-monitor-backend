@@ -1,11 +1,13 @@
 import * as cdk from '@aws-cdk/core'
 import {
   LambdaIntegration,
+  Method,
   Resource,
   RestApi,
 } from '@aws-cdk/aws-apigateway'
 import { Handlers } from './constructLambdas'
 import addCorsOptions from './addCorsOptions'
+import env from '../../../lib/env'
 
 interface Resources {
   singleFundRecords: Resource;
@@ -63,7 +65,34 @@ const constructEndpoints = (api: RestApi): Resources => {
   }
 }
 
-const intergrateResourcesHandlers = (resources: Resources, handlers: Handlers): void => {
+const DEFAULT_PUBLIC_ACCESS_PFX = 'DefaultPublicAccess'
+const PLAN_NAME = `${DEFAULT_PUBLIC_ACCESS_PFX}UsagePlan`
+const API_KEY_NAME = `${DEFAULT_PUBLIC_ACCESS_PFX}ApiKey`
+const RATE_LIMIT = 10
+const BURST_LIMIT = 2
+const throttle = {
+  rateLimit: RATE_LIMIT,
+  burstLimit: BURST_LIMIT,
+}
+const constructRateLimitApiKey = (api: RestApi, methods: Method[]): void => {
+  const key = api.addApiKey(API_KEY_NAME, {
+    apiKeyName: API_KEY_NAME,
+    value: env.values.DEFAULT_PUBLIC_ACCESS_API_KEY_VALUE,
+  })
+  const plan = api.addUsagePlan(PLAN_NAME, {
+    name: PLAN_NAME,
+    apiKey: key,
+    throttle,
+  })
+  // Assign each method to plan
+  methods.map(method => plan.addApiStage({
+    stage: api.deploymentStage,
+    throttle: [{ method, throttle }],
+  }))
+}
+
+const DEFAULT_METHOD_OPTIONS = { apiKeyRequired: true }
+const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): Method[] => {
   const {
     singleFundRecords,
     quarterrates,
@@ -91,28 +120,32 @@ const intergrateResourcesHandlers = (resources: Resources, handlers: Handlers): 
   const searchRecordsIntegration = new LambdaIntegration(searchRecords)
   const listQuartersIntegration = new LambdaIntegration(listQuarters)
 
-  // Add methods
-  singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration)
-  quarterrates.addMethod('GET', listQuartersIntegration)
-  searchedMpfRecords.addMethod('GET', searchRecordsIntegration)
-  comRecords.addMethod('GET', listComRecordsIntegration)
-  weekRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration)
-  monthRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration)
-  quarterRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration)
-
   // Add CORS options
   addCorsOptions(comRecords)
   addCorsOptions(singleFundRecords)
   addCorsOptions(weekRates)
   addCorsOptions(monthRates)
   addCorsOptions(quarterRates)
+
+  return [
+    singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration, DEFAULT_METHOD_OPTIONS),
+    quarterrates.addMethod('GET', listQuartersIntegration, DEFAULT_METHOD_OPTIONS),
+    searchedMpfRecords.addMethod('GET', searchRecordsIntegration, DEFAULT_METHOD_OPTIONS),
+    comRecords.addMethod('GET', listComRecordsIntegration, DEFAULT_METHOD_OPTIONS),
+    weekRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration, DEFAULT_METHOD_OPTIONS),
+    monthRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration, DEFAULT_METHOD_OPTIONS),
+    quarterRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration, DEFAULT_METHOD_OPTIONS),
+  ]
 }
 
 const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => {
   const api = new RestApi(scope, 'FundPricesApi', {
     restApiName: 'Fund Prices Service',
+    description: 'Services for accessing fund-price resources',
+
   })
   const resources = constructEndpoints(api)
-  intergrateResourcesHandlers(resources, handlers)
+  const methods = integrateResourcesHandlers(resources, handlers)
+  constructRateLimitApiKey(api, methods)
 }
 export default constructApiGateway

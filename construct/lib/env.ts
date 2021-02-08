@@ -6,6 +6,7 @@ const keys = [
   'TELEGRAM_CHAT_ID_PARAMETER_NAME',
   'TELEGRAM_TEST_CHAT_ID_PARAMETER_NAME',
   'GENERAL_LOG_SUBSCRIPTION_EMAIL',
+  'DEFAULT_PUBLIC_ACCESS_API_KEY_VALUE',
   'AWS_DEFAULT_REGION',
 ] as const
 export interface EnvValues extends EV<typeof keys[number]> {}
