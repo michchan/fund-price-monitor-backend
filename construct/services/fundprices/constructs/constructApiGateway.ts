@@ -131,19 +131,25 @@ interface DeploymentStages {
 const constructDeploymentStages = (
   scope: cdk.Construct,
   api: RestApi,
-  methods: Method[]
 ): DeploymentStages => {
   const devDeployment = new Deployment(scope, `${DEV_STAGE_NAME}Deployment`, { api })
-  methods.forEach(method => [devDeployment, api.deploymentStage]
-    .forEach(deployment => deployment.node.addDependency(method)))
+  const devStage = new Stage(scope, `${DEV_STAGE_NAME}Stage`, {
+    stageName: DEV_STAGE_NAME,
+    deployment: devDeployment,
+    cachingEnabled: IS_DEV_CACHING_ENABLED,
+  })
 
+  const prodDeployment = new Deployment(scope, `${PROD_STAGE_NAME}Deployment`, { api })
+  const prodStage = new Stage(scope, `${PROD_STAGE_NAME}Stage`, {
+    stageName: PROD_STAGE_NAME,
+    deployment: prodDeployment,
+    cachingEnabled: IS_PROD_CACHING_ENABLED,
+  })
+
+  api.deploymentStage = prodStage
   return {
-    dev: new Stage(scope, `${DEV_STAGE_NAME}Stage`, {
-      stageName: DEV_STAGE_NAME,
-      deployment: devDeployment,
-      cachingEnabled: IS_DEV_CACHING_ENABLED,
-    }),
-    prod: api.deploymentStage,
+    dev: devStage,
+    prod: prodStage,
   }
 }
 
@@ -200,14 +206,12 @@ const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => 
   const api = new RestApi(scope, API_ID, {
     restApiName: 'Fund Prices Service',
     description: 'Services for accessing fund-price resources',
-    deployOptions: {
-      stageName: PROD_STAGE_NAME,
-      cachingEnabled: IS_PROD_CACHING_ENABLED,
-    },
+    // Use self-managed deployments
+    deploy: false,
   })
   const resources = constructEndpoints(api)
   const methods = integrateResourcesHandlers(resources, handlers)
-  const stages = constructDeploymentStages(scope, api, methods)
+  const stages = constructDeploymentStages(scope, api)
   constructRateLimitApiKeys(api, methods, stages)
 }
 export default constructApiGateway
