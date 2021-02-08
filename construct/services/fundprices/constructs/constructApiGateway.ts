@@ -114,7 +114,7 @@ const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): M
   ]
 }
 
-const DEV_STAGE_NAME = 'prod-dev'
+const DEV_STAGE_NAME = 'dev'
 const IS_DEV_CACHING_ENABLED = false
 const DEV_THROTTLING_RATE_LIMIT = 10000
 const DEV_THROTTLING_BURST_LIMIT = 5000
@@ -194,10 +194,10 @@ const constructRateLimitApiKeys = (
       throttle,
     })
     // Assign each method to plan
-    methods.forEach(method => plan.addApiStage({
+    plan.addApiStage({
       stage,
-      throttle: [{ method, throttle }],
-    }))
+      throttle: methods.map(method => ({ method, throttle })),
+    })
   })
 }
 
