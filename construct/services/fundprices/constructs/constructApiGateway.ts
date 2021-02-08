@@ -114,12 +114,12 @@ const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): M
   ]
 }
 
-const DEV_STAGE_NAME = 'dev'
+const DEV_STAGE_NAME = 'prod-dev'
 const IS_DEV_CACHING_ENABLED = false
 const DEV_THROTTLING_RATE_LIMIT = 10000
 const DEV_THROTTLING_BURST_LIMIT = 5000
 
-const PROD_STAGE_NAME = 'prod'
+const PROD_STAGE_NAME = 'prod-v1'
 const IS_PROD_CACHING_ENABLED = true
 const PROD_THROTTLING_RATE_LIMIT = 1000
 const PROD_THROTTLING_BURST_LIMIT = 500
