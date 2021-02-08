@@ -1,9 +1,11 @@
 import * as cdk from '@aws-cdk/core'
 import {
+  Deployment,
   LambdaIntegration,
   Method,
   Resource,
   RestApi,
+  Stage,
 } from '@aws-cdk/aws-apigateway'
 import { Handlers } from './constructLambdas'
 import addCorsOptions from './addCorsOptions'
@@ -65,48 +67,6 @@ const constructEndpoints = (api: RestApi): Resources => {
   }
 }
 
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-const KEYS_CONFIG = [
-  {
-    name: 'Dev',
-    rateLimit: 10000,
-    burstLimit: 2000,
-    apiKeyValue: env.values.API_KEY_DEV,
-  },
-  {
-    name: 'DefaultPublicAccess',
-    rateLimit: 10,
-    burstLimit: 2,
-    apiKeyValue: env.values.API_KEY_DEFAULT_PUBLIC_ACCESS,
-  },
-]
-/* eslint-enable @typescript-eslint/no-magic-numbers */
-const constructRateLimitApiKeys = (api: RestApi, methods: Method[]): void => KEYS_CONFIG.forEach(({
-  name,
-  rateLimit,
-  burstLimit,
-  apiKeyValue,
-}) => {
-  const apiKeyName = `${name}ApiKey`
-  const key = api.addApiKey(apiKeyName, {
-    apiKeyName,
-    value: apiKeyValue,
-  })
-
-  const throttle = { rateLimit, burstLimit }
-  const planName = `${name}PlanName`
-  const plan = api.addUsagePlan(planName, {
-    name: planName,
-    apiKey: key,
-    throttle,
-  })
-  // Assign each method to plan
-  methods.map(method => plan.addApiStage({
-    stage: api.deploymentStage,
-    throttle: [{ method, throttle }],
-  }))
-})
-
 const DEFAULT_METHOD_OPTIONS = { apiKeyRequired: true }
 const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): Method[] => {
   const {
@@ -154,14 +114,91 @@ const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): M
   ]
 }
 
+const DEV_STAGE_NAME = 'dev'
+const PROD_STAGE_NAME = 'prod'
+interface DeploymentStages {
+  dev: Stage;
+  prod: Stage;
+}
+const constructDeploymentStages = (
+  scope: cdk.Construct,
+  api: RestApi,
+  methods: Method[]
+): DeploymentStages => {
+  const devDeployment = new Deployment(scope, `${DEV_STAGE_NAME}Deployment`, { api })
+  const prodDeployment = new Deployment(scope, `${PROD_STAGE_NAME}Deployment`, { api })
+  methods.forEach(method => [devDeployment, prodDeployment]
+    .forEach(deployment => deployment.node.addDependency(method)))
+
+  return {
+    dev: new Stage(scope, DEV_STAGE_NAME, { deployment: devDeployment }),
+    prod: new Stage(scope, PROD_STAGE_NAME, { deployment: prodDeployment }),
+  }
+}
+
+const constructRateLimitApiKeys = (
+  api: RestApi,
+  methods: Method[],
+  stages: DeploymentStages,
+): void => {
+  /* eslint-disable @typescript-eslint/no-magic-numbers */
+  const config = [
+    {
+      name: 'Dev',
+      rateLimit: 10000,
+      burstLimit: 2000,
+      apiKeyValue: env.values.API_KEY_DEV,
+      stage: stages.dev,
+    },
+    {
+      name: 'DefaultPublicAccess',
+      rateLimit: 10,
+      burstLimit: 2,
+      apiKeyValue: env.values.API_KEY_DEFAULT_PUBLIC_ACCESS,
+      stage: stages.prod,
+    },
+  ]
+  /* eslint-enable @typescript-eslint/no-magic-numbers */
+  config.forEach(({
+    name,
+    rateLimit,
+    burstLimit,
+    apiKeyValue,
+    stage,
+  }) => {
+    const apiKeyName = `${name}ApiKey`
+    const key = api.addApiKey(apiKeyName, {
+      apiKeyName,
+      value: apiKeyValue,
+    })
+    const throttle = { rateLimit, burstLimit }
+    const planName = `${name}PlanName`
+    const plan = api.addUsagePlan(planName, {
+      name: planName,
+      apiKey: key,
+      throttle,
+    })
+    // Assign each method to plan
+    methods.forEach(method => plan.addApiStage({
+      stage,
+      throttle: [{ method, throttle }],
+    }))
+  })
+}
+
+const API_ID = 'FundPricesApi'
 const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => {
-  const api = new RestApi(scope, 'FundPricesApi', {
+  const api = new RestApi(scope, API_ID, {
     restApiName: 'Fund Prices Service',
     description: 'Services for accessing fund-price resources',
-
+    // Use self-managed deployments
+    deploy: false,
   })
   const resources = constructEndpoints(api)
   const methods = integrateResourcesHandlers(resources, handlers)
-  constructRateLimitApiKeys(api, methods)
+  const stages = constructDeploymentStages(scope, api, methods)
+  // Bind deployment stage to prod
+  api.deploymentStage = stages.prod
+  constructRateLimitApiKeys(api, methods, stages)
 }
 export default constructApiGateway
