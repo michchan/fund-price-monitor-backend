@@ -115,7 +115,15 @@ const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): M
 }
 
 const DEV_STAGE_NAME = 'dev'
+const IS_DEV_CACHING_ENABLED = false
+const DEV_THROTTLING_RATE_LIMIT = 10000
+const DEV_THROTTLING_BURST_LIMIT = 5000
+
 const PROD_STAGE_NAME = 'prod'
+const IS_PROD_CACHING_ENABLED = true
+const PROD_THROTTLING_RATE_LIMIT = 1000
+const PROD_THROTTLING_BURST_LIMIT = 500
+
 interface DeploymentStages {
   dev: Stage;
   prod: Stage;
@@ -126,13 +134,16 @@ const constructDeploymentStages = (
   methods: Method[]
 ): DeploymentStages => {
   const devDeployment = new Deployment(scope, `${DEV_STAGE_NAME}Deployment`, { api })
-  const prodDeployment = new Deployment(scope, `${PROD_STAGE_NAME}Deployment`, { api })
-  methods.forEach(method => [devDeployment, prodDeployment]
+  methods.forEach(method => [devDeployment, api.deploymentStage]
     .forEach(deployment => deployment.node.addDependency(method)))
 
   return {
-    dev: new Stage(scope, DEV_STAGE_NAME, { deployment: devDeployment }),
-    prod: new Stage(scope, PROD_STAGE_NAME, { deployment: prodDeployment }),
+    dev: new Stage(scope, `${DEV_STAGE_NAME}Stage`, {
+      stageName: DEV_STAGE_NAME,
+      deployment: devDeployment,
+      cachingEnabled: IS_DEV_CACHING_ENABLED,
+    }),
+    prod: api.deploymentStage,
   }
 }
 
@@ -141,24 +152,22 @@ const constructRateLimitApiKeys = (
   methods: Method[],
   stages: DeploymentStages,
 ): void => {
-  /* eslint-disable @typescript-eslint/no-magic-numbers */
   const config = [
     {
       name: 'Dev',
-      rateLimit: 10000,
-      burstLimit: 2000,
+      rateLimit: DEV_THROTTLING_RATE_LIMIT,
+      burstLimit: DEV_THROTTLING_BURST_LIMIT,
       apiKeyValue: env.values.API_KEY_DEV,
       stage: stages.dev,
     },
     {
       name: 'DefaultPublicAccess',
-      rateLimit: 10,
-      burstLimit: 2,
+      rateLimit: PROD_THROTTLING_RATE_LIMIT,
+      burstLimit: PROD_THROTTLING_BURST_LIMIT,
       apiKeyValue: env.values.API_KEY_DEFAULT_PUBLIC_ACCESS,
       stage: stages.prod,
     },
   ]
-  /* eslint-enable @typescript-eslint/no-magic-numbers */
   config.forEach(({
     name,
     rateLimit,
@@ -191,14 +200,14 @@ const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => 
   const api = new RestApi(scope, API_ID, {
     restApiName: 'Fund Prices Service',
     description: 'Services for accessing fund-price resources',
-    // Use self-managed deployments
-    deploy: false,
+    deployOptions: {
+      stageName: PROD_STAGE_NAME,
+      cachingEnabled: IS_PROD_CACHING_ENABLED,
+    },
   })
   const resources = constructEndpoints(api)
   const methods = integrateResourcesHandlers(resources, handlers)
   const stages = constructDeploymentStages(scope, api, methods)
-  // Bind deployment stage to prod
-  api.deploymentStage = stages.prod
   constructRateLimitApiKeys(api, methods, stages)
 }
 export default constructApiGateway
