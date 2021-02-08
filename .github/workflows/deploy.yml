@@ -25,7 +25,8 @@ jobs:
       TELEGRAM_CHAT_ID_PARAMETER_NAME: ${{ secrets.TELEGRAM_CHAT_ID_PARAMETER_NAME }}
       TELEGRAM_TEST_CHAT_ID_PARAMETER_NAME: ${{ secrets.TELEGRAM_TEST_CHAT_ID_PARAMETER_NAME }}
       GENERAL_LOG_SUBSCRIPTION_EMAIL: ${{ secrets.GENERAL_LOG_SUBSCRIPTION_EMAIL }}
-      DEFAULT_PUBLIC_ACCESS_API_KEY_VALUE: ${{ secrets.DEFAULT_PUBLIC_ACCESS_API_KEY_VALUE }}
+      API_KEY_DEV: ${{ secrets.API_KEY_DEV }}
+      API_KEY_DEFAULT_PUBLIC_ACCESS: ${{ secrets.API_KEY_DEFAULT_PUBLIC_ACCESS }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:

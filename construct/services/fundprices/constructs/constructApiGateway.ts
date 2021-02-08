@@ -65,22 +65,38 @@ const constructEndpoints = (api: RestApi): Resources => {
   }
 }
 
-const DEFAULT_PUBLIC_ACCESS_PFX = 'DefaultPublicAccess'
-const PLAN_NAME = `${DEFAULT_PUBLIC_ACCESS_PFX}UsagePlan`
-const API_KEY_NAME = `${DEFAULT_PUBLIC_ACCESS_PFX}ApiKey`
-const RATE_LIMIT = 10
-const BURST_LIMIT = 2
-const throttle = {
-  rateLimit: RATE_LIMIT,
-  burstLimit: BURST_LIMIT,
-}
-const constructRateLimitApiKey = (api: RestApi, methods: Method[]): void => {
-  const key = api.addApiKey(API_KEY_NAME, {
-    apiKeyName: API_KEY_NAME,
-    value: env.values.DEFAULT_PUBLIC_ACCESS_API_KEY_VALUE,
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+const KEYS_CONFIG = [
+  {
+    name: 'Dev',
+    rateLimit: 10000,
+    burstLimit: 2000,
+    apiKeyValue: env.values.API_KEY_DEV,
+  },
+  {
+    name: 'DefaultPublicAccess',
+    rateLimit: 10,
+    burstLimit: 2,
+    apiKeyValue: env.values.API_KEY_DEFAULT_PUBLIC_ACCESS,
+  },
+]
+/* eslint-enable @typescript-eslint/no-magic-numbers */
+const constructRateLimitApiKeys = (api: RestApi, methods: Method[]): void => KEYS_CONFIG.forEach(({
+  name,
+  rateLimit,
+  burstLimit,
+  apiKeyValue,
+}) => {
+  const apiKeyName = `${name}ApiKey`
+  const key = api.addApiKey(apiKeyName, {
+    apiKeyName,
+    value: apiKeyValue,
   })
-  const plan = api.addUsagePlan(PLAN_NAME, {
-    name: PLAN_NAME,
+
+  const throttle = { rateLimit, burstLimit }
+  const planName = `${name}PlanName`
+  const plan = api.addUsagePlan(planName, {
+    name: planName,
     apiKey: key,
     throttle,
   })
@@ -89,7 +105,7 @@ const constructRateLimitApiKey = (api: RestApi, methods: Method[]): void => {
     stage: api.deploymentStage,
     throttle: [{ method, throttle }],
   }))
-}
+})
 
 const DEFAULT_METHOD_OPTIONS = { apiKeyRequired: true }
 const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): Method[] => {
@@ -146,6 +162,6 @@ const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => 
   })
   const resources = constructEndpoints(api)
   const methods = integrateResourcesHandlers(resources, handlers)
-  constructRateLimitApiKey(api, methods)
+  constructRateLimitApiKeys(api, methods)
 }
 export default constructApiGateway
