@@ -3,6 +3,7 @@ import {
   Deployment,
   LambdaIntegration,
   Method,
+  MethodLoggingLevel,
   Resource,
   RestApi,
   Stage,
@@ -137,6 +138,7 @@ const constructDeploymentStages = (
     stageName: DEV_STAGE_NAME,
     deployment: devDeployment,
     cachingEnabled: IS_DEV_CACHING_ENABLED,
+    loggingLevel: MethodLoggingLevel.INFO,
   })
 
   const prodDeployment = new Deployment(scope, `${PROD_STAGE_NAME}Deployment`, { api })
@@ -144,6 +146,7 @@ const constructDeploymentStages = (
     stageName: PROD_STAGE_NAME,
     deployment: prodDeployment,
     cachingEnabled: IS_PROD_CACHING_ENABLED,
+    loggingLevel: MethodLoggingLevel.ERROR,
   })
 
   api.deploymentStage = prodStage
