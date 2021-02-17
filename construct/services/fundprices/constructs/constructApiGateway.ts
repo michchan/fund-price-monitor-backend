@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core'
+import * as iam from '@aws-cdk/aws-iam'
 import {
   Deployment,
   LambdaIntegration,
@@ -69,7 +70,11 @@ const constructEndpoints = (api: RestApi): Resources => {
 }
 
 const DEFAULT_METHOD_OPTIONS = { apiKeyRequired: true }
-const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): Method[] => {
+const integrateResourcesHandlers = (
+  role: iam.Role,
+  resources: Resources,
+  handlers: Handlers,
+): Method[] => {
   const {
     singleFundRecords,
     quarterrates,
@@ -90,12 +95,16 @@ const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): M
     listQuarters,
   } = handlers
 
+  const options = { credentialsRole: role }
   // Integrations
-  const listSingleFundRecordsIntegration = new LambdaIntegration(listSingleFundRecords)
-  const listComRecordsIntegration = new LambdaIntegration(listCompanyRecords)
-  const listComSinglePeriodRatesIntegration = new LambdaIntegration(listCompanySinglePeriodRates)
-  const searchRecordsIntegration = new LambdaIntegration(searchRecords)
-  const listQuartersIntegration = new LambdaIntegration(listQuarters)
+  const listSingleFundRecordsIntegration = new LambdaIntegration(listSingleFundRecords, options)
+  const listComRecordsIntegration = new LambdaIntegration(listCompanyRecords, options)
+  const listComSinglePeriodRatesIntegration = new LambdaIntegration(
+    listCompanySinglePeriodRates,
+    options
+  )
+  const searchRecordsIntegration = new LambdaIntegration(searchRecords, options)
+  const listQuartersIntegration = new LambdaIntegration(listQuarters, options)
 
   // Add CORS options
   addCorsOptions(comRecords)
@@ -205,7 +214,7 @@ const constructRateLimitApiKeys = (
 }
 
 const API_ID = 'FundPricesApi'
-const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => {
+const constructApiGateway = (scope: cdk.Construct, role: iam.Role, handlers: Handlers): void => {
   const api = new RestApi(scope, API_ID, {
     restApiName: 'Fund Prices Service',
     description: 'Services for accessing fund-price resources',
@@ -213,7 +222,7 @@ const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => 
     deploy: false,
   })
   const resources = constructEndpoints(api)
-  const methods = integrateResourcesHandlers(resources, handlers)
+  const methods = integrateResourcesHandlers(role, resources, handlers)
   const stages = constructDeploymentStages(scope, api)
   constructRateLimitApiKeys(api, methods, stages)
 }
