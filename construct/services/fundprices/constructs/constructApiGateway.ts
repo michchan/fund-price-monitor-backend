@@ -1,5 +1,4 @@
 import * as cdk from '@aws-cdk/core'
-import * as iam from '@aws-cdk/aws-iam'
 import {
   Deployment,
   LambdaIntegration,
@@ -9,6 +8,7 @@ import {
   RestApi,
   Stage,
 } from '@aws-cdk/aws-apigateway'
+import { ServicePrincipal } from '@aws-cdk/aws-iam'
 import { Handlers } from './constructLambdas'
 import addCorsOptions from './addCorsOptions'
 import env from '../../../lib/env'
@@ -70,11 +70,7 @@ const constructEndpoints = (api: RestApi): Resources => {
 }
 
 const DEFAULT_METHOD_OPTIONS = { apiKeyRequired: true }
-const integrateResourcesHandlers = (
-  role: iam.Role,
-  resources: Resources,
-  handlers: Handlers,
-): Method[] => {
+const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): Method[] => {
   const {
     singleFundRecords,
     quarterrates,
@@ -95,16 +91,12 @@ const integrateResourcesHandlers = (
     listQuarters,
   } = handlers
 
-  const options = { credentialsRole: role }
   // Integrations
-  const listSingleFundRecordsIntegration = new LambdaIntegration(listSingleFundRecords, options)
-  const listComRecordsIntegration = new LambdaIntegration(listCompanyRecords, options)
-  const listComSinglePeriodRatesIntegration = new LambdaIntegration(
-    listCompanySinglePeriodRates,
-    options
-  )
-  const searchRecordsIntegration = new LambdaIntegration(searchRecords, options)
-  const listQuartersIntegration = new LambdaIntegration(listQuarters, options)
+  const listSingleFundRecordsIntegration = new LambdaIntegration(listSingleFundRecords)
+  const listComRecordsIntegration = new LambdaIntegration(listCompanyRecords)
+  const listComSinglePeriodRatesIntegration = new LambdaIntegration(listCompanySinglePeriodRates)
+  const searchRecordsIntegration = new LambdaIntegration(searchRecords)
+  const listQuartersIntegration = new LambdaIntegration(listQuarters)
 
   // Add CORS options
   addCorsOptions(comRecords)
@@ -213,8 +205,24 @@ const constructRateLimitApiKeys = (
   })
 }
 
+const grantLambdaInvoke = (
+  api: RestApi,
+  stages: DeploymentStages,
+  handlers: Handlers,
+): void => Object.values(stages).forEach(({ stageName }: Stage, stageIndex) => {
+  const sourceArn = api.arnForExecuteApi('*', '/*', stageName)
+  Object.values(handlers)
+    .forEach((handler: Handlers[keyof Handlers], i) => {
+      handler.addPermission(`apigatewayPermission_${stageIndex}_${i}`, {
+        action: 'lambda:InvokeFunction',
+        principal: new ServicePrincipal('apigateway.amazonaws.com'),
+        sourceArn,
+      })
+    })
+})
+
 const API_ID = 'FundPricesApi'
-const constructApiGateway = (scope: cdk.Construct, role: iam.Role, handlers: Handlers): void => {
+const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => {
   const api = new RestApi(scope, API_ID, {
     restApiName: 'Fund Prices Service',
     description: 'Services for accessing fund-price resources',
@@ -222,8 +230,9 @@ const constructApiGateway = (scope: cdk.Construct, role: iam.Role, handlers: Han
     deploy: false,
   })
   const resources = constructEndpoints(api)
-  const methods = integrateResourcesHandlers(role, resources, handlers)
+  const methods = integrateResourcesHandlers(resources, handlers)
   const stages = constructDeploymentStages(scope, api)
   constructRateLimitApiKeys(api, methods, stages)
+  grantLambdaInvoke(api, stages, handlers)
 }
 export default constructApiGateway

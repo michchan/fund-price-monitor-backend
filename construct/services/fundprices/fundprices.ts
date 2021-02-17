@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core'
 
-import constructIamRoles from './constructs/constructIamRoles'
+import constructIamRole from './constructs/constructIamRole'
 import constructLamdas, { Handlers } from './constructs/constructLambdas'
 import constructApiGateway from './constructs/constructApiGateway'
 
@@ -11,9 +11,9 @@ export interface Output {
 }
 
 function construct (scope: cdk.Construct): Output {
-  const { lambdaRole, apiRole } = constructIamRoles(scope)
-  const handlers = constructLamdas(scope, lambdaRole, SERVICE_PATHNAME)
-  constructApiGateway(scope, apiRole, handlers)
+  const role = constructIamRole(scope)
+  const handlers = constructLamdas(scope, role, SERVICE_PATHNAME)
+  constructApiGateway(scope, handlers)
   return { handlers }
 }
 
