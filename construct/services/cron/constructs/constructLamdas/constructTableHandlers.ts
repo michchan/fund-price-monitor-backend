@@ -3,8 +3,8 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 export interface TableHandlers {
-  createTable: lambda.Function;
-  updateTable: lambda.Function;
+  createNextQuarterTable: lambda.Function;
+  updatePrevQuarterTable: lambda.Function;
 }
 const constructTableHandlers = (
   scope: cdk.Construct,
@@ -17,19 +17,19 @@ const constructTableHandlers = (
   // Handler for create table for next coming quarter
   const createTableHandler = new lambda.Function(scope, 'CronTableCreateHandler', {
     ...defaultInput,
-    handler: 'createTable.handler',
+    handler: 'createNextQuarterTable.handler',
     environment: commonTableHandlingEnv,
   })
   // Handler for adjust the provisioned throughput of table for previous quarter
   const updateTableHandler = new lambda.Function(scope, 'CronTableUpdateHandler', {
     ...defaultInput,
-    handler: 'updateTable.handler',
+    handler: 'updatePrevQuarterTable.handler',
     environment: commonTableHandlingEnv,
   })
 
   return {
-    createTable: createTableHandler,
-    updateTable: updateTableHandler,
+    createNextQuarterTable: createTableHandler,
+    updatePrevQuarterTable: updateTableHandler,
   }
 }
 export default constructTableHandlers

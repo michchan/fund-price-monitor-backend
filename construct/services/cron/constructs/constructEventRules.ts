@@ -47,14 +47,14 @@ const constructQuarterlyEventRules = (
   {
     notifyQuarterly,
     testNotifyQuarterly,
-    createTable,
-    updateTable,
+    createNextQuarterTable,
+    updatePrevQuarterTable,
     detailsScrapers,
   }: Pick<Handlers,
   | 'notifyQuarterly'
   | 'testNotifyQuarterly'
-  | 'createTable'
-  | 'updateTable'
+  | 'createNextQuarterTable'
+  | 'updatePrevQuarterTable'
   | 'detailsScrapers'
   >,
 ) => {
@@ -63,7 +63,7 @@ const constructQuarterlyEventRules = (
   const quarterNearEndRule = new events.Rule(scope, 'QuarterNearEndRule', {
     schedule: events.Schedule.expression('cron(0 15 28 3,6,9,12 ? *)'),
   })
-  quarterNearEndRule.addTarget(new targets.LambdaFunction(createTable))
+  quarterNearEndRule.addTarget(new targets.LambdaFunction(createNextQuarterTable))
   quarterNearEndRule.addTarget(new targets.LambdaFunction(notifyQuarterly))
   quarterNearEndRule.addTarget(new targets.LambdaFunction(testNotifyQuarterly))
 
@@ -80,7 +80,7 @@ const constructQuarterlyEventRules = (
   const quarterStartRule = new events.Rule(scope, 'QuarterStartRule', {
     schedule: events.Schedule.expression('cron(0 0 1 1,4,7,10 ? *)'),
   })
-  quarterStartRule.addTarget(new targets.LambdaFunction(updateTable))
+  quarterStartRule.addTarget(new targets.LambdaFunction(updatePrevQuarterTable))
 }
 
 type EventRulesArgs = [
