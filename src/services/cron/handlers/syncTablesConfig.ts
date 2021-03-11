@@ -59,7 +59,7 @@ export const handler: ScheduledHandler = async () => {
       }))
 
       const createHandler = (input: Omit<DynamoDB.UpdateTableInput, 'TableName'>) => async () => {
-        await updateTable(year, quarter, input)
+        await updateTable(year, quarter, input, true)
         if (i < arr.length - 1) await wait(DELAY)
       }
 
