@@ -1,7 +1,5 @@
 import { ScheduledHandler } from 'aws-lambda'
 import { DynamoDB } from 'aws-sdk'
-
-import omit from 'lodash/omit'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 import wait from 'simply-utils/dist/async/wait'
 
@@ -12,12 +10,6 @@ import fromTableName from 'src/models/fundPriceRecord/utils/fromTableName'
 import getTableParams from 'src/models/fundPriceRecord/utils/getTableParams'
 
 const DELAY = 1000
-
-const OMITTED_FIELDS = [
-  'TableName',
-  'KeySchema',
-  'GlobalSecondaryIndexes',
-]
 
 /**
  * Sync tables configuration with updated code
@@ -43,19 +35,19 @@ export const handler: ScheduledHandler = async () => {
         Create: gsi,
       }))
 
-      const createHandler = (
-        GlobalSecondaryIndexUpdates: DynamoDB.GlobalSecondaryIndexUpdateList
-      ) => async () => {
-        await updateTable(year, quarter, {
-          ...omit(params, OMITTED_FIELDS),
-          GlobalSecondaryIndexUpdates,
-        })
+      const createHandler = (input: Omit<DynamoDB.UpdateTableInput, 'TableName'>) => async () => {
+        await updateTable(year, quarter, input)
         if (i < arr.length - 1) await wait(DELAY)
       }
 
       return [
-        createHandler(gsiDeleteList),
-        createHandler(gsiCreateList),
+        createHandler({
+          AttributeDefinitions: params.AttributeDefinitions,
+          ProvisionedThroughput: params.ProvisionedThroughput,
+        }),
+        createHandler({ GlobalSecondaryIndexUpdates: gsiDeleteList }),
+        createHandler({ GlobalSecondaryIndexUpdates: gsiCreateList }),
+        createHandler({ StreamSpecification: params.StreamSpecification }),
       ]
     })
   )()
