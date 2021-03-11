@@ -94,7 +94,7 @@ const getTableParams = (
   // Add stream for aggregation of top-level items
   StreamSpecification: {
     StreamEnabled: isActive,
-    StreamViewType: 'NEW_AND_OLD_IMAGES',
+    StreamViewType: isActive ? 'NEW_AND_OLD_IMAGES' : undefined,
   },
 })
 
