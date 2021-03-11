@@ -75,22 +75,27 @@ const GlobalSecondaryIndexes = [
   recordsByRiskLevelGSI,
 ]
 
-const StreamSpecification = {
-  StreamEnabled: true,
-  StreamViewType: 'NEW_AND_OLD_IMAGES',
-}
-
-/** Helper to get table params */
-const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
+/**
+ * Helper to get table params
+ * @param TableName
+ * @param isActive Default to true
+ */
+const getTableParams = (
+  TableName: string,
+  isActive: boolean = true
+): DynamoDB.CreateTableInput => ({
   TableName,
   KeySchema,
   AttributeDefinitions,
   // Every created table are regarded as a table containing the latest timeSK series data,
   // So assign the best capacity units.
-  ProvisionedThroughput: tableThroughput.ACTIVE,
+  ProvisionedThroughput: isActive ? tableThroughput.ACTIVE : tableThroughput.INACTIVE,
   GlobalSecondaryIndexes,
   // Add stream for aggregation of top-level items
-  StreamSpecification,
+  StreamSpecification: {
+    StreamEnabled: isActive,
+    StreamViewType: 'NEW_AND_OLD_IMAGES',
+  },
 })
 
 export default getTableParams
