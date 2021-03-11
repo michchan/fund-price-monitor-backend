@@ -12,6 +12,7 @@ import describeTable, {
 import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import updateTable from 'src/models/fundPriceRecord/io/updateTable'
+import tableThroughput from 'src/models/fundPriceRecord/constants/tableThroughput'
 
 const lambda = new AWS.Lambda()
 
@@ -109,8 +110,8 @@ export const handler: ScheduledHandler<EventDetail> = async event => {
   } = event.detail ?? {}
   const {
     // Default to 1 for both RCU and WCU
-    ReadCapacityUnits = 1,
-    WriteCapacityUnits = 1,
+    ReadCapacityUnits = tableThroughput.INACTIVE.ReadCapacityUnits,
+    WriteCapacityUnits = tableThroughput.INACTIVE.WriteCapacityUnits,
   } = event.detail?.ProvisionedThroughput ?? {}
 
   // Check table existence of previous quarter

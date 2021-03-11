@@ -5,6 +5,7 @@ import getDefaultLambdaInput from './getDefaultLambdaInput'
 export interface TableHandlers {
   createNextQuarterTable: lambda.Function;
   updatePrevQuarterTable: lambda.Function;
+  syncTable: lambda.Function;
 }
 const constructTableHandlers = (
   scope: cdk.Construct,
@@ -27,9 +28,17 @@ const constructTableHandlers = (
     environment: commonTableHandlingEnv,
   })
 
+  // Handler for sync tables config
+  const syncTableHandler = new lambda.Function(scope, 'CronSyncTablesConfigHandler', {
+    ...defaultInput,
+    handler: 'syncTablesConfig.handler',
+    environment: commonTableHandlingEnv,
+  })
+
   return {
     createNextQuarterTable: createTableHandler,
     updatePrevQuarterTable: updateTableHandler,
+    syncTable: syncTableHandler,
   }
 }
 export default constructTableHandlers

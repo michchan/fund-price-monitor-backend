@@ -3,6 +3,7 @@ import { NonKeyAttributeNameList } from 'aws-sdk/clients/dynamodb'
 
 import attrs from '../constants/attributeNames'
 import indexNames from '../constants/indexNames'
+import tableThroughput from '../constants/tableThroughput'
 
 const RECORD_PROJECTED_ATTRS = [
   attrs.PRICE,
@@ -79,10 +80,6 @@ const StreamSpecification = {
   StreamViewType: 'NEW_AND_OLD_IMAGES',
 }
 
-// Minimum of 2 is required for the table aggregation IO processes
-const ReadCapacityUnits = 2
-const WriteCapacityUnits = 2
-
 /** Helper to get table params */
 const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
   TableName,
@@ -90,10 +87,7 @@ const getTableParams = (TableName: string): DynamoDB.CreateTableInput => ({
   AttributeDefinitions,
   // Every created table are regarded as a table containing the latest timeSK series data,
   // So assign the best capacity units.
-  ProvisionedThroughput: {
-    ReadCapacityUnits,
-    WriteCapacityUnits,
-  },
+  ProvisionedThroughput: tableThroughput.ACTIVE,
   GlobalSecondaryIndexes,
   // Add stream for aggregation of top-level items
   StreamSpecification,
