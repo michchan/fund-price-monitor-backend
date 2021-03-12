@@ -124,7 +124,10 @@ export const handler: ScheduledHandler = async () => {
       }
       const mapGsiActionToHandler = (
         action: DynamoDB.GlobalSecondaryIndexUpdate
-      ) => createHandler({ GlobalSecondaryIndexUpdates: [action] })
+      ) => createHandler({
+        AttributeDefinitions: params.AttributeDefinitions,
+        GlobalSecondaryIndexUpdates: [action],
+      })
 
       const isAttrChanged = !isEqual(
         [...(tableDesc.AttributeDefinitions || [])].sort(sortAttr),
