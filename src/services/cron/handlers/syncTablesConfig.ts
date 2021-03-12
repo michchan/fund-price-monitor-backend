@@ -146,9 +146,9 @@ export const handler: ScheduledHandler = async () => {
         { TableName: tableName },
         (action.Create || action.Update || action.Delete)?.IndexName as string,
         (() => {
-          if (action.Delete) return 'notExist'
+          if (action.Delete) return 'deleted'
           if (action.Update) return 'updated'
-          return 'exist'
+          return 'created'
         })()
       ))
 
