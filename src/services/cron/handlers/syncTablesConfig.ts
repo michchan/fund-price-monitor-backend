@@ -118,7 +118,10 @@ export const handler: ScheduledHandler = async () => {
       const createHandler = (input: Omit<DynamoDB.UpdateTableInput, 'TableName'>) => async () => {
         const updateId = generateRandomString()
         logObj(`[${updateId}] Updating ${tableName}: `, input)
-        await updateTable(year, quarter, input, true)
+        await updateTable(year, quarter, {
+          ProvisionedThroughput: params.ProvisionedThroughput,
+          ...input,
+        }, true)
         logObj(`[${updateId}] UPDATED ${tableName}`, {})
         if (i < arr.length - 1) await wait(DELAY)
       }
@@ -145,13 +148,27 @@ export const handler: ScheduledHandler = async () => {
         params.StreamSpecification
       )
 
-      logObj('Changed parts in input: ', {
+      logObj(`Attributes Change (${tableName}): `, {
         isAttrChanged,
+        table: tableDesc.AttributeDefinitions,
+        params: params.AttributeDefinitions,
+      })
+      logObj(`Throughput Change (${tableName}): `, {
         isThroughputChanged,
+        table: tableDesc.ProvisionedThroughput,
+        params: params.ProvisionedThroughput,
+      })
+      logObj(`Stream spec Change (${tableName}): `, {
         isStreamSpecChanged,
+        table: tableDesc.StreamSpecification,
+        params: params.StreamSpecification,
+      })
+      logObj(`GSI Change (${tableName}): `, {
         gsiUpdateList,
         gsiCreateList,
         gsiDeleteList,
+        table: tableDesc.GlobalSecondaryIndexes,
+        params: params.GlobalSecondaryIndexes,
       })
 
       return [
