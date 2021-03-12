@@ -2,6 +2,8 @@ import * as cdk from '@aws-cdk/core'
 import * as lambda from '@aws-cdk/aws-lambda'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
+const MAX_DURATION_MINS = 15
+
 export interface TableHandlers {
   createNextQuarterTable: lambda.Function;
   updatePrevQuarterTable: lambda.Function;
@@ -33,6 +35,7 @@ const constructTableHandlers = (
     ...defaultInput,
     handler: 'syncTablesConfig.handler',
     environment: commonTableHandlingEnv,
+    timeout: cdk.Duration.minutes(MAX_DURATION_MINS),
   })
 
   return {
