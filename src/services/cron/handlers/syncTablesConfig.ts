@@ -118,10 +118,7 @@ export const handler: ScheduledHandler = async () => {
       const createHandler = (input: Omit<DynamoDB.UpdateTableInput, 'TableName'>) => async () => {
         const updateId = generateRandomString()
         logObj(`[${updateId}] Updating ${tableName}: `, input)
-        await updateTable(year, quarter, {
-          ProvisionedThroughput: params.ProvisionedThroughput,
-          ...input,
-        }, true)
+        await updateTable(year, quarter, input, true)
         logObj(`[${updateId}] UPDATED ${tableName}`, {})
         if (i < arr.length - 1) await wait(DELAY)
       }
@@ -172,7 +169,6 @@ export const handler: ScheduledHandler = async () => {
       })
 
       return [
-        isAttrChanged && createHandler({ AttributeDefinitions: params.AttributeDefinitions }),
         isThroughputChanged
           && createHandler({ ProvisionedThroughput: params.ProvisionedThroughput }),
         isStreamSpecChanged && createHandler({ StreamSpecification: params.StreamSpecification }),
