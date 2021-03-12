@@ -13,6 +13,7 @@ import updateTable from 'src/models/fundPriceRecord/io/updateTable'
 import fromTableName from 'src/models/fundPriceRecord/utils/fromTableName'
 import getTableParams from 'src/models/fundPriceRecord/utils/getTableParams'
 import logObj from 'src/helpers/logObj'
+import waitForGlobalSecondaryIndex from 'src/lib/AWS/dynamodb/waitForGlobalSecondaryIndex'
 
 type TableDesc = DynamoDB.TableDescription
 type AttrDef = Pick<DynamoDB.AttributeDefinition, 'AttributeName'>
@@ -123,10 +124,16 @@ export const handler: ScheduledHandler = async () => {
         Delete: { IndexName } as DynamoDB.DeleteGlobalSecondaryIndexAction,
       }))
 
-      const createHandler = (input: Omit<DynamoDB.UpdateTableInput, 'TableName'>) => async () => {
+      const createHandler = (
+        input: Omit<DynamoDB.UpdateTableInput, 'TableName'>,
+        asyncCallback?: () => Promise<unknown>,
+      ) => async () => {
         const updateId = generateRandomString()
         logObj(`[${updateId}] Updating ${tableName}: `, input)
+
         await updateTable(year, quarter, input, true)
+        if (asyncCallback) await asyncCallback()
+
         logObj(`[${updateId}] UPDATED ${tableName}`, {})
         if (i < arr.length - 1) await wait(DELAY)
       }
@@ -135,7 +142,15 @@ export const handler: ScheduledHandler = async () => {
       ) => createHandler({
         AttributeDefinitions: params.AttributeDefinitions,
         GlobalSecondaryIndexUpdates: [action],
-      })
+      }, () => waitForGlobalSecondaryIndex(
+        { TableName: tableName },
+        (action.Create || action.Update || action.Delete)?.IndexName as string,
+        (() => {
+          if (action.Delete) return 'notExist'
+          if (action.Update) return 'updated'
+          return 'exist'
+        })()
+      ))
 
       const isAttrChanged = !isEqual(
         [...(tableDesc.AttributeDefinitions || [])].sort(sortAttr),
