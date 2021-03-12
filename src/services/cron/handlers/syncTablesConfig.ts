@@ -5,6 +5,7 @@ import isEqual from 'lodash/isEqual'
 import isFunction from 'lodash/isFunction'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 import wait from 'simply-utils/dist/async/wait'
+import generateRandomString from 'simply-utils/dist/string/generateRandomString'
 
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import listTables from 'src/models/fundPriceRecord/io/listTables'
@@ -14,7 +15,7 @@ import getTableParams from 'src/models/fundPriceRecord/utils/getTableParams'
 import logObj from 'src/helpers/logObj'
 
 type TableDesc = DynamoDB.TableDescription
-type AttrDef = DynamoDB.AttributeDefinition
+type AttrDef = Pick<DynamoDB.AttributeDefinition, 'AttributeName'>
 
 const dynamodb = new DynamoDB()
 const DELAY = 1000
@@ -26,10 +27,17 @@ const sortAttr = (a: AttrDef, b: AttrDef): number => {
   if (b.AttributeName < a.AttributeName) return 1
   return 0
 }
+const sortStr = (a: string, b: string): number => {
+  if (a > b) return -1
+  if (b < a) return 1
+  return 0
+}
 
 /**
  * Sync tables configuration with updated code
  */
+// @TODO: Refractor functions
+/* eslint-disable max-lines-per-function */
 export const handler: ScheduledHandler = async () => {
   const tableNames = await listTables()
   const tableDescriptions = await pipeAsync<TableDesc[]>(
@@ -51,17 +59,72 @@ export const handler: ScheduledHandler = async () => {
       const params = getTableParams(tableName, isActive)
       const { GlobalSecondaryIndexes = [] } = params
 
-      const gsiDeleteList = GlobalSecondaryIndexes?.map(({ IndexName }) => ({
-        Delete: { IndexName },
-      }))
-      const gsiCreateList = GlobalSecondaryIndexes?.map(gsi => ({
-        Create: gsi,
+      const gsiUpdateList = GlobalSecondaryIndexes
+        ?.filter(({ IndexName, ProvisionedThroughput }) => {
+          if (!ProvisionedThroughput) return false
+          const prevGsi = tableDesc.GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
+          if (prevGsi) {
+            return !isEqual(
+              pick(prevGsi.ProvisionedThroughput, THROUGHPUT_COMPARE_ATTRS),
+              pick(ProvisionedThroughput, THROUGHPUT_COMPARE_ATTRS),
+            )
+          }
+          // No corresponding GSI
+          return false
+        })
+        ?.map(gsi => ({
+          Update: pick(gsi, ['IndexName', 'ProvisionedThroughput']) as DynamoDB.UpdateGlobalSecondaryIndexAction,
+        }))
+
+      const gsiCreateList = GlobalSecondaryIndexes
+        ?.filter(({ IndexName, KeySchema, Projection }) => {
+          const prevGsi = tableDesc.GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
+          if (prevGsi) {
+            const hasKeySchemaChanged = !isEqual(
+              [...(prevGsi.KeySchema || [])].sort(sortAttr),
+              [...(KeySchema || [])].sort(sortAttr)
+            )
+            const hasProjectionChanged = !isEqual(
+              {
+                ...prevGsi.Projection,
+                NonKeyAttributes: prevGsi.Projection?.NonKeyAttributes?.sort(sortStr),
+              },
+              {
+                ...Projection,
+                NonKeyAttributes: Projection?.NonKeyAttributes?.sort(sortStr),
+              },
+            )
+            return hasKeySchemaChanged || hasProjectionChanged
+          }
+          // Create new GSI
+          return true
+        })
+        ?.map(gsi => ({
+          Create: gsi as DynamoDB.CreateGlobalSecondaryIndexAction,
+        }))
+
+      const gsiDeleteList = [
+        ...(tableDesc.GlobalSecondaryIndexes || [])
+          .filter(({ IndexName }) => {
+            const nextGsi = GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
+            if (!nextGsi) return true
+            return false
+          }),
+        ...gsiCreateList.map(c => c.Create),
+      ].map(({ IndexName }) => ({
+        Delete: { IndexName } as DynamoDB.DeleteGlobalSecondaryIndexAction,
       }))
 
       const createHandler = (input: Omit<DynamoDB.UpdateTableInput, 'TableName'>) => async () => {
+        const updateId = generateRandomString()
+        logObj(`[${updateId}] Updating ${tableName}: `, input)
         await updateTable(year, quarter, input, true)
+        logObj(`[${updateId}] UPDATED ${tableName}`, {})
         if (i < arr.length - 1) await wait(DELAY)
       }
+      const mapGsiActionToHandler = (
+        action: DynamoDB.GlobalSecondaryIndexUpdate
+      ) => createHandler({ GlobalSecondaryIndexUpdates: [action] })
 
       const isAttrChanged = !isEqual(
         [...(tableDesc.AttributeDefinitions || [])].sort(sortAttr),
@@ -71,10 +134,6 @@ export const handler: ScheduledHandler = async () => {
         pick(tableDesc.ProvisionedThroughput, THROUGHPUT_COMPARE_ATTRS),
         pick(params.ProvisionedThroughput, THROUGHPUT_COMPARE_ATTRS),
       )
-      const isGSIChanged = !isEqual(
-        tableDesc.GlobalSecondaryIndexes,
-        GlobalSecondaryIndexes
-      )
       const isStreamSpecChanged = !(
         !params.StreamSpecification?.StreamEnabled
         && !tableDesc.StreamSpecification?.StreamEnabled
@@ -82,20 +141,24 @@ export const handler: ScheduledHandler = async () => {
         tableDesc.StreamSpecification,
         params.StreamSpecification
       )
+
       logObj('Changed parts in input: ', {
         isAttrChanged,
         isThroughputChanged,
-        isGSIChanged,
         isStreamSpecChanged,
+        gsiUpdateList,
+        gsiCreateList,
+        gsiDeleteList,
       })
 
       return [
         isAttrChanged && createHandler({ AttributeDefinitions: params.AttributeDefinitions }),
         isThroughputChanged
           && createHandler({ ProvisionedThroughput: params.ProvisionedThroughput }),
-        isGSIChanged && createHandler({ GlobalSecondaryIndexUpdates: gsiDeleteList }),
-        isGSIChanged && createHandler({ GlobalSecondaryIndexUpdates: gsiCreateList }),
         isStreamSpecChanged && createHandler({ StreamSpecification: params.StreamSpecification }),
+        ...gsiUpdateList.map(mapGsiActionToHandler),
+        ...gsiDeleteList.map(mapGsiActionToHandler),
+        ...gsiCreateList.map(mapGsiActionToHandler),
       ].filter(isFunction)
     })
   )()
