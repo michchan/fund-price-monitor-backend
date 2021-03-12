@@ -105,12 +105,20 @@ export const handler: ScheduledHandler = async () => {
 
       const gsiDeleteList = [
         ...(tableDesc.GlobalSecondaryIndexes || [])
+          // Only keep which does NOT exist in the update params
           .filter(({ IndexName }) => {
             const nextGsi = GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
             if (!nextGsi) return true
             return false
           }),
-        ...gsiCreateList.map(c => c.Create),
+        ...gsiCreateList
+          .map(c => c.Create)
+          // Only keep which exists in the table
+          .filter(({ IndexName }) => {
+            const gsi = tableDesc.GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
+            if (gsi) return true
+            return false
+          }),
       ].map(({ IndexName }) => ({
         Delete: { IndexName } as DynamoDB.DeleteGlobalSecondaryIndexAction,
       }))
