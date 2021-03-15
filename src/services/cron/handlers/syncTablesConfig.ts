@@ -17,6 +17,7 @@ import waitForGlobalSecondaryIndex from 'src/lib/AWS/dynamodb/waitForGlobalSecon
 
 type TableDesc = DynamoDB.TableDescription
 type AttrDef = Pick<DynamoDB.AttributeDefinition, 'AttributeName'>
+type GSIList = DynamoDB.GlobalSecondaryIndexList
 
 const dynamodb = new DynamoDB()
 const DELAY = 1000
@@ -32,6 +33,134 @@ const sortStr = (a: string, b: string): number => {
   if (a > b) return -1
   if (b < a) return 1
   return 0
+}
+
+type GSIUpdateActionList = {
+  Update: DynamoDB.UpdateGlobalSecondaryIndexAction;
+}[]
+const getGSIUpdateList = (
+  tableDesc: TableDesc,
+  GlobalSecondaryIndexes: GSIList
+): GSIUpdateActionList => GlobalSecondaryIndexes
+  ?.filter(({ IndexName, ProvisionedThroughput }) => {
+    if (!ProvisionedThroughput) return false
+    const prevGsi = tableDesc.GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
+    if (prevGsi) {
+      return !isEqual(
+        pick(prevGsi.ProvisionedThroughput, THROUGHPUT_COMPARE_ATTRS),
+        pick(ProvisionedThroughput, THROUGHPUT_COMPARE_ATTRS),
+      )
+    }
+    // No corresponding GSI
+    return false
+  })
+  ?.map(gsi => ({
+    Update: pick(gsi, ['IndexName', 'ProvisionedThroughput']) as DynamoDB.UpdateGlobalSecondaryIndexAction,
+  }))
+
+type GSICreateActionList = {
+  Create: DynamoDB.CreateGlobalSecondaryIndexAction;
+}[]
+const getGSICreateList = (
+  tableDesc: TableDesc,
+  GlobalSecondaryIndexes: GSIList
+): GSICreateActionList => GlobalSecondaryIndexes
+  ?.filter(({ IndexName, KeySchema, Projection }) => {
+    const prevGsi = tableDesc.GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
+    if (prevGsi) {
+      const hasKeySchemaChanged = !isEqual(
+        [...(prevGsi.KeySchema || [])].sort(sortAttr),
+        [...(KeySchema || [])].sort(sortAttr)
+      )
+      const hasProjectionChanged = !isEqual(
+        {
+          ...prevGsi.Projection,
+          NonKeyAttributes: prevGsi.Projection?.NonKeyAttributes?.sort(sortStr),
+        },
+        {
+          ...Projection,
+          NonKeyAttributes: Projection?.NonKeyAttributes?.sort(sortStr),
+        },
+      )
+      return hasKeySchemaChanged || hasProjectionChanged
+    }
+    // Create new GSI
+    return true
+  })
+  ?.map(gsi => ({
+    Create: gsi as DynamoDB.CreateGlobalSecondaryIndexAction,
+  }))
+
+type GSIDeleteActionList = {
+  Delete: DynamoDB.DeleteGlobalSecondaryIndexAction;
+}[]
+const getGSIDeleteList = (
+  tableDesc: TableDesc,
+  GlobalSecondaryIndexes: GSIList,
+  gsiCreateList: GSICreateActionList,
+): GSIDeleteActionList => [
+  ...(tableDesc.GlobalSecondaryIndexes || [])
+    // Only keep which does NOT exist in the update params
+    .filter(({ IndexName }) => {
+      const nextGsi = GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
+      if (!nextGsi) return true
+      return false
+    }),
+  ...gsiCreateList
+    .map(c => c.Create)
+    // Only keep which exists in the table
+    .filter(({ IndexName }) => {
+      const gsi = tableDesc.GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
+      if (gsi) return true
+      return false
+    }),
+].map(({ IndexName }) => ({
+  Delete: { IndexName } as DynamoDB.DeleteGlobalSecondaryIndexAction,
+}))
+
+interface LogOptions {
+  isAttrChanged: boolean;
+  isThroughputChanged: boolean;
+  isStreamSpecChanged: boolean;
+  gsiUpdateList: GSIUpdateActionList;
+  gsiCreateList: GSICreateActionList;
+  gsiDeleteList: GSIDeleteActionList;
+}
+const logChanges = (
+  tableName: string,
+  tableDesc: TableDesc,
+  params: ReturnType<typeof getTableParams>,
+  {
+    isAttrChanged,
+    isThroughputChanged,
+    isStreamSpecChanged,
+    gsiUpdateList,
+    gsiCreateList,
+    gsiDeleteList,
+  }: LogOptions
+) => {
+  logObj(`Attributes Change (${tableName}): `, {
+    isAttrChanged,
+    table: tableDesc.AttributeDefinitions,
+    params: params.AttributeDefinitions,
+  })
+  logObj(`Throughput Change (${tableName}): `, {
+    isThroughputChanged,
+    table: tableDesc.ProvisionedThroughput,
+    params: params.ProvisionedThroughput,
+  })
+  logObj(`Stream spec Change (${tableName}): `, {
+    isStreamSpecChanged,
+    table: tableDesc.StreamSpecification,
+    params: params.StreamSpecification,
+  })
+  logObj(`GSI Change (${tableName}): `, {
+    gsiUpdateList,
+    gsiCreateList,
+    gsiDeleteList,
+    table: tableDesc.GlobalSecondaryIndexes,
+    params: params.GlobalSecondaryIndexes,
+  })
 }
 
 /**
@@ -60,69 +189,9 @@ export const handler: ScheduledHandler = async () => {
       const params = getTableParams(tableName, isActive)
       const { GlobalSecondaryIndexes = [] } = params
 
-      const gsiUpdateList = GlobalSecondaryIndexes
-        ?.filter(({ IndexName, ProvisionedThroughput }) => {
-          if (!ProvisionedThroughput) return false
-          const prevGsi = tableDesc.GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
-          if (prevGsi) {
-            return !isEqual(
-              pick(prevGsi.ProvisionedThroughput, THROUGHPUT_COMPARE_ATTRS),
-              pick(ProvisionedThroughput, THROUGHPUT_COMPARE_ATTRS),
-            )
-          }
-          // No corresponding GSI
-          return false
-        })
-        ?.map(gsi => ({
-          Update: pick(gsi, ['IndexName', 'ProvisionedThroughput']) as DynamoDB.UpdateGlobalSecondaryIndexAction,
-        }))
-
-      const gsiCreateList = GlobalSecondaryIndexes
-        ?.filter(({ IndexName, KeySchema, Projection }) => {
-          const prevGsi = tableDesc.GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
-          if (prevGsi) {
-            const hasKeySchemaChanged = !isEqual(
-              [...(prevGsi.KeySchema || [])].sort(sortAttr),
-              [...(KeySchema || [])].sort(sortAttr)
-            )
-            const hasProjectionChanged = !isEqual(
-              {
-                ...prevGsi.Projection,
-                NonKeyAttributes: prevGsi.Projection?.NonKeyAttributes?.sort(sortStr),
-              },
-              {
-                ...Projection,
-                NonKeyAttributes: Projection?.NonKeyAttributes?.sort(sortStr),
-              },
-            )
-            return hasKeySchemaChanged || hasProjectionChanged
-          }
-          // Create new GSI
-          return true
-        })
-        ?.map(gsi => ({
-          Create: gsi as DynamoDB.CreateGlobalSecondaryIndexAction,
-        }))
-
-      const gsiDeleteList = [
-        ...(tableDesc.GlobalSecondaryIndexes || [])
-          // Only keep which does NOT exist in the update params
-          .filter(({ IndexName }) => {
-            const nextGsi = GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
-            if (!nextGsi) return true
-            return false
-          }),
-        ...gsiCreateList
-          .map(c => c.Create)
-          // Only keep which exists in the table
-          .filter(({ IndexName }) => {
-            const gsi = tableDesc.GlobalSecondaryIndexes?.find(c => c.IndexName === IndexName)
-            if (gsi) return true
-            return false
-          }),
-      ].map(({ IndexName }) => ({
-        Delete: { IndexName } as DynamoDB.DeleteGlobalSecondaryIndexAction,
-      }))
+      const gsiUpdateList = getGSIUpdateList(tableDesc, GlobalSecondaryIndexes)
+      const gsiCreateList = getGSICreateList(tableDesc, GlobalSecondaryIndexes)
+      const gsiDeleteList = getGSIDeleteList(tableDesc, GlobalSecondaryIndexes, gsiCreateList)
 
       const createHandler = (
         input: Omit<DynamoDB.UpdateTableInput, 'TableName'>,
@@ -168,27 +237,13 @@ export const handler: ScheduledHandler = async () => {
         params.StreamSpecification
       )
 
-      logObj(`Attributes Change (${tableName}): `, {
+      logChanges(tableName, tableDesc, params, {
         isAttrChanged,
-        table: tableDesc.AttributeDefinitions,
-        params: params.AttributeDefinitions,
-      })
-      logObj(`Throughput Change (${tableName}): `, {
         isThroughputChanged,
-        table: tableDesc.ProvisionedThroughput,
-        params: params.ProvisionedThroughput,
-      })
-      logObj(`Stream spec Change (${tableName}): `, {
         isStreamSpecChanged,
-        table: tableDesc.StreamSpecification,
-        params: params.StreamSpecification,
-      })
-      logObj(`GSI Change (${tableName}): `, {
         gsiUpdateList,
         gsiCreateList,
         gsiDeleteList,
-        table: tableDesc.GlobalSecondaryIndexes,
-        params: params.GlobalSecondaryIndexes,
       })
 
       return [
