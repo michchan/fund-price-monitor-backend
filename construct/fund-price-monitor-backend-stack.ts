@@ -1,11 +1,12 @@
 import * as cdk from '@aws-cdk/core'
 import * as lambda from '@aws-cdk/aws-lambda'
 
+import runtimeEnv from '../src/lib/env'
 import cron, { Output as CronOutput } from './services/cron'
 import fundprices, { Output as FundpricesOutput } from './services/fundprices'
 import logging from './services/logging'
 import migration, { Output as MigrationOutput } from './services/migration'
-import runtimeEnv from '../src/lib/env'
+import webDeployment from './services/webDeployment'
 
 interface GroupAllHandlersOptions {
   fundpricesHandlers: FundpricesOutput['handlers'];
@@ -42,6 +43,8 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
     const { handlers: fundpricesHandlers } = fundprices.construct(this)
     // Initialize migration service
     const { handlers: migrationHandlers } = migration.construct(this)
+    // Initialize web deployment service
+    webDeployment.construct(this)
 
     const handlers = groupAllHandlers({
       cronHandlers,
