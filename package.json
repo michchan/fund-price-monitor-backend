@@ -1,6 +1,6 @@
 {
   "name": "fund-price-monitor-backend",
-  "version": "0.53.0",
+  "version": "0.53.1",
   "bin": {
     "fund-price-monitor-backend": "bin/fund-price-monitor-backend.ts"
   },
