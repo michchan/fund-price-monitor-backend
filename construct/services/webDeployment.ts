@@ -4,8 +4,6 @@ import * as iam from '@aws-cdk/aws-iam'
 
 function constructS3Bucket (scope: cdk.Construct) {
   const bucket = new s3.Bucket(scope, 'WebStaticBucket', {
-    enforceSSL: true,
-    publicReadAccess: true,
     websiteErrorDocument: 'error.html',
     websiteIndexDocument: 'index.html',
   })
