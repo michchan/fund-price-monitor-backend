@@ -9,7 +9,7 @@ function constructS3Bucket (scope: cdk.Construct) {
   })
   bucket.addToResourcePolicy(new iam.PolicyStatement({
     sid: 'PublicReadGetObject',
-    principals: [new iam.AccountRootPrincipal()],
+    principals: [new iam.AnyPrincipal()],
     effect: iam.Effect.ALLOW,
     actions: ['s3:GetObject'],
     resources: [bucket.arnForObjects('*')],
