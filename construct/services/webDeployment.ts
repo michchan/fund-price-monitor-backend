@@ -3,7 +3,7 @@ import * as s3 from '@aws-cdk/aws-s3'
 import * as iam from '@aws-cdk/aws-iam'
 
 function constructS3Bucket (scope: cdk.Construct) {
-  const bucket = new s3.Bucket(scope, 'WebStaticBucket', {
+  const bucket = new s3.Bucket(scope, 'WebStaticServingBucket', {
     publicReadAccess: true,
     websiteErrorDocument: 'error.html',
     websiteIndexDocument: 'index.html',
