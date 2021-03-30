@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam'
 function constructS3Bucket (scope: cdk.Construct) {
   const bucket = new s3.Bucket(scope, 'WebStaticServingBucket', {
     publicReadAccess: true,
-    websiteErrorDocument: 'error.html',
+    websiteErrorDocument: '404.html',
     websiteIndexDocument: 'index.html',
   })
   bucket.addToResourcePolicy(new iam.PolicyStatement({
