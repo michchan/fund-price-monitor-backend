@@ -33,13 +33,18 @@ const constructMonthlyEventRules = (
   { notifyMonthly, testNotifyMonthly }: Pick<Handlers, 'notifyMonthly' | 'testNotifyMonthly'>,
   { scrapeDetails }: Pick<StateMachines, 'scrapeDetails'>,
 ) => {
+  // Run on every start day of month
+  const monthlyStartRule = new events.Rule(scope, 'MonthlyStartRule', {
+    schedule: events.Schedule.expression('cron(0 0 1 * * *)'),
+  })
+  monthlyStartRule.addTarget(new targets.SfnStateMachine(scrapeDetails))
+
   // Run on the 28th day in every month at 15:00 UTC
   const monthlyReviewRule = new events.Rule(scope, 'MonthlyReviewRule', {
-    schedule: events.Schedule.expression('cron(0 15 28 * ? *)'),
+    schedule: events.Schedule.expression('cron(0 15 28 * * *)'),
   })
   monthlyReviewRule.addTarget(new targets.LambdaFunction(notifyMonthly))
   monthlyReviewRule.addTarget(new targets.LambdaFunction(testNotifyMonthly))
-  monthlyReviewRule.addTarget(new targets.SfnStateMachine(scrapeDetails))
 }
 
 const constructQuarterlyEventRules = (
