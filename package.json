@@ -15,7 +15,7 @@
       "ignore": "src/services/cron/handlers/__*.ts",
       "quiet": false
     },
-    "build:dev": {
+    "build-dev": {
       "patterns": [
         "src",
         "construct",
@@ -27,22 +27,22 @@
   },
   "scripts": {
     "analyze": "webpack-bundle-analyzer",
-    "build": "npm run build:scrapers && tsc && webpack && npm run rm-scrapers-cache",
-    "build:dev": "tsc && webpack",
-    "build:scrapers": "ts-node scripts/buildScrapers",
+    "build": "npm run build-scrapers && tsc && webpack && npm run rm-scrapers-cache",
+    "build-dev": "tsc && webpack",
+    "build-scrapers": "ts-node scripts/buildScrapers",
     "cdk": "cdk",
     "clear-build-cache": "rm -rf ./build && rm -rf ./bundles",
     "deploy": "cdk deploy FundPriceMonitorBackendStack --require-approval never",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "eslint:fix": "npm run eslint -- --fix",
+    "eslint-fix": "npm run eslint -- --fix",
     "invoke": "sam local invoke --profile=$AWS_PROFILE",
     "rm-scrapers-cache": "ts-node scripts/removeScrapersCache",
-    "start:api": "sam local start-api --profile=$AWS_PROFILE",
+    "start-api": "sam local start-api --profile=$AWS_PROFILE -p $SAM_API_PORT",
     "template": "npm run build && cdk synth --no-staging > template.yaml --profile=$AWS_PROFILE",
     "test": "jest",
-    "watch": "npm-watch build:dev",
-    "watch:all": "npm-watch build",
-    "watch:tsc": "tsc --watch --noemit"
+    "watch": "npm-watch build-dev",
+    "watch-all": "npm-watch build",
+    "watch-tsc": "tsc --watch --noemit"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.94.1",
