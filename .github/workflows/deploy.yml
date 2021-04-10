@@ -15,6 +15,18 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    env:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_RUNTIME_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      API_KEY_DEV: ${{ secrets.API_KEY_DEV }}
+      API_KEY_DEFAULT_PUBLIC_ACCESS: ${{ secrets.API_KEY_DEFAULT_PUBLIC_ACCESS }}
+      API_CORS_WHITELIST: ${{ secrets.API_CORS_WHITELIST }}
+      GENERAL_LOG_SUBSCRIPTION_EMAIL: ${{ secrets.GENERAL_LOG_SUBSCRIPTION_EMAIL }}
+      TELEGRAM_BOT_API_KEY_PARAMETER_NAME: ${{ secrets.TELEGRAM_BOT_API_KEY_PARAMETER_NAME }}
+      TELEGRAM_BOT_API_KEY_PARAMETER_VERSION: 1
+      TELEGRAM_CHAT_ID_PARAMETER_NAME: ${{ secrets.TELEGRAM_CHAT_ID_PARAMETER_NAME }}
+      TELEGRAM_TEST_CHAT_ID_PARAMETER_NAME: ${{ secrets.TELEGRAM_TEST_CHAT_ID_PARAMETER_NAME }}
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checkout master branch
@@ -44,17 +56,6 @@ jobs:
       # Build
       - name: Build
         run: npm run build
-        env:
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_RUNTIME_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          API_KEY_DEV: ${{ secrets.API_KEY_DEV }}
-          API_KEY_DEFAULT_PUBLIC_ACCESS: ${{ secrets.API_KEY_DEFAULT_PUBLIC_ACCESS }}
-          API_CORS_WHITELIST: ${{ secrets.API_CORS_WHITELIST }}
-          GENERAL_LOG_SUBSCRIPTION_EMAIL: ${{ secrets.GENERAL_LOG_SUBSCRIPTION_EMAIL }}
-          TELEGRAM_BOT_API_KEY_PARAMETER_NAME: ${{ secrets.TELEGRAM_BOT_API_KEY_PARAMETER_NAME }}
-          TELEGRAM_BOT_API_KEY_PARAMETER_VERSION: 1
-          TELEGRAM_CHAT_ID_PARAMETER_NAME: ${{ secrets.TELEGRAM_CHAT_ID_PARAMETER_NAME }}
-          TELEGRAM_TEST_CHAT_ID_PARAMETER_NAME: ${{ secrets.TELEGRAM_TEST_CHAT_ID_PARAMETER_NAME }}
 
       # CDK Deploy 
       - name: cdk deploy
