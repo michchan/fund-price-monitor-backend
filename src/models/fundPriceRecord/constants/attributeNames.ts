@@ -1,6 +1,5 @@
 /* eslint-disable sort-keys */
-import FundDetails from '../FundDetails.type'
-import { CompanyType, FundType, RiskLevel } from '../FundPriceRecord.type'
+import { FundDetails, CompanyType, FundType, RiskLevel } from '@michchan/fund-price-monitor-lib'
 
 const attributeNames = {
   // Based table partition key

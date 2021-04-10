@@ -1,9 +1,9 @@
 import { ScheduledHandler } from 'aws-lambda'
 import launchPuppeteerBrowserSession, { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
+import { FundDetails } from '@michchan/fund-price-monitor-lib'
 
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import logObj from 'src/helpers/logObj'
-import FundDetails from 'src/models/fundPriceRecord/FundDetails.type'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 
 type TRec = FundDetails

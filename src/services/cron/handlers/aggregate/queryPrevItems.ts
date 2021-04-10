@@ -1,6 +1,6 @@
+import { FundPriceRecord, FundPriceChangeRate, CompanyType } from '@michchan/fund-price-monitor-lib'
+
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
-import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
-import FundPriceRecord, { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'

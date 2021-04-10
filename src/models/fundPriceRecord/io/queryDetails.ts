@@ -1,13 +1,12 @@
 import isFunction from 'lodash/isFunction'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { FundDetails, CompanyType } from '@michchan/fund-price-monitor-lib'
 
 import queryItems, { Output as O } from './queryItems'
 import attrs from '../constants/attributeNames'
-import { CompanyType } from '../FundPriceRecord.type'
 import TableRange from '../TableRange.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import topLevelKeysValues from '../constants/topLevelKeysValues'
-import FundDetails from '../FundDetails.type'
 import parseDetail from '../utils/parseDetail'
 
 export const EXP_COM_CODE_PK = ':company_code' as string

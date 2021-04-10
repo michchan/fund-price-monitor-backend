@@ -1,4 +1,4 @@
-import FundDetails from 'src/models/fundPriceRecord/FundDetails.type'
+import { FundDetails } from '@michchan/fund-price-monitor-lib'
 import getCompanyCodePK from 'src/models/fundPriceRecord/utils/getCompanyCodePK'
 
 type FD = FundDetails

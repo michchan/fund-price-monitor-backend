@@ -1,4 +1,4 @@
-import { FundType } from '../FundPriceRecord.type'
+import { FundType } from '@michchan/fund-price-monitor-lib'
 
 const whitelist: FundType[] = ['mpf']
 const regex = new RegExp(`^(${whitelist.join('|')})$`, 'i')

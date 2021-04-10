@@ -1,6 +1,6 @@
 import { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
+import { FundPriceRecord, FundType } from '@michchan/fund-price-monitor-lib'
 
-import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import getRecordsScraperTemplateHandler from '../helpers/getRecordsScraperTemplateHandler'
 import notifyOnScrape from '../helpers/notifyOnScrape'
 

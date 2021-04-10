@@ -47,6 +47,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "1.94.1",
     "@michchan/eslint-config": "1.7.0",
+    "@michchan/fund-price-monitor-lib": "^0.1.0",
     "@michchan/webpack-config-aws-cdk": "^0.3.1",
     "@types/aws-lambda": "^8.10.70",
     "@types/jest": "^26.0.4",

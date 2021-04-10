@@ -1,4 +1,4 @@
-import FundPriceChangeRate from '../FundPriceChangeRate.type'
+import { FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
 
 const getCompositeSKFromChangeRate = ({
   recordType,

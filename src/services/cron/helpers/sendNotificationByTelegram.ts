@@ -1,11 +1,10 @@
 import callPromiseWithDelay from 'simply-utils/dist/async/callPromiseWithDelay'
+import { FundPriceRecord, FundPriceChangeRate, CompanyType, FundType } from '@michchan/fund-price-monitor-lib'
 
-import FundPriceRecord, { CompanyType, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import sendMessage from 'src/lib/telegram/sendMessage'
 import toTelegramMessages from 'src/models/fundPriceRecord/utils/toTelegramMessages'
 import { ScheduleType } from './queryItemsBySchedule'
 import { Output as CredentialOutput } from 'src/helpers/getTelegramApiCredentials'
-import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
 
 interface ItemDetails {
   name: string;

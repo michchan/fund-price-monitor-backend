@@ -1,9 +1,11 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import mapValues from 'lodash/mapValues'
+import {
+  ListSingleFundRecordsPathParams,
+  ListSingleFundRecordsQueryParams,
+  ListSingleFundRecordsResponse,
+} from '@michchan/fund-price-monitor-lib'
 
-import { ListResponse } from '../Responses.type'
-import FundPriceRecord, { CompanyType } from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import createReadResponse from '../helpers/createReadResponse'
 import validateCompany from '../validators/validateCompany'
 import validateKey from '../validators/validateKey'
@@ -14,21 +16,11 @@ import validateTimestampRange from '../validators/validateTimestampRange'
 import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 
-export type Res = ListResponse<FundPriceRecord>
+export type Res = ListSingleFundRecordsResponse
 
-export interface PathParams {
-  company: CompanyType;
-  code: FundPriceRecord['code'];
-}
+export interface PathParams extends ListSingleFundRecordsPathParams {}
 
-export interface QueryParams {
-  latest?: boolean;
-  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
-  /** ISO timestamp */
-  startTime?: string;
-  /** ISO timestamp */
-  endTime?: string;
-}
+export interface QueryParams extends ListSingleFundRecordsQueryParams {}
 
 /**
  * Get time-series recrods of a single fund

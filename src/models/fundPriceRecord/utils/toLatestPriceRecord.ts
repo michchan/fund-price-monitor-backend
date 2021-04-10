@@ -1,5 +1,5 @@
 import isSameDay from 'simply-utils/dist/dateTime/isSameDay'
-import FundPriceRecord, { FundType, RecordType } from '../FundPriceRecord.type'
+import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 import calculatePriceChangeRate from './calculatePriceChangeRate'
 
 const toLatestPriceRecord = <FT extends FundType> (

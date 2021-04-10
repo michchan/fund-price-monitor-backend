@@ -1,12 +1,11 @@
 import zeroPadding from 'simply-utils/dist/number/zeroPadding'
 import capitalize from 'lodash/capitalize'
 import startCase from 'lodash/startCase'
+import { FundPriceRecord, CompanyType, FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
 
-import FundPriceRecord, { CompanyType } from '../FundPriceRecord.type'
 import { ScheduleType } from 'src/services/cron/helpers/queryItemsBySchedule'
 import parseLinesToChunks from 'src/lib/telegram/parseLinesToChunks'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
-import FundPriceChangeRate from '../FundPriceChangeRate.type'
 
 const PADDING = 2
 const PRECISION = 2

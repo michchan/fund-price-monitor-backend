@@ -1,4 +1,4 @@
-import FundPriceRecord from '../FundPriceRecord.type'
+import { FundPriceRecord } from '@michchan/fund-price-monitor-lib'
 
 export interface Item {
   code: FundPriceRecord['code'];

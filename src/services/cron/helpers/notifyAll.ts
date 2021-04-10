@@ -1,10 +1,10 @@
+import { FundPriceRecord, CompanyType, Languages } from '@michchan/fund-price-monitor-lib'
+
 import sendNotificationByTelegram, { Item } from './sendNotificationByTelegram'
 import getTelegramApiCredentials from 'src/helpers/getTelegramApiCredentials'
 import forEachCompany from 'src/models/fundPriceRecord/utils/forEachCompany'
-import FundPriceRecord, { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import queryItemsBySchedule, { ScheduleType } from './queryItemsBySchedule'
 import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
-import { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 import logObj from 'src/helpers/logObj'
 import getCompanyCodePK from 'src/models/fundPriceRecord/utils/getCompanyCodePK'

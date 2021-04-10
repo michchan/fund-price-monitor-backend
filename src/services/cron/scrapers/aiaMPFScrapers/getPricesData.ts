@@ -1,6 +1,6 @@
 import puppeteer = require('puppeteer')
 
-import FundPriceRecord from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { FundPriceRecord } from '@michchan/fund-price-monitor-lib'
 import retryWithDelay from '../../helpers/retryWithDelay'
 
 export interface PriceDataRecord extends Pick<FundPriceRecord<'mpf', 'record'>,

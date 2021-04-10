@@ -1,17 +1,16 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
 import statusCodes from 'http-status-codes'
+import { ListQuartersQueryParams, ListQuartersResponse, ListResponse } from '@michchan/fund-price-monitor-lib'
 
 import createReadResponse from '../helpers/createReadResponse'
 import listAllTables from 'src/lib/AWS/dynamodb/listAllTables'
-import { ListResponse } from '../Responses.type'
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import validateYearQuarter from '../validators/validateYearQuarter'
 import stringify from 'src/helpers/stringify'
 
-export interface QueryParams {
-  /** Format: YYYY.(1|2|3|4) */
-  exclusiveStartQuarter?: string;
-}
+export type Res = ListQuartersResponse
+
+export interface QueryParams extends ListQuartersQueryParams {}
 
 /**
  * Get list of quarters (YYYY.(1|2|3|4)) available for data resouces

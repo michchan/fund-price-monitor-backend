@@ -1,12 +1,14 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
 import mapValues from 'lodash/mapValues'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-
-import { ListResponse } from '../Responses.type'
-import FundPriceRecord, {
+import {
+  ListCompanyRecordsPathParams,
+  ListCompanyRecordsQueryParams,
+  ListCompanyRecordsResponse,
   CompanyType,
   RiskLevel,
-} from '../../../models/fundPriceRecord/FundPriceRecord.type'
+} from '@michchan/fund-price-monitor-lib'
+
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import isValidRiskLevel from 'src/models/fundPriceRecord/utils/isValidRiskLevel'
@@ -69,18 +71,10 @@ const queryByRiskLevel = ({
   })
 }
 
-export type Res = ListResponse<FundPriceRecord>
+export type Res = ListCompanyRecordsResponse
 
-export interface PathParams {
-  company: CompanyType;
-}
-export interface QueryParams {
-  riskLevel?: RiskLevel;
-  latest?: boolean;
-  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
-  /** Format: YYYY.(1|2|3|4) */
-  quarter?: string;
-}
+export interface PathParams extends ListCompanyRecordsPathParams {}
+export interface QueryParams extends ListCompanyRecordsQueryParams {}
 
 /**
  * Get fund records of a company

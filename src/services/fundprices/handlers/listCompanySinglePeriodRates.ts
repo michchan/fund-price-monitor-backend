@@ -1,35 +1,30 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import {
+  AggregatedRecordType,
+  ListCompanySinglePeriodRatesPathParams,
+  ListCompanySinglePeriodRatesQueryParams,
+  ListCompanySinglePeriodRatesResponse,
+} from '@michchan/fund-price-monitor-lib'
 
-import { ListResponse } from '../Responses.type'
-import { CompanyType } from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import createReadResponse from '../helpers/createReadResponse'
 import validateCompany from '../validators/validateCompany'
 import validateKey from '../validators/validateKey'
-import validatePeriod, { PeriodType } from '../validators/validatePeriod'
+import validatePeriod from '../validators/validatePeriod'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
-import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import logObj from 'src/helpers/logObj'
 import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 
-export type Res = ListResponse<FundPriceChangeRate>
+export type Res = ListCompanySinglePeriodRatesResponse
 
-export type PathParams = {
-  company: CompanyType;
-} & {
-  /** Either `week`, `month` or `quarter` */
-  [key in PeriodType]: string
-}
-export interface QueryParams {
-  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
-}
+export type PathParams = ListCompanySinglePeriodRatesPathParams
+export interface QueryParams extends ListCompanySinglePeriodRatesQueryParams {}
 
-const getPeriodType = (path: string): PeriodType => {
+const getPeriodType = (path: string): AggregatedRecordType => {
   switch (true) {
     case path.includes('quarter'):
       return 'quarter'
@@ -41,7 +36,7 @@ const getPeriodType = (path: string): PeriodType => {
   }
 }
 /** Return format: YYYY.{1|2|3|4} */
-const getYearQuarter = (periodType: PeriodType, period: string): string => {
+const getYearQuarter = (periodType: AggregatedRecordType, period: string): string => {
   switch (periodType) {
     case 'quarter': return period
     default: {

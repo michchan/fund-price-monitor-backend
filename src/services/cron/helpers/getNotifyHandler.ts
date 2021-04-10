@@ -1,6 +1,6 @@
 import { ScheduledHandler } from 'aws-lambda'
 import logObj from 'src/helpers/logObj'
-import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { CompanyType } from '@michchan/fund-price-monitor-lib'
 import { ScheduleType } from 'src/services/cron/helpers/queryItemsBySchedule'
 import notifyAll, { OverridingItemsDict } from '../helpers/notifyAll'
 

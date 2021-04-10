@@ -3,12 +3,14 @@ import languages from 'src/models/fundPriceRecord/constants/languages'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 import pick from 'lodash/pick'
 
-import FundDetails, { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
-import FundPriceRecord, {
+import {
+  FundPriceRecord,
+  FundDetails,
+  Languages,
   CompanyType,
   FundType,
   RecordType,
-} from 'src/models/fundPriceRecord/FundPriceRecord.type'
+} from '@michchan/fund-price-monitor-lib'
 import mapAndReduceFundDetailsBatches from '../helpers/mapAndReduceFundDetailsBatches'
 import retryWithDelay from '../helpers/retryWithDelay'
 

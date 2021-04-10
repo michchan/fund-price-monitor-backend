@@ -2,7 +2,7 @@ import pick from 'lodash/pick'
 import isEqual from 'lodash/isEqual'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 
-import FundPriceRecord, { FundType } from '../FundPriceRecord.type'
+import { FundPriceRecord, FundType } from '@michchan/fund-price-monitor-lib'
 import queryItemsByCompany from '../io/queryItemsByCompany'
 import isPKEqual from './isPKEqual'
 import logObj from 'src/helpers/logObj'

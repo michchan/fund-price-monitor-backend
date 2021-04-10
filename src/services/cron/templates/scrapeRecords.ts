@@ -1,6 +1,6 @@
 import { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 
-import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { FundPriceRecord, FundType } from '@michchan/fund-price-monitor-lib'
 import batchCreate from 'src/models/fundPriceRecord/io/batchCreate'
 import serializeRecord from 'src/models/fundPriceRecord/utils/serializeRecord'
 import getRecordsScraperTemplateHandler from '../helpers/getRecordsScraperTemplateHandler'

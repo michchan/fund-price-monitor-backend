@@ -1,11 +1,10 @@
 import isFunction from 'lodash/isFunction'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { FundPriceRecord, FundPriceChangeRate, CompanyType, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import indexNames from '../constants/indexNames'
 import queryItems, { Output as O } from './queryItems'
 import attrs from '../constants/attributeNames'
-import FundPriceRecord, { CompanyType, RecordType } from '../FundPriceRecord.type'
-import FundPriceChangeRate from '../FundPriceChangeRate.type'
 import TableRange from '../TableRange.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import parseRecord from '../utils/parseRecord'

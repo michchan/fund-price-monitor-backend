@@ -1,5 +1,4 @@
-import FundPriceChangeRate from '../FundPriceChangeRate.type'
-import FundPriceRecord from '../FundPriceRecord.type'
+import { FundPriceRecord, FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
 
 const isSKEqual = <T extends FundPriceRecord | FundPriceChangeRate> (
   based: T,

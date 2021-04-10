@@ -1,5 +1,4 @@
-import FundPriceChangeRate, { AggregatedRecordType } from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
-import FundPriceRecord, { FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { FundPriceRecord, FundPriceChangeRate, AggregatedRecordType, FundType } from '@michchan/fund-price-monitor-lib'
 import getChangeRate from 'src/models/fundPriceRecord/utils/getChangeRate'
 import toLatestPriceRecord from 'src/models/fundPriceRecord/utils/toLatestPriceRecord'
 import { Output as Input } from './queryPrevItems'

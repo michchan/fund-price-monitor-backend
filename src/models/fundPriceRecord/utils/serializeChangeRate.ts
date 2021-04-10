@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk'
+import { FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
 
-import FundPriceChangeRate from '../FundPriceChangeRate.type'
 import attr from '../constants/attributeNames'
 import getCompositeSKFromChangeRate from './getCompositeSKFromChangeRate'
 import getCompanyCodePK from './getCompanyCodePK'

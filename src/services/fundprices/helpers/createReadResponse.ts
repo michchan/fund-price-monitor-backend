@@ -3,8 +3,8 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import pick from 'lodash/pick'
 import { APIGatewayProxyResult } from 'aws-lambda'
 import statusCodes from 'http-status-codes'
+import { ListResponse } from '@michchan/fund-price-monitor-lib'
 
-import { ListResponse } from '../Responses.type'
 import stringify from 'src/helpers/stringify'
 
 type BasedOutput =

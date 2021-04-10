@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk'
 
-import FundPriceRecord, { FundType, RecordType } from '../FundPriceRecord.type'
+import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 import attr, { FundPriceRecordAttributeMap } from '../constants/attributeNames'
 
 /**

@@ -2,13 +2,13 @@ import { ScheduledHandler } from 'aws-lambda'
 import mapValues from 'lodash/mapValues'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 import wait from 'simply-utils/dist/async/wait'
+import { FundPriceRecord, FundPriceChangeRate, CompanyType } from '@michchan/fund-price-monitor-lib'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import logObj from 'src/helpers/logObj'
 import forEachCompany from 'src/models/fundPriceRecord/utils/forEachCompany'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
-import FundPriceRecord, { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
 import batchDelete from 'src/models/fundPriceRecord/io/batchDelete'
 import queryItemsByCompany, { Input as QueryItemsInput } from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
@@ -17,7 +17,6 @@ import getCompositeSKFromChangeRate from 'src/models/fundPriceRecord/utils/getCo
 import isDuplicated from 'src/models/fundPriceRecord/utils/isDuplicated'
 import parseRecord from 'src/models/fundPriceRecord/utils/parseRecord'
 import parseChangeRate from 'src/models/fundPriceRecord/utils/parseChangeRate'
-import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
 
 const EXP_TIME_SK_PREFIX = ':timeSK' as string
 

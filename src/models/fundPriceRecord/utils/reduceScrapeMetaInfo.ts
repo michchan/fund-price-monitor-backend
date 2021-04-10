@@ -1,5 +1,5 @@
 import logObj from 'src/helpers/logObj'
-import FundPriceRecord, { CompanyType, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { FundPriceRecord, CompanyType, FundType } from '@michchan/fund-price-monitor-lib'
 import getCompaniesFromRecords from 'src/models/fundPriceRecord/utils/getCompaniesFromRecords'
 import { CompanyScrapeMeta, ScrapeMeta, ScrapeStatus } from '../FundPriceTableDetails.type'
 

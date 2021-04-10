@@ -1,5 +1,5 @@
 import topLevelKeysValues from '../constants/topLevelKeysValues'
-import FundPriceRecord from '../FundPriceRecord.type'
+import { FundPriceRecord } from '@michchan/fund-price-monitor-lib'
 
 export interface Options extends Pick<FundPriceRecord, 'code' | 'company'> {}
 const getRecordDetailsSK = ({

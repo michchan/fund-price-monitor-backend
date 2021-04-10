@@ -1,4 +1,4 @@
-import { CompanyType } from '../FundPriceRecord.type'
+import { CompanyType } from '@michchan/fund-price-monitor-lib'
 
 const whitelist: CompanyType[] = ['aia', 'manulife']
 const regex = new RegExp(`^(${whitelist.join('|')})$`, 'i')

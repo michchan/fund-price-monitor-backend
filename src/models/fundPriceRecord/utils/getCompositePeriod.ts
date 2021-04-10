@@ -1,4 +1,4 @@
-import FundPriceChangeRate from '../FundPriceChangeRate.type'
+import { FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
 
 type T = Pick<FundPriceChangeRate, 'recordType' | 'company' | 'period'>
 const getCompositePeriod = ({

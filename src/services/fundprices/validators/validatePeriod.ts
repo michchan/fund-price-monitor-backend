@@ -1,10 +1,9 @@
+import { AggregatedRecordType } from '@michchan/fund-price-monitor-lib'
 import createParameterErrMsg from '../helpers/createParameterErrMsg'
-
-export type PeriodType = 'week' | 'month' | 'quarter'
 
 const validatePeriod = (
   maybePeriod: unknown,
-  type: PeriodType
+  type: AggregatedRecordType
 ): void => {
   const throwErr = () => { throw new Error(createParameterErrMsg(type, 'path')) }
 

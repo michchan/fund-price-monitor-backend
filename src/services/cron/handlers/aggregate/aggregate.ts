@@ -1,9 +1,11 @@
 import { DynamoDBStreamHandler } from 'aws-lambda'
-
-import FundPriceRecord, {
+import {
+  FundPriceRecord,
+  FundPriceChangeRate,
   CompanyType,
   FundType,
-} from 'src/models/fundPriceRecord/FundPriceRecord.type'
+} from '@michchan/fund-price-monitor-lib'
+
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import groupEventRecordsByCompany from './groupEventRecordsByCompany'
 import updateTableLevelDetails from './updateTableLevelDetails'
@@ -11,7 +13,6 @@ import queryPrevItems from './queryPrevItems'
 import deriveAggregatedItems from './deriveAggregatedItems'
 import createItems from './createItems'
 import deleteItems from './deleteItems'
-import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
 
 /**
  * Handler to process each group of FundPriceRecord list

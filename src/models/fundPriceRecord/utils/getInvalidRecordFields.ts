@@ -3,7 +3,7 @@ import isNum from 'simply-utils/dist/number/isNum'
 import isNullOrUndef from 'simply-utils/dist/validators/isNullOrUndef'
 import isISOTimestamp from 'simply-utils/dist/dateTime/isISOTimestamp'
 
-import FundPriceRecord, { FundType, RecordType } from '../FundPriceRecord.type'
+import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 import isValidCompany from './isValidCompany'
 import isValidRiskLevel from './isValidRiskLevel'
 import isValidFundType from './isValidFundType'

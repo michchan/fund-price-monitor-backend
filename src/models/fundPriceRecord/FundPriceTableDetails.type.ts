@@ -1,4 +1,4 @@
-import { CompanyType, FundType } from './FundPriceRecord.type'
+import { CompanyType, FundType } from '@michchan/fund-price-monitor-lib'
 
 export type ScrapeStatus = 'pending' | 'success' | 'failed'
 export interface CompanyScrapeMeta {

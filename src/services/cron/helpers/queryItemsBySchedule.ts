@@ -1,8 +1,7 @@
-import FundPriceRecord, {
+import { FundPriceRecord,
+  FundPriceChangeRate,
   CompanyType,
-  FundType,
-} from 'src/models/fundPriceRecord/FundPriceRecord.type'
-import FundPriceChangeRate from 'src/models/fundPriceRecord/FundPriceChangeRate.type'
+  FundType } from '@michchan/fund-price-monitor-lib'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'

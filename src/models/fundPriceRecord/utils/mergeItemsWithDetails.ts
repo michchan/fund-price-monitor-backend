@@ -1,6 +1,4 @@
-import FundDetails from '../FundDetails.type'
-import FundPriceChangeRate from '../FundPriceChangeRate.type'
-import FundPriceRecord from '../FundPriceRecord.type'
+import { FundPriceRecord, FundDetails, FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
 import getCompanyCodePK from './getCompanyCodePK'
 
 type Item = FundPriceRecord | FundPriceChangeRate

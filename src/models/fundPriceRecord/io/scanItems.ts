@@ -1,11 +1,10 @@
 import getQuarter from 'simply-utils/dist/dateTime/getQuarter'
+import { FundPriceRecord, FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
 
 import scanAllItems, { Input, Output as O } from 'src/lib/AWS/dynamodb/scanAllItems'
 import TableRange from '../TableRange.type'
 import getTableName from '../utils/getTableName'
 import scanPageItems from 'src/lib/AWS/dynamodb/scanItems'
-import FundPriceRecord from '../FundPriceRecord.type'
-import FundPriceChangeRate from '../FundPriceChangeRate.type'
 import parseRecord from '../utils/parseRecord'
 
 type TVariants = FundPriceRecord | FundPriceChangeRate

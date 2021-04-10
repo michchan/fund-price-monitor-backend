@@ -1,4 +1,4 @@
-import FundPriceRecord, { CompanyType, FundType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { FundPriceRecord, CompanyType, FundType } from '@michchan/fund-price-monitor-lib'
 import { ScrapeStatus } from 'src/models/fundPriceRecord/FundPriceTableDetails.type'
 
 type RT = FundPriceRecord<FundType, 'record'>

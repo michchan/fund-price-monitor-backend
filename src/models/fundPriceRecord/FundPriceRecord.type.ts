@@ -1,4 +1,4 @@
-import FundDetails from './FundDetails.type'
+import { FundDetails } from '@michchan/fund-price-monitor-lib'
 
 export type FundType = 'mpf'
 

@@ -1,4 +1,4 @@
-import { AggregatedRecordType } from '../FundPriceChangeRate.type'
+import { AggregatedRecordType } from '@michchan/fund-price-monitor-lib'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 
 const getPeriodByRecordType = (

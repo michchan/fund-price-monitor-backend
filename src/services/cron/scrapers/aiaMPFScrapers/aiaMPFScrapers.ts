@@ -1,15 +1,17 @@
 import puppeteer = require('puppeteer')
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
-
-import FundPriceRecord, {
+import {
+  FundPriceRecord,
   CompanyType,
   FundType,
   RecordType,
-} from 'src/models/fundPriceRecord/FundPriceRecord.type'
+  FundDetails,
+  Languages,
+} from '@michchan/fund-price-monitor-lib'
+
 import getPricesData, { PriceDataRecord } from './getPricesData'
 import getPerformanceData, { PerfDataRecord } from './getPerformanceData'
 import getDetailsData, { DetailsDataRecord } from './getDetailsData'
-import FundDetails, { Languages } from 'src/models/fundPriceRecord/FundDetails.type'
 import languages from 'src/models/fundPriceRecord/constants/languages'
 import mapAndReduceFundDetailsBatches from '../../helpers/mapAndReduceFundDetailsBatches'
 

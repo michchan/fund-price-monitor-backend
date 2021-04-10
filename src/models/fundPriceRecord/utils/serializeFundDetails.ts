@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk'
+import { FundDetails } from '@michchan/fund-price-monitor-lib'
 
-import FundDetails from '../FundDetails.type'
 import attr from '../constants/attributeNames'
 import getRecordDetailsSK from './getRecordDetailsSK'
 import topLevelKeysValues from '../constants/topLevelKeysValues'

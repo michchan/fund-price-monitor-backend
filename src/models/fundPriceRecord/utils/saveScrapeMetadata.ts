@@ -4,7 +4,7 @@ import isDeepEmpty from 'simply-utils/dist/object/isDeepEmpty'
 
 import updateTableDetails, { Input as I, Output as O } from 'src/models/fundPriceRecord/io/updateTableDetails'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
-import { CompanyType } from 'src/models/fundPriceRecord/FundPriceRecord.type'
+import { CompanyType } from '@michchan/fund-price-monitor-lib'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import logObj from 'src/helpers/logObj'
 import { ScrapeMeta } from '../FundPriceTableDetails.type'

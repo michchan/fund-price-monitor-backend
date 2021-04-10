@@ -1,15 +1,14 @@
 import isFunction from 'lodash/isFunction'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { FundPriceRecord, FundPriceChangeRate, CompanyType, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import queryItems, { Output as O } from './queryItems'
 import attrs from '../constants/attributeNames'
-import FundPriceRecord, { CompanyType, RecordType } from '../FundPriceRecord.type'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import between from 'src/lib/AWS/dynamodb/expressionFunctions/between'
 import getCompanyCodePK from '../utils/getCompanyCodePK'
 import getCompositeSK from '../utils/getCompositeSK'
-import FundPriceChangeRate from '../FundPriceChangeRate.type'
 import parseRecord from '../utils/parseRecord'
 
 const EXP_COM_CODE_PK = ':company_code' as string

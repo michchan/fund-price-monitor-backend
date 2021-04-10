@@ -1,9 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import mapValues from 'lodash/mapValues'
+import { SearchRecordsQueryParams, SearchRecordsResponse, RecordType } from '@michchan/fund-price-monitor-lib'
 
-import { ListResponse } from '../Responses.type'
-import FundPriceRecord, { RecordType } from '../../../models/fundPriceRecord/FundPriceRecord.type'
 import createReadResponse from '../helpers/createReadResponse'
 import { StructuredQuery } from '../StructuredQuery.type'
 import parseQuery from '../helpers/parseQuery'
@@ -20,14 +18,12 @@ import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWi
 
 const EXP_TIME_SK_PFX = ':timeSK_prefix' as string
 
-export type Res = ListResponse<FundPriceRecord>
+export type Res = SearchRecordsResponse
 
-export interface QueryParams {
-  latest?: boolean;
-  exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
+export interface QueryParams extends SearchRecordsQueryParams {}
+
+export interface QueryParamsParsed extends Omit<QueryParams, 'q'> {
   q?: StructuredQuery;
-  /** Format: YYYY.(1|2|3|4) */
-  quarter?: string;
 }
 
 /**
@@ -40,7 +36,7 @@ export const handler: APIGatewayProxyHandler = async event => {
       if (key === 'latest') return value === 'true'
       if (key === 'q') return parseQuery(value ?? '')
       return value
-    }) as unknown as QueryParams
+    }) as unknown as QueryParamsParsed
     const {
       latest: shouldQueryLatest,
       exclusiveStartKey,
