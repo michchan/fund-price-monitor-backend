@@ -18,6 +18,7 @@ export interface QueryParams extends ListQuartersQueryParams {}
 export const handler: APIGatewayProxyHandler = async event => {
   try {
     const { exclusiveStartQuarter } = (event.queryStringParameters ?? {}) as QueryParams
+    console.log(event)
 
     /** ----------- Validations ----------- */
     if (exclusiveStartQuarter) validateYearQuarter(exclusiveStartQuarter, 'exclusiveStartQuarter')
@@ -43,6 +44,6 @@ export const handler: APIGatewayProxyHandler = async event => {
     }
   } catch (error) {
     // Send back failed response
-    return createReadResponse(error)
+    return createReadResponse(event, error)
   }
 }

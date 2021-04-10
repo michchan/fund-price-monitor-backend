@@ -78,9 +78,9 @@ export const handler: APIGatewayProxyHandler = async event => {
     const parsedItems = mergeItemsWithDetails(recordsOutput.parsedItems, detailsOutput.parsedItems)
 
     // Send back successful response
-    return createReadResponse(null, { ...recordsOutput, parsedItems })
+    return createReadResponse(event, null, { ...recordsOutput, parsedItems })
   } catch (error) {
     // Send back failed response
-    return createReadResponse(error)
+    return createReadResponse(event, error)
   }
 }
