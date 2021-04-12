@@ -1,4 +1,5 @@
 import getParameter from 'src/lib/AWS/parameterStore/getParameter'
+import getEnvVars from './getEnvVar'
 
 export interface Output {
   chatId: string;
@@ -9,15 +10,9 @@ const getTelegramApiCredentials = async (): Promise<Output> => {
   /* Get the telegram notification channel chat ID passed from
      the environment variables defined in CDK construct of cron,
      To map as dynamodb stream target function */
-  const chatId = process.env.TELEGRAM_CHAT_ID as string
+  const chatId = getEnvVars('TELEGRAM_CHAT_ID')
   // Get the parameter name (in AWS parameter store) of telegram bot API key
-  const apiKeyParamName = process.env.TELEGRAM_BOT_API_KEY_PARAMETER_NAME as string
-
-  // Validate environment
-  if (!chatId)
-    throw new Error('TELEGRAM_CHAT_ID is required in environment but got undefined.')
-  if (!apiKeyParamName)
-    throw new Error('TELEGRAM_BOT_API_KEY_PARAMETER_NAME is required in environment but got undefined.')
+  const apiKeyParamName = getEnvVars('TELEGRAM_BOT_API_KEY_PARAMETER_NAME')
 
   // Get telegram bot API key (secure string) from the SSM parameter store in runtime
   const parameterOutput = await getParameter({

@@ -8,14 +8,14 @@ import createTableDetails from 'src/models/fundPriceRecord/io/createTableDetails
 import checkTableExistence from '../helpers/checkTableExistence'
 import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
 import defaultScrapeMeta from 'src/models/fundPriceRecord/constants/defaultScrapeMeta'
+import getEnvVars from 'src/helpers/getEnvVar'
 
 export type EventDetail = TableRange | undefined
 
 const createTableAndDetails = async (year: number | string, quarter: Quarter) => {
   // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
   // To map as dynamodb stream target function
-  const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
-  if (!aggregationHandlerArn) throw new Error('Environment variable AGGREGATION_HANDLER_ARN undefined')
+  const aggregationHandlerArn = getEnvVars('AGGREGATION_HANDLER_ARN')
 
   // Create one if it doesn't exist
   await createTable(year, quarter, aggregationHandlerArn)

@@ -13,6 +13,7 @@ import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import updateTable from 'src/models/fundPriceRecord/io/updateTable'
 import tableThroughput from 'src/models/fundPriceRecord/constants/tableThroughput'
+import getEnvVars from 'src/helpers/getEnvVar'
 
 const lambda = new AWS.Lambda()
 
@@ -26,7 +27,7 @@ const deleteLambdaStreamEventSourceMapping = async (year: number | string, quart
     /* Get the aggregator ARN Passed from the environment variables
        defined in CDK construct of cron,
        To map as dynamodb stream target function */
-    const aggregationHandlerArn = process.env.AGGREGATION_HANDLER_ARN as string
+    const aggregationHandlerArn = getEnvVars('AGGREGATION_HANDLER_ARN')
 
     // List event source mapping
     const eventSourceMappings = await lambda.listEventSourceMappings({

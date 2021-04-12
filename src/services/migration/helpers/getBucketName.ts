@@ -1,6 +1,4 @@
-const getBucketName = (): string => {
-  const bucketName = process.env.BUCKET_NAME
-  if (!bucketName) throw new Error('Environment variable BUCKET_NAME undefined')
-  return bucketName
-}
+import getEnvVars from 'src/helpers/getEnvVar'
+
+const getBucketName = (): string => getEnvVars('BUCKET_NAME')
 export default getBucketName

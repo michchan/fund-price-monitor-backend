@@ -6,6 +6,7 @@ import statusCodes from 'http-status-codes'
 import { ListResponse } from '@michchan/fund-price-monitor-lib'
 
 import stringify from 'src/helpers/stringify'
+import getEnvVars from 'src/helpers/getEnvVar'
 
 const DEV_STAGE_NAME = 'dev'
 
@@ -13,7 +14,7 @@ const withCorsHeaders = (event: APIGatewayProxyEvent) => ({
   // Required for CORS support to work
   'Access-Control-Allow-Origin': event.requestContext.stage === DEV_STAGE_NAME
     ? '*'
-    : process.env.API_CORS_WHITELIST ?? '',
+    : getEnvVars('API_CORS_WHITELIST'),
   // Required for cookies, authorization headers with HTTPS
   'Access-Control-Allow-Credentials': true,
 })

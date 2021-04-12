@@ -4,6 +4,7 @@ import toLatestPriceRecord from 'src/models/fundPriceRecord/utils/toLatestPriceR
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import { EventDetail } from '../helpers/getNotifyHandler'
 import { Callback } from './getRecordsScraperTemplateHandler'
+import getEnvVars from 'src/helpers/getEnvVar'
 
 const lambda = new AWS.Lambda()
 
@@ -29,11 +30,7 @@ const notifyOnScrape: Callback = async (tableRange, records, companies) => {
       overridingItemsDict: { [company]: latestItems },
     }
 
-    const notifierArn = process.env.NOTIFIER_ARN as string
-    // Validate environment
-    if (!notifierArn)
-      throw new Error('NOTIFIER_ARN is required in environment but got undefined.')
-
+    const notifierArn = getEnvVars('NOTIFIER_ARN')
     // @TODO: Always notify changed items only
     await lambda.invoke({
       FunctionName: notifierArn,
