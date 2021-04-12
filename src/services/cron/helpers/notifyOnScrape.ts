@@ -6,6 +6,8 @@ import { EventDetail } from '../helpers/getNotifyHandler'
 import { Callback } from './getRecordsScraperTemplateHandler'
 import getEnvVars from 'src/helpers/getEnvVar'
 
+const notifierArn = getEnvVars('NOTIFIER_ARN')
+
 const lambda = new AWS.Lambda()
 
 const notifyOnScrape: Callback = async (tableRange, records, companies) => {
@@ -30,7 +32,6 @@ const notifyOnScrape: Callback = async (tableRange, records, companies) => {
       overridingItemsDict: { [company]: latestItems },
     }
 
-    const notifierArn = getEnvVars('NOTIFIER_ARN')
     // @TODO: Always notify changed items only
     await lambda.invoke({
       FunctionName: notifierArn,

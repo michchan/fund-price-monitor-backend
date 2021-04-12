@@ -15,6 +15,11 @@ import updateTable from 'src/models/fundPriceRecord/io/updateTable'
 import tableThroughput from 'src/models/fundPriceRecord/constants/tableThroughput'
 import getEnvVars from 'src/helpers/getEnvVar'
 
+/* Get the aggregator ARN Passed from the environment variables
+   defined in CDK construct of cron,
+   To map as dynamodb stream target function */
+const aggregationHandlerArn = getEnvVars('AGGREGATION_HANDLER_ARN')
+
 const lambda = new AWS.Lambda()
 
 const deleteLambdaStreamEventSourceMapping = async (year: number | string, quarter: Quarter) => {
@@ -24,11 +29,6 @@ const deleteLambdaStreamEventSourceMapping = async (year: number | string, quart
   const streamArn = describeTableOutput.Table?.LatestStreamArn
   // Remove event source mapping for aggregation handler
   if (streamArn) {
-    /* Get the aggregator ARN Passed from the environment variables
-       defined in CDK construct of cron,
-       To map as dynamodb stream target function */
-    const aggregationHandlerArn = getEnvVars('AGGREGATION_HANDLER_ARN')
-
     // List event source mapping
     const eventSourceMappings = await lambda.listEventSourceMappings({
       FunctionName: aggregationHandlerArn,

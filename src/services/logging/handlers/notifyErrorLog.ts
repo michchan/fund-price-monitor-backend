@@ -6,6 +6,9 @@ import logObj from 'src/helpers/logObj'
 
 import AWS from 'src/lib/AWS'
 
+// * Environment variable SNS_TOPIC_ARN is required
+const snsArn = getEnvVars('SNS_TOPIC_ARN')
+
 const sns = new AWS.SNS()
 
 /** Publish error message to SNS topic */
@@ -37,8 +40,6 @@ export const handler: CloudWatchLogsHandler = async event => {
   const payload = decodeCloudWatchLogEventPayload(event)
   logObj('Payload: ', payload)
 
-  // * Environment variable SNS_TOPIC_ARN is required
-  const snsArn = getEnvVars('SNS_TOPIC_ARN')
   // Must await the service
   await publishMessage(payload, snsArn)
 }

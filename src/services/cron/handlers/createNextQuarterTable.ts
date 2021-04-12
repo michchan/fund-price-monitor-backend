@@ -10,13 +10,13 @@ import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
 import defaultScrapeMeta from 'src/models/fundPriceRecord/constants/defaultScrapeMeta'
 import getEnvVars from 'src/helpers/getEnvVar'
 
+// Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
+// To map as dynamodb stream target function
+const aggregationHandlerArn = getEnvVars('AGGREGATION_HANDLER_ARN')
+
 export type EventDetail = TableRange | undefined
 
 const createTableAndDetails = async (year: number | string, quarter: Quarter) => {
-  // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
-  // To map as dynamodb stream target function
-  const aggregationHandlerArn = getEnvVars('AGGREGATION_HANDLER_ARN')
-
   // Create one if it doesn't exist
   await createTable(year, quarter, aggregationHandlerArn)
   // Create table detail row
