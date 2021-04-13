@@ -43,7 +43,7 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
     // Initialize web deployment service
     const { handlers: webDeploymentHandlers } = webDeployment.construct(this)
     // Initialize cron service
-    const { handlers: cronHandlers } = cron.construct(this)
+    const { handlers: cronHandlers } = cron.construct(this, webDeploymentHandlers)
     // Initialize fundprices service
     const { handlers: fundpricesHandlers } = fundprices.construct(this)
     // Initialize migration service

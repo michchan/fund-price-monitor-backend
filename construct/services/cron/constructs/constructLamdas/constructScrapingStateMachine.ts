@@ -123,47 +123,77 @@ const constructStateMachine = (
   return stateMachine
 }
 
-const constructRecordsScrapingStateMachine = (
+const constructStateMachineWithStartTask = (
   scope: cdk.Construct,
-  { scrapers, startScrapeSession }: Pick<ScrapingHandlers, 'scrapers' | 'startScrapeSession'>,
+  id: string,
+  scrapeHandlers: lambda.Function[],
+  successHandler?: lambda.Function,
 ): sfn.StateMachine => {
   // Create step functions
-  const startTask = new sfnTasks.LambdaInvoke(scope, 'CronRecScrapeTaskStart', {
-    lambdaFunction: startScrapeSession,
-  })
-  return constructStateMachine(scope, scrapers, startTask, 'CronRecScrape')
+  const startTask = new sfn.Pass(scope, `${id}StartTask`)
+  const handlers = [...scrapeHandlers, successHandler].filter(v => v) as lambda.Function[]
+  return constructStateMachine(scope, handlers, startTask, id)
 }
 
-const constructDetailsScrapingStateMachine = (
-  scope: cdk.Construct,
-  { detailsScrapers }: Pick<ScrapingHandlers, 'detailsScrapers'>,
-): sfn.StateMachine => {
-  // Create step functions
-  const startTask = new sfn.Pass(scope, 'CronDetailsScrapeStartTask')
-  return constructStateMachine(scope, detailsScrapers, startTask, 'CronDetailsScrape')
+export interface Options {
+  serviceDirname: string;
+  defaultInput: DefaultInput;
+  // For test functions
+  defaultInputTest: DefaultInput;
+  recordScrapeSuccessHandler?: lambda.Function;
+  detailScrapeSuccessHandler?: lambda.Function;
 }
 
 export interface Output extends ScrapingHandlers {
   stateMachines: {
     scrape: sfn.StateMachine;
     scrapeDetails: sfn.StateMachine;
+    testScrape: sfn.StateMachine;
+    testScrapeDetails: sfn.StateMachine;
   };
 }
-const constructScrapingStateMachine = (
-  scope: cdk.Construct,
-  serviceDirname: string,
-  defaultInput: DefaultInput,
-  // For test functions
-  defaultInputTest: DefaultInput,
-): Output => {
+const constructScrapingStateMachine = (scope: cdk.Construct, {
+  serviceDirname,
+  defaultInput,
+  defaultInputTest,
+  recordScrapeSuccessHandler,
+  detailScrapeSuccessHandler,
+}: Options): Output => {
   const handlers = constructScrapingHandlers(scope, serviceDirname, defaultInput, defaultInputTest)
-  const scrapeRecordsStateMachine = constructRecordsScrapingStateMachine(scope, handlers)
-  const scrapeDetailsStateMachine = constructDetailsScrapingStateMachine(scope, handlers)
+
+  const scrapeRecordsStateMachine = constructStateMachineWithStartTask(
+    scope,
+    'CronRecordScrape',
+    handlers.scrapers,
+    recordScrapeSuccessHandler
+  )
+  const scrapeDetailsStateMachine = constructStateMachineWithStartTask(
+    scope,
+    'CronDetailsScrape',
+    handlers.detailsScrapers,
+    detailScrapeSuccessHandler
+  )
+
+  const testScrapeRecordsStateMachine = constructStateMachineWithStartTask(
+    scope,
+    'CronTestRecordScrape',
+    handlers.testScrapers,
+    recordScrapeSuccessHandler
+  )
+  const testScrapeDetailsStateMachine = constructStateMachineWithStartTask(
+    scope,
+    'CronTestDetailsScrape',
+    handlers.testDetailsScrapers,
+    detailScrapeSuccessHandler
+  )
+
   return {
     ...handlers,
     stateMachines: {
       scrape: scrapeRecordsStateMachine,
       scrapeDetails: scrapeDetailsStateMachine,
+      testScrape: testScrapeRecordsStateMachine,
+      testScrapeDetails: testScrapeDetailsStateMachine,
     },
   }
 }

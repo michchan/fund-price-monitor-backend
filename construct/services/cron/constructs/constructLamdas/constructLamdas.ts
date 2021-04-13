@@ -4,7 +4,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions'
 import * as lambda from '@aws-cdk/aws-lambda'
 
 import { CronRoles } from '../constructIamRoles'
-import constructScrapingStateMachine, { ScrapingHandlers } from './constructScrapingStateMachine'
+import constructScrapingStateMachine, { DefaultInput, ScrapingHandlers } from './constructScrapingStateMachine'
 import constructAggregators, { Aggregators } from './constructAggregators'
 import constructTableHandlers, { TableHandlers } from './constructTableHandlers'
 import constructNotificationHandlers, { NotificationHandlers } from './constructNotificationHandlers'
@@ -63,25 +63,38 @@ interface Notifiers {
   testNotifyOnUpdate: lambda.Function;
 }
 
+export interface DeploymentHandlers {
+  deploy: lambda.Function;
+}
+
+interface ConstructScrapingComponentsOptions extends Pick<Options,
+| 'serviceDirname'
+| 'servicePathname'
+| 'telegramChatId'
+| 'telegramTestChatId'
+> {
+  roles: Pick<CronRoles, 'itemsAlterer' | 'aggregator'>;
+  notifiers: Notifiers;
+  deploymentHandlers: DeploymentHandlers;
+}
 const constructScrapingComponents = (
   scope: cdk.Construct,
-  { itemsAlterer, aggregator }: Pick<CronRoles, 'itemsAlterer' | 'aggregator'>,
-  { serviceDirname, servicePathname }: Pick<Options,
-  | 'serviceDirname'
-  | 'servicePathname'
-  | 'telegramChatId'
-  | 'telegramTestChatId'
-  >,
-  { notifyOnUpdate, testNotifyOnUpdate }: Notifiers
+  {
+    serviceDirname,
+    servicePathname,
+    roles: { itemsAlterer, aggregator },
+    notifiers: { notifyOnUpdate, testNotifyOnUpdate },
+    deploymentHandlers,
+  }: ConstructScrapingComponentsOptions,
 ): ScrapingComponents => {
   const getInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)
-  const defaultInput = {
+  const defaultInput: DefaultInput = {
     ...getInput(itemsAlterer),
     environment: {
       NOTIFIER_ARN: notifyOnUpdate.functionArn,
     },
   }
-  const defaultInputTest = {
+  const defaultInputTest: DefaultInput = {
     ...defaultInput,
     environment: {
       NOTIFIER_ARN: testNotifyOnUpdate.functionArn,
@@ -90,7 +103,13 @@ const constructScrapingComponents = (
   const {
     stateMachines,
     ...scrapingHandlers
-  } = constructScrapingStateMachine(scope, serviceDirname, defaultInput, defaultInputTest)
+  } = constructScrapingStateMachine(scope, {
+    serviceDirname,
+    defaultInput,
+    defaultInputTest,
+    recordScrapeSuccessHandler: deploymentHandlers.deploy,
+    detailScrapeSuccessHandler: deploymentHandlers.deploy,
+  })
 
   const aggregators = constructAggregators(scope, getInput(aggregator))
 
@@ -119,6 +138,7 @@ export interface Options {
   serviceDirname: string;
   telegramChatId: string;
   telegramTestChatId: string;
+  deploymentHandlers: DeploymentHandlers;
 }
 const constructLamdas = (
   scope: cdk.Construct,
@@ -126,16 +146,16 @@ const constructLamdas = (
   options: Options,
 ): Output => {
   const { tableHandler } = roles
-  const { servicePathname } = options
+  const { servicePathname, deploymentHandlers } = options
 
   const sideComponents = constructSideComponents(scope, roles, options)
 
-  const scrapingComponents = constructScrapingComponents(
-    scope,
+  const scrapingComponents = constructScrapingComponents(scope, {
+    ...options,
     roles,
-    options,
-    sideComponents.handlers
-  )
+    notifiers: sideComponents.handlers,
+    deploymentHandlers,
+  })
   const { handlers: { aggregation } } = scrapingComponents
 
   const getInput = (role: iam.Role) => getDefaultLambdaInput(role, servicePathname)
