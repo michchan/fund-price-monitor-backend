@@ -18,9 +18,9 @@ const groupAllHandlers = ({
   fundpricesHandlers,
   cronHandlers,
   migrationHandlers,
+  webDeploymentHandlers,
 }: GroupAllHandlersOptions): lambda.Function[] => [
-  // @TODO: Fix: PolicyLengthExceededException;
-  // ...Object.values(webDeploymentHandlers),
+  ...Object.values(webDeploymentHandlers),
   ...Object.values(fundpricesHandlers),
   ...Object.values(migrationHandlers),
   ...Object.values(cronHandlers)
@@ -57,7 +57,16 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
     })
     // Initialize logging service
     const { handlers: logHandlers } = logging.construct(this, {
-      logGroups: handlers.map(lambda => lambda.logGroup),
+      // @TODO: Fix: PolicyLengthExceededException;
+      logGroups: [
+        ...Object.values(fundpricesHandlers),
+        ...Object.values(migrationHandlers),
+        ...Object.values(cronHandlers)
+          .reduce((
+            acc: lambda.Function[],
+            curr
+          ) => Array.isArray(curr) ? [...acc, ...curr] : [...acc, curr], []),
+      ].map(lambda => lambda.logGroup),
     })
     // Bind runtime environment variable
     bindRuntimeEnvVars([...handlers, ...Object.values(logHandlers)])
