@@ -18,9 +18,9 @@ const groupAllHandlers = ({
   fundpricesHandlers,
   cronHandlers,
   migrationHandlers,
-  webDeploymentHandlers,
 }: GroupAllHandlersOptions): lambda.Function[] => [
-  ...Object.values(webDeploymentHandlers),
+  // @TODO: Fix: PolicyLengthExceededException;
+  // ...Object.values(webDeploymentHandlers),
   ...Object.values(fundpricesHandlers),
   ...Object.values(migrationHandlers),
   ...Object.values(cronHandlers)
