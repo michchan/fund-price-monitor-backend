@@ -20,8 +20,9 @@ type TRec = FundPriceRecord<'mpf', 'record'>
 type ScrapedRec = TRec & FundDetails
 
 type RiskLevelIndicatorImageNamesMap = {
-  [key in TRec['riskLevel']]: string[]
+  [key in Exclude<TRec['riskLevel'], 'unknown'>]: string[]
 }
+type RLKey = keyof RiskLevelIndicatorImageNamesMap
 
 // Have to be same scope
 const getRecords = (viewId: string, lng: Languages): ScrapedRec[] => {
@@ -52,7 +53,7 @@ const getRecords = (viewId: string, lng: Languages): ScrapedRec[] => {
       const riskIndicatorImg = dataCells[4].querySelector('img')
       // Find risk level key
       return Object.keys(riskLevelIndicatorImageNamesMap)
-        .find(riskLevel => riskLevelIndicatorImageNamesMap[riskLevel as TRec['riskLevel']].some(
+        .find(riskLevel => riskLevelIndicatorImageNamesMap[riskLevel as RLKey].some(
           val => riskIndicatorImg?.src?.includes(val)
         )) as keyof RiskLevelIndicatorImageNamesMap
     })()

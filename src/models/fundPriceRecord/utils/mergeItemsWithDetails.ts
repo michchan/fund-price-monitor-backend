@@ -6,6 +6,7 @@ type ResultItem <T extends Item> = T & Pick<FundDetails,
 | 'name'
 | 'initialPrice'
 | 'launchedDate'
+| 'riskLevel'
 >
 
 const mergeItemsWithDetails = <T extends Item> (
@@ -21,6 +22,7 @@ const mergeItemsWithDetails = <T extends Item> (
       en: '',
       zh_HK: '',
     },
+    riskLevel: detailItem?.riskLevel ?? 'unknown',
     initialPrice: detailItem?.initialPrice ?? 0,
     launchedDate: detailItem?.launchedDate ?? '',
   }
