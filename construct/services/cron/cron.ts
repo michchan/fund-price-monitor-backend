@@ -29,7 +29,7 @@ export interface Output {
 }
 function construct (scope: cdk.Construct, deploymentHandlers: DeploymentHandlers): Output {
   const roles = constructIamRoles(scope)
-  // Get non-secure string paramters from parameter store
+  // Get non-secure string parameters from parameter store
   const secrets = getSecrets(scope)
   const { handlers, stateMachines } = constructLamdas(scope, roles, {
     ...secrets,
