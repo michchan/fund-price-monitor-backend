@@ -28,10 +28,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "typeRoots": ["./node_modules/@types"],
-    "rootDir": "src",
     "outDir": "build",
     "baseUrl": "./"
   },
-  "exclude": ["node_modules", "cdk.out", "construct"],
-  "include": ["src", "construct/lib/grantCloudWatchLogGroupPermissions.ts", "construct/constants.ts", "construct/services/fundprices/index.ts", "construct/services/cron/index.ts", "construct/services/migration/index.ts", "construct/fund-price-monitor-backend-stack.ts"]
+  "exclude": ["node_modules", "cdk.out"],
+  "include": ["src", "construct"]
 }
