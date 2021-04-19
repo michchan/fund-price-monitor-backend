@@ -4,7 +4,6 @@ import startCase from 'lodash/startCase'
 import { FundPriceRecord, CompanyType, FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
 
 import { ScheduleType } from 'src/services/cron/helpers/queryItemsBySchedule'
-import parseLinesToChunks from 'src/lib/telegram/parseLinesToChunks'
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 
 const PADDING = 2
@@ -19,7 +18,7 @@ export interface Item extends
   name: string;
 }
 
-const toTelegramMessages = (
+const toTelegramMessageLines = (
   company: CompanyType,
   scheduleType: ScheduleType,
   items: Item[],
@@ -54,7 +53,7 @@ const toTelegramMessages = (
     return isEmphasized ? `*${line}*` : line
   })
 
-  return parseLinesToChunks([titleLine, '', ...itemLines])
+  return [titleLine, '', ...itemLines]
 }
 
-export default toTelegramMessages
+export default toTelegramMessageLines
