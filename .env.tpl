@@ -1,6 +1,8 @@
 # For dev scripts
 AWS_PROFILE='fundprice-root'
 SAM_API_PORT=8001
+# For local webpack config
+BUNDLE_ANALYZER_ENABLED=true
 
 # For AWS construct
 API_KEY_DEV=''
