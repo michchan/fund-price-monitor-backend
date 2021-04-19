@@ -1,6 +1,7 @@
 import { ScheduledHandler } from 'aws-lambda'
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
+import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import createTable from 'src/models/fundPriceRecord/io/createTable'
@@ -8,11 +9,10 @@ import createTableDetails from 'src/models/fundPriceRecord/io/createTableDetails
 import checkTableExistence from '../helpers/checkTableExistence'
 import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
 import defaultScrapeMeta from 'src/models/fundPriceRecord/constants/defaultScrapeMeta'
-import getEnvVars from 'src/helpers/getEnvVar'
 
 // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,
 // To map as dynamodb stream target function
-const aggregationHandlerArn = getEnvVars('AGGREGATION_HANDLER_ARN')
+const aggregationHandlerArn = getEnvVar('AGGREGATION_HANDLER_ARN')
 
 export type EventDetail = TableRange | undefined
 

@@ -1,13 +1,13 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsHandler } from 'aws-lambda'
 import decodeCloudWatchLogEventPayload from 'simply-utils/dist/AWS/decodeCloudWatchLogEventPayload'
 import capitalizeWords from 'simply-utils/dist/string/capitalizeWords'
-import getEnvVars from 'src/helpers/getEnvVar'
+import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 import logObj from 'src/helpers/logObj'
 
 import AWS from 'src/lib/AWS'
 
 // * Environment variable SNS_TOPIC_ARN is required
-const snsArn = getEnvVars('SNS_TOPIC_ARN')
+const snsArn = getEnvVar('SNS_TOPIC_ARN')
 
 const sns = new AWS.SNS()
 

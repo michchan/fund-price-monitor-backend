@@ -1,12 +1,12 @@
+import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 import AWS from 'src/lib/AWS'
 import logObj from 'src/helpers/logObj'
 import toLatestPriceRecord from 'src/models/fundPriceRecord/utils/toLatestPriceRecord'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import { EventDetail } from '../helpers/getNotifyHandler'
 import { Callback } from './getRecordsScraperTemplateHandler'
-import getEnvVars from 'src/helpers/getEnvVar'
 
-const notifierArn = getEnvVars('NOTIFIER_ARN')
+const notifierArn = getEnvVar('NOTIFIER_ARN')
 
 const lambda = new AWS.Lambda()
 

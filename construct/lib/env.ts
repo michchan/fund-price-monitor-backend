@@ -1,4 +1,4 @@
-import composeEnv, { EnvValues as EV } from 'simply-utils/dist/devOps/composeEnv'
+import composeEnv, { EnvValues as EV } from 'simply-utils/dist/utils/composeEnv'
 
 const keys = [
   'API_KEY_DEV',

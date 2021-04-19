@@ -40,9 +40,9 @@
     "start-api": "sam local start-api --profile=$AWS_PROFILE -p $SAM_API_PORT",
     "template": "npm run build && cdk synth --no-staging > template.yaml --profile=$AWS_PROFILE",
     "test": "jest",
+    "tsc-watch": "tsc --watch --noemit",
     "watch": "npm-watch build-dev",
-    "watch-all": "npm-watch build",
-    "watch-tsc": "tsc --watch --noemit"
+    "watch-all": "npm-watch build"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.98.0",
@@ -92,7 +92,7 @@
     "lodash": "^4.17.20",
     "puppeteer": "5.5.0",
     "puppeteer-core": "5.5.0",
-    "simply-utils": "0.55.0",
+    "simply-utils": "0.56.1",
     "source-map-support": "^0.5.19"
   }
 }

@@ -3,6 +3,7 @@ import { ProvisionedThroughput } from 'aws-sdk/clients/dynamodb'
 import { ScheduledHandler } from 'aws-lambda'
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
+import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 
 import AWS from 'src/lib/AWS'
 import checkTableExistence from '../helpers/checkTableExistence'
@@ -13,12 +14,11 @@ import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import updateTable from 'src/models/fundPriceRecord/io/updateTable'
 import tableThroughput from 'src/models/fundPriceRecord/constants/tableThroughput'
-import getEnvVars from 'src/helpers/getEnvVar'
 
 /* Get the aggregator ARN Passed from the environment variables
    defined in CDK construct of cron,
    To map as dynamodb stream target function */
-const aggregationHandlerArn = getEnvVars('AGGREGATION_HANDLER_ARN')
+const aggregationHandlerArn = getEnvVar('AGGREGATION_HANDLER_ARN')
 
 const lambda = new AWS.Lambda()
 

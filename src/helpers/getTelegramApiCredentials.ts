@@ -1,12 +1,12 @@
+import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 import getParameter from 'src/lib/AWS/parameterStore/getParameter'
-import getEnvVars from './getEnvVar'
 
 /* Get the telegram notification channel chat ID passed from
   the environment variables defined in CDK construct of cron,
   To map as dynamodb stream target function */
-const chatId = getEnvVars('TELEGRAM_CHAT_ID')
+const chatId = getEnvVar('TELEGRAM_CHAT_ID')
 // Get the parameter name (in AWS parameter store) of telegram bot API key
-const apiKeyParamName = getEnvVars('TELEGRAM_BOT_API_KEY_PARAMETER_NAME')
+const apiKeyParamName = getEnvVar('TELEGRAM_BOT_API_KEY_PARAMETER_NAME')
 
 export interface Output {
   chatId: string;

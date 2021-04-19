@@ -1,12 +1,12 @@
 import { Handler } from 'aws-lambda'
 import { Octokit } from '@octokit/core'
-import getEnvVars from 'src/helpers/getEnvVar'
+import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 
-const accessToken = getEnvVars('DEPLOYMENT_GITHUB_ACCESS_TOKEN')
-const owner = getEnvVars('DEPLOYMENT_GITHUB_OWNER')
-const repo = getEnvVars('DEPLOYMENT_GITHUB_REPO')
-const workflow_id = getEnvVars('DEPLOYMENT_GITHUB_WORKFLOW_ID')
-const ref = getEnvVars('DEPLOYMENT_GITHUB_WORKFLOW_REF')
+const accessToken = getEnvVar('DEPLOYMENT_GITHUB_ACCESS_TOKEN')
+const owner = getEnvVar('DEPLOYMENT_GITHUB_OWNER')
+const repo = getEnvVar('DEPLOYMENT_GITHUB_REPO')
+const workflow_id = getEnvVar('DEPLOYMENT_GITHUB_WORKFLOW_ID')
+const ref = getEnvVar('DEPLOYMENT_GITHUB_WORKFLOW_REF')
 
 const octokit = new Octokit({ auth: accessToken })
 

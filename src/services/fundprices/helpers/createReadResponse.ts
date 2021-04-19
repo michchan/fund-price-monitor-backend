@@ -4,11 +4,11 @@ import pick from 'lodash/pick'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import statusCodes from 'http-status-codes'
 import { ListResponse } from '@michchan/fund-price-monitor-lib'
+import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 
 import stringify from 'src/helpers/stringify'
-import getEnvVars from 'src/helpers/getEnvVar'
 
-const apiCorsWhitelist = getEnvVars('API_CORS_WHITELIST')
+const apiCorsWhitelist = getEnvVar('API_CORS_WHITELIST')
 const DEV_STAGE_NAME = 'dev'
 
 const withCorsHeaders = (event: APIGatewayProxyEvent) => ({
