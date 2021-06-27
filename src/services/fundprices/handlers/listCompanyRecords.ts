@@ -23,6 +23,7 @@ import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
+import createParameterError from '../helpers/createParameterError'
 
 const EXP_COM = ':com_code'
 
@@ -104,7 +105,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     /** ----------- Validations ----------- */
     validateCompany(company)
     if (riskLevel && !isValidRiskLevel(riskLevel))
-      throw new Error(composeParameterErrMsg('riskLevel'))
+      throw createParameterError(composeParameterErrMsg('riskLevel'))
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
     if (quarter) validateYearQuarter(quarter, 'quarter')
 

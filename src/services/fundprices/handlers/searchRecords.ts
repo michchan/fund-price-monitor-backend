@@ -15,6 +15,7 @@ import validateYearQuarter from '../validators/validateYearQuarter'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
 import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
+import createParameterError from '../helpers/createParameterError'
 
 const EXP_TIME_SK_PFX = ':timeSK_prefix' as string
 
@@ -48,7 +49,7 @@ export const handler: APIGatewayProxyHandler = async event => {
 
     /** ----------- Validations ----------- */
 
-    if (!q) throw new Error(composeParameterErrMsg('q', 'query'))
+    if (!q) throw createParameterError(composeParameterErrMsg('q', 'query'))
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
     if (quarter) validateYearQuarter(quarter, 'quarter')
 
