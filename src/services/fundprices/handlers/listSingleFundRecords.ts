@@ -17,7 +17,7 @@ import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 import validateYearQuarter from '../validators/validateYearQuarter'
 import getYearQuarterFromTimestamp from '../helpers/getYearQuarterFromTimestamp'
-import createParameterErrMsg from '../helpers/createParameterErrMsg'
+import composeParameterErrMsg from '../helpers/composeParameterErrMsg'
 
 const validateTimestampInQuarter = (
   timestamp: string,
@@ -25,7 +25,7 @@ const validateTimestampInQuarter = (
   [timestampName, yearQuarterName]: [string, string],
 ) => {
   if (getYearQuarterFromTimestamp(timestamp) !== yearQuarter) {
-    throw new Error(createParameterErrMsg(
+    throw new Error(composeParameterErrMsg(
       timestampName,
       'query',
       'custom',

@@ -15,7 +15,7 @@ import isValidRiskLevel from 'src/models/fundPriceRecord/utils/isValidRiskLevel'
 import queryItemsByRiskLevel from 'src/models/fundPriceRecord/io/queryItemsByRiskLevel'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import createReadResponse from '../helpers/createReadResponse'
-import createParameterErrMsg from '../helpers/createParameterErrMsg'
+import composeParameterErrMsg from '../helpers/composeParameterErrMsg'
 import validateKey from '../validators/validateKey'
 import validateCompany from '../validators/validateCompany'
 import validateYearQuarter from '../validators/validateYearQuarter'
@@ -104,7 +104,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     /** ----------- Validations ----------- */
     validateCompany(company)
     if (riskLevel && !isValidRiskLevel(riskLevel))
-      throw new Error(createParameterErrMsg('riskLevel'))
+      throw new Error(composeParameterErrMsg('riskLevel'))
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
     if (quarter) validateYearQuarter(quarter, 'quarter')
 

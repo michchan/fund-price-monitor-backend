@@ -1,11 +1,11 @@
 import { AggregatedRecordType } from '@michchan/fund-price-monitor-lib'
-import createParameterErrMsg from '../helpers/createParameterErrMsg'
+import composeParameterErrMsg from '../helpers/composeParameterErrMsg'
 
 const validatePeriod = (
   maybePeriod: unknown,
   type: AggregatedRecordType
 ): void => {
-  const throwErr = () => { throw new Error(createParameterErrMsg(type, 'path')) }
+  const throwErr = () => { throw new Error(composeParameterErrMsg(type, 'path')) }
 
   switch (type) {
     case 'week':

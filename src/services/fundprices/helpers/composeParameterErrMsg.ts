@@ -4,7 +4,7 @@ export type MessageType =
   | 'invalidKeyFormat'
   | 'custom'
 
-const createParameterErrMsg = (
+const composeParameterErrMsg = (
   fieldName: string,
   paramType: ParamType = 'query',
   messageType: MessageType = 'invalid',
@@ -25,4 +25,4 @@ const createParameterErrMsg = (
   return `${paramName} parameter '${fieldName}' ${msg}`
 }
 
-export default createParameterErrMsg
+export default composeParameterErrMsg

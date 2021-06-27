@@ -9,7 +9,7 @@ import validateKey from '../validators/validateKey'
 import scanItems from 'src/models/fundPriceRecord/io/scanItems'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import beginsWith from 'src/lib/AWS/dynamodb/expressionFunctions/beginsWith'
-import createParameterErrMsg from '../helpers/createParameterErrMsg'
+import composeParameterErrMsg from '../helpers/composeParameterErrMsg'
 import mapQueryToFilterExpressions from '../helpers/mapQueryToFilterExpressions'
 import validateYearQuarter from '../validators/validateYearQuarter'
 import yearQuarterToTableRange from '../helpers/yearQuarterToTableRange'
@@ -48,7 +48,7 @@ export const handler: APIGatewayProxyHandler = async event => {
 
     /** ----------- Validations ----------- */
 
-    if (!q) throw new Error(createParameterErrMsg('q', 'query'))
+    if (!q) throw new Error(composeParameterErrMsg('q', 'query'))
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
     if (quarter) validateYearQuarter(quarter, 'quarter')
 

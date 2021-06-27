@@ -1,4 +1,4 @@
-import createParameterErrMsg from '../helpers/createParameterErrMsg'
+import composeParameterErrMsg from '../helpers/composeParameterErrMsg'
 import getYearQuarterFromTimestamp from '../helpers/getYearQuarterFromTimestamp'
 
 /**
@@ -16,7 +16,7 @@ const validateTimestampRange = (
   const end = getYearQuarterFromTimestamp(endTime)
 
   if (start !== end) {
-    throw new Error(createParameterErrMsg(
+    throw new Error(composeParameterErrMsg(
       `${startTimeName}\', \'${endTimeName}`,
       'query',
       'custom',

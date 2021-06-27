@@ -1,6 +1,6 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import createParameterErrMsg from '../helpers/createParameterErrMsg'
+import composeParameterErrMsg from '../helpers/composeParameterErrMsg'
 import forEach from 'lodash/forEach'
 
 /**
@@ -11,11 +11,11 @@ import forEach from 'lodash/forEach'
  * @param exclusiveStartKey
  */
 const validateKey = (key: DocumentClient.Key, fieldName: string): void => {
-  if (typeof key !== 'object') throw new Error(createParameterErrMsg(fieldName, 'query', 'invalid'))
+  if (typeof key !== 'object') throw new Error(composeParameterErrMsg(fieldName, 'query', 'invalid'))
 
   forEach(key, value => {
     if (value && !/^[a-z0-9_\-\.]{3,255}$/i.test(`${value}`))
-      throw new Error(createParameterErrMsg(fieldName, 'query', 'invalidKeyFormat'))
+      throw new Error(composeParameterErrMsg(fieldName, 'query', 'invalidKeyFormat'))
   })
 }
 
