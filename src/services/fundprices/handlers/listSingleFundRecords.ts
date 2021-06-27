@@ -33,11 +33,13 @@ export const handler: APIGatewayProxyHandler = async event => {
 
     // Get query params
     const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
-      if (key === 'latest') return value === 'true'
+      if (['latest', 'all'].includes(key)) return value === 'true'
       return value
     }) as unknown as QueryParams
+
     const {
       latest: shouldQueryLatest,
+      all: shouldQueryAll,
       exclusiveStartKey,
       startTime,
       endTime,
@@ -55,11 +57,13 @@ export const handler: APIGatewayProxyHandler = async event => {
     const [recordsOutput, detailsOutput] = await Promise.all([
       querySingleFundRecords(company, code, {
         shouldQueryLatest,
-        shouldQueryAll: false,
+        shouldQueryAll,
         startTime,
         endTime,
         input: { ExclusiveStartKey: exclusiveStartKey },
       }),
+      // Details items are non-time-series/mutable records.
+      // Should always 'query all' records in order to map the details.
       queryDetails({ company, shouldQueryAll: true }),
     ])
     // Merge records and details

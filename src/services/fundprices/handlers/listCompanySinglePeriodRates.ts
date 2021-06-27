@@ -6,6 +6,7 @@ import {
   ListCompanySinglePeriodRatesQueryParams,
   ListCompanySinglePeriodRatesResponse,
 } from '@michchan/fund-price-monitor-lib'
+import mapValues from 'lodash/mapValues'
 
 import createReadResponse from '../helpers/createReadResponse'
 import validateCompany from '../validators/validateCompany'
@@ -70,8 +71,18 @@ export const handler: APIGatewayProxyHandler = async event => {
     const periodType = getPeriodType(event.path)
     // Get path params
     const { company, [periodType]: _period } = (event.pathParameters ?? {}) as unknown as PathParams
+
     // Get query params
-    const { exclusiveStartKey } = (event.queryStringParameters ?? {}) as unknown as QueryParams
+    const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
+      if (['latest', 'all'].includes(key)) return value === 'true'
+      return value
+    }) as unknown as QueryParams
+
+    // Get query params
+    const {
+      exclusiveStartKey,
+      all: shouldQueryAll,
+    } = queryParams
 
     /** ----------- Validations ----------- */
     validateCompany(company)
@@ -91,10 +102,12 @@ export const handler: APIGatewayProxyHandler = async event => {
     // Query
     const [recordsOutput, detailsOutput] = await Promise.all([
       queryPeriodPriceChangeRate(company, periodType, period, {
-        shouldQueryAll: false,
+        shouldQueryAll,
         at: tableRange,
         input: { ExclusiveStartKey: exclusiveStartKey },
       }),
+      // Details items are non-time-series/mutable records.
+      // Should always 'query all' records in order to map the details.
       queryDetails({ company, shouldQueryAll: true }),
     ])
     // Merge records and details

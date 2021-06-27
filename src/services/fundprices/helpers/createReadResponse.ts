@@ -46,10 +46,12 @@ function createReadResponse <T> (
     }
   }
 
+  const data = output?.parsedItems ?? []
   const body: ListResponse<T> = {
     result: true,
-    data: output?.parsedItems ?? [],
+    length: data.length,
     lastEvaluatedKey: output?.LastEvaluatedKey ?? null,
+    data,
   }
   return {
     statusCode: statusCodes.OK,

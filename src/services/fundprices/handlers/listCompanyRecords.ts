@@ -32,6 +32,7 @@ interface QueryOptions {
   exclusiveStartKey?: DocumentClient.QueryInput['ExclusiveStartKey'];
   riskLevel?: RiskLevel;
   shouldQueryLatest?: boolean;
+  shouldQueryAll?: boolean;
 }
 const queryByRiskLevel = ({
   riskLevel,
@@ -39,12 +40,13 @@ const queryByRiskLevel = ({
   tableRange,
   exclusiveStartKey,
   shouldQueryLatest,
+  shouldQueryAll = false,
 }: QueryOptions) => {
   if (riskLevel) {
     // Query records with risk level and company constraint
     return queryItemsByRiskLevel(riskLevel, {
       shouldQueryLatest,
-      shouldQueryAll: false,
+      shouldQueryAll,
       at: tableRange,
       input: defaultInput => ({
         ExclusiveStartKey: exclusiveStartKey,
@@ -64,7 +66,7 @@ const queryByRiskLevel = ({
   return queryItemsByCompany(company, {
     at: tableRange,
     shouldQueryLatest,
-    shouldQueryAll: false,
+    shouldQueryAll,
     input: {
       ExclusiveStartKey: exclusiveStartKey,
     },
@@ -87,12 +89,14 @@ export const handler: APIGatewayProxyHandler = async event => {
 
     // Get query params
     const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
-      if (key === 'latest') return value === 'true'
+      if (['latest', 'all'].includes(key)) return value === 'true'
       return value
     }) as unknown as QueryParams
+
     const {
       riskLevel,
       latest: shouldQueryLatest,
+      all: shouldQueryAll,
       exclusiveStartKey,
       quarter,
     } = queryParams
@@ -115,7 +119,10 @@ export const handler: APIGatewayProxyHandler = async event => {
         exclusiveStartKey,
         riskLevel,
         shouldQueryLatest,
+        shouldQueryAll,
       }),
+      // Details items are non-time-series/mutable records.
+      // Should always 'query all' records in order to map the details.
       queryDetails({ company, shouldQueryAll: true }),
     ])
     // Merge records and details

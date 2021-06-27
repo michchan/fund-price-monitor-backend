@@ -33,12 +33,14 @@ export const handler: APIGatewayProxyHandler = async event => {
   try {
     // Get query params
     const queryParams = mapValues(event.queryStringParameters ?? {}, (value, key) => {
-      if (key === 'latest') return value === 'true'
+      if (['latest', 'all'].includes(key)) return value === 'true'
       if (key === 'q') return parseQuery(value ?? '')
       return value
     }) as unknown as QueryParamsParsed
+
     const {
       latest: shouldQueryLatest,
+      all: shouldQueryAll,
       exclusiveStartKey,
       q,
       quarter,
@@ -71,7 +73,7 @@ export const handler: APIGatewayProxyHandler = async event => {
           beginsWith(attrs.TIME_SK, EXP_TIME_SK_PFX),
           ...filterExp,
         ].join(' AND '),
-      }, false, tableRange),
+      }, shouldQueryAll, tableRange),
       queryDetails({ shouldQueryAll: true }),
     ])
     // Merge records and details
