@@ -87,6 +87,7 @@
     "@octokit/core": "^3.4.0",
     "axios": "^0.21.1",
     "chrome-aws-lambda": "5.5.0",
+    "dayjs": "^1.10.5",
     "dotenv": "^8.2.0",
     "http-status-codes": "^2.1.4",
     "lodash": "^4.17.20",

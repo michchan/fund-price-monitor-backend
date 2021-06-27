@@ -18,6 +18,7 @@ import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import logObj from 'src/helpers/logObj'
 import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
+import parseWeekPeriodParam from '../helpers/parseWeekPeriodParam'
 
 export type Res = ListCompanySinglePeriodRatesResponse
 
@@ -68,17 +69,19 @@ export const handler: APIGatewayProxyHandler = async event => {
     // Get period type
     const periodType = getPeriodType(event.path)
     // Get path params
-    const { company, [periodType]: period } = (event.pathParameters ?? {}) as unknown as PathParams
+    const { company, [periodType]: _period } = (event.pathParameters ?? {}) as unknown as PathParams
     // Get query params
     const { exclusiveStartKey } = (event.queryStringParameters ?? {}) as unknown as QueryParams
 
-    // Get quarter by period
-    const yearQuarter = getYearQuarter(periodType, period)
-
     /** ----------- Validations ----------- */
     validateCompany(company)
-    validatePeriod(period, periodType)
+    validatePeriod(_period, periodType)
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
+
+    /** ----------- Param Parsing ----------- */
+    const period = periodType === 'week' ? parseWeekPeriodParam(_period) : _period
+    // Get quarter by period
+    const yearQuarter = getYearQuarter(periodType, period)
 
     /** ----------- Query ----------- */
     // Get table range

@@ -9,12 +9,15 @@ const validatePeriod = (
 
   switch (type) {
     case 'week':
-      if (!/^[0-9]{4}-((0[0-9])|(1[0-2]))\.[0-9]+$/.test(maybePeriod as string)) throwErr()
+      // `YYYY-MM.nthWeek` or `YYYY.nthWeek`
+      if (!/^[0-9]{4}(-((0[0-9])|(1[0-2])))?\.[0-9]+$/.test(maybePeriod as string)) throwErr()
       break
     case 'month':
+      // `YYYY-MM`
       if (!/^[0-9]{4}-((0[0-9])|(1[0-2]))$/.test(maybePeriod as string)) throwErr()
       break
     case 'quarter':
+      // `YYYY.nthQuarter`
       if (!/^[0-9]{4}\.[1-4]$/.test(maybePeriod as string)) throwErr()
       break
     default:
