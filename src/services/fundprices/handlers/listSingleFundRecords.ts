@@ -15,6 +15,24 @@ import validateCode from '../validators/validateCode'
 import validateTimestampRange from '../validators/validateTimestampRange'
 import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
+import validateYearQuarter from '../validators/validateYearQuarter'
+import getYearQuarterFromTimestamp from '../helpers/getYearQuarterFromTimestamp'
+import createParameterErrMsg from '../helpers/createParameterErrMsg'
+
+const validateTimestampInQuarter = (
+  timestamp: string,
+  yearQuarter: string,
+  [timestampName, yearQuarterName]: [string, string],
+) => {
+  if (getYearQuarterFromTimestamp(timestamp) !== yearQuarter) {
+    throw new Error(createParameterErrMsg(
+      timestampName,
+      'query',
+      'custom',
+      `must be within the same quarter defined with ${yearQuarterName}`
+    ))
+  }
+}
 
 export type Res = ListSingleFundRecordsResponse
 
@@ -43,14 +61,21 @@ export const handler: APIGatewayProxyHandler = async event => {
       exclusiveStartKey,
       startTime,
       endTime,
+      quarter,
     } = queryParams
 
     /** ----------- Validations ----------- */
     validateCompany(company)
     validateCode(code)
+
     if (startTime) validateTimestamp(startTime, 'startTime')
     if (endTime) validateTimestamp(endTime, 'endTime')
-    if (startTime && endTime) validateTimestampRange(startTime, endTime)
+    if (quarter) validateYearQuarter(quarter, 'quarter')
+
+    if (startTime && endTime) validateTimestampRange(startTime, endTime, ['startTime', 'endTime'])
+    if (quarter && startTime) validateTimestampInQuarter(startTime, quarter, ['startTime', 'quarter'])
+    if (quarter && endTime) validateTimestampInQuarter(endTime, quarter, ['endTime', 'quarter'])
+
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
 
     /** ----------- Query ----------- */
@@ -60,6 +85,7 @@ export const handler: APIGatewayProxyHandler = async event => {
         shouldQueryAll,
         startTime,
         endTime,
+        quarter,
         input: { ExclusiveStartKey: exclusiveStartKey },
       }),
       // Details items are non-time-series/mutable records.

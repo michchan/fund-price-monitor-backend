@@ -10,6 +10,7 @@ import between from 'src/lib/AWS/dynamodb/expressionFunctions/between'
 import getCompanyCodePK from '../utils/getCompanyCodePK'
 import getCompositeSK from '../utils/getCompositeSK'
 import parseRecord from '../utils/parseRecord'
+import yearQuarterToTableRange from 'src/services/fundprices/helpers/yearQuarterToTableRange'
 
 const EXP_COM_CODE_PK = ':company_code' as string
 const EXP_TIME_SK_PFX = ':time_SK' as string
@@ -31,6 +32,8 @@ export interface Options <T extends TVariants = FundPriceRecord> {
   /** ISO Timestamp */
   startTime?: string;
   endTime?: string;
+  /** YYYY.nthQuarter */
+  quarter?: string;
   input?: PartialInput | ((defaultInput: Input) => PartialInput);
   /** Default to parseRecord */
   parser?: Parser<T>;
@@ -70,13 +73,16 @@ const querySingleFundRecords = async <T extends TVariants = FundPriceRecord> (
     shouldQueryAll,
     startTime,
     endTime,
+    quarter,
     input = {},
     parser = parseRecord as Parser<T>,
   }: Options<T> = {},
 ): Promise<Output<T>> => {
   const startDate = startTime ? new Date(startTime) : new Date()
-  // Get table from
-  const from = getDateTimeDictionary(startDate)
+  // Get table at
+  const tableAt = quarter
+    ? yearQuarterToTableRange(quarter)
+    : getDateTimeDictionary(startDate)
   // Construct TIME SK query
   const recordType: RecordType = shouldQueryLatest ? 'latest' : 'record'
   // Derive timeSK expression values based on conditions
@@ -97,7 +103,7 @@ const querySingleFundRecords = async <T extends TVariants = FundPriceRecord> (
   const output = await queryItems({
     ...defaultInput,
     ...isFunction(input) ? input(defaultInput) : input,
-  }, shouldQueryAll, from)
+  }, shouldQueryAll, tableAt)
 
   return {
     ...output,
