@@ -20,6 +20,11 @@ import logObj from 'src/helpers/logObj'
 import queryDetails from 'src/models/fundPriceRecord/io/queryDetails'
 import mergeItemsWithDetails from 'src/models/fundPriceRecord/utils/mergeItemsWithDetails'
 import parseWeekPeriodParam from '../helpers/parseWeekPeriodParam'
+import attributeNames from 'src/models/fundPriceRecord/constants/attributeNames'
+import validateCode from '../validators/validateCode'
+import getCompanyCodePK from 'src/models/fundPriceRecord/utils/getCompanyCodePK'
+
+const EXP_COM_CODE = ':company_code' as string
 
 export type Res = ListCompanySinglePeriodRatesResponse
 
@@ -82,12 +87,14 @@ export const handler: APIGatewayProxyHandler = async event => {
     const {
       exclusiveStartKey,
       all: shouldQueryAll,
+      code,
     } = queryParams
 
     /** ----------- Validations ----------- */
     validateCompany(company)
     validatePeriod(_period, periodType)
     if (exclusiveStartKey) validateKey(exclusiveStartKey, 'exclusiveStartKey')
+    if (code) validateCode(code)
 
     /** ----------- Param Parsing ----------- */
     const period = periodType === 'week' ? parseWeekPeriodParam(_period) : _period
@@ -104,7 +111,18 @@ export const handler: APIGatewayProxyHandler = async event => {
       queryPeriodPriceChangeRate(company, periodType, period, {
         shouldQueryAll,
         at: tableRange,
-        input: { ExclusiveStartKey: exclusiveStartKey },
+        input: defaultInput => ({
+          ...defaultInput,
+          ExclusiveStartKey: exclusiveStartKey,
+          ExpressionAttributeValues: code ? {
+            ...defaultInput?.ExpressionAttributeValues,
+            [EXP_COM_CODE]: getCompanyCodePK({ company, code }),
+          } : undefined,
+          FilterExpression: [
+            defaultInput.FilterExpression,
+            code && `${attributeNames.COMPANY_CODE} = ${EXP_COM_CODE}`,
+          ].filter(v => v).join(' AND ') || undefined,
+        }),
       }),
       // Details items are non-time-series/mutable records.
       // Should always 'query all' records in order to map the details.

@@ -61,7 +61,6 @@
     "@aws-cdk/aws-stepfunctions-tasks": "1.110.1",
     "@aws-cdk/core": "1.110.1",
     "@michchan/eslint-config": "1.7.0",
-    "@michchan/fund-price-monitor-lib": "0.6.0",
     "@michchan/webpack-config-aws-cdk": "0.5.1",
     "@types/aws-lambda": "^8.10.70",
     "@types/jest": "^26.0.4",
@@ -84,6 +83,7 @@
     "webpack-cli": "^4.3.1"
   },
   "dependencies": {
+    "@michchan/fund-price-monitor-lib": "0.7.0",
     "@octokit/core": "^3.4.0",
     "axios": "^0.21.1",
     "chrome-aws-lambda": "5.5.0",
