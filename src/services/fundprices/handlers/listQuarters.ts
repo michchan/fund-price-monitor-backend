@@ -11,7 +11,7 @@ export type Res = ListQuartersResponse
 export interface QueryParams extends ListQuartersQueryParams {}
 
 /**
- * Get list of quarters (YYYY.(1|2|3|4)) available for data resouces
+ * Get list of quarters (YYYY.(1|2|3|4)) available for data resources
  */
 export const handler: APIGatewayProxyHandler = async event => {
   try {

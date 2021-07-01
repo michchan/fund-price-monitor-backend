@@ -14,8 +14,9 @@ import addCorsOptions from './addCorsOptions'
 import env from '../../../lib/env'
 
 interface Resources {
+  quarters: Resource;
+  companies: Resource;
   singleFundRecords: Resource;
-  quarterrates: Resource;
   searchedMpfRecords: Resource;
   comRecords: Resource;
   weekRates: Resource;
@@ -32,7 +33,9 @@ const constructEndpoints = (api: RestApi): Resources => {
   // /fundprices/mpf
   const mpfFunds = funds.addResource('mpf')
   // /fundprices/mpf/quarters
-  const quarterrates = mpfFunds.addResource('quarters')
+  const quarters = mpfFunds.addResource('quarters')
+  // /fundprices/mpf/companies
+  const companies = mpfFunds.addResource('companies')
   // /fundprices/mpf/search
   const searchedMpfRecords = mpfFunds.addResource('search')
   // /fundprices/mpf/{company}
@@ -56,8 +59,9 @@ const constructEndpoints = (api: RestApi): Resources => {
   const quarterRateSingle = quarterRates.addResource('{quarter}')
 
   return {
+    quarters,
+    companies,
     singleFundRecords,
-    quarterrates,
     searchedMpfRecords,
     comRecords,
     weekRates,
@@ -72,15 +76,13 @@ const constructEndpoints = (api: RestApi): Resources => {
 const DEFAULT_METHOD_OPTIONS = { apiKeyRequired: true }
 const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): Method[] => {
   const {
+    quarters,
+    companies,
     singleFundRecords,
-    quarterrates,
     searchedMpfRecords,
     comRecords,
-    weekRates,
     weekRateSingle,
-    monthRates,
     monthRateSingle,
-    quarterRates,
     quarterRateSingle,
   } = resources
   const {
@@ -89,6 +91,7 @@ const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): M
     listCompanySinglePeriodRates,
     searchRecords,
     listQuarters,
+    listCompanies,
   } = handlers
 
   // Integrations
@@ -97,17 +100,15 @@ const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): M
   const listComSinglePeriodRatesIntegration = new LambdaIntegration(listCompanySinglePeriodRates)
   const searchRecordsIntegration = new LambdaIntegration(searchRecords)
   const listQuartersIntegration = new LambdaIntegration(listQuarters)
+  const listCompaniesIntegration = new LambdaIntegration(listCompanies)
 
   // Add CORS options
-  addCorsOptions(comRecords)
-  addCorsOptions(singleFundRecords)
-  addCorsOptions(weekRates)
-  addCorsOptions(monthRates)
-  addCorsOptions(quarterRates)
+  Object.values(resources).forEach((resource: Resource) => addCorsOptions(resource))
 
   return [
+    quarters.addMethod('GET', listQuartersIntegration, DEFAULT_METHOD_OPTIONS),
+    companies.addMethod('GET', listCompaniesIntegration, DEFAULT_METHOD_OPTIONS),
     singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration, DEFAULT_METHOD_OPTIONS),
-    quarterrates.addMethod('GET', listQuartersIntegration, DEFAULT_METHOD_OPTIONS),
     searchedMpfRecords.addMethod('GET', searchRecordsIntegration, DEFAULT_METHOD_OPTIONS),
     comRecords.addMethod('GET', listComRecordsIntegration, DEFAULT_METHOD_OPTIONS),
     weekRateSingle.addMethod('GET', listComSinglePeriodRatesIntegration, DEFAULT_METHOD_OPTIONS),

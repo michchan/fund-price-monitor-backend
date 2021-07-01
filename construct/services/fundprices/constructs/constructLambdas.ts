@@ -10,6 +10,7 @@ export interface Handlers {
   listCompanySinglePeriodRates: lambda.Function;
   searchRecords: lambda.Function;
   listQuarters: lambda.Function;
+  listCompanies: lambda.Function;
 }
 const constructLamdas = (
   scope: cdk.Construct,
@@ -43,6 +44,10 @@ const constructLamdas = (
     ...defaultInput,
     handler: 'listQuarters.handler',
   })
+  const listCompaniesHandler = new lambda.Function(scope, 'ApiListCompanies', {
+    ...defaultInput,
+    handler: 'listCompanies.handler',
+  })
 
   return {
     listSingleFundRecords: listSingleFundRecordsHandler,
@@ -50,6 +55,7 @@ const constructLamdas = (
     listCompanySinglePeriodRates: listComSinglePeriodRatesHandler,
     searchRecords: searchRecordsHandler,
     listQuarters: listQuartersHandler,
+    listCompanies: listCompaniesHandler,
   }
 }
 export default constructLamdas

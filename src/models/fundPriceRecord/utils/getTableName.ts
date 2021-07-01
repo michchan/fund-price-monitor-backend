@@ -17,7 +17,7 @@ const getTableName = (
     throw new Error(`Cannot get table name: ${stringify({ yr, qt })}`)
 
   const tableName = `${PROJECT_NAMESPACE}.FundPriceRecords_${yr}_q${qt}`
-  logObj('Get table name: ', { yr, qt, tableName })
+  logObj('Get table name: ', { yr, qt, quarterOffset, tableName })
   return tableName
 }
 
