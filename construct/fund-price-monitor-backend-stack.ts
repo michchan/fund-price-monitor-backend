@@ -69,6 +69,10 @@ export class FundPriceMonitorBackendStack extends cdk.Stack {
       ].map(lambda => lambda.logGroup),
     })
     // Bind runtime environment variable
-    bindRuntimeEnvVars([...handlers, ...Object.values(logHandlers)])
+    bindRuntimeEnvVars([
+      ...handlers,
+      ...Object.values(logHandlers.notifyErrorLogHandlers),
+      logHandlers.mockErrorLog,
+    ])
   }
 }

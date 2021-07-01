@@ -17,6 +17,8 @@ const commonIamStatementInput = {
   effect: iam.Effect.ALLOW,
 }
 
+const NUM_LOG_GROUP_PER_HANDLER = 10
+
 const constructIamRole = (scope: cdk.Construct) => {
   // Create IAM roles for SNS topics subscriptions handling
   const role = new iam.Role(scope, ROLE_ID, {
@@ -49,29 +51,43 @@ const constructSNSTopics = (scope: cdk.Construct) => {
 }
 
 interface Handlers {
-  notifyErrorLog: lambda.Function;
+  notifyErrorLogHandlers: lambda.Function[];
   mockErrorLog: lambda.Function;
 }
-const constructLambdas = (
-  scope: cdk.Construct,
-  role: iam.Role,
-  servicePathname: string,
-  generalLogTopic: sns.Topic,
-): Handlers => {
+interface ConstructLambdasOptions {
+  scope: cdk.Construct;
+  role: iam.Role;
+  servicePathname: string;
+  generalLogTopic: sns.Topic;
+  numLogGroups: number;
+}
+const constructLambdas = ({
+  scope,
+  role,
+  servicePathname,
+  generalLogTopic,
+  numLogGroups,
+}: ConstructLambdasOptions): Handlers => {
   // Common input for lambda Definition
   const defaultInput = {
     ...defaultLambdaInput,
     code: lambda.Code.fromAsset(`bundles/${servicePathname}/handlers`),
     role,
   }
-  /** Error log handler */
-  const notifyErrorLogHandler = new lambda.Function(scope, 'LoggingNotifyErrorLog', {
-    ...defaultInput,
-    handler: 'notifyErrorLog.handler',
-    environment: { SNS_TOPIC_ARN: generalLogTopic.topicArn },
-  })
+
+  /**
+   * Error log handlers.
+   */
+  const notifyErrorLogHandlers = Array(Math.ceil(numLogGroups / NUM_LOG_GROUP_PER_HANDLER))
+    .fill(null)
+    .map((v, i) => new lambda.Function(scope, `LoggingNotifyErrorLog${i}`, {
+      ...defaultInput,
+      handler: 'notifyErrorLog.handler',
+      environment: { SNS_TOPIC_ARN: generalLogTopic.topicArn },
+    }))
+
   // Grant SNS publish permission
-  generalLogTopic.grantPublish(notifyErrorLogHandler)
+  notifyErrorLogHandlers.forEach(handler => generalLogTopic.grantPublish(handler))
 
   /** Mock error logs handler */
   const mockErrorLogHandler = new lambda.Function(scope, 'LoggingMockErrorLog', {
@@ -80,30 +96,36 @@ const constructLambdas = (
   })
 
   return {
-    notifyErrorLog: notifyErrorLogHandler,
+    notifyErrorLogHandlers,
     mockErrorLog: mockErrorLogHandler,
   }
 }
 
 const constructSubscriptions = (
   scope: cdk.Construct,
-  { notifyErrorLog, mockErrorLog }: Handlers,
+  { notifyErrorLogHandlers }: Handlers,
   logGroups: logs.ILogGroup[],
 ) => {
-  // Create lambda subscription destination
-  const subsDestination = new LambdaDestination(notifyErrorLog)
-  // Create filter pattern
-  const subsFilterPattern = logs.FilterPattern.anyTerm('ERROR', 'WARN')
+  notifyErrorLogHandlers.forEach((notifyErrorLog, index) => {
+    // Create lambda subscription destination
+    const subsDestination = new LambdaDestination(notifyErrorLog)
+    // Create filter pattern
+    const subsFilterPattern = logs.FilterPattern.anyTerm('ERROR', 'WARN')
 
-  const allLogGroups = [...logGroups, mockErrorLog.logGroup]
-  // Create subscription filters for each log group
-  allLogGroups.forEach((logGroup, i) => {
-    const id = `LambdaErrLogs${i}}`
-    return new logs.SubscriptionFilter(scope, id, {
-      logGroup,
-      destination: subsDestination,
-      filterPattern: subsFilterPattern,
-    })
+    const logGroupStartIndex = index * NUM_LOG_GROUP_PER_HANDLER
+    const logGroupEndIndexExclusive = logGroupStartIndex + NUM_LOG_GROUP_PER_HANDLER
+
+    // Create subscription filters for each log group
+    logGroups
+      .slice(logGroupStartIndex, logGroupEndIndexExclusive)
+      .forEach((logGroup, i) => {
+        const id = `LambdaErrLogsFilterF${index}G${i}`
+        return new logs.SubscriptionFilter(scope, id, {
+          logGroup,
+          destination: subsDestination,
+          filterPattern: subsFilterPattern,
+        })
+      })
   })
 }
 
@@ -121,7 +143,13 @@ function construct (scope: cdk.Construct, options: InitOptions): ReturnType {
 
   const role = constructIamRole(scope)
   const generalLogTopic = constructSNSTopics(scope)
-  const handlers = constructLambdas(scope, role, SERVICE_PATHNAME, generalLogTopic)
+  const handlers = constructLambdas({
+    scope,
+    role,
+    servicePathname: SERVICE_PATHNAME,
+    generalLogTopic,
+    numLogGroups: logGroups.length,
+  })
   constructSubscriptions(scope, handlers, logGroups)
 
   return { handlers }
