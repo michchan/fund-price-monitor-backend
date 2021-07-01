@@ -203,6 +203,7 @@ const constructRateLimitApiKeys = (
       stage,
       throttle: methods.map(method => ({ method, throttle })),
     })
+    plan.node.addDependency(...methods)
   })
 }
 
