@@ -6,8 +6,8 @@ import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import createTable from 'src/models/fundPriceRecord/io/createTable'
 import createTableDetails from 'src/models/fundPriceRecord/io/createTableDetails'
-import checkTableExistence from '../helpers/checkTableExistence'
-import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
+import checkTableExistence from 'src/models/fundPriceRecord/io/checkTableExistence'
+import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import defaultScrapeMeta from 'src/models/fundPriceRecord/constants/defaultScrapeMeta'
 
 // Get the aggregator ARN Passed from the environment variables defined in CDK construct of cron,

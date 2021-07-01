@@ -6,11 +6,11 @@ import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
 import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 
 import AWS from 'src/lib/AWS'
-import checkTableExistence from '../helpers/checkTableExistence'
+import checkTableExistence from 'src/models/fundPriceRecord/io/checkTableExistence'
 import describeTable, {
   Output as DescribeTableResult,
 } from 'src/models/fundPriceRecord/io/describeTable'
-import getCurrentYearAndQuarter from '../../../helpers/getCurrentYearAndQuarter'
+import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import updateTable from 'src/models/fundPriceRecord/io/updateTable'
 import tableThroughput from 'src/models/fundPriceRecord/constants/tableThroughput'

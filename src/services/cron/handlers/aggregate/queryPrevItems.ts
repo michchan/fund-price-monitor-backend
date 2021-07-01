@@ -1,25 +1,12 @@
 import { FundPriceRecord, FundPriceChangeRate, CompanyType } from '@michchan/fund-price-monitor-lib'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
-import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
+import queryPrevLatestItems from 'src/models/fundPriceRecord/io/queryPrevLatestItems'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
 
 type ItemOutput = FundPriceRecord[]
-const queryPrevLatestItems = async (
-  company: CompanyType,
-  matchInserted: (rec: FundPriceRecord | FundPriceChangeRate) => boolean,
-  tableRange: TableRange,
-): Promise<ItemOutput> => {
-  /** Query previous latest records */
-  const { parsedItems: prevLatestItems } = await queryItemsByCompany(company, {
-    shouldQueryAll: true,
-    shouldQueryLatest: true,
-    at: tableRange,
-  })
-  return prevLatestItems.filter(matchInserted)
-}
 
 type ChangeRateOutput = [
   FundPriceChangeRate[],
@@ -28,8 +15,8 @@ type ChangeRateOutput = [
 ]
 const queryPrevChangeRateItems = async (
   company: CompanyType,
-  matchInserted: (rec: FundPriceRecord | FundPriceChangeRate) => boolean,
   date: Date,
+  filterPredicate: (rec: FundPriceRecord | FundPriceChangeRate) => boolean,
 ): Promise<ChangeRateOutput> => {
   const priceChangeRateQueryInput = { shouldQueryAll: true }
   // Query week price change rate
@@ -46,9 +33,9 @@ const queryPrevChangeRateItems = async (
     queryPeriodPriceChangeRate(company, 'quarter', getPeriodByRecordType('quarter', date), priceChangeRateQueryInput),
   ])
   return [
-    prevWeekRateItems.filter(matchInserted),
-    prevMonthRateItems.filter(matchInserted),
-    prevQuarterRateItems.filter(matchInserted),
+    prevWeekRateItems.filter(filterPredicate),
+    prevMonthRateItems.filter(filterPredicate),
+    prevQuarterRateItems.filter(filterPredicate),
   ]
 }
 
@@ -63,8 +50,8 @@ const queryPrevItems = async (
   // Create table range
   const tableRange: TableRange = { year, quarter }
 
-  const prevLatestItems = await queryPrevLatestItems(company, matchInserted, tableRange)
-  const prevChangeRatesItems = await queryPrevChangeRateItems(company, matchInserted, date)
+  const prevLatestItems = await queryPrevLatestItems(company, tableRange, matchInserted)
+  const prevChangeRatesItems = await queryPrevChangeRateItems(company, date, matchInserted)
 
   return [prevLatestItems, ...prevChangeRatesItems]
 }

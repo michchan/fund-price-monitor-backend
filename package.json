@@ -60,7 +60,7 @@
     "@aws-cdk/aws-stepfunctions": "1.110.1",
     "@aws-cdk/aws-stepfunctions-tasks": "1.110.1",
     "@aws-cdk/core": "1.110.1",
-    "@michchan/eslint-config": "1.7.0",
+    "@michchan/eslint-config": "1.9.0",
     "@michchan/webpack-config-aws-cdk": "0.5.1",
     "@types/aws-lambda": "^8.10.70",
     "@types/jest": "^26.0.4",

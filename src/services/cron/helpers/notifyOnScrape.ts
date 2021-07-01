@@ -1,10 +1,11 @@
 import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
+
 import AWS from 'src/lib/AWS'
 import logObj from 'src/helpers/logObj'
 import toLatestPriceRecord from 'src/models/fundPriceRecord/utils/toLatestPriceRecord'
-import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
 import { EventDetail } from '../helpers/getNotifyHandler'
 import { Callback } from './getRecordsScraperTemplateHandler'
+import queryPrevLatestItems from 'src/models/fundPriceRecord/io/queryPrevLatestItems'
 
 const notifierArn = getEnvVar('NOTIFIER_ARN')
 
@@ -15,11 +16,7 @@ const notifyOnScrape: Callback = async (tableRange, records, companies) => {
   // Handle notification
   for (const company of companies) {
     /** Query previous latest records */
-    const { parsedItems: prevLatestItems } = await queryItemsByCompany(company, {
-      shouldQueryAll: true,
-      shouldQueryLatest: true,
-      at: tableRange,
-    })
+    const prevLatestItems = await queryPrevLatestItems(company, tableRange)
     const date = new Date()
     const latestItems = records.map(item => {
       const prevItem = prevLatestItems.find(eachItem => eachItem.code === item.code)
