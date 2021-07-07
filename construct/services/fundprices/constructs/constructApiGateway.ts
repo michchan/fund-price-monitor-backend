@@ -149,6 +149,7 @@ const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => 
   const apiKey = api.addApiKey(`${API_ID}ApiKey`, { value: env.values.API_KEY })
   const plan = api.addUsagePlan(`${API_ID}UsagePlan`)
   plan.addApiKey(apiKey)
+  plan.addApiStage({ stage: api.deploymentStage })
 
   const resources = constructEndpoints(api)
   integrateResourcesHandlers(resources, handlers)
