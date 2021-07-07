@@ -1,8 +1,6 @@
 import composeEnv, { EnvValues as EV } from 'simply-utils/dist/utils/composeEnv'
 
 const keys = [
-  'API_KEY_DEV',
-  'API_KEY_DEFAULT_PUBLIC_ACCESS',
   'AWS_DEFAULT_REGION',
   'GENERAL_LOG_SUBSCRIPTION_EMAIL',
   'TELEGRAM_BOT_API_KEY_PARAMETER_NAME',
