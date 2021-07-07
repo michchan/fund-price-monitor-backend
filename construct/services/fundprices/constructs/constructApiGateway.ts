@@ -146,7 +146,9 @@ const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => 
       throttlingBurstLimit: THROTTLING_BURST_LIMIT,
     },
   })
-  api.addApiKey(`${API_ID}ApiKey`, { value: env.values.API_KEY })
+  const apiKey = api.addApiKey(`${API_ID}ApiKey`, { value: env.values.API_KEY })
+  const plan = api.addUsagePlan(`${API_ID}UsagePlan`)
+  plan.addApiKey(apiKey)
 
   const resources = constructEndpoints(api)
   integrateResourcesHandlers(resources, handlers)
