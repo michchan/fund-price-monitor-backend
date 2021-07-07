@@ -1,17 +1,13 @@
 import * as cdk from '@aws-cdk/core'
 import {
-  Deployment,
   LambdaIntegration,
   Method,
-  MethodLoggingLevel,
   Resource,
   RestApi,
-  Stage,
 } from '@aws-cdk/aws-apigateway'
 import { ServicePrincipal } from '@aws-cdk/aws-iam'
 import { Handlers } from './constructLambdas'
 import addCorsOptions from './addCorsOptions'
-import env from '../../../lib/env'
 
 interface Resources {
   quarters: Resource;
@@ -103,9 +99,12 @@ const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): M
   const listCompaniesIntegration = new LambdaIntegration(listCompanies)
 
   // Add CORS options
-  Object.values(resources).forEach((resource: Resource) => addCorsOptions(resource))
+  const optionsMethods = Object
+    .values(resources)
+    .map((resource: Resource) => addCorsOptions(resource))
 
   return [
+    ...optionsMethods,
     quarters.addMethod('GET', listQuartersIntegration, DEFAULT_METHOD_OPTIONS),
     companies.addMethod('GET', listCompaniesIntegration, DEFAULT_METHOD_OPTIONS),
     singleFundRecords.addMethod('GET', listSingleFundRecordsIntegration, DEFAULT_METHOD_OPTIONS),
@@ -117,124 +116,37 @@ const integrateResourcesHandlers = (resources: Resources, handlers: Handlers): M
   ]
 }
 
-const DEV_STAGE_NAME = 'dev'
-const IS_DEV_CACHING_ENABLED = false
-const DEV_THROTTLING_RATE_LIMIT = 1000
-const DEV_THROTTLING_BURST_LIMIT = 200
-
-const PROD_STAGE_NAME = 'prod-v1'
-const IS_PROD_CACHING_ENABLED = false
-const PROD_THROTTLING_RATE_LIMIT = 10
-const PROD_THROTTLING_BURST_LIMIT = 2
-
-interface DeploymentStages {
-  dev: Stage;
-  prod: Stage;
-}
-const constructDeploymentStages = (
-  scope: cdk.Construct,
-  api: RestApi,
-): DeploymentStages => {
-  const devDeployment = new Deployment(scope, `${DEV_STAGE_NAME}Deployment`, { api })
-  const devStage = new Stage(scope, `${DEV_STAGE_NAME}Stage`, {
-    stageName: DEV_STAGE_NAME,
-    deployment: devDeployment,
-    cachingEnabled: IS_DEV_CACHING_ENABLED,
-    loggingLevel: MethodLoggingLevel.INFO,
-  })
-
-  const prodDeployment = new Deployment(scope, `${PROD_STAGE_NAME}Deployment`, { api })
-  const prodStage = new Stage(scope, `${PROD_STAGE_NAME}Stage`, {
-    stageName: PROD_STAGE_NAME,
-    deployment: prodDeployment,
-    cachingEnabled: IS_PROD_CACHING_ENABLED,
-    loggingLevel: MethodLoggingLevel.ERROR,
-  })
-
-  api.deploymentStage = prodStage
-  return {
-    dev: devStage,
-    prod: prodStage,
-  }
-}
-
-const constructRateLimitApiKeys = (
-  api: RestApi,
-  methods: Method[],
-  stages: DeploymentStages,
-): void => {
-  const config = [
-    {
-      name: 'Dev',
-      rateLimit: DEV_THROTTLING_RATE_LIMIT,
-      burstLimit: DEV_THROTTLING_BURST_LIMIT,
-      apiKeyValue: env.values.API_KEY_DEV,
-      stage: stages.dev,
-    },
-    {
-      name: 'DefaultPublicAccess',
-      rateLimit: PROD_THROTTLING_RATE_LIMIT,
-      burstLimit: PROD_THROTTLING_BURST_LIMIT,
-      apiKeyValue: env.values.API_KEY_DEFAULT_PUBLIC_ACCESS,
-      stage: stages.prod,
-    },
-  ]
-  config.forEach(({
-    name,
-    rateLimit,
-    burstLimit,
-    apiKeyValue,
-    stage,
-  }) => {
-    const apiKeyName = `${name}ApiKey`
-    const key = api.addApiKey(apiKeyName, {
-      apiKeyName,
-      value: apiKeyValue,
-    })
-    const throttle = { rateLimit, burstLimit }
-    const planName = `${name}PlanName`
-    const plan = api.addUsagePlan(planName, {
-      name: planName,
-      apiKey: key,
-      throttle,
-    })
-    // Assign each method to plan
-    plan.addApiStage({
-      stage,
-      throttle: methods.map(method => ({ method, throttle })),
-    })
-    plan.node.addDependency(api, ...Object.values(stages), ...methods)
-  })
-}
-
 const grantLambdaInvoke = (
   api: RestApi,
-  stages: DeploymentStages,
   handlers: Handlers,
-): void => Object.values(stages).forEach(({ stageName }: Stage, stageIndex) => {
-  const sourceArn = api.arnForExecuteApi('*', '/*', stageName)
+): void => {
+  const sourceArn = api.arnForExecuteApi('*', '/*')
   Object.values(handlers)
     .forEach((handler: Handlers[keyof Handlers], i) => {
-      handler.addPermission(`apigatewayPermission_${stageIndex}_${i}`, {
+      handler.addPermission(`apigatewayPermission_${i}`, {
         action: 'lambda:InvokeFunction',
         principal: new ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn,
       })
     })
-})
+}
 
 const API_ID = 'FundPricesApi'
+// @TODO: Move to env?
+const THROTTLING_RATE_LIMIT = 1000
+const THROTTLING_BURST_LIMIT = 200
+
 const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => {
   const api = new RestApi(scope, API_ID, {
     restApiName: 'Fund Prices Service',
     description: 'Services for accessing fund-price resources',
-    // Use self-managed deployments
-    deploy: false,
+    deployOptions: {
+      throttlingRateLimit: THROTTLING_RATE_LIMIT,
+      throttlingBurstLimit: THROTTLING_BURST_LIMIT,
+    },
   })
   const resources = constructEndpoints(api)
-  const methods = integrateResourcesHandlers(resources, handlers)
-  const stages = constructDeploymentStages(scope, api)
-  constructRateLimitApiKeys(api, methods, stages)
-  grantLambdaInvoke(api, stages, handlers)
+  integrateResourcesHandlers(resources, handlers)
+  grantLambdaInvoke(api, handlers)
 }
 export default constructApiGateway

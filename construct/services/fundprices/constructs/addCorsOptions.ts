@@ -4,8 +4,8 @@ import * as apigateway from '@aws-cdk/aws-apigateway'
  * Helper to add CORS options to resources
  * @param apiResource
  */
-function addCorsOptions (apiResource: apigateway.IResource): void {
-  apiResource.addMethod('OPTIONS', new apigateway.MockIntegration({
+function addCorsOptions (apiResource: apigateway.IResource): apigateway.Method {
+  return apiResource.addMethod('OPTIONS', new apigateway.MockIntegration({
     integrationResponses: [{
       statusCode: '200',
       responseParameters: {
