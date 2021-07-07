@@ -114,14 +114,16 @@ export const handler: APIGatewayProxyHandler = async event => {
         input: defaultInput => ({
           ...defaultInput,
           ExclusiveStartKey: exclusiveStartKey,
-          ExpressionAttributeValues: code ? {
-            ...defaultInput?.ExpressionAttributeValues,
-            [EXP_COM_CODE]: getCompanyCodePK({ company, code }),
-          } : undefined,
-          FilterExpression: [
-            defaultInput.FilterExpression,
-            code && `${attributeNames.COMPANY_CODE} = ${EXP_COM_CODE}`,
-          ].filter(v => v).join(' AND ') || undefined,
+          ...code ? {
+            ExpressionAttributeValues: {
+              ...defaultInput.ExpressionAttributeValues,
+              [EXP_COM_CODE]: getCompanyCodePK({ company, code }),
+            },
+            FilterExpression: [
+              defaultInput.FilterExpression,
+              `${attributeNames.COMPANY_CODE} = ${EXP_COM_CODE}`,
+            ].filter(v => v).join(' AND '),
+          } : {},
         }),
       }),
       // Details items are non-time-series/mutable records.
