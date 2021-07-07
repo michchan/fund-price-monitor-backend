@@ -8,6 +8,7 @@ import {
 import { ServicePrincipal } from '@aws-cdk/aws-iam'
 import { Handlers } from './constructLambdas'
 import addCorsOptions from './addCorsOptions'
+import env from '../../../lib/env'
 
 interface Resources {
   quarters: Resource;
@@ -145,6 +146,8 @@ const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => 
       throttlingBurstLimit: THROTTLING_BURST_LIMIT,
     },
   })
+  api.addApiKey(`${API_ID}ApiKey`, { value: env.values.API_KEY })
+
   const resources = constructEndpoints(api)
   integrateResourcesHandlers(resources, handlers)
   grantLambdaInvoke(api, handlers)
