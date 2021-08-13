@@ -8,6 +8,8 @@ const SERVICE_PATHNAME = 'webDeployment'
 
 function constructS3Bucket (scope: cdk.Construct) {
   const bucket = new s3.Bucket(scope, 'WebStaticServingBucket', {
+    // @TODO: Move to environment variable
+    bucketName: 'fundprice.dev',
     publicReadAccess: true,
     websiteErrorDocument: '404.html',
     websiteIndexDocument: 'index.html',
