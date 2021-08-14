@@ -86,6 +86,7 @@ export const scrapeRecords = (
   }
 })
 
+/** The name 'scrapeDetails' is required by scripts/buildScrapers */
 export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]> => {
   const batches = await pipeAsync<FundDetails[][]>(
     ...languages.map(lng => async (input: FundDetails[][] = []) => {
