@@ -132,6 +132,7 @@ const constructAggregatorRole = (scope: cdk.Construct): iam.Role => {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
   grantDynamoDBStreamPermissions(role)
+  granteIamReadTablePermissions(role)
   granteIamTableReadItemsPermissions(role)
   granteIamTableAlterItemsPermissions(role)
   grantCloudWatchLogGroupPermissions(role)
