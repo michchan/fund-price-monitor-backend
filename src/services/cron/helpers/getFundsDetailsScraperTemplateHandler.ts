@@ -6,6 +6,8 @@ import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import logObj from 'src/helpers/logObj'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 
+const SCRAPER_TIMEOUT = 600_000
+
 type TRec = FundDetails
 export type Callback <T = void> = (
   tableRange: TableRange,
@@ -14,7 +16,7 @@ export type Callback <T = void> = (
 
 const scrapeAndReduce = async (scrapers: GetDataWithPage<TRec[]>[]): Promise<TRec[]> => {
   // Scrape records from the site
-  const batches = await launchPuppeteerBrowserSession<TRec[]>(scrapers)
+  const batches = await launchPuppeteerBrowserSession<TRec[]>(scrapers, SCRAPER_TIMEOUT)
   return batches.reduce((acc, curr) => [...acc, ...curr], [])
 }
 

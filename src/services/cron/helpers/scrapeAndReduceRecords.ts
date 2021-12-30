@@ -8,6 +8,8 @@ import getCompaniesFromRecords from 'src/models/fundPriceRecord/utils/getCompani
 import getInvalidRecordFields from 'src/models/fundPriceRecord/utils/getInvalidRecordFields'
 import takeUpdatedRecords from 'src/models/fundPriceRecord/utils/takeUpdatedRecords'
 
+const SCRAPER_TIMEOUT = 600_000
+
 type RT = FundPriceRecord<FundType, 'record'>
 
 const validateRecords = (records: RT[]): void => {
@@ -32,7 +34,7 @@ const reduceRecords = async (batches: RT[][]): Promise<Output> => {
 
 async function scrapeAndReduceRecords (scrapers: GetDataWithPage<RT[]>[]): Promise<Output> {
   // Scrape records from the site
-  const batches = await launchPuppeteerBrowserSession<RT[]>(scrapers)
+  const batches = await launchPuppeteerBrowserSession<RT[]>(scrapers, SCRAPER_TIMEOUT)
   const [records, companies] = await reduceRecords(batches)
   validateRecords(records)
   logObj('Records to insert', records)
