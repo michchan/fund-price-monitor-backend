@@ -42,7 +42,8 @@
     "test": "jest",
     "tsc-watch": "tsc --watch --noemit",
     "watch": "npm-watch build-dev",
-    "watch-all": "npm-watch build"
+    "watch-all": "npm-watch build",
+    "release": "standard-version --ignore-path .gitignore --commit-hook false"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.111.0",
