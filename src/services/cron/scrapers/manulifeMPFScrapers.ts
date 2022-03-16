@@ -14,113 +14,132 @@ import {
 import mapAndReduceFundDetailsBatches from '../helpers/mapAndReduceFundDetailsBatches'
 import retryWithDelay from '../helpers/retryWithDelay'
 
-const VIEW_ID = '#viewns_Z7_4P4E1I02I8KL70QQRDQK530054'
+const LIST_CONTAINER_SELECTOR = '.funds-list__items.latest-price'
 
 type TRec = FundPriceRecord<'mpf', 'record'>
 type ScrapedRec = TRec & FundDetails
 
-type RiskLevelIndicatorImageNamesMap = {
-  [key in Exclude<TRec['riskLevel'], 'unknown'>]: string[]
+type RiskLevelMap = {
+  [key in Exclude<TRec['riskLevel'], 'unknown'>]: string[];
 }
-type RLKey = keyof RiskLevelIndicatorImageNamesMap
+type RLKey = keyof RiskLevelMap
 
 // Have to be same scope
-const getRecords = (viewId: string, lng: Languages): ScrapedRec[] => {
+const getRecords = (containerSelector: string, lng: Languages): ScrapedRec[] => {
   const company: CompanyType = 'manulife'
   const fundType: FundType = 'mpf'
   const recordType: RecordType = 'record'
   // Map gif name to risk level
-  const riskLevelIndicatorImageNamesMap: RiskLevelIndicatorImageNamesMap = {
-    veryLow: ['v.gif', 'vc.gif'],
-    low: ['w.gif', 'wc.gif'],
-    neutral: ['x.gif', 'xc.gif'],
-    high: ['y.gif', 'yc.gif'],
-    veryHigh: ['z.gif', 'zc.gif'],
+  const riskLevelMap: RiskLevelMap = {
+    veryLow: ['1'],
+    low: ['2', '3'],
+    neutral: ['4'],
+    high: ['5', '6'],
+    veryHigh: ['7'],
   }
-  const time = new Date().toISOString()
-  const tableRows: NodeListOf<HTMLTableRowElement> = document
-    .querySelectorAll(`${viewId}_\\:mainContent\\:datat\\:tbody_element > tr`)
 
-  const mapRow = (row: HTMLTableRowElement): ScrapedRec => {
-    // Get table cells list
-    const dataCells = row.children as HTMLCollectionOf<HTMLTableDataCellElement>
-    const code = dataCells[0].innerText.trim().replace(/\s|_/g, '')
-    const price = (() => {
-      const text = dataCells[3].innerText.trim()
-      return Number(text.replace(/HKD|↵|\n/gim, ''))
+  const time = new Date().toISOString()
+  const tableRows: NodeListOf<HTMLDivElement> = document.querySelectorAll(
+    `${containerSelector} > *`
+  )
+
+  const mapRow = (row: HTMLDivElement): ScrapedRec => {
+    const code = (row.querySelector('div > div.fundlist-item__col0 > div.fundlist-item__title > div') as HTMLDivElement)
+      ?.innerText
+      ?.split('·')?.[0]
+      ?.trim()
+      ?.replace(/\(|\)/g, '') ?? ''
+
+    const name = (row.querySelector(
+      'div > div.fundlist-item__col0 > div.fundlist-item__title > h3'
+    ) as HTMLHeadingElement)?.innerText?.trim()
+
+    const price = Number((row.querySelector(
+      'div > div.fundlist-item__col1.funds-list__item--columns4.show > div > div > div:nth-child(1) > span'
+    ) as HTMLSpanElement)
+      ?.innerText ?? '0')
+
+    const updatedDate = (() => {
+      const dateNode = row.querySelector(
+        'div > div.fundlist-item__col1.funds-list__item--columns4.show > div > div > div.sub-value'
+      ) as HTMLDivElement
+      if (dateNode?.children?.length) dateNode?.removeChild(dateNode?.children[0])
+      // In 'DD/MM/YYYY' format
+      const rawDate = dateNode?.innerText?.trim()
+      return rawDate
+        ?.split('/')
+        ?.reverse()
+        ?.join('-') ?? ''
     })()
+
     const riskLevel = (() => {
-      const riskIndicatorImg = dataCells[4].querySelector('img')
+      // From '1' to '7'
+      const rawRiskLevel = (row.querySelector(
+        'div > div.fundlist-item__col4.funds-list__item--columns4 > div > div.box-risk-points'
+      ) as HTMLDivElement)?.innerText?.trim()
       // Find risk level key
-      return Object.keys(riskLevelIndicatorImageNamesMap)
-        .find(riskLevel => riskLevelIndicatorImageNamesMap[riskLevel as RLKey].some(
-          val => riskIndicatorImg?.src?.includes(val)
-        )) as keyof RiskLevelIndicatorImageNamesMap
+      return Object.keys(riskLevelMap)
+        .find(riskLevel => riskLevelMap[riskLevel as RLKey]
+          .some(riskNum => riskNum === rawRiskLevel)) as keyof RiskLevelMap
     })()
+
     return {
       company,
       code,
-      // Replace 'slashes' with 'hyphens'
-      updatedDate: dataCells[2].innerText.trim().replace(/\//g, '-'),
+      updatedDate,
       price,
       riskLevel,
       time,
       fundType,
       recordType,
-      name: { [lng]: dataCells[1].innerText.trim() } as FundDetails['name'],
-      // Derive initialPrice and launchedDate
-      ...(() => {
-        const text = dataCells[5].innerText.trim()
-        const textWithoutDollarSign = text.replace(/^HKD(↵|\n)/gim, '')
-        const [price, date] = textWithoutDollarSign.split(/↵|\n/)
-        return {
-          initialPrice: Number(price),
-          // Replace 'slashes' with 'hyphens'
-          launchedDate: date.trim().replace(/\//g, '-'),
-        }
-      })(),
+      name: { [lng]: name } as FundDetails['name'],
+      // @TODO: Derive initialPrice and launchedDate
+      initialPrice: 0,
+      launchedDate: updatedDate,
     }
   }
-  return Array.from(tableRows).map(mapRow)
+  return Array.from(tableRows)
+    .map(mapRow)
+    .filter(r => r.price && r.updatedDate)
 }
 
-const evaluateData = async <T extends TRec | FundDetails> (
+const evaluateData = async <T extends TRec | FundDetails>(
   page: puppeteer.Page,
   evaluateCallback: (viewId: string, lng: Languages) => T[],
-  lng: Languages,
+  lng: Languages
 ): Promise<T[]> => {
   // Wait for the elements we want
-  await retryWithDelay(() => page.waitForSelector(
-    `${VIEW_ID}_\\:mainContent\\:datat\\:tbody_element > tr:last-child > td > img`
-  ), 'manulifeMPFScrapers')
+  await retryWithDelay(
+    () => page.waitForSelector(
+      // eslint-disable-next-line max-len
+      `${LIST_CONTAINER_SELECTOR} > div:last-child > div > div:last-child`
+    ),
+    'manulifeMPFScrapers'
+  )
 
   // Query DOM data
   // * Constants/variables must be inside the scope of the callback function
-  return page.evaluate(evaluateCallback, VIEW_ID, lng)
+  return page.evaluate(evaluateCallback, LIST_CONTAINER_SELECTOR, lng)
 }
 
 // Locales recognized by the Manulife website
 const locales: { [lng in Languages]: string } = {
   en: 'en',
-  zh_HK: 'zh_TW',
+  zh_HK: 'zh-hk',
 }
 
-const getPageUrl = (lng: Languages) => `https://fundprice.manulife.com.hk/wps/portal/pwsdfphome/dfp/detail?catId=8&locale=${locales[lng]}`
-
-const langCookieKeys = [
-  'ManulifeLang',
-  'com.ibm.wps.state.preprocessors.locale.LanguageCookie',
-]
-const COOKIE_DOMAIN = 'fundprice.manulife.com.hk'
-
-const navigateToPage = async (page: puppeteer.Page, lng: Languages) => {
-  await page.setCookie(...langCookieKeys.map(name => ({
-    name,
-    value: locales[lng],
-    domain: COOKIE_DOMAIN,
-  })))
-  return page.goto(getPageUrl(lng))
+const getPageProductName = (lng: Languages): string => {
+  switch (lng) {
+    case 'en':
+      return 'Manulife%20Global%20Select%20(MPF)%20Scheme'
+    case 'zh_HK':
+      return '宏利環球精選(強積金)計劃'
+  }
 }
+
+const getPageUrl = (lng: Languages) => `https://www.manulife.com.hk/${locales[lng]}/individual/fund-price/mpf.html/v2?product=${getPageProductName(lng)}`
+
+const navigateToPage = (page: puppeteer.Page, lng: Languages) => page.goto(getPageUrl(lng))
 
 /** The name 'scrapeRecords' is required by scripts/buildScrapers */
 export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
@@ -140,20 +159,25 @@ export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
 }
 
 /** The name 'scrapeDetails' is required by scripts/buildScrapers */
-export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]> => {
+export const scrapeDetails = async (
+  page: puppeteer.Page
+): Promise<FundDetails[]> => {
   const batches = await pipeAsync<FundDetails[][]>(
     ...languages.map(lng => async (input: FundDetails[][] = []) => {
       await navigateToPage(page, lng)
       const records = await evaluateData(page, getRecords, lng)
-      return [...input, records.map(rec => pick(rec, [
-        'company',
-        'code',
-        'name',
-        'initialPrice',
-        'launchedDate',
-        'riskLevel',
-        'fundType',
-      ]))]
+      return [
+        ...input,
+        records.map(rec => pick(rec, [
+          'company',
+          'code',
+          'name',
+          'initialPrice',
+          'launchedDate',
+          'riskLevel',
+          'fundType',
+        ])),
+      ]
     })
   )([])
   return mapAndReduceFundDetailsBatches(batches)
