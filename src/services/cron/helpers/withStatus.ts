@@ -13,7 +13,7 @@ const withStatus = async (callback: () => Promise<CallbackOutput>): Promise<Outp
     const [records, companies] = await callback()
     return ['success', null, records, companies]
   } catch (error) {
-    return ['failed', error, [], []]
+    return ['failed', error as Error, [], []]
   }
 }
 export default withStatus

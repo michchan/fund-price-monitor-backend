@@ -1,6 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
 import mapValues from 'lodash/mapValues'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { AWSError } from 'aws-sdk'
 import {
   ListCompanyRecordsPathParams,
   ListCompanyRecordsQueryParams,
@@ -133,6 +134,6 @@ export const handler: APIGatewayProxyHandler = async event => {
     return createReadResponse(event, null, { ...recordsOutput, parsedItems })
   } catch (error) {
     // Send back failed response
-    return createReadResponse(event, error)
+    return createReadResponse(event, error as AWSError)
   }
 }

@@ -1,4 +1,5 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
+import { AWSError } from 'aws-sdk'
 import { ListCompaniesResponse, ListCompaniesQueryParams } from '@michchan/fund-price-monitor-lib'
 
 import getTableDetails from 'src/models/fundPriceRecord/io/getTableDetails'
@@ -29,6 +30,6 @@ export const handler: APIGatewayProxyHandler = async event => {
     })
   } catch (error) {
     // Send back failed response
-    return createReadResponse(event, error)
+    return createReadResponse(event, error as AWSError)
   }
 }

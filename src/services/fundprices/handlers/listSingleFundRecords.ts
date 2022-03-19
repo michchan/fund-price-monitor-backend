@@ -1,4 +1,5 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
+import { AWSError } from 'aws-sdk'
 import mapValues from 'lodash/mapValues'
 import {
   ListSingleFundRecordsPathParams,
@@ -100,6 +101,6 @@ export const handler: APIGatewayProxyHandler = async event => {
     return createReadResponse(event, null, { ...recordsOutput, parsedItems })
   } catch (error) {
     // Send back failed response
-    return createReadResponse(event, error)
+    return createReadResponse(event, error as AWSError)
   }
 }
