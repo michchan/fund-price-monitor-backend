@@ -4,6 +4,11 @@
   "bin": {
     "fund-price-monitor-backend": "bin/fund-price-monitor-backend.ts"
   },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": "please-use-yarn",
+    "yarn": ">= 1.22.0"
+  },
   "watch": {
     "build": {
       "patterns": [
@@ -27,18 +32,18 @@
   },
   "scripts": {
     "analyze": "webpack-bundle-analyzer",
-    "build": "npm run build-scrapers && tsc && webpack && npm run rm-scrapers-cache",
+    "build": "yarn run build-scrapers && tsc && webpack && yarn run rm-scrapers-cache",
     "build-dev": "tsc && webpack",
     "build-scrapers": "ts-node scripts/buildScrapers",
     "cdk": "cdk",
     "clear-build-cache": "rm -rf ./build && rm -rf ./bundles",
     "deploy": "cdk deploy FundPriceMonitorBackendStack --require-approval never",
     "eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "eslint-fix": "npm run eslint -- --fix",
+    "eslint-fix": "yarn run eslint -- --fix",
     "invoke": "sam local invoke --profile=$AWS_PROFILE",
     "rm-scrapers-cache": "ts-node scripts/removeScrapersCache",
     "start-api": "sam local start-api --profile=$AWS_PROFILE -p $SAM_API_PORT",
-    "template": "npm run build && cdk synth --no-staging > template.yaml --profile=$AWS_PROFILE",
+    "template": "yarn run build && cdk synth --no-staging > template.yaml --profile=$AWS_PROFILE",
     "test": "jest",
     "tsc-watch": "tsc --watch --noemit",
     "watch": "npm-watch build-dev",

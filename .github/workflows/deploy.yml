@@ -44,27 +44,27 @@ jobs:
       - name: Setup Node with the right version
         uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
 
-      # NPM install
-      - run: npm install
+      # Yarn install
+      - run: yarn install
 
       # Run eslint test
       - name: Run ESLint test
-        run: npm run eslint
+        run: yarn run eslint
 
       # Clear last build cache
       - name: Clear last build cache
-        run: npm run clear-build-cache
+        run: yarn run clear-build-cache
 
       # Build
       - name: Build
-        run: npm run build
+        run: yarn run build
 
       # CDK Deploy 
       - name: cdk deploy
-        run: npm run deploy
+        run: yarn run deploy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
