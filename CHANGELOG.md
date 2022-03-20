@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.65.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.64.11...v0.65.0) (2022-03-20)
+
+
+### Bug Fixes
+
+* eslint errors ([8a2d0a0](https://github.com/michchan/fund-price-monitor-backend/commit/8a2d0a013e1e4162ddd166f641a74d15e31e6799))
+
 ### [0.64.11](https://github.com/michchan/fund-price-monitor-backend/compare/v0.64.10...v0.64.11) (2022-03-19)
 
 ### [0.64.10](https://github.com/michchan/fund-price-monitor-backend/compare/v0.64.9...v0.64.10) (2022-03-19)
