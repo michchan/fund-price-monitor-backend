@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core'
-import * as lambda from '@aws-cdk/aws-lambda'
+import { Construct } from 'constructs'
+import { aws_lambda as lambda, Duration } from 'aws-cdk-lib'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 const MAX_DURATION_MINS = 15
@@ -10,7 +10,7 @@ export interface TableHandlers {
   syncTable: lambda.Function;
 }
 const constructTableHandlers = (
-  scope: cdk.Construct,
+  scope: Construct,
   defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
   aggregationHandler: lambda.Function,
 ): TableHandlers => {
@@ -35,7 +35,7 @@ const constructTableHandlers = (
     ...defaultInput,
     handler: 'syncTablesConfig.handler',
     environment: commonTableHandlingEnv,
-    timeout: cdk.Duration.minutes(MAX_DURATION_MINS),
+    timeout: Duration.minutes(MAX_DURATION_MINS),
   })
 
   return {

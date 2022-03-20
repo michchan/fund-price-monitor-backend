@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core'
-import * as iam from '@aws-cdk/aws-iam'
+import { Construct } from 'constructs'
+import { aws_iam as iam } from 'aws-cdk-lib'
 import grantCloudWatchLogGroupPermissions from '../../../lib/grantCloudWatchLogGroupPermissions'
 
 const ROLE_ID = 'ApiRole'
@@ -19,7 +19,7 @@ const grantIamDBAccess = (role: iam.Role) => role.addToPolicy(new iam.PolicyStat
   ],
 }))
 
-const constructIamRole = (scope: cdk.Construct): iam.Role => {
+const constructIamRole = (scope: Construct): iam.Role => {
   // Create IAM roles for API handling
   const role = new iam.Role(scope, ROLE_ID, {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),

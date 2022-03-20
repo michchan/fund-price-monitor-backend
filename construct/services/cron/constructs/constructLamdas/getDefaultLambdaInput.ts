@@ -1,5 +1,4 @@
-import * as lambda from '@aws-cdk/aws-lambda'
-import * as iam from '@aws-cdk/aws-iam'
+import { aws_lambda as lambda, aws_iam as iam } from 'aws-cdk-lib'
 import defaultLambdaInput from '../../../../common/defaultLambdaInput'
 
 export type Output =

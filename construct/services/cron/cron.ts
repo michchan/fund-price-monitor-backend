@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core'
+import { Construct } from 'constructs'
 
 import env from '../../lib/env'
 import constructIamRoles from './constructs/constructIamRoles'
@@ -9,7 +9,7 @@ import getSSMStringParameter from '../../lib/getSSMStringParameter'
 const SERVICE_DIRNAME = __dirname.replace(/construct/i, 'src')
 const SERVICE_PATHNAME = 'cron'
 
-const getSecrets = (scope: cdk.Construct) => {
+const getSecrets = (scope: Construct) => {
   // Retrieve the telegram notification channel's chat ID
   const telegramChatId = getSSMStringParameter(
     scope,
@@ -27,7 +27,7 @@ const getSecrets = (scope: cdk.Construct) => {
 export interface Output {
   handlers: Handlers;
 }
-function construct (scope: cdk.Construct, deploymentHandlers: DeploymentHandlers): Output {
+function construct (scope: Construct, deploymentHandlers: DeploymentHandlers): Output {
   const roles = constructIamRoles(scope)
   // Get non-secure string parameters from parameter store
   const secrets = getSecrets(scope)

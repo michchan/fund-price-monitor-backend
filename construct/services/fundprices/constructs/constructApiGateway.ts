@@ -1,11 +1,11 @@
-import * as cdk from '@aws-cdk/core'
+import { Construct } from 'constructs'
 import {
   LambdaIntegration,
   Method,
   Resource,
   RestApi,
-} from '@aws-cdk/aws-apigateway'
-import { ServicePrincipal } from '@aws-cdk/aws-iam'
+} from 'aws-cdk-lib/aws-apigateway'
+import { ServicePrincipal } from 'aws-cdk-lib/aws-iam'
 import { Handlers } from './constructLambdas'
 import addCorsOptions from './addCorsOptions'
 import env from '../../../lib/env'
@@ -137,7 +137,7 @@ const API_ID = 'FundPricesApi'
 const THROTTLING_RATE_LIMIT = 1000
 const THROTTLING_BURST_LIMIT = 200
 
-const constructApiGateway = (scope: cdk.Construct, handlers: Handlers): void => {
+const constructApiGateway = (scope: Construct, handlers: Handlers): void => {
   const api = new RestApi(scope, API_ID, {
     restApiName: 'Fund Prices Service',
     description: 'Services for accessing fund-price resources',

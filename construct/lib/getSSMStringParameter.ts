@@ -1,8 +1,8 @@
-import * as cdk from '@aws-cdk/core'
-import * as ssm from '@aws-cdk/aws-ssm'
+import { Construct } from 'constructs'
+import { aws_ssm as ssm } from 'aws-cdk-lib'
 
 const getSSMStringParameter = (
-  scope: cdk.Construct,
+  scope: Construct,
   id: string,
   parameterName: string
 ): string => (

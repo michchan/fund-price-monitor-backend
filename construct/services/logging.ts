@@ -1,10 +1,9 @@
-import * as cdk from '@aws-cdk/core'
-import * as iam from '@aws-cdk/aws-iam'
-import * as lambda from '@aws-cdk/aws-lambda'
-import * as logs from '@aws-cdk/aws-logs'
-import * as sns from '@aws-cdk/aws-sns'
-import * as subs from '@aws-cdk/aws-sns-subscriptions'
-import { LambdaDestination } from '@aws-cdk/aws-logs-destinations'
+import { Construct } from 'constructs'
+import { aws_iam as iam, aws_lambda as lambda } from 'aws-cdk-lib'
+import * as logs from 'aws-cdk-lib/aws-logs'
+import * as sns from 'aws-cdk-lib/aws-sns'
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions'
+import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations'
 
 import { PROJECT_NAMESPACE } from '../constants'
 import defaultLambdaInput from '../common/defaultLambdaInput'
@@ -19,7 +18,7 @@ const commonIamStatementInput = {
 
 const NUM_LOG_GROUP_PER_HANDLER = 10
 
-const constructIamRole = (scope: cdk.Construct) => {
+const constructIamRole = (scope: Construct) => {
   // Create IAM roles for SNS topics subscriptions handling
   const role = new iam.Role(scope, ROLE_ID, {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -38,7 +37,7 @@ const constructIamRole = (scope: cdk.Construct) => {
   return role
 }
 
-const constructSNSTopics = (scope: cdk.Construct) => {
+const constructSNSTopics = (scope: Construct) => {
   // Create generalLogTopic for subscription to lambda error logs
   const generalLogTopic = new sns.Topic(scope, 'GeneralLog', {
     displayName: `${PROJECT_NAMESPACE} - General Log`,
@@ -55,7 +54,7 @@ interface Handlers {
   mockErrorLog: lambda.Function;
 }
 interface ConstructLambdasOptions {
-  scope: cdk.Construct;
+  scope: Construct;
   role: iam.Role;
   servicePathname: string;
   generalLogTopic: sns.Topic;
@@ -102,7 +101,7 @@ const constructLambdas = ({
 }
 
 const constructSubscriptions = (
-  scope: cdk.Construct,
+  scope: Construct,
   { notifyErrorLogHandlers }: Handlers,
   logGroups: logs.ILogGroup[],
 ) => {
@@ -138,7 +137,7 @@ export interface InitOptions {
 /**
  * Reference: https://aws.amazon.com/blogs/mt/get-notified-specific-lambda-function-error-patterns-using-cloudwatch/
  */
-function construct (scope: cdk.Construct, options: InitOptions): ReturnType {
+function construct (scope: Construct, options: InitOptions): ReturnType {
   const { logGroups } = options
 
   const role = constructIamRole(scope)

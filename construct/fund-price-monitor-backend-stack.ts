@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core'
-import * as lambda from '@aws-cdk/aws-lambda'
+import { Construct } from 'constructs'
+import { aws_lambda as lambda, Stack, StackProps } from 'aws-cdk-lib'
 
 import runtimeEnv from '../src/lib/env'
 import cron, { Output as CronOutput } from './services/cron'
@@ -36,8 +36,8 @@ const bindRuntimeEnvVars = (handlers: lambda.Function[]): void => {
   })
 }
 
-export class FundPriceMonitorBackendStack extends cdk.Stack {
-  constructor (scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class FundPriceMonitorBackendStack extends Stack {
+  constructor (scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props)
 
     // Initialize web deployment service

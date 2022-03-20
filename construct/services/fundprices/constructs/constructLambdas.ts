@@ -1,6 +1,5 @@
-import * as cdk from '@aws-cdk/core'
-import * as lambda from '@aws-cdk/aws-lambda'
-import * as iam from '@aws-cdk/aws-iam'
+import { Construct } from 'constructs'
+import { aws_lambda as lambda, aws_iam as iam } from 'aws-cdk-lib'
 
 import defaultLambdaInput from '../../../common/defaultLambdaInput'
 
@@ -13,7 +12,7 @@ export interface Handlers {
   listCompanies: lambda.Function;
 }
 const constructLamdas = (
-  scope: cdk.Construct,
+  scope: Construct,
   role: iam.Role,
   servicePathname: string
 ): Handlers => {

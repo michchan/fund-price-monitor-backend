@@ -1,4 +1,4 @@
-import * as iam from '@aws-cdk/aws-iam'
+import {aws_iam as iam} from 'aws-cdk-lib'
 
 const commonIamStatementInput = {
   resources: ['*'],

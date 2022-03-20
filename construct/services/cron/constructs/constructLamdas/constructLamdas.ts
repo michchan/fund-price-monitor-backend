@@ -1,7 +1,6 @@
-import * as cdk from '@aws-cdk/core'
-import * as iam from '@aws-cdk/aws-iam'
-import * as sfn from '@aws-cdk/aws-stepfunctions'
-import * as lambda from '@aws-cdk/aws-lambda'
+import { Construct } from 'constructs'
+import { aws_iam as iam, aws_lambda as lambda } from 'aws-cdk-lib'
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions'
 
 import { CronRoles } from '../constructIamRoles'
 import constructScrapingStateMachine, { DefaultInput, ScrapingHandlers } from './constructScrapingStateMachine'
@@ -28,7 +27,7 @@ interface SideComponents {
 }
 
 const constructSideComponents = (
-  scope: cdk.Construct,
+  scope: Construct,
   { itemsReader, itemsAlterer }: Pick<CronRoles, 'itemsReader' | 'itemsAlterer'>,
   { servicePathname, telegramChatId, telegramTestChatId }: Pick<Options,
   | 'servicePathname'
@@ -78,7 +77,7 @@ interface ConstructScrapingComponentsOptions extends Pick<Options,
   deploymentHandlers: DeploymentHandlers;
 }
 const constructScrapingComponents = (
-  scope: cdk.Construct,
+  scope: Construct,
   {
     serviceDirname,
     servicePathname,
@@ -141,7 +140,7 @@ export interface Options {
   deploymentHandlers: DeploymentHandlers;
 }
 const constructLamdas = (
-  scope: cdk.Construct,
+  scope: Construct,
   roles: CronRoles,
   options: Options,
 ): Output => {

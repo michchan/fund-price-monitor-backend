@@ -1,16 +1,16 @@
 /**
  * Reference: https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
  */
-import * as cdk from '@aws-cdk/core'
-import * as events from '@aws-cdk/aws-events'
-import * as targets from '@aws-cdk/aws-events-targets'
+import { Construct } from 'constructs'
+import * as events from 'aws-cdk-lib/aws-events'
+import * as targets from 'aws-cdk-lib/aws-events-targets'
 
 import { StateMachines, Handlers } from './constructLamdas/constructLamdas'
 
 // Scrape every four hour
 const SCRAPE_INTERVAL_HOUR = 4
 const constructDailyEventRules = (
-  scope: cdk.Construct,
+  scope: Construct,
   { dedup }: Pick<Handlers, 'dedup'>,
   { scrape: scrapeMachine }: Pick<StateMachines, 'scrape'>,
 ) => {
@@ -29,7 +29,7 @@ const constructDailyEventRules = (
 }
 
 const constructMonthlyEventRules = (
-  scope: cdk.Construct,
+  scope: Construct,
   { notifyMonthly, testNotifyMonthly }: Pick<Handlers, 'notifyMonthly' | 'testNotifyMonthly'>,
   { scrapeDetails }: Pick<StateMachines, 'scrapeDetails'>,
 ) => {
@@ -48,7 +48,7 @@ const constructMonthlyEventRules = (
 }
 
 const constructQuarterlyEventRules = (
-  scope: cdk.Construct,
+  scope: Construct,
   {
     notifyQuarterly,
     testNotifyQuarterly,
@@ -89,7 +89,7 @@ const constructQuarterlyEventRules = (
 }
 
 type EventRulesArgs = [
-  scope: cdk.Construct,
+  scope: Construct,
   handlers: Handlers,
   stateMachines: Pick<StateMachines, 'scrape' | 'scrapeDetails'>
 ]

@@ -1,12 +1,11 @@
-import * as cdk from '@aws-cdk/core'
-import * as s3 from '@aws-cdk/aws-s3'
-import * as iam from '@aws-cdk/aws-iam'
-import * as lambda from '@aws-cdk/aws-lambda'
+import { Construct } from 'constructs'
+import * as s3 from 'aws-cdk-lib/aws-s3'
+import { aws_iam as iam, aws_lambda as lambda } from 'aws-cdk-lib'
 import defaultLambdaInput from '../common/defaultLambdaInput'
 
 const SERVICE_PATHNAME = 'webDeployment'
 
-function constructS3Bucket (scope: cdk.Construct) {
+function constructS3Bucket (scope: Construct) {
   const bucket = new s3.Bucket(scope, 'WebStaticServingBucket', {
     // @TODO: Move to environment variable
     bucketName: 'fundprice.dev',
@@ -27,7 +26,7 @@ interface Handlers {
   deploy: lambda.Function;
 }
 function constructLambdas (
-  scope: cdk.Construct,
+  scope: Construct,
   servicePathname: string
 ): Handlers {
   // Common input for lambda Definition
@@ -47,7 +46,7 @@ function constructLambdas (
 export interface Output {
   handlers: Handlers;
 }
-function construct (scope: cdk.Construct): Output {
+function construct (scope: Construct): Output {
   constructS3Bucket(scope)
   const handlers = constructLambdas(scope, SERVICE_PATHNAME)
   return { handlers }

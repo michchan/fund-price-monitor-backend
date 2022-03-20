@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core'
-import * as lambda from '@aws-cdk/aws-lambda'
+import { Construct } from 'constructs'
+import { aws_lambda as lambda } from 'aws-cdk-lib'
 import env from '../../../../lib/env'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
@@ -16,7 +16,7 @@ export interface NotificationGenericHandlers {
   notifyQuarterly: lambda.Function;
 }
 const createHandlers = (
-  scope: cdk.Construct,
+  scope: Construct,
   idPrefix: string,
   defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
   environment: lambda.FunctionOptions['environment'],
@@ -54,7 +54,7 @@ export interface NotificationHandlers {
 }
 
 const constructNotificationHandlers = (
-  scope: cdk.Construct,
+  scope: Construct,
   defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
   telegramChatId: string,
   telegramTestChatId: string,

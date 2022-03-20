@@ -1,12 +1,12 @@
-import * as cdk from '@aws-cdk/core'
-import * as lambda from '@aws-cdk/aws-lambda'
+import { Construct } from 'constructs'
+import { aws_lambda as lambda } from 'aws-cdk-lib'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 export interface Aggregators {
   aggregation: lambda.Function;
 }
 const constructAggregators = (
-  scope: cdk.Construct,
+  scope: Construct,
   defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
 ): Aggregators => {
   // Handler for aggregating top-level items of records

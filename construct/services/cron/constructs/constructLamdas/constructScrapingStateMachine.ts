@@ -1,7 +1,7 @@
-import * as cdk from '@aws-cdk/core'
-import * as lambda from '@aws-cdk/aws-lambda'
-import * as sfn from '@aws-cdk/aws-stepfunctions'
-import * as sfnTasks from '@aws-cdk/aws-stepfunctions-tasks'
+import { Construct } from 'constructs'
+import { aws_lambda as lambda, Duration } from 'aws-cdk-lib'
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions'
+import * as sfnTasks from 'aws-cdk-lib/aws-stepfunctions-tasks'
 import * as fs from 'fs'
 import upperFirst from 'lodash/upperFirst'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
@@ -14,7 +14,7 @@ const getDefaultScrapersInput = () => {
     // Extra memory is needed for running the headless browser instance
     memorySize: MEMORY_SIZE_MB,
     // Extra timeout for scrapers
-    timeout: cdk.Duration.minutes(TIMEOUT_MINS),
+    timeout: Duration.minutes(TIMEOUT_MINS),
   }
 }
 
@@ -32,7 +32,7 @@ export type DefaultInput =
 
 /** Scraper creator */
 const getScraperMapperCreator = (
-  scope: cdk.Construct,
+  scope: Construct,
   defaultInput: DefaultInput,
 ) => (nameRegExp: RegExp, namePrefix: string) => (fileName: string) => {
   const name = fileName
@@ -47,7 +47,7 @@ const getScraperMapperCreator = (
 }
 
 const constructScrapingHandlers = (
-  scope: cdk.Construct,
+  scope: Construct,
   serviceDirname: string,
   defaultInput: DefaultInput,
   // For test functions
@@ -95,7 +95,7 @@ const constructScrapingHandlers = (
 
 const SCRAPER_DELAY_MINS = 3
 const constructStateMachine = (
-  scope: cdk.Construct,
+  scope: Construct,
   handlers: lambda.Function[],
   startTask: sfn.Chain | sfnTasks.LambdaInvoke | sfn.Pass,
   idPrefix: string,
@@ -111,8 +111,8 @@ const constructStateMachine = (
         time: sfn.WaitTime.duration(
           // Do not wait too long if it is the last item
           i + 1 === arr.length
-            ? cdk.Duration.seconds(1)
-            : cdk.Duration.minutes(SCRAPER_DELAY_MINS)
+            ? Duration.seconds(1)
+            : Duration.minutes(SCRAPER_DELAY_MINS)
         ),
       })),
     startTask as unknown as sfn.Chain
@@ -124,7 +124,7 @@ const constructStateMachine = (
 }
 
 const constructStateMachineWithStartTask = (
-  scope: cdk.Construct,
+  scope: Construct,
   id: string,
   scrapeHandlers: lambda.Function[],
   successHandler?: lambda.Function,
@@ -152,7 +152,7 @@ export interface Output extends ScrapingHandlers {
     testScrapeDetails: sfn.StateMachine;
   };
 }
-const constructScrapingStateMachine = (scope: cdk.Construct, {
+const constructScrapingStateMachine = (scope: Construct, {
   serviceDirname,
   defaultInput,
   defaultInputTest,

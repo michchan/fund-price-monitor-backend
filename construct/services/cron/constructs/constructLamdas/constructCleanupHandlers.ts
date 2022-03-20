@@ -1,12 +1,12 @@
-import * as cdk from '@aws-cdk/core'
-import * as lambda from '@aws-cdk/aws-lambda'
+import { Construct } from 'constructs'
+import { aws_lambda as lambda } from 'aws-cdk-lib'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 export interface CleanupHandlers {
   dedup: lambda.Function;
 }
 const constructCleanupHandlers = (
-  scope: cdk.Construct,
+  scope: Construct,
   defaultInput: ReturnType<typeof getDefaultLambdaInput> & lambda.FunctionOptions,
 ): CleanupHandlers => {
   // Handler for de-duplications of records

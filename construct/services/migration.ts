@@ -1,6 +1,5 @@
-import * as cdk from '@aws-cdk/core'
-import * as iam from '@aws-cdk/aws-iam'
-import * as lambda from '@aws-cdk/aws-lambda'
+import { Construct } from 'constructs'
+import { aws_iam as iam, aws_lambda as lambda, Duration } from 'aws-cdk-lib'
 
 import grantCloudWatchLogGroupPermissions from '../lib/grantCloudWatchLogGroupPermissions'
 import defaultLambdaInput from '../common/defaultLambdaInput'
@@ -13,7 +12,7 @@ const commonIamStatementInput = {
 }
 const WRITE_ITEMS_HANDLER_TIMEOUT_MINS = 15
 
-const constructIamRole = (scope: cdk.Construct): iam.Role => {
+const constructIamRole = (scope: Construct): iam.Role => {
   // Create IAM roles for handlers
   const role = new iam.Role(scope, ROLE_ID, {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -52,7 +51,7 @@ export interface Handlers {
   s3ToDynamodb: lambda.Function;
 }
 const constructLamdas = (
-  scope: cdk.Construct,
+  scope: Construct,
   role: iam.Role,
   servicePathname: string,
 ): Handlers => {
@@ -71,7 +70,7 @@ const constructLamdas = (
   const s3ToDynamodbHandler = new lambda.Function(scope, 'MigrateS3ToDynamodb', {
     ...defaultInput,
     handler: 's3ToDynamodb.handler',
-    timeout: cdk.Duration.minutes(WRITE_ITEMS_HANDLER_TIMEOUT_MINS),
+    timeout: Duration.minutes(WRITE_ITEMS_HANDLER_TIMEOUT_MINS),
   })
 
   return {
@@ -83,7 +82,7 @@ const constructLamdas = (
 export interface Output {
   handlers: Handlers;
 }
-function construct (scope: cdk.Construct): Output {
+function construct (scope: Construct): Output {
   const role = constructIamRole(scope)
   const handlers = constructLamdas(scope, role, SERVICE_PATHNAME)
   return { handlers }

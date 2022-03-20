@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core'
-import * as iam from '@aws-cdk/aws-iam'
+import { Construct } from 'constructs'
+import {aws_iam as iam} from 'aws-cdk-lib'
 import grantCloudWatchLogGroupPermissions from '../../../lib/grantCloudWatchLogGroupPermissions'
 
 const commonIamStatementInput = {
@@ -92,7 +92,7 @@ const grantSfnExecutionPermissions = (
   ],
 }))
 
-const constructTableHandlerRole = (scope: cdk.Construct): iam.Role => {
+const constructTableHandlerRole = (scope: Construct): iam.Role => {
   const role = new iam.Role(scope, 'CronTableHandlerRole', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
@@ -105,7 +105,7 @@ const constructTableHandlerRole = (scope: cdk.Construct): iam.Role => {
   return role
 }
 
-const constructItemsReaderRole = (scope: cdk.Construct): iam.Role => {
+const constructItemsReaderRole = (scope: Construct): iam.Role => {
   const role = new iam.Role(scope, 'CronNotifierRole', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
@@ -117,7 +117,7 @@ const constructItemsReaderRole = (scope: cdk.Construct): iam.Role => {
   return role
 }
 
-const constructItemsAltererRole = (scope: cdk.Construct): iam.Role => {
+const constructItemsAltererRole = (scope: Construct): iam.Role => {
   const role = new iam.Role(scope, 'CronAltererRole', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
@@ -127,7 +127,7 @@ const constructItemsAltererRole = (scope: cdk.Construct): iam.Role => {
   grantCloudWatchLogGroupPermissions(role)
   return role
 }
-const constructAggregatorRole = (scope: cdk.Construct): iam.Role => {
+const constructAggregatorRole = (scope: Construct): iam.Role => {
   const role = new iam.Role(scope, 'CronAggregatorRole', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
   })
@@ -146,7 +146,7 @@ export interface CronRoles {
   itemsAlterer: iam.Role;
   aggregator: iam.Role;
 }
-const constructIamRoles = (scope: cdk.Construct): CronRoles => {
+const constructIamRoles = (scope: Construct): CronRoles => {
   const tableHandler = constructTableHandlerRole(scope)
   const itemsReader = constructItemsReaderRole(scope)
   const itemsAlterer = constructItemsAltererRole(scope)
