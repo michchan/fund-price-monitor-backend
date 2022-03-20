@@ -39,7 +39,7 @@
     "clear-build-cache": "rm -rf ./build && rm -rf ./bundles",
     "deploy": "cdk deploy FundPriceMonitorBackendStack --require-approval never",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "lint-fix": "yarn run eslint -- --fix",
+    "lint-fix": "yarn run lint -- --fix",
     "invoke": "sam local invoke --profile=$AWS_PROFILE",
     "rm-scrapers-cache": "ts-node scripts/removeScrapersCache",
     "start-api": "sam local start-api --profile=$AWS_PROFILE -p $SAM_API_PORT",

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs'
-import {aws_iam as iam} from 'aws-cdk-lib'
+import { aws_iam as iam } from 'aws-cdk-lib'
 import grantCloudWatchLogGroupPermissions from '../../../lib/grantCloudWatchLogGroupPermissions'
 
 const commonIamStatementInput = {
