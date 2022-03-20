@@ -1,5 +1,4 @@
 import puppeteer = require('puppeteer')
-import languages from 'src/models/fundPriceRecord/constants/languages'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 import pick from 'lodash/pick'
 
@@ -10,33 +9,58 @@ import {
   CompanyType,
   FundType,
   RecordType,
+  RiskLevel,
 } from '@michchan/fund-price-monitor-lib'
 import mapAndReduceFundDetailsBatches from '../helpers/mapAndReduceFundDetailsBatches'
 import retryWithDelay from '../helpers/retryWithDelay'
 
 const LIST_CONTAINER_SELECTOR = '.funds-list__items.latest-price'
 
-type TRec = FundPriceRecord<'mpf', 'record'>
+type TRec = FundPriceRecord<FundType.mpf, RecordType.record>
 type ScrapedRec = TRec & FundDetails
 
 type RiskLevelMap = {
-  [key in Exclude<TRec['riskLevel'], 'unknown'>]: string[];
+  [key in RiskLevel]: string[];
 }
 type RLKey = keyof RiskLevelMap
 
-// Have to be same scope
-const getRecords = (containerSelector: string, lng: Languages): ScrapedRec[] => {
-  const company: CompanyType = 'manulife'
-  const fundType: FundType = 'mpf'
-  const recordType: RecordType = 'record'
-  // Map gif name to risk level
-  const riskLevelMap: RiskLevelMap = {
-    veryLow: ['1'],
-    low: ['2', '3'],
-    neutral: ['4'],
-    high: ['5', '6'],
-    veryHigh: ['7'],
-  }
+// Map gif name to risk level
+const riskLevelMap: RiskLevelMap = {
+  [RiskLevel.veryLow]: ['1'],
+  [RiskLevel.low]: ['2', '3'],
+  [RiskLevel.neutral]: ['4'],
+  [RiskLevel.high]: ['5', '6'],
+  [RiskLevel.veryHigh]: ['7'],
+  [RiskLevel.unknown]: [],
+}
+
+interface SerializableClientData {
+  company: CompanyType;
+  fundType: FundType;
+  recordType: RecordType.record;
+  riskLevelMap: RiskLevelMap;
+}
+
+const clientData: SerializableClientData = {
+  company: CompanyType.manulife,
+  fundType: FundType.mpf,
+  recordType: RecordType.record,
+  riskLevelMap,
+}
+
+// =================================== CLIENT-SIDE CODE ===================================
+// Everything should be in the same code and no module bundling to be expected
+const getRecords = (
+  containerSelector: string,
+  lng: Languages,
+  clientDataJSON: string,
+): ScrapedRec[] => {
+  const {
+    company,
+    fundType,
+    recordType,
+    riskLevelMap,
+  } = JSON.parse(clientDataJSON) as SerializableClientData
 
   const time = new Date().toISOString()
   const tableRows: NodeListOf<HTMLDivElement> = document.querySelectorAll(
@@ -102,11 +126,13 @@ const getRecords = (containerSelector: string, lng: Languages): ScrapedRec[] => 
     .map(mapRow)
     .filter(r => r.price && r.updatedDate)
 }
+// =================================== / CLIENT-SIDE CODE ===================================
 
 const evaluateData = async <T extends TRec | FundDetails>(
   page: puppeteer.Page,
-  evaluateCallback: (viewId: string, lng: Languages) => T[],
-  lng: Languages
+  evaluateCallback: (viewId: string, lng: Languages, clientDataJSON: string) => T[],
+  lng: Languages,
+  clientData: SerializableClientData
 ): Promise<T[]> => {
   // Wait for the elements we want
   await retryWithDelay(
@@ -119,7 +145,7 @@ const evaluateData = async <T extends TRec | FundDetails>(
 
   // Query DOM data
   // * Constants/variables must be inside the scope of the callback function
-  return page.evaluate(evaluateCallback, LIST_CONTAINER_SELECTOR, lng)
+  return page.evaluate(evaluateCallback, LIST_CONTAINER_SELECTOR, lng, JSON.stringify(clientData))
 }
 
 // Locales recognized by the Manulife website
@@ -130,9 +156,9 @@ const locales: { [lng in Languages]: string } = {
 
 const getPageProductName = (lng: Languages): string => {
   switch (lng) {
-    case 'en':
+    case Languages.en:
       return 'Manulife%20Global%20Select%20(MPF)%20Scheme'
-    case 'zh_HK':
+    case Languages.zh_HK:
       return '宏利環球精選(強積金)計劃'
   }
 }
@@ -143,9 +169,9 @@ const navigateToPage = (page: puppeteer.Page, lng: Languages) => page.goto(getPa
 
 /** The name 'scrapeRecords' is required by scripts/buildScrapers */
 export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
-  const lng: Languages = 'zh_HK'
+  const lng = Languages.zh_HK
   await navigateToPage(page, lng)
-  const records = await evaluateData(page, getRecords, lng)
+  const records = await evaluateData(page, getRecords, lng, clientData)
   return records.map(rec => pick(rec, [
     'company',
     'code',
@@ -163,9 +189,9 @@ export const scrapeDetails = async (
   page: puppeteer.Page
 ): Promise<FundDetails[]> => {
   const batches = await pipeAsync<FundDetails[][]>(
-    ...languages.map(lng => async (input: FundDetails[][] = []) => {
+    ...Object.values(Languages).map(lng => async (input: FundDetails[][] = []) => {
       await navigateToPage(page, lng)
-      const records = await evaluateData(page, getRecords, lng)
+      const records = await evaluateData(page, getRecords, lng, clientData)
       return [
         ...input,
         records.map(rec => pick(rec, [

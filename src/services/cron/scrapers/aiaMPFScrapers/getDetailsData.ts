@@ -1,9 +1,19 @@
 import puppeteer = require('puppeteer')
+import { FundPriceRecord, FundType, RecordType, RiskLevel } from '@michchan/fund-price-monitor-lib'
 
-import { FundPriceRecord, RiskLevel } from '@michchan/fund-price-monitor-lib'
 import retryWithDelay from '../../helpers/retryWithDelay'
 
-export interface DetailsDataRecord extends Pick<FundPriceRecord<'mpf', 'record'>, 'riskLevel'> {
+interface RiskLevelMap { [className: string]: RiskLevel }
+// Mapper for specific node class name to RiskLevel
+const riskLevelMapConfig: RiskLevelMap = {
+  rating1: RiskLevel.veryLow,
+  rating2: RiskLevel.low,
+  rating3: RiskLevel.neutral,
+  rating4: RiskLevel.high,
+  rating5: RiskLevel.veryHigh,
+}
+
+export interface DetailsDataRecord extends Pick<FundPriceRecord<FundType.mpf, RecordType.record>, 'riskLevel'> {
   name: string;
 }
 
@@ -18,31 +28,32 @@ const getDetailsData = async (page: puppeteer.Page): Promise<DetailsDataRecord[]
 
   // Query DOM data
   // * Constants/variables must be inside the scope of the callback function
-  return page.evaluate((): DetailsDataRecord[] => {
-    // Mapper for specific node class name to RiskLevel
-    const riskLevelMap: { [className: string]: RiskLevel } = {
-      rating1: 'veryLow',
-      rating2: 'low',
-      rating3: 'neutral',
-      rating4: 'high',
-      rating5: 'veryHigh',
-    }
-    // Query table rows nodes
-    const tables: NodeListOf<HTMLTableElement> = document
-      .querySelectorAll('#funddetails_list > table:not(:first-child)')
+  return page.evaluate(
+    // =================================== CLIENT-SIDE CODE ===================================
+    // Everything should be in the same code and no module bundling to be expected
+    (riskLevelMapJSON: string): DetailsDataRecord[] => {
+      const riskLevelMap = JSON.parse(riskLevelMapJSON) as RiskLevelMap
 
-    // Map table rows data to PriceDataRecord[]
-    return Array.from(tables)
-      .map((table): DetailsDataRecord => {
-        const rows = table.querySelectorAll('tr')
-        const nameCell = rows[0].children[0] as HTMLTableDataCellElement
-        const riskRow = rows[rows.length - 1]
-        const riskCell = riskRow.children[riskRow.children.length - 1] as HTMLTableDataCellElement
-        return {
-          name: nameCell.innerText,
-          riskLevel: riskLevelMap[riskCell.className.trim().toLowerCase()],
-        }
-      })
-  })
+      // Query table rows nodes
+      const tables: NodeListOf<HTMLTableElement> = document
+        .querySelectorAll('#funddetails_list > table:not(:first-child)')
+
+      // Map table rows data to PriceDataRecord[]
+      return Array.from(tables)
+        .map((table): DetailsDataRecord => {
+          const rows = table.querySelectorAll('tr')
+          const nameCell = rows[0].children[0] as HTMLTableDataCellElement
+          const riskRow = rows[rows.length - 1]
+          const riskCell = riskRow.children[riskRow.children.length - 1] as HTMLTableDataCellElement
+          return {
+            name: nameCell.innerText,
+            riskLevel: riskLevelMap[riskCell.className.trim().toLowerCase()],
+          }
+        })
+    },
+    // =================================== / CLIENT-SIDE CODE ===================================
+    JSON.stringify(riskLevelMapConfig)
+  )
 }
+
 export default getDetailsData

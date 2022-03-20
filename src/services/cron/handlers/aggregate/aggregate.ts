@@ -4,6 +4,7 @@ import {
   FundPriceChangeRate,
   CompanyType,
   FundType,
+  RecordType,
 } from '@michchan/fund-price-monitor-lib'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
@@ -19,7 +20,7 @@ import deleteItems from './deleteItems'
  */
 const processCompanyRecords = async (
   company: CompanyType,
-  insertedItems: FundPriceRecord<FundType, 'record'>[],
+  insertedItems: FundPriceRecord<FundType, RecordType.record>[],
   date: Date,
 ) => {
   // Get year and quarter

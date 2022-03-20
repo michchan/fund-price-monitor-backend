@@ -3,10 +3,10 @@ import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-moni
 import calculatePriceChangeRate from './calculatePriceChangeRate'
 
 const toLatestPriceRecord = <FT extends FundType> (
-  record: FundPriceRecord<FT, 'record'>,
+  record: FundPriceRecord<FT, RecordType.record>,
   date?: Date,
   prevRecord?: FundPriceRecord<FT, RecordType>,
-): FundPriceRecord<FT, 'latest'> => {
+): FundPriceRecord<FT, RecordType.latest> => {
   const time = date ? date.toISOString() : record.time
   const isDifferentDay = (
     prevRecord?.time
@@ -24,7 +24,7 @@ const toLatestPriceRecord = <FT extends FundType> (
   return {
     ...record,
     time,
-    recordType: 'latest',
+    recordType: RecordType.latest,
     priceChangeRate: calculatePriceChangeRate(previousPrice, record.price),
     dayPriceChangeRate: calculatePriceChangeRate(previousDayPrice, record.price),
     previousPrice,

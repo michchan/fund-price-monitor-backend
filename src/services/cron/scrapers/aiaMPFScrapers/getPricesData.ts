@@ -1,9 +1,9 @@
 import puppeteer = require('puppeteer')
+import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 
-import { FundPriceRecord } from '@michchan/fund-price-monitor-lib'
 import retryWithDelay from '../../helpers/retryWithDelay'
 
-export interface PriceDataRecord extends Pick<FundPriceRecord<'mpf', 'record'>,
+export interface PriceDataRecord extends Pick<FundPriceRecord<FundType.mpf, RecordType.record>,
 | 'code'
 | 'price'
 | 'updatedDate'
@@ -11,6 +11,8 @@ export interface PriceDataRecord extends Pick<FundPriceRecord<'mpf', 'record'>,
   name: string;
 }
 
+// =================================== CLIENT-SIDE CODE ===================================
+// Everything should be in the same code and no module bundling to be expected
 const evaluatePage = (): PriceDataRecord[] => {
   const ZERO_PADDING_UPPER_LIMIT = 10
   // Query table rows nodes
@@ -52,6 +54,7 @@ const evaluatePage = (): PriceDataRecord[] => {
       }
     })
 }
+// =================================== / CLIENT-SIDE CODE ===================================
 
 /**
  * Helpers to query the prices data from html

@@ -1,4 +1,4 @@
-import { FundPriceRecord, FundPriceChangeRate, AggregatedRecordType, FundType } from '@michchan/fund-price-monitor-lib'
+import { FundPriceRecord, FundPriceChangeRate, AggregatedRecordType, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 import getChangeRate from 'src/models/fundPriceRecord/utils/getChangeRate'
 import toLatestPriceRecord from 'src/models/fundPriceRecord/utils/toLatestPriceRecord'
 import { Output as Input } from './queryPrevItems'
@@ -6,7 +6,7 @@ import { Output as Input } from './queryPrevItems'
 export type Output = Input
 
 const deriveAggregatedItems = (
-  insertedItems: FundPriceRecord<FundType, 'record'>[],
+  insertedItems: FundPriceRecord<FundType, RecordType.record>[],
   date: Date,
   ...rest: Output
 ): Output => {
@@ -41,9 +41,18 @@ const deriveAggregatedItems = (
   })
 
   // Derive records to save
-  const weekRateItems = deriveChangeRateRecords('week', prevWeekRateItems)
-  const monthRateItems = deriveChangeRateRecords('month', prevMonthRateItems)
-  const quarterRateItems = deriveChangeRateRecords('quarter', prevQuarterRateItems)
+  const weekRateItems = deriveChangeRateRecords(
+    AggregatedRecordType.week,
+    prevWeekRateItems
+  )
+  const monthRateItems = deriveChangeRateRecords(
+    AggregatedRecordType.month,
+    prevMonthRateItems
+  )
+  const quarterRateItems = deriveChangeRateRecords(
+    AggregatedRecordType.quarter,
+    prevQuarterRateItems
+  )
 
   return [
     latestItems,

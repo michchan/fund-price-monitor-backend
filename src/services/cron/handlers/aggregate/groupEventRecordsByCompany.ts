@@ -1,13 +1,13 @@
 import { DynamoDBStreamEvent } from 'aws-lambda'
 import omitBy from 'lodash/omitBy'
 import isEmpty from 'lodash/isEmpty'
+import { FundPriceRecord, CompanyType, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 
-import { FundPriceRecord, CompanyType, FundType } from '@michchan/fund-price-monitor-lib'
 import AWS from 'src/lib/AWS'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import parseRecord from 'src/models/fundPriceRecord/utils/parseRecord'
 
-type T = FundPriceRecord<FundType, 'record'>
+type T = FundPriceRecord<FundType, RecordType.record>
 export type Groups = { [company in CompanyType]: T[] }
 /**
  * Process event records

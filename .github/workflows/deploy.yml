@@ -50,9 +50,9 @@ jobs:
       # Yarn install
       - run: yarn install --frozen-lockfile
 
-      # Run eslint test
-      - name: Run ESLint test
-        run: yarn run eslint
+      # Run lint test
+      - name: Run lint
+        run: yarn run lint
 
       # Clear last build cache
       - name: Clear last build cache

@@ -1,7 +1,7 @@
-import { FundPriceRecord, CompanyType, FundType } from '@michchan/fund-price-monitor-lib'
+import { FundPriceRecord, CompanyType, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 import { ScrapeStatus } from 'src/models/fundPriceRecord/FundPriceTableDetails.type'
 
-type RT = FundPriceRecord<FundType, 'record'>
+type RT = FundPriceRecord<FundType, RecordType.record>
 type CallbackOutput = [RT[], CompanyType[]]
 export type Output = [
   ScrapeStatus,

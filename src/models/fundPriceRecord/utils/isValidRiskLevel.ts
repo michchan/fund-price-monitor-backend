@@ -1,6 +1,6 @@
 import { RiskLevel } from '@michchan/fund-price-monitor-lib'
 
-const whitelist: RiskLevel[] = ['veryLow', 'low', 'neutral', 'high', 'veryHigh']
+const whitelist = Object.values(RiskLevel)
 const regex = new RegExp(`^(${whitelist.join('|')})$`, 'i')
 
 function isValidRiskLevel (maybeRiskLevel: string): maybeRiskLevel is RiskLevel {

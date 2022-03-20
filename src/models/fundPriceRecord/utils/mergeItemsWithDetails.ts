@@ -1,4 +1,4 @@
-import { FundPriceRecord, FundDetails, FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
+import { FundPriceRecord, FundDetails, FundPriceChangeRate, RiskLevel } from '@michchan/fund-price-monitor-lib'
 import getCompanyCodePK from './getCompanyCodePK'
 
 type Item = FundPriceRecord | FundPriceChangeRate
@@ -22,7 +22,7 @@ const mergeItemsWithDetails = <T extends Item> (
       en: '',
       zh_HK: '',
     },
-    riskLevel: detailItem?.riskLevel ?? 'unknown',
+    riskLevel: detailItem?.riskLevel ?? RiskLevel.unknown,
     initialPrice: detailItem?.initialPrice ?? 0,
     launchedDate: detailItem?.launchedDate ?? '',
   }

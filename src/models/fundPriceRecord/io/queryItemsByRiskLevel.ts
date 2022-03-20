@@ -1,6 +1,6 @@
 import isFunction from 'lodash/isFunction'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-import { FundPriceRecord, FundPriceChangeRate, RiskLevel } from '@michchan/fund-price-monitor-lib'
+import { FundPriceRecord, FundPriceChangeRate, RiskLevel, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import indexNames from '../constants/indexNames'
 import queryItems, { Output as O } from './queryItems'
@@ -44,7 +44,7 @@ const queryItemsByRiskLevel = async <T extends TVariants = FundPriceRecord> (
     IndexName: indexNames.RECORDS_BY_RISK_LEVEL,
     ExpressionAttributeValues: {
       [EXP_RISK_LEVEL_PK]: riskLevel,
-      [EXP_TIME_SK]: shouldQueryLatest ? 'latest' : 'record',
+      [EXP_TIME_SK]: shouldQueryLatest ? RecordType.latest : RecordType.record,
     },
     KeyConditionExpression: `${attrs.RISK_LEVEL} = ${EXP_RISK_LEVEL_PK}`,
     FilterExpression: beginsWith(attrs.TIME_SK, EXP_TIME_SK),

@@ -2,14 +2,14 @@ import { ScheduledHandler } from 'aws-lambda'
 import { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
 
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
-import { FundPriceRecord, FundType } from '@michchan/fund-price-monitor-lib'
+import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import reduceScrapeMetaInfo from 'src/models/fundPriceRecord/utils/reduceScrapeMetaInfo'
 import saveScrapeMetadata, { MetadataMode } from 'src/models/fundPriceRecord/utils/saveScrapeMetadata'
 import scrapeAndReduceRecords, { Output as ScrapeAndReduceRecordOutput } from './scrapeAndReduceRecords'
 import withStatus from './withStatus'
 
-type TRec = FundPriceRecord<FundType, 'record'>
+type TRec = FundPriceRecord<FundType, RecordType.record>
 export type Callback <T = void> = (
   tableRange: TableRange,
   ...args: ScrapeAndReduceRecordOutput

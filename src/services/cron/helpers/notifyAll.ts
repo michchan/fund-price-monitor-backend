@@ -1,4 +1,4 @@
-import { FundPriceRecord, CompanyType, Languages } from '@michchan/fund-price-monitor-lib'
+import { FundPriceRecord, CompanyType, Languages, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import sendNotificationByTelegram, { Item } from './sendNotificationByTelegram'
 import getTelegramApiCredentials from 'src/helpers/getTelegramApiCredentials'
@@ -10,8 +10,8 @@ import logObj from 'src/helpers/logObj'
 import getCompanyCodePK from 'src/models/fundPriceRecord/utils/getCompanyCodePK'
 import takeLatestRecords from 'src/models/fundPriceRecord/utils/takeLatestRecords'
 
-const LNG: Languages = 'zh_HK'
-type OvRT = FundPriceRecord<'mpf', 'latest'>
+const LNG = Languages.zh_HK
+type OvRT = FundPriceRecord<FundType.mpf, RecordType.latest>
 export type OverridingItemsDict = { [company in CompanyType]?: OvRT[] }
 
 const getItems = async (

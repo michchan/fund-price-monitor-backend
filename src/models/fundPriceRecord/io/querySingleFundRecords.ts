@@ -84,7 +84,7 @@ const querySingleFundRecords = async <T extends TVariants = FundPriceRecord> (
     ? yearQuarterToTableRange(quarter)
     : getDateTimeDictionary(startDate)
   // Construct TIME SK query
-  const recordType: RecordType = shouldQueryLatest ? 'latest' : 'record'
+  const recordType = shouldQueryLatest ? RecordType.latest : RecordType.record
   // Derive timeSK expression values based on conditions
   const timeSKValues = getTimeSKValues(company, recordType, startTime, endTime)
   // Derive timeSK expression based on conditions

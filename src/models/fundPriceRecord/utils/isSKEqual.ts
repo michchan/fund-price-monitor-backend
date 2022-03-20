@@ -1,12 +1,19 @@
-import { FundPriceRecord, FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
+import { FundPriceRecord, FundPriceChangeRate, RecordType } from '@michchan/fund-price-monitor-lib'
 
 const isSKEqual = <T extends FundPriceRecord | FundPriceChangeRate> (
   based: T,
   compared: T,
 ): boolean => {
-  if (based.recordType === 'latest' && compared.recordType === 'latest') return true
+  if (
+    based.recordType === RecordType.latest
+    && compared.recordType === RecordType.latest
+  ) return true
+
   // Supposed the fund price record is updated daily
-  if (based.recordType === 'record' && compared.recordType === 'record')
+  if (
+    based.recordType === RecordType.record
+    && compared.recordType === RecordType.record
+  )
     return based.time.split('T').shift() === compared.time.split('T').shift()
 
   const basedR = based as FundPriceChangeRate

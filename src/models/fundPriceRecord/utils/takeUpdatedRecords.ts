@@ -1,15 +1,15 @@
 import pick from 'lodash/pick'
 import isEqual from 'lodash/isEqual'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
+import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 
-import { FundPriceRecord, FundType } from '@michchan/fund-price-monitor-lib'
 import queryItemsByCompany from '../io/queryItemsByCompany'
 import isPKEqual from './isPKEqual'
 import logObj from 'src/helpers/logObj'
 import getCompaniesFromRecords from './getCompaniesFromRecords'
 
-type RT = FundPriceRecord<FundType, 'record'>
-type LT = FundPriceRecord<FundType, 'latest'>
+type RT = FundPriceRecord<FundType, RecordType.record>
+type LT = FundPriceRecord<FundType, RecordType.latest>
 
 type PeriodicallyChangedAttributes = keyof Pick<RT,
 | 'updatedDate'

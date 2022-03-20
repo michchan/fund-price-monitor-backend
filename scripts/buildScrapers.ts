@@ -12,7 +12,7 @@
  *
  * Each of the above scraper files should export the following functions:
  *  - Records scraper: a function named with <recordsHandlerName> in the module, of type:
- * `GetDataWithPage<FundPriceRecord<FundType, 'record'>[]>`.
+ * `GetDataWithPage<FundPriceRecord<FundType, RecordType.record>[]>`.
  *  - Details scraper: a function named with <detailsHandlerName> in th e module, of type:
  * `GetDataWithPage<FundDetails[]>`.
  *

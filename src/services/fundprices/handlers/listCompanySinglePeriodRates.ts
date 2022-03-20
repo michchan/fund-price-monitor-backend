@@ -35,12 +35,12 @@ export interface QueryParams extends ListCompanySinglePeriodRatesQueryParams {}
 const getPeriodType = (path: string): AggregatedRecordType => {
   switch (true) {
     case path.includes('quarter'):
-      return 'quarter'
+      return AggregatedRecordType.quarter
     case path.includes('month'):
-      return 'month'
+      return AggregatedRecordType.month
     case path.includes('week'):
     default:
-      return 'week'
+      return AggregatedRecordType.week
   }
 }
 /** Return format: YYYY.{1|2|3|4} */

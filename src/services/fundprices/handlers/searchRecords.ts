@@ -61,7 +61,7 @@ export const handler: APIGatewayProxyHandler = async event => {
     // Get table range
     const tableRange = quarter ? yearQuarterToTableRange(quarter) : undefined
 
-    const recordType: RecordType = shouldQueryLatest ? 'latest' : 'record'
+    const recordType = shouldQueryLatest ? RecordType.latest : RecordType.record
     // Query
     const [recordsOutput, detailsOutput] = await Promise.all([
       scanItems({

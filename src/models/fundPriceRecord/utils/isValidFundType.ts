@@ -1,6 +1,6 @@
 import { FundType } from '@michchan/fund-price-monitor-lib'
 
-const whitelist: FundType[] = ['mpf']
+const whitelist = Object.values(FundType)
 const regex = new RegExp(`^(${whitelist.join('|')})$`, 'i')
 
 function isValidFundType (maybeFundType: string): maybeFundType is FundType {

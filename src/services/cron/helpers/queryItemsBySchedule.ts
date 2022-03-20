@@ -1,7 +1,8 @@
 import { FundPriceRecord,
   FundPriceChangeRate,
   CompanyType,
-  FundType } from '@michchan/fund-price-monitor-lib'
+  FundType,
+  AggregatedRecordType } from '@michchan/fund-price-monitor-lib'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
 import getPeriodByRecordType from 'src/models/fundPriceRecord/utils/getPeriodByRecordType'
 import queryItemsByCompany from 'src/models/fundPriceRecord/io/queryItemsByCompany'
@@ -18,16 +19,31 @@ export type ItemType =
 const queryBySchedule = async (scheduleType: ScheduleType, company: CompanyType, date: Date) => {
   switch (scheduleType) {
     case 'quarterly': {
-      const period = getPeriodByRecordType('quarter', date)
-      return queryPeriodPriceChangeRate(company, 'quarter', period, priceChangeRateQueryInput)
+      const period = getPeriodByRecordType(AggregatedRecordType.quarter, date)
+      return queryPeriodPriceChangeRate(
+        company,
+        AggregatedRecordType.quarter,
+        period,
+        priceChangeRateQueryInput
+      )
     }
     case 'monthly': {
-      const period = getPeriodByRecordType('month', date)
-      return queryPeriodPriceChangeRate(company, 'month', period, priceChangeRateQueryInput)
+      const period = getPeriodByRecordType(AggregatedRecordType.month, date)
+      return queryPeriodPriceChangeRate(
+        company,
+        AggregatedRecordType.month,
+        period,
+        priceChangeRateQueryInput
+      )
     }
     case 'weekly': {
-      const period = getPeriodByRecordType('week', date)
-      return queryPeriodPriceChangeRate(company, 'week', period, priceChangeRateQueryInput)
+      const period = getPeriodByRecordType(AggregatedRecordType.week, date)
+      return queryPeriodPriceChangeRate(
+        company,
+        AggregatedRecordType.week,
+        period,
+        priceChangeRateQueryInput
+      )
     }
     case 'onUpdate':
     default: {

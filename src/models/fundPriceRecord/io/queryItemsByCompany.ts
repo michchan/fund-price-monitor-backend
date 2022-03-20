@@ -40,7 +40,7 @@ const queryItemsByCompany = async <T extends TVariants = FundPriceRecord> (
     parser = parseRecord as Parser<T>,
   }: Options<T> = {},
 ): Promise<Output<T>> => {
-  const recordType: RecordType = shouldQueryLatest ? 'latest' : 'record'
+  const recordType = shouldQueryLatest ? RecordType.latest : RecordType.record
   const defaultInput: Input = {
     IndexName: indexNames.RECORDS_BY_COMPANY,
     ExpressionAttributeValues: {

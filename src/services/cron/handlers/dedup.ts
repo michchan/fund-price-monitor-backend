@@ -2,7 +2,7 @@ import { ScheduledHandler } from 'aws-lambda'
 import mapValues from 'lodash/mapValues'
 import pipeAsync from 'simply-utils/dist/async/pipeAsync'
 import wait from 'simply-utils/dist/async/wait'
-import { FundPriceRecord, FundPriceChangeRate, CompanyType } from '@michchan/fund-price-monitor-lib'
+import { FundPriceRecord, FundPriceChangeRate, CompanyType, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import logObj from 'src/helpers/logObj'
@@ -110,7 +110,7 @@ const getBatchRequestSender = (tableRange: TableRange) => (
   type CArgs = [TableRange, typeof getCompositeSKFromChangeRate]
 
   const { year, quarter } = tableRange
-  const isRecord = k === 'latest' || k === 'record'
+  const isRecord = k === RecordType.latest || k === RecordType.record
   const getTimeSK = isRecord
     ? getCompositeSK
     : getCompositeSKFromChangeRate

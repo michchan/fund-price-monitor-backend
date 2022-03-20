@@ -1,4 +1,4 @@
-import { FundPriceRecord, FundPriceChangeRate, CompanyType } from '@michchan/fund-price-monitor-lib'
+import { FundPriceRecord, FundPriceChangeRate, CompanyType, AggregatedRecordType } from '@michchan/fund-price-monitor-lib'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import queryPeriodPriceChangeRate from 'src/models/fundPriceRecord/io/queryPeriodPriceChangeRate'
@@ -26,11 +26,26 @@ const queryPrevChangeRateItems = async (
     { parsedItems: prevQuarterRateItems },
   ] = await Promise.all([
     // Week query
-    queryPeriodPriceChangeRate(company, 'week', getPeriodByRecordType('week', date), priceChangeRateQueryInput),
+    queryPeriodPriceChangeRate(
+      company,
+      AggregatedRecordType.week,
+      getPeriodByRecordType(AggregatedRecordType.week, date),
+      priceChangeRateQueryInput
+    ),
     // Month query
-    queryPeriodPriceChangeRate(company, 'month', getPeriodByRecordType('month', date), priceChangeRateQueryInput),
+    queryPeriodPriceChangeRate(
+      company,
+      AggregatedRecordType.month,
+      getPeriodByRecordType(AggregatedRecordType.month, date),
+      priceChangeRateQueryInput
+    ),
     // Quarter query
-    queryPeriodPriceChangeRate(company, 'quarter', getPeriodByRecordType('quarter', date), priceChangeRateQueryInput),
+    queryPeriodPriceChangeRate(
+      company,
+      AggregatedRecordType.quarter,
+      getPeriodByRecordType(AggregatedRecordType.quarter, date),
+      priceChangeRateQueryInput
+    ),
   ])
   return [
     prevWeekRateItems.filter(filterPredicate),
