@@ -49,8 +49,8 @@
     "template": "yarn run build && cdk synth --no-staging > template.yaml --profile=$AWS_PROFILE --region=$AWS_RUNTIME_REGION",
     "test": "jest",
     "tsc-watch": "tsc --watch --noemit",
-    "watch": "npm-watch build-dev",
-    "watch-all": "npm-watch build",
+    "watch": "yarn run clear-build-cache && npm-watch build-dev",
+    "watch-all": "yarn run clear-build-cache && npm-watch build",
     "release": "standard-version --ignore-path .gitignore --commit-hook false"
   },
   "devDependencies": {
