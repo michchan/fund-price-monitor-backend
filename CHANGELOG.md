@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.66.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.65.3...v0.66.0) (2022-03-27)
+
+
+### Bug Fixes
+
+* manulife MPF some details missing after site upgrade; refractor with scrapeDetails ([18f1f73](https://github.com/michchan/fund-price-monitor-backend/commit/18f1f73fac43a0a470fd810527b47338e34f5db9))
+
 ### [0.65.3](https://github.com/michchan/fund-price-monitor-backend/compare/v0.65.2...v0.65.3) (2022-03-27)
 
 ### [0.65.2](https://github.com/michchan/fund-price-monitor-backend/compare/v0.65.0...v0.65.2) (2022-03-21)
