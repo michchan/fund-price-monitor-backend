@@ -23,7 +23,6 @@ export interface ScrapingHandlers {
   testScrapers: lambda.Function[];
   detailsScrapers: lambda.Function[];
   testDetailsScrapers: lambda.Function[];
-  startScrapeSession: lambda.Function;
 }
 
 export type DefaultInput =
@@ -80,14 +79,9 @@ const constructScrapingHandlers = (
     .filter(fileName => /^__testDetailScraper__/i.test(fileName))
     .map(createTestMapper(/^__testDetailScraper__/i, 'CronTestDetailsScraper'))
 
-  const startScrapeSessionHandler = new lambda.Function(scope, 'CronStartScrapeSession', {
-    ...defaultInput,
-    handler: 'startScrapeSession.handler',
-  })
   return {
     scrapers: scrapeHandlers,
     testScrapers: testScrapeHandlers,
-    startScrapeSession: startScrapeSessionHandler,
     detailsScrapers: detailsScrapeHandlers,
     testDetailsScrapers: testDetailsScrapeHandlers,
   }
