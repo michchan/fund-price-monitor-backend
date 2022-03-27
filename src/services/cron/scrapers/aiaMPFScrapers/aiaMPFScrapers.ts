@@ -93,8 +93,8 @@ export const scrapeRecords = (
 /** The name 'scrapeDetails' is required by scripts/buildScrapers */
 export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]> => {
   const batches = await pipeAsync<FundDetails[][]>(
-    ...Object.values(Languages).map(lng => async (input: FundDetails[][] = []) => {
-      const records = await evaluateData(page, lng, (
+    ...Object.values(Languages).map(lng => async (recordsOfLangs: FundDetails[][] = []) => {
+      const recordsPerLang = await evaluateData(page, lng, (
         priceAttrs,
         perfAttrs,
         detailsAttrs
@@ -110,7 +110,7 @@ export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]
           riskLevel: detailsAttrs?.riskLevel ?? RiskLevel.unknown,
         }
       })
-      return [...input, records]
+      return [...recordsOfLangs, recordsPerLang]
     })
   )([])
   return mapAndReduceFundDetailsBatches(batches)
