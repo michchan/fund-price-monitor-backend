@@ -11,8 +11,8 @@ import {
   RecordType,
   RiskLevel,
 } from '@michchan/fund-price-monitor-lib'
-import mapAndReduceFundDetailsBatches from '../helpers/mapAndReduceFundDetailsBatches'
-import retryWithDelay from '../helpers/retryWithDelay'
+import mapAndReduceFundDetailsBatches from '../../helpers/mapAndReduceFundDetailsBatches'
+import retryWithDelay from '../../helpers/retryWithDelay'
 
 const LIST_CONTAINER_SELECTOR = '.funds-list__items.latest-price'
 
@@ -128,7 +128,7 @@ const getRecords = (
 }
 // =================================== / CLIENT-SIDE CODE ===================================
 
-const evaluateData = async <T extends TRec | FundDetails>(
+const evaluateRecordData = async <T extends TRec | FundDetails>(
   page: puppeteer.Page,
   evaluateCallback: (viewId: string, lng: Languages, clientDataJSON: string) => T[],
   lng: Languages,
@@ -167,23 +167,6 @@ const getPageUrl = (lng: Languages) => `https://www.manulife.com.hk/${locales[ln
 
 const navigateToPage = (page: puppeteer.Page, lng: Languages) => page.goto(getPageUrl(lng))
 
-/** The name 'scrapeRecords' is required by scripts/buildScrapers */
-export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
-  const lng = Languages.zh_HK
-  await navigateToPage(page, lng)
-  const records = await evaluateData(page, getRecords, lng, clientData)
-  return records.map(rec => pick(rec, [
-    'company',
-    'code',
-    'updatedDate',
-    'price',
-    'riskLevel',
-    'time',
-    'fundType',
-    'recordType',
-  ]))
-}
-
 /** The name 'scrapeDetails' is required by scripts/buildScrapers */
 export const scrapeDetails = async (
   page: puppeteer.Page
@@ -191,7 +174,7 @@ export const scrapeDetails = async (
   const batches = await pipeAsync<FundDetails[][]>(
     ...Object.values(Languages).map(lng => async (input: FundDetails[][] = []) => {
       await navigateToPage(page, lng)
-      const records = await evaluateData(page, getRecords, lng, clientData)
+      const records = await evaluateRecordData(page, getRecords, lng, clientData)
       return [
         ...input,
         records.map(rec => pick(rec, [
