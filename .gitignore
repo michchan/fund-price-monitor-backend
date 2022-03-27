@@ -36,3 +36,6 @@ bundles
 **/cron/handlers/__testRecordScraper__*.ts
 **/cron/handlers/__detailScraper__*.ts
 **/cron/handlers/__testDetailScraper__*.ts
+
+# Ignore sam local logs
+.sam-local-dev-log
