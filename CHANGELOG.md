@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.65.3](https://github.com/michchan/fund-price-monitor-backend/compare/v0.65.2...v0.65.3) (2022-03-27)
+
 ### [0.65.2](https://github.com/michchan/fund-price-monitor-backend/compare/v0.65.0...v0.65.2) (2022-03-21)
 
 
