@@ -39,6 +39,7 @@
     "clear-build-cache": "rm -rf ./build && rm -rf ./bundles",
     "rm-scrapers-cache": "ts-node scripts/removeScrapersCache",
     "deploy": "cdk deploy FundPriceMonitorBackendStack --require-approval never",
+    "link": "yarn link \"@michchan/fund-price-monitor-lib\"",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint-fix": "yarn run lint -- --fix",
     "preinvoke": "scripts/load_env.sh",
