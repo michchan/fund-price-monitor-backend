@@ -1,5 +1,4 @@
 import puppeteer = require('puppeteer')
-import pick from 'lodash/pick'
 
 import {
   FundPriceRecord,
@@ -129,15 +128,5 @@ const evaluateData = async <T extends TRec>(
 export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
   const lng = Languages.zh_HK
   await page.goto(getIndexPageUrl(lng))
-  const records = await evaluateData(page, getRecords, clientData)
-  return records.map(rec => pick(rec, [
-    'company',
-    'code',
-    'updatedDate',
-    'price',
-    'riskLevel',
-    'time',
-    'fundType',
-    'recordType',
-  ]))
+  return evaluateData(page, getRecords, clientData)
 }
