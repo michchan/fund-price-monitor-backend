@@ -11,14 +11,13 @@ import {
 import retryWithDelay from '../../helpers/retryWithDelay'
 import {
   getIndexPageUrl,
+  INDEX_PAGE_LIST_CONTAINER_SELECTOR,
   INDEX_PAGE_WAIT_FOR_ELEMENT_SELECTOR,
   RiskLevelMap,
   RLKey,
   serializableStaticClientData,
   SerializableStaticClientData,
 } from './common'
-
-const LIST_CONTAINER_SELECTOR = '.funds-list__items.latest-price'
 
 type TRec = FundPriceRecord<FundType.mpf, RecordType.record>
 
@@ -119,7 +118,11 @@ const evaluateData = async <T extends TRec>(
   )
   // Query DOM data
   // * Constants/variables must be inside the scope of the callback function
-  return page.evaluate(evaluateCallback, LIST_CONTAINER_SELECTOR, JSON.stringify(clientData))
+  return page.evaluate(
+    evaluateCallback,
+    INDEX_PAGE_LIST_CONTAINER_SELECTOR,
+    JSON.stringify(clientData)
+  )
 }
 
 /** The name 'scrapeRecords' is required by scripts/buildScrapers */
