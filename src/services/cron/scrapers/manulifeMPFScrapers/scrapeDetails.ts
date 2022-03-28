@@ -57,9 +57,9 @@ const getIndexData = (containerSelector: string, clientDataJSON: string): IndexD
       'div > div.fundlist-item__col4.funds-list__item--columns4 > div > div.box-risk-points'
     ) as HTMLDivElement)?.innerText?.trim()
     // Find risk level key
-    return Object.keys(riskLevelMap)
+    return (Object.keys(riskLevelMap)
       .find(riskLevel => riskLevelMap[riskLevel as RLKey]
-        .some(riskNum => riskNum === rawRiskLevel)) as keyof RiskLevelMap
+        .some(riskNum => riskNum === rawRiskLevel)) ?? 'unknown') as unknown as keyof RiskLevelMap
   }
 
   const mapRow = (row: HTMLDivElement): IndexData => {
