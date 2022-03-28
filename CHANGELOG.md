@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.67.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.66.0...v0.67.0) (2022-03-28)
+
+
+### Features
+
+* add hsbcMPFScrapers ([2869932](https://github.com/michchan/fund-price-monitor-backend/commit/2869932f2791e23ecdf2a5ef4fa678283ab9a045))
+
 ## [0.66.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.65.3...v0.66.0) (2022-03-27)
 
 
