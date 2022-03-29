@@ -69,19 +69,22 @@ const getDetailsData = (
     .map(row => {
       const code = (row.querySelector('.anchor') as HTMLDivElement)?.id ?? ''
       const name = (row.querySelector('.expander h4.dropdown-text') as HTMLDivElement)?.innerText?.trim() ?? ''
+
       const riskLevel = (() => {
         const rawRiskLevel = (
           row.querySelector('section.exp-content .exp-panel .cc-column p:last-of-type') as HTMLParagraphElement
         )
           ?.innerHTML
-          ?.replace(/risk rating is (\d).+/i, 'risk_rating==$1==')
+          ?.replace(/(risk rating is |風險級數為)(\d).+/i, 'risk_rating==$2==')
           ?.split('==')
           ?.filter(Boolean)
           ?.pop() ?? ''
         // Find risk level key
-        return (Object.keys(riskLevelMap)
-          .find(riskLevel => riskLevelMap[riskLevel as RLKey]
-            .some(riskNum => riskNum === rawRiskLevel)) ?? 'unknown') as unknown as keyof RiskLevelMap
+        return (
+          Object.keys(riskLevelMap)
+            .find(riskLevel => riskLevelMap[riskLevel as RLKey]
+              .some(riskNum => riskNum === rawRiskLevel)) ?? 'unknown'
+        ) as unknown as keyof RiskLevelMap
       })()
 
       // @TODO: Scrape these
