@@ -67,8 +67,11 @@ const getDetailsData = (
 
   return Array.from(tableRows)
     .map(row => {
-      const code = (row.querySelector('.anchor') as HTMLDivElement)?.id ?? ''
+      let code = (row.querySelector('.anchor') as HTMLDivElement)?.id ?? ''
       const name = (row.querySelector('.expander h4.dropdown-text') as HTMLDivElement)?.innerText?.trim() ?? ''
+
+      // Fix bug from HSBC site (wrong id for ANEF fund in zh-HK)
+      if (code === 'HKEF' && name.includes('亞太股票基金')) code = 'ANEF'
 
       const riskLevel = (() => {
         const rawRiskLevel = (
