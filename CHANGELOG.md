@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.67.1](https://github.com/michchan/fund-price-monitor-backend/compare/v0.67.0...v0.67.1) (2022-03-29)
+
+
+### Bug Fixes
+
+* HSBC mpf risk level unknown ([c37ab4b](https://github.com/michchan/fund-price-monitor-backend/commit/c37ab4b9dea0aa2646061d13f1544d7ea0a25156))
+
 ## [0.67.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.66.0...v0.67.0) (2022-03-28)
 
 
