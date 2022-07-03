@@ -64,17 +64,11 @@ const getIndexData = (containerSelector: string, clientDataJSON: string): IndexD
     ) as unknown as keyof RiskLevelMap
   }
 
-  const mapRow = (row: HTMLDivElement): IndexData => {
+  return Array.from(tableRows).map((row: HTMLDivElement): IndexData => {
     const code = getCodeFromIndexPageRow(row)
-      // Replace multiple codes like "SHK149/DIS149" -> "SHK149"
-      ?.split('/')
-      ?.shift() ?? ''
-
     const riskLevel = getRiskLevelFromIndexPageRow(row)
-
     return { code, riskLevel }
-  }
-  return Array.from(tableRows).map(mapRow)
+  })
 }
 
 // Everything should be in the same code and no module bundling to be expected
@@ -204,8 +198,12 @@ export const scrapeDetails = async (
     ...Object.values(Languages).map(lng => async (recordsOfLangs: FundDetails[][] = []) => {
       const recordsPerLang = await pipeAsync<FundDetails[]>(
         ...indexData.map(({ code, riskLevel }) => async (recordsOfCodes: FundDetails[] = []) => {
-          await page.goto(getDetailsPageUrl(lng, code))
-          logObj('Get details data per code: ', { lng, code })
+          // Replace multiple codes like "SHK149/DIS149" -> "SHK149"
+          const codeUri = code.split('/').shift() as string
+
+          await page.goto(getDetailsPageUrl(lng, codeUri))
+          logObj('Get details data per code: ', { lng, code, codeUri })
+
           const attributesFromDetailsPage = await evaluateDetailsRecordData(page, getDetailsData, {
             ...serializableStaticClientData,
             lng,
