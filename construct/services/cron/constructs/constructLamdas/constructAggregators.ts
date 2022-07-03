@@ -4,6 +4,7 @@ import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 export interface Aggregators {
   aggregation: lambda.Function;
+  testAggregation: lambda.Function;
 }
 const constructAggregators = (
   scope: Construct,
@@ -14,6 +15,15 @@ const constructAggregators = (
     ...defaultInput,
     handler: 'aggregate.handler',
   })
-  return { aggregation }
+
+  const testAggregation = new lambda.Function(scope, 'CronTestAggregator', {
+    ...defaultInput,
+    handler: 'aggregate.handler',
+    environment: {
+      IS_TEST: 'true',
+    },
+  })
+
+  return { aggregation, testAggregation }
 }
 export default constructAggregators

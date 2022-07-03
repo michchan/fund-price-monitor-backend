@@ -6,14 +6,18 @@ import {
   FundType,
   RecordType,
 } from '@michchan/fund-price-monitor-lib'
+import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
+import logObj from 'src/helpers/logObj'
 import groupEventRecordsByCompany from './groupEventRecordsByCompany'
 import updateTableLevelDetails from './updateTableLevelDetails'
 import queryPrevItems from './queryPrevItems'
 import deriveAggregatedItems from './deriveAggregatedItems'
 import createItems from './createItems'
 import deleteItems from './deleteItems'
+
+const isTest = /^true$/i.test(getEnvVar('IS_TEST'))
 
 /**
  * Handler to process each group of FundPriceRecord list
@@ -23,6 +27,8 @@ const processCompanyRecords = async (
   insertedItems: FundPriceRecord<FundType, RecordType.record>[],
   date: Date,
 ) => {
+  if (isTest) logObj('processCompanyRecords.insertedItems:', insertedItems)
+
   // Get year and quarter
   const dateTimeDict = getDateTimeDictionary(date)
 
@@ -37,11 +43,13 @@ const processCompanyRecords = async (
   const aggregatedOutputs = deriveAggregatedItems(insertedItems, date, ...prevOutputs)
 
   /** -------- Send batch requests -------- */
-  await createItems(dateTimeDict, ...aggregatedOutputs)
-  await deleteItems(dateTimeDict, ...prevOutputs)
+  await createItems(dateTimeDict, isTest, ...aggregatedOutputs)
+  await deleteItems(dateTimeDict, isTest, ...prevOutputs)
 }
 
 export const handler: DynamoDBStreamHandler = async event => {
+  if (isTest) logObj('aggregate.event:', event)
+
   // Create date of latest item
   const date = new Date()
   const { year, quarter } = getDateTimeDictionary(date)
@@ -54,5 +62,5 @@ export const handler: DynamoDBStreamHandler = async event => {
   for (const [company, items] of Object.entries(groups))
     await processCompanyRecords(company as CompanyType, items, date)
 
-  await updateTableLevelDetails(groups, records, year, quarter)
+  await updateTableLevelDetails(groups, records, year, quarter, isTest)
 }

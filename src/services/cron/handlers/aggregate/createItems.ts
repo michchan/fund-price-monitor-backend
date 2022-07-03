@@ -8,6 +8,7 @@ import { Output } from './deriveAggregatedItems'
 
 const createItems = async (
   tableRange: TableRange,
+  isTest: boolean,
   ...rest: Output
 ): Promise<void> => {
   const [
@@ -22,7 +23,7 @@ const createItems = async (
 
   // Batch create all aggregation items
   // Create latest records
-  await batchCreate(latestItems, tableRange, serializeRecord)
+  if (!isTest) await batchCreate(latestItems, tableRange, serializeRecord)
 
   // Log records to insert
   logObj('weekRateItems to insert', weekRateItems)
@@ -30,10 +31,12 @@ const createItems = async (
   logObj('quarterRateItems to insert', quarterRateItems)
 
   // Create change rates
-  await batchCreate([
-    ...weekRateItems,
-    ...monthRateItems,
-    ...quarterRateItems,
-  ], tableRange, serializeChangeRate)
+  if (!isTest) {
+    await batchCreate([
+      ...weekRateItems,
+      ...monthRateItems,
+      ...quarterRateItems,
+    ], tableRange, serializeChangeRate)
+  }
 }
 export default createItems

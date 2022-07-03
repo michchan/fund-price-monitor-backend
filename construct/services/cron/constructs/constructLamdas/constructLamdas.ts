@@ -122,6 +122,7 @@ const constructScrapingComponents = (
     handlers: {
       ...scrapingHandlers,
       aggregation: aggregators.aggregation,
+      testAggregation: aggregators.testAggregation,
     },
     stateMachines,
   }

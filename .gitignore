@@ -39,3 +39,6 @@ bundles
 
 # Ignore sam local logs
 .sam-local-dev-log
+
+# Ignore local temp folders
+.local-mock

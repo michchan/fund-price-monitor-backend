@@ -7,6 +7,7 @@ import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 
 const deleteItems = async (
   tableRange: TableRange,
+  isTest: boolean,
   ...rest: Output
 ): Promise<void> => {
   const [
@@ -20,7 +21,7 @@ const deleteItems = async (
   logObj('prevLatestItems to remove', prevLatestItems)
 
   // Remove previous latest records
-  await batchDelete(prevLatestItems, tableRange, getCompositeSK)
+  if (!isTest) await batchDelete(prevLatestItems, tableRange, getCompositeSK)
 
   // Log records to insert
   logObj('prevWeekRateItems to remove', prevWeekRateItems)
@@ -28,10 +29,12 @@ const deleteItems = async (
   logObj('prevQuarterRateItems to remove', prevQuarterRateItems)
 
   // Remove previous change rates
-  await batchDelete([
-    ...prevWeekRateItems,
-    ...prevMonthRateItems,
-    ...prevQuarterRateItems,
-  ], tableRange, getCompositeSKFromChangeRate)
+  if (!isTest) {
+    await batchDelete([
+      ...prevWeekRateItems,
+      ...prevMonthRateItems,
+      ...prevQuarterRateItems,
+    ], tableRange, getCompositeSKFromChangeRate)
+  }
 }
 export default deleteItems

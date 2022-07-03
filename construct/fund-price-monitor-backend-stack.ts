@@ -30,6 +30,7 @@ const groupAllHandlers = ({
     ) => Array.isArray(curr) ? [...acc, ...curr] : [...acc, curr], []),
 ]
 
+// @TODO: Bind variables to the functions which used it only
 const bindRuntimeEnvVars = (handlers: lambda.Function[]): void => {
   handlers.forEach(lambda => {
     runtimeEnv.keys.forEach(key => lambda.addEnvironment(key, runtimeEnv.values[key]))

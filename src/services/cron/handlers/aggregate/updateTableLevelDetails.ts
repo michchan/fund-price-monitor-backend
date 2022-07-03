@@ -6,6 +6,7 @@ import { Groups } from './groupEventRecordsByCompany'
 import updateTableDetails from 'src/models/fundPriceRecord/io/updateTableDetails'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'
 import AWS from 'src/lib/AWS'
+import logObj from 'src/helpers/logObj'
 
 const docClient = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true })
 
@@ -20,11 +21,13 @@ const updateTableLevelDetails = async (
   records: FundPriceRecord[],
   year: number | string,
   quarter: Quarter,
+  isTest: boolean
+// eslint-disable-next-line max-params
 ): Promise<void> => {
   // Get fund types
   const fundTypes = uniq(records.map(rec => rec.fundType))
-  // Update table details with companies and fund types
-  await updateTableDetails({
+
+  const tableDetails = {
     // Append values to sets
     UpdateExpression: `ADD ${[
       `${attrs.COMPANIES} ${EXP_COMS}`,
@@ -34,6 +37,12 @@ const updateTableLevelDetails = async (
       [EXP_COMS]: docClient.createSet(Object.keys(groups)),
       [EXP_FUND_TYPES]: docClient.createSet(fundTypes),
     },
-  }, year, quarter)
+  }
+  // Update table details with companies and fund types
+  if (isTest) {
+    logObj('updateTableLevelDetails.tableDetails: ', tableDetails)
+    return
+  }
+  await updateTableDetails(tableDetails, year, quarter)
 }
 export default updateTableLevelDetails
