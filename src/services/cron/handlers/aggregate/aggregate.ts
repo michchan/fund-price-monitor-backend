@@ -17,7 +17,7 @@ import deriveAggregatedItems from './deriveAggregatedItems'
 import createItems from './createItems'
 import deleteItems from './deleteItems'
 
-const isTest = /^true$/i.test(getEnvVar('IS_TEST'))
+const isTest = /^true$/i.test(getEnvVar('IS_TEST', false))
 
 /**
  * Handler to process each group of FundPriceRecord list
