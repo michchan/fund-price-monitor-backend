@@ -1,0 +1,482 @@
+{
+	"info": {
+		"_postman_id": "e714ea8a-1a4c-46da-81df-c4d7a83e7c39",
+		"name": "FundPriceMonitorHK",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10197127"
+	},
+	"item": [
+		{
+			"name": "List Quarters",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{API_KEY}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{API_KEY_HEADER_NAME}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/fundprices/mpf/quarters",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"fundprices",
+						"mpf",
+						"quarters"
+					]
+				},
+				"description": "Get fundprices of a company"
+			},
+			"response": []
+		},
+		{
+			"name": "List Companies",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{API_KEY}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{API_KEY_HEADER_NAME}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/fundprices/mpf/companies",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"fundprices",
+						"mpf",
+						"companies"
+					],
+					"query": [
+						{
+							"key": "quarter",
+							"value": "2021.1",
+							"description": "Format: `YYYY.(1|2|3|4)`\nIt must be the same quarter as `startTime` and/or `endTime` (if defined).",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Get fundprices of a company"
+			},
+			"response": []
+		},
+		{
+			"name": "List Company Records",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{API_KEY}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{API_KEY_HEADER_NAME}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/fundprices/mpf/{{fp_company}}?latest=true&all=false",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"fundprices",
+						"mpf",
+						"{{fp_company}}"
+					],
+					"query": [
+						{
+							"key": "latest",
+							"value": "true",
+							"description": "Default to false"
+						},
+						{
+							"key": "all",
+							"value": "false",
+							"description": "Default to false"
+						},
+						{
+							"key": "quarter",
+							"value": "2021.2",
+							"description": "Default to current quarter",
+							"disabled": true
+						},
+						{
+							"key": "riskLevel",
+							"value": "high",
+							"disabled": true
+						},
+						{
+							"key": "exclusiveStartKey",
+							"value": null,
+							"description": "'lastEvaluatedKey' of previous response (pagination)",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Get fundprices of a company"
+			},
+			"response": []
+		},
+		{
+			"name": "LIst Single Fund Records",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{API_KEY}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{API_KEY_HEADER_NAME}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/fundprices/mpf/{{fp_company}}/{{fp_code}}?all=true&latest=false",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"fundprices",
+						"mpf",
+						"{{fp_company}}",
+						"{{fp_code}}"
+					],
+					"query": [
+						{
+							"key": "all",
+							"value": "true"
+						},
+						{
+							"key": "latest",
+							"value": "false"
+						},
+						{
+							"key": "startTime",
+							"value": "2021-02-01T00:00:00.000Z",
+							"description": "ISO Timestamp",
+							"disabled": true
+						},
+						{
+							"key": "endTime",
+							"value": "2021-03-01T00:00:00.000Z",
+							"description": "ISO Timestamp",
+							"disabled": true
+						},
+						{
+							"key": "quarter",
+							"value": "2021.2",
+							"description": "Format: `YYYY.(1|2|3|4)`\nIt must be the same quarter as `startTime` and/or `endTime` (if defined).",
+							"disabled": true
+						},
+						{
+							"key": "exclusiveStartKey",
+							"value": null,
+							"description": "'lastEvaluatedKey' of previous response (pagination)",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Weekly Change Rates",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{API_KEY}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{API_KEY_HEADER_NAME}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/fundprices/mpf/{{fp_company}}/weekrates/{{fp_weekrate}}?all=true",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"fundprices",
+						"mpf",
+						"{{fp_company}}",
+						"weekrates",
+						"{{fp_weekrate}}"
+					],
+					"query": [
+						{
+							"key": "all",
+							"value": "true"
+						},
+						{
+							"key": "exclusiveStartKey",
+							"value": "",
+							"description": "'lastEvaluatedKey' of previous response (pagination)",
+							"disabled": true
+						},
+						{
+							"key": "code",
+							"value": "SHK134",
+							"description": "Unique code of the fund",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Get fundprices of a company"
+			},
+			"response": []
+		},
+		{
+			"name": "List Monthly Change Rates",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{API_KEY}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{API_KEY_HEADER_NAME}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/fundprices/mpf/{{fp_company}}/monthrates/{{fp_monthrate}}?all=true",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"fundprices",
+						"mpf",
+						"{{fp_company}}",
+						"monthrates",
+						"{{fp_monthrate}}"
+					],
+					"query": [
+						{
+							"key": "all",
+							"value": "true"
+						},
+						{
+							"key": "exclusiveStartKey",
+							"value": "",
+							"description": "'lastEvaluatedKey' of previous response (pagination)",
+							"disabled": true
+						},
+						{
+							"key": "code",
+							"value": "SHK137",
+							"description": "Unique code of the fund",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Get fundprices of a company"
+			},
+			"response": []
+		},
+		{
+			"name": "List Quarterly Change Rates",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{API_KEY}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{API_KEY_HEADER_NAME}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/fundprices/mpf/{{fp_company}}/quarterrates/{{fp_quarterrate}}?all=true",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"fundprices",
+						"mpf",
+						"{{fp_company}}",
+						"quarterrates",
+						"{{fp_quarterrate}}"
+					],
+					"query": [
+						{
+							"key": "all",
+							"value": "true"
+						},
+						{
+							"key": "exclusiveStartKey",
+							"value": "",
+							"description": "'lastEvaluatedKey' of previous response (pagination)",
+							"disabled": true
+						},
+						{
+							"key": "code",
+							"value": "SHK134",
+							"description": "Unique code of the fund",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Get fundprices of a company"
+			},
+			"response": []
+		},
+		{
+			"name": "searchRecords",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{API_KEY}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{API_KEY_HEADER_NAME}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/fundprices/mpf/search?latest=true&q=company_code[e]manulife_SHK137&all=true&quarter=2021.2",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"fundprices",
+						"mpf",
+						"search"
+					],
+					"query": [
+						{
+							"key": "latest",
+							"value": "true",
+							"description": "Default to false"
+						},
+						{
+							"key": "q",
+							"value": "company_code[e]manulife_SHK137"
+						},
+						{
+							"key": "all",
+							"value": "true",
+							"description": "Default to false"
+						},
+						{
+							"key": "quarter",
+							"value": "2021.2",
+							"description": "Format: `YYYY.(1|2|3|4)`\nIt must be the same quarter as `startTime` and/or `endTime` (if defined)."
+						}
+					]
+				},
+				"description": "Get fundprices of a company"
+			},
+			"response": []
+		}
+	]
+}
