@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.68.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.67.1...v0.68.0) (2022-07-03)
+
+
+### Features
+
+* update table of previous quarter capacity mode to 'on-demand' ([bae664d](https://github.com/michchan/fund-price-monitor-backend/commit/bae664d77ff2f10f41dc2e5e47f4fee94c8a80f8))
+
+
+### Bug Fixes
+
+* manulife scraper code with "/" issue ([bc52633](https://github.com/michchan/fund-price-monitor-backend/commit/bc52633a1f09a83c2f72d2941ca8f8aa0bc6e994))
+
 ### [0.67.1](https://github.com/michchan/fund-price-monitor-backend/compare/v0.67.0...v0.67.1) (2022-03-29)
 
 
