@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.68.1](https://github.com/michchan/fund-price-monitor-backend/compare/v0.68.0...v0.68.1) (2022-07-03)
+
+
+### Bug Fixes
+
+* make `IS_TEST` optional for aggregate ([20bbd77](https://github.com/michchan/fund-price-monitor-backend/commit/20bbd7706c76b619cb482b4afd7418e17bd9599f))
+
 ## [0.68.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.67.1...v0.68.0) (2022-07-03)
 
 
