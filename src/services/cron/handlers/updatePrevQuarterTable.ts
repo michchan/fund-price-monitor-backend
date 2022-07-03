@@ -1,5 +1,4 @@
 import { DynamoDB } from 'aws-sdk'
-import { ProvisionedThroughput } from 'aws-sdk/clients/dynamodb'
 import { ScheduledHandler } from 'aws-lambda'
 import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
 import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
@@ -13,7 +12,8 @@ import describeTable, {
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'
 import TableRange from 'src/models/fundPriceRecord/TableRange.type'
 import updateTable from 'src/models/fundPriceRecord/io/updateTable'
-import tableThroughput from 'src/models/fundPriceRecord/constants/tableThroughput'
+
+const BILLING_MODE_PAY_PER_REQUEST = 'PAY_PER_REQUEST'
 
 /* Get the aggregator ARN Passed from the environment variables
    defined in CDK construct of cron,
@@ -46,34 +46,24 @@ const deleteLambdaStreamEventSourceMapping = async (year: number | string, quart
   return describeTableOutput
 }
 
-const updateTableThroughputsAndDisableStream = async (
+const updateTableConfig = async (
   describeTableOutput: DescribeTableResult,
   year: string | number,
   quarter: Quarter,
-  {
-    WriteCapacityUnits,
-    ReadCapacityUnits,
-  }: ProvisionedThroughput,
 ) => {
-  const throughput = describeTableOutput?.Table?.ProvisionedThroughput
+  const billingMode = describeTableOutput?.Table?.BillingModeSummary?.BillingMode
   const isStreamEnabled = describeTableOutput.Table?.StreamSpecification?.StreamEnabled
 
   // * The following update-table requests must be separate,
   // * Since AWS DynamoDB only allow update either one per request.
 
-  // Update only when some of the throughput changed
+  // Update only when the mode is different
   // Since AWS don't allow an "unchanged update".
-  if (
-    throughput?.ReadCapacityUnits !== ReadCapacityUnits
-    || throughput?.WriteCapacityUnits !== WriteCapacityUnits
-  ) {
+  if (billingMode !== BILLING_MODE_PAY_PER_REQUEST) {
     // Send update table request
     await updateTable(year, quarter, {
-      // Update the throughput of the table
-      ProvisionedThroughput: {
-        ReadCapacityUnits,
-        WriteCapacityUnits,
-      },
+      // Update billing mode to 'on-demand'
+      BillingMode: BILLING_MODE_PAY_PER_REQUEST,
     // Wait for the service to be updated complete,
     // If there is another update, i.e. disabling table's stream
     }, isStreamEnabled)
@@ -109,11 +99,6 @@ export const handler: ScheduledHandler<EventDetail> = async event => {
     year = prevYear,
     quarter = prevQuarter,
   } = event.detail ?? {}
-  const {
-    // Default to 1 for both RCU and WCU
-    ReadCapacityUnits = tableThroughput.INACTIVE.ReadCapacityUnits,
-    WriteCapacityUnits = tableThroughput.INACTIVE.WriteCapacityUnits,
-  } = event.detail?.ProvisionedThroughput ?? {}
 
   // Check table existence of previous quarter
   const hasExistingPrevTable = await checkTableExistence(year, quarter)
@@ -121,9 +106,6 @@ export const handler: ScheduledHandler<EventDetail> = async event => {
   // Do update if the table exists
   if (hasExistingPrevTable) {
     const describeTableOutput = await deleteLambdaStreamEventSourceMapping(year, quarter)
-    await updateTableThroughputsAndDisableStream(describeTableOutput, year, quarter, {
-      ReadCapacityUnits,
-      WriteCapacityUnits,
-    })
+    await updateTableConfig(describeTableOutput, year, quarter)
   }
 }
