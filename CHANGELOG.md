@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.68.3](https://github.com/michchan/fund-price-monitor-backend/compare/v0.68.2...v0.68.3) (2022-12-01)
+
+
+### Bug Fixes
+
+* `month start at 0` should be handled in `parseWeekPeriodParam` ([74d7d51](https://github.com/michchan/fund-price-monitor-backend/commit/74d7d5108321668bb09eb571da8315d41a3cfae7))
+
 ### [0.68.2](https://github.com/michchan/fund-price-monitor-backend/compare/v0.68.1...v0.68.2) (2022-12-01)
 
 
