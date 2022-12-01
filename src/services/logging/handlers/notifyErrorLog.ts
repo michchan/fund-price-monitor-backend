@@ -5,6 +5,9 @@ import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
 import logObj from 'src/helpers/logObj'
 
 import AWS from 'src/lib/AWS'
+import env from 'src/lib/env'
+
+const { values: { AWS_RUNTIME_REGION } } = env
 
 // * Environment variable SNS_TOPIC_ARN is required
 const snsArn = getEnvVar('SNS_TOPIC_ARN')
@@ -13,14 +16,18 @@ const sns = new AWS.SNS()
 
 /** Publish error message to SNS topic */
 const publishMessage = (payload: CloudWatchLogsDecodedData, TargetArn: string) => {
-  const resourceType = capitalizeWords(payload.logGroup.split('/')[2])
-  const resourceName = payload.logGroup.split('/').pop()
-  const messages = payload.logEvents.map(e => e.message).join('\n')
+  const { logGroup, logStream, logEvents } = payload
+  const resourceType = capitalizeWords(logGroup.split('/')[2])
+  const resourceName = logGroup.split('/').pop()
+  const messages = logEvents.map(e => e.message).join('\n')
+
+  const logStreamUrl = `https://${AWS_RUNTIME_REGION}.console.aws.amazon.com/cloudwatch/home?region=${AWS_RUNTIME_REGION}#logsV2:log-groups/log-group/${encodeURIComponent(logGroup)}/log-events/${encodeURIComponent(logStream)}`
 
   const message = `\n${resourceType} Error Summary\n\n`
     + '------------------------------------------------------\n\n'
     + `# LogGroup name: ${payload.logGroup}\n`
     + `# LogStream: ${payload.logStream}\n`
+    + `# Log URL: ${logStreamUrl}\n`
     + `# LogMessage: \n\n${messages}\n\n`
     + '------------------------------------------------------'
 
