@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.68.2](https://github.com/michchan/fund-price-monitor-backend/compare/v0.68.1...v0.68.2) (2022-12-01)
+
+
+### Features
+
+* add log strem url to log notifer ([ab5a37d](https://github.com/michchan/fund-price-monitor-backend/commit/ab5a37de936a7542b1f247d9176bee37ae3d0bff))
+
+
+### Bug Fixes
+
+* error should have info ([78a231f](https://github.com/michchan/fund-price-monitor-backend/commit/78a231f2cbd641b7cfcdbe5d2c3bb37cefaf14c6))
+
 ### [0.68.1](https://github.com/michchan/fund-price-monitor-backend/compare/v0.68.0...v0.68.1) (2022-07-03)
 
 
