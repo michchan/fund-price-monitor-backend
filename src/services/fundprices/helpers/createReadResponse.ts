@@ -34,7 +34,7 @@ function createReadResponse <T> (
   output?: Output<T>,
 ): APIGatewayProxyResult {
   if (error) {
-    console.log('ERROR: ', stringify(error))
+    console.log('ERROR: ', error)
     const body: ListResponse<T> = {
       result: false,
       error: pick(error, ['message', 'code']),
