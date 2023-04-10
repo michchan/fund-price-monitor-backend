@@ -10,9 +10,9 @@ const INDEX_PAGE_LIST_CONTAINER_SELECTOR = '.unit_prices_table > table.desktop'
 // eslint-disable-next-line max-len
 const INDEX_PAGE_WAIT_FOR_ELEMENT_SELECTOR = `${INDEX_PAGE_LIST_CONTAINER_SELECTOR} > tbody > tr:last-child > td:last-child`
 
-const DETAILS_PAGE_LIST_CONTAINER_SELECTOR = '#content_main_accordion_1'
+const DETAILS_PAGE_LIST_CONTAINER_SELECTOR = '#pp_main_basicTable_1 table.desktop'
 // eslint-disable-next-line max-len
-const DETAILS_PAGE_WAIT_FOR_ELEMENT_SELECTOR = `${DETAILS_PAGE_LIST_CONTAINER_SELECTOR} > .row:last-child`
+const DETAILS_PAGE_WAIT_FOR_ELEMENT_SELECTOR = `${DETAILS_PAGE_LIST_CONTAINER_SELECTOR} > tbody > tr:last-child > td:last-child`
 
 type TRec = FundPriceRecord<FundType.mpf, RecordType.record>
 
@@ -48,11 +48,25 @@ interface SerializableClientData extends SerializableStaticClientData {
   lng: Languages;
 }
 
+/** The transit item for matching the name of item when scraping details */
+interface SerializableNameCodeMap {
+  code: string;
+  name: string;
+}
+
+type RecordItem = Omit<TRec, 'riskLevel'>
+
+/** The transit item for matching the name of item when scraping details */
+interface TransitRecordItem extends RecordItem {
+  name: string;
+}
+
 // =================================== CLIENT-SIDE CODE ===================================
 // Everything should be in the same code and no module bundling to be expected
 const getDetailsData = (
   containerSelector: string,
   clientDataJSON: string,
+  nameCodeMapsJSON: string,
 ): FundDetails[] => {
   const {
     company,
@@ -61,21 +75,20 @@ const getDetailsData = (
     riskLevelMap,
   } = JSON.parse(clientDataJSON) as SerializableClientData
 
+  const nameCodeMaps = JSON.parse(nameCodeMapsJSON) as SerializableNameCodeMap[]
+
   const tableRows: NodeListOf<HTMLDivElement> = document.querySelectorAll(
-    `${containerSelector} > .row`
+    `${containerSelector} > tbody > tr`
   )
 
   return Array.from(tableRows)
     .map(row => {
-      let code = (row.querySelector('.anchor') as HTMLDivElement)?.id ?? ''
-      const name = (row.querySelector('.expander h4.dropdown-text') as HTMLDivElement)?.innerText?.trim() ?? ''
-
-      // Fix bug from HSBC site (wrong id for ANEF fund in zh-HK)
-      if (code === 'HKEF' && name.includes('亞太股票基金')) code = 'ANEF'
+      const name = (row.querySelector('td:first-child') as HTMLTableCellElement)?.innerText?.trim() ?? ''
+      const code = nameCodeMaps.find(nameCodeMap => nameCodeMap.name?.toLowerCase() === name?.toLowerCase())?.code ?? ''
 
       const riskLevel = (() => {
         const rawRiskLevel = (
-          row.querySelector('section.exp-content .exp-panel .cc-column p:last-of-type') as HTMLParagraphElement
+          row.querySelector('td:last-child p:last-of-type') as HTMLParagraphElement
         )
           ?.innerHTML
           ?.replace(/(risk rating is |風險級數為)(\d).+/i, 'risk_rating==$2==')
@@ -90,9 +103,10 @@ const getDetailsData = (
         ) as unknown as keyof RiskLevelMap
       })()
 
-      // @TODO: Scrape these
+      // @TODO: No information provided on the page
       const initialPrice = 0
       const launchedDate = ''
+
       return {
         company,
         code,
@@ -112,7 +126,7 @@ const getDetailsData = (
 const getRecordsFromIndexPage = (
   containerSelector: string,
   clientDataJSON: string,
-): Omit<TRec, 'riskLevel'>[] => {
+): TransitRecordItem[] => {
   const {
     company,
     fundType,
@@ -130,11 +144,14 @@ const getRecordsFromIndexPage = (
 
   return Array.from(tableRows)
     .map(row => {
-      const code = (row.querySelector('td:first-child > a') as HTMLAnchorElement)?.href?.split('#').pop() ?? ''
+      const firstColumnEl = (row.querySelector('td:first-child > a') as HTMLAnchorElement)
+      const code = firstColumnEl?.href?.split('#').pop() ?? ''
+      const name = firstColumnEl?.innerText ?? ''
       const price = Number((row.querySelector('td:last-child') as HTMLTableCellElement)?.innerText)
       return {
         company,
         code,
+        name,
         updatedDate,
         price,
         time,
@@ -183,8 +200,13 @@ const evaluateIndexPageData = async <T extends Omit<TRec, 'riskLevel'>>(
 
 const evaluateDetailsPageData = async <T extends FundDetails>(
   page: puppeteer.Page,
-  evaluateCallback: (containerSelector: string, clientDataJSON: string) => T[],
-  clientData: SerializableClientData
+  evaluateCallback: (
+    containerSelector: string,
+    clientDataJSON: string,
+    nameCodeMapsJSON: string
+  ) => T[],
+  clientData: SerializableClientData,
+  nameCodeMaps: SerializableNameCodeMap[]
 ): Promise<T[]> => {
   // Wait for the elements we want
   await retryWithDelay(
@@ -196,8 +218,29 @@ const evaluateDetailsPageData = async <T extends FundDetails>(
   return page.evaluate(
     evaluateCallback,
     DETAILS_PAGE_LIST_CONTAINER_SELECTOR,
-    JSON.stringify(clientData)
+    JSON.stringify(clientData),
+    JSON.stringify(nameCodeMaps),
   )
+}
+
+const scrapeData = async (page: puppeteer.Page, lng: Languages) => {
+  await page.goto(getIndexPageUrl(lng))
+
+  const recordsData = await evaluateIndexPageData(
+    page,
+    getRecordsFromIndexPage,
+    { ...serializableStaticClientData, lng }
+  )
+
+  await page.goto(getDetailsPageUrl(lng))
+  const detailsData = await evaluateDetailsPageData(
+    page,
+    getDetailsData,
+    { ...serializableStaticClientData, lng },
+    recordsData.map(record => pick(record, ['name', 'code'])),
+  )
+
+  return { recordsData, detailsData }
 }
 
 /** The name 'scrapeDetails' is required by scripts/buildScrapers */
@@ -205,14 +248,9 @@ export const scrapeDetails = async (
   page: puppeteer.Page
 ): Promise<FundDetails[]> => {
   const batches = await pipeAsync<FundDetails[][]>(
-    ...Object.values(Languages).map(lng => async (recordsOfLangs: FundDetails[][] = []) => {
-      await page.goto(getDetailsPageUrl(lng))
-      const recordsPerLang = await evaluateDetailsPageData(
-        page,
-        getDetailsData,
-        { ...serializableStaticClientData, lng }
-      )
-      return [...recordsOfLangs, recordsPerLang]
+    ...Object.values(Languages).map(lng => async (data: FundDetails[][] = []) => {
+      const { detailsData: detailsOfLang } = await scrapeData(page, lng)
+      return [...data, detailsOfLang]
     })
   )([])
   return mapAndReduceFundDetailsBatches(batches)
@@ -222,22 +260,9 @@ export const scrapeDetails = async (
 export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
   const lng = Languages.en
 
-  await page.goto(getIndexPageUrl(lng))
-  const indexPageRecords = await evaluateIndexPageData(
-    page,
-    getRecordsFromIndexPage,
-    { ...serializableStaticClientData, lng }
-  )
+  const { recordsData, detailsData } = await scrapeData(page, lng)
 
-  await page.goto(getDetailsPageUrl(lng))
-  // Get risk level data from details page
-  const detailsData = await evaluateDetailsPageData(
-    page,
-    getDetailsData,
-    { ...serializableStaticClientData, lng }
-  )
-
-  return indexPageRecords.map(rec => ({
+  return recordsData.map(rec => ({
     ...rec,
     ...pick(detailsData?.find(d => d.code === rec.code) ?? { riskLevel: RiskLevel.unknown }, 'riskLevel'),
   }))
