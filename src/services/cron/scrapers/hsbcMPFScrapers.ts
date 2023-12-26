@@ -1,5 +1,5 @@
-import puppeteer = require('puppeteer')
-import pipeAsync from 'simply-utils/dist/async/pipeAsync'
+import { Page } from 'puppeteer-core'
+import pipeAsync from 'simply-utils/async/pipeAsync'
 import pick from 'lodash/pick'
 import { CompanyType, FundDetails, FundPriceRecord, FundType, Languages, RecordType, RiskLevel } from '@michchan/fund-price-monitor-lib'
 
@@ -180,7 +180,7 @@ const getDetailsPageUrl = (lng: Languages) => {
 }
 
 const evaluateIndexPageData = async <T extends Omit<TRec, 'riskLevel'>>(
-  page: puppeteer.Page,
+  page: Page,
   evaluateCallback: (containerSelector: string, clientDataJSON: string) => T[],
   clientData: SerializableClientData
 ): Promise<T[]> => {
@@ -199,7 +199,7 @@ const evaluateIndexPageData = async <T extends Omit<TRec, 'riskLevel'>>(
 }
 
 const evaluateDetailsPageData = async <T extends FundDetails>(
-  page: puppeteer.Page,
+  page: Page,
   evaluateCallback: (
     containerSelector: string,
     clientDataJSON: string,
@@ -223,7 +223,7 @@ const evaluateDetailsPageData = async <T extends FundDetails>(
   )
 }
 
-const scrapeData = async (page: puppeteer.Page, lng: Languages) => {
+const scrapeData = async (page: Page, lng: Languages) => {
   await page.goto(getIndexPageUrl(lng))
 
   const recordsData = await evaluateIndexPageData(
@@ -245,7 +245,7 @@ const scrapeData = async (page: puppeteer.Page, lng: Languages) => {
 
 /** The name 'scrapeDetails' is required by scripts/buildScrapers */
 export const scrapeDetails = async (
-  page: puppeteer.Page
+  page: Page
 ): Promise<FundDetails[]> => {
   const batches = await pipeAsync<FundDetails[][]>(
     ...Object.values(Languages).map(lng => async (data: FundDetails[][] = []) => {
@@ -257,7 +257,7 @@ export const scrapeDetails = async (
 }
 
 /** The name 'scrapeRecords' is required by scripts/buildScrapers */
-export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
+export const scrapeRecords = async (page: Page): Promise<TRec[]> => {
   const lng = Languages.en
 
   const { recordsData, detailsData } = await scrapeData(page, lng)

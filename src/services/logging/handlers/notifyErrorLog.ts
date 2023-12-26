@@ -1,7 +1,7 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsHandler } from 'aws-lambda'
-import decodeCloudWatchLogEventPayload from 'simply-utils/dist/AWS/decodeCloudWatchLogEventPayload'
-import capitalizeWords from 'simply-utils/dist/string/capitalizeWords'
-import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
+import decodeCloudWatchLogEventPayload from 'simply-utils/AWS/decodeCloudWatchLogEventPayload'
+import capitalizeWords from 'simply-utils/string/capitalizeWords'
+import getEnvVar from 'simply-utils/utils/getEnvVar'
 import logObj from 'src/helpers/logObj'
 
 import AWS from 'src/lib/AWS'

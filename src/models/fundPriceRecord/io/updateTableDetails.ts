@@ -1,4 +1,4 @@
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import { Quarter } from 'simply-utils/dateTime/getQuarter'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import getTableName from '../utils/getTableName'

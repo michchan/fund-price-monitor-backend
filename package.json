@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@michchan/eslint-config": "1.9.0",
-    "@michchan/webpack-config-aws-cdk": "0.5.1",
+    "@michchan/webpack-config-aws-cdk": "0.5.4",
     "@types/aws-lambda": "^8.10.70",
     "@types/jest": "^26.0.4",
     "@types/lodash": "^4.14.167",
@@ -83,15 +83,15 @@
     "@michchan/fund-price-monitor-lib": "0.10.0",
     "@octokit/core": "^3.4.0",
     "axios": "^0.21.1",
-    "chrome-aws-lambda": "6.0.0",
+    "chrome-aws-lambda": "10.0.0",
     "dayjs": "^1.10.5",
     "dotenv": "^8.2.0",
     "http-status-codes": "^2.1.4",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
-    "puppeteer": "6.0.0",
-    "puppeteer-core": "6.0.0",
-    "simply-utils": "0.63.1",
+    "puppeteer": "10.0.0",
+    "puppeteer-core": "10.0.0",
+    "simply-utils": "0.69.0",
     "source-map-support": "^0.5.19"
   }
 }

@@ -6,7 +6,7 @@ import {
   FundType,
   RecordType,
 } from '@michchan/fund-price-monitor-lib'
-import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
+import getEnvVar from 'simply-utils/utils/getEnvVar'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'
 import logObj from 'src/helpers/logObj'

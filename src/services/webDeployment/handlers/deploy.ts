@@ -1,6 +1,6 @@
 import { Handler } from 'aws-lambda'
 import { Octokit } from '@octokit/core'
-import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
+import getEnvVar from 'simply-utils/utils/getEnvVar'
 
 const accessToken = getEnvVar('DEPLOYMENT_GITHUB_ACCESS_TOKEN')
 const owner = getEnvVar('DEPLOYMENT_GITHUB_OWNER')

@@ -1,5 +1,5 @@
 import AWS from 'src/lib/AWS'
-import waitForAWSService from 'simply-utils/dist/AWS/waitForAWSService'
+import waitForAWSService from 'simply-utils/AWS/waitForAWSService'
 
 // Initialize
 const dynamodb = new AWS.DynamoDB()

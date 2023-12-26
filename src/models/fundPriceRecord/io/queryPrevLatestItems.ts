@@ -1,5 +1,5 @@
 import { CompanyType, FundPriceChangeRate, FundPriceRecord } from '@michchan/fund-price-monitor-lib'
-import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
+import getQuarterOffset from 'simply-utils/dateTime/getQuarterOffset'
 import TableRange from '../TableRange.type'
 import checkTableExistence from './checkTableExistence'
 import queryItemsByCompany from './queryItemsByCompany'

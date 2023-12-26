@@ -1,5 +1,5 @@
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
-import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
+import { Quarter } from 'simply-utils/dateTime/getQuarter'
+import getQuarterOffset from 'simply-utils/dateTime/getQuarterOffset'
 
 import { PROJECT_NAMESPACE } from '../../../constants'
 import logObj from 'src/helpers/logObj'

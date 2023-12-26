@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk'
-import listAllDynamodbTables, { ListAllTablesResult } from 'simply-utils/dist/AWS/listAllDynamodbTables'
-import getQuarter, { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import listAllDynamodbTables, { ListAllTablesResult } from 'simply-utils/AWS/listAllDynamodbTables'
+import getQuarter, { Quarter } from 'simply-utils/dateTime/getQuarter'
 
 import AWS from 'src/lib/AWS'
 import getTableName from 'src/models/fundPriceRecord/utils/getTableName'

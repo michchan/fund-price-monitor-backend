@@ -1,7 +1,7 @@
 import { ScheduledHandler } from 'aws-lambda'
 import mapValues from 'lodash/mapValues'
-import pipeAsync from 'simply-utils/dist/async/pipeAsync'
-import wait from 'simply-utils/dist/async/wait'
+import pipeAsync from 'simply-utils/async/pipeAsync'
+import wait from 'simply-utils/async/wait'
 import { FundPriceRecord, FundPriceChangeRate, CompanyType, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import getDateTimeDictionary from 'src/helpers/getDateTimeDictionary'

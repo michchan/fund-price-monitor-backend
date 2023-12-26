@@ -1,5 +1,5 @@
 import { FundPriceRecord, FundPriceChangeRate, FundType } from '@michchan/fund-price-monitor-lib'
-import compareISOTimestamp from 'simply-utils/dist/dateTime/compareISOTimestamp'
+import compareISOTimestamp from 'simply-utils/dateTime/compareISOTimestamp'
 
 import getCompanyCodePK from './getCompanyCodePK'
 

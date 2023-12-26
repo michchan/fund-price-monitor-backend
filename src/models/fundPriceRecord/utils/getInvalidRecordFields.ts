@@ -1,7 +1,7 @@
-import isStr from 'simply-utils/dist/string/isStr'
-import isNum from 'simply-utils/dist/number/isNum'
-import isNullOrUndef from 'simply-utils/dist/validators/isNullOrUndef'
-import isISOTimestamp from 'simply-utils/dist/dateTime/isISOTimestamp'
+import isStr from 'simply-utils/string/isStr'
+import isNum from 'simply-utils/number/isNum'
+import isNullOrUndef from 'simply-utils/validators/isNullOrUndef'
+import isISOTimestamp from 'simply-utils/dateTime/isISOTimestamp'
 
 import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 import isValidCompany from './isValidCompany'

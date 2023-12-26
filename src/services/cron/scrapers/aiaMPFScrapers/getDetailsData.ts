@@ -1,4 +1,4 @@
-import puppeteer = require('puppeteer')
+import { Page } from 'puppeteer-core'
 import { FundPriceRecord, FundType, RecordType, RiskLevel } from '@michchan/fund-price-monitor-lib'
 
 import retryWithDelay from '../../helpers/retryWithDelay'
@@ -20,7 +20,7 @@ export interface DetailsDataRecord extends Pick<FundPriceRecord<FundType.mpf, Re
 /**
 * Helpers to query the details data from html
 */
-const getDetailsData = async (page: puppeteer.Page): Promise<DetailsDataRecord[]> => {
+const getDetailsData = async (page: Page): Promise<DetailsDataRecord[]> => {
   // Wait for the elements we want
   await retryWithDelay(() => page.waitForSelector(
     '#funddetails_list > table > tbody > tr:not(.header):last-child > td'

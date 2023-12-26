@@ -1,6 +1,6 @@
 import launchPuppeteerBrowserSession, {
   GetDataWithPage,
-} from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
+} from 'simply-utils/scraping/launchPuppeteerBrowserSession'
 import { FundPriceRecord, CompanyType, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import logObj from 'src/helpers/logObj'

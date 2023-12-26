@@ -1,4 +1,4 @@
-import getQuarter from 'simply-utils/dist/dateTime/getQuarter'
+import getQuarter from 'simply-utils/dateTime/getQuarter'
 import { FundPriceRecord, FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'
 
 import scanAllItems, { Input, Output as O } from 'src/lib/AWS/dynamodb/scanAllItems'

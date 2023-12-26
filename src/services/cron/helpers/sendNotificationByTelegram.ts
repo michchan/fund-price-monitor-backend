@@ -1,4 +1,4 @@
-import sendTelegramMessages from 'simply-utils/dist/telegram/sendTelegramMessages'
+import sendTelegramMessages from 'simply-utils/telegram/sendTelegramMessages'
 import { FundPriceRecord, FundPriceChangeRate, CompanyType, FundType } from '@michchan/fund-price-monitor-lib'
 
 import toTelegramMessageLines from 'src/models/fundPriceRecord/utils/toTelegramMessageLines'

@@ -1,4 +1,4 @@
-import getQuarter from 'simply-utils/dist/dateTime/getQuarter'
+import getQuarter from 'simply-utils/dateTime/getQuarter'
 
 import queryAllItems, { Input, Output as O } from 'src/lib/AWS/dynamodb/queryAllItems'
 import TableRange from '../TableRange.type'

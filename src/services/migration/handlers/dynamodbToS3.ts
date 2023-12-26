@@ -1,7 +1,7 @@
 import { Handler } from 'aws-lambda'
 import { AttributeMap } from 'aws-sdk/clients/dynamodb'
-import pipeAsync from 'simply-utils/dist/async/pipeAsync'
-import wait from 'simply-utils/dist/async/wait'
+import pipeAsync from 'simply-utils/async/pipeAsync'
+import wait from 'simply-utils/async/wait'
 import omit from 'lodash/omit'
 
 import listTables from 'src/models/fundPriceRecord/io/listTables'

@@ -1,5 +1,5 @@
 import { DynamoDB } from 'aws-sdk'
-import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
+import getQuarterOffset from 'simply-utils/dateTime/getQuarterOffset'
 
 import { PROJECT_NAMESPACE } from '../../../constants'
 import listAllTables from 'src/lib/AWS/dynamodb/listAllTables'

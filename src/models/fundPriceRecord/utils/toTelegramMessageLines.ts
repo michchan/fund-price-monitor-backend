@@ -1,4 +1,4 @@
-import zeroPadding from 'simply-utils/dist/number/zeroPadding'
+import zeroPadding from 'simply-utils/number/zeroPadding'
 import capitalize from 'lodash/capitalize'
 import startCase from 'lodash/startCase'
 import { FundPriceRecord, CompanyType, FundPriceChangeRate } from '@michchan/fund-price-monitor-lib'

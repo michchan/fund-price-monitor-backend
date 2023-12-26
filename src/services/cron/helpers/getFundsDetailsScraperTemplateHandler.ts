@@ -1,5 +1,5 @@
 import { ScheduledHandler } from 'aws-lambda'
-import launchPuppeteerBrowserSession, { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
+import launchPuppeteerBrowserSession, { GetDataWithPage } from 'simply-utils/scraping/launchPuppeteerBrowserSession'
 import { FundDetails } from '@michchan/fund-price-monitor-lib'
 
 import getCurrentYearAndQuarter from 'src/helpers/getCurrentYearAndQuarter'

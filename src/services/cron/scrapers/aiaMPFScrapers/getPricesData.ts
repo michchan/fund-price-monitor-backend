@@ -1,4 +1,4 @@
-import puppeteer = require('puppeteer')
+import { Page } from 'puppeteer-core'
 import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import retryWithDelay from '../../helpers/retryWithDelay'
@@ -59,7 +59,7 @@ const evaluatePage = (): PriceDataRecord[] => {
 /**
  * Helpers to query the prices data from html
  */
-const getPricesData = async (page: puppeteer.Page): Promise<PriceDataRecord[]> => {
+const getPricesData = async (page: Page): Promise<PriceDataRecord[]> => {
   // Wait for the elements we want
   await retryWithDelay(() => page.waitForSelector(
     '#fundpriceslist > table > tbody > tr:not(.header):last-child > td'

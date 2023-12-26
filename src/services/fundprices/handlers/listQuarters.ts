@@ -4,7 +4,7 @@ import { ListQuartersQueryParams, ListQuartersResponse } from '@michchan/fund-pr
 
 import createReadResponse from '../helpers/createReadResponse'
 import listAllTables from 'src/lib/AWS/dynamodb/listAllTables'
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import { Quarter } from 'simply-utils/dateTime/getQuarter'
 import validateYearQuarter from '../validators/validateYearQuarter'
 
 export type Res = ListQuartersResponse

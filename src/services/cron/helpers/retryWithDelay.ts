@@ -1,4 +1,4 @@
-import retry from 'simply-utils/dist/async/retry'
+import retry from 'simply-utils/async/retry'
 import logObj from 'src/helpers/logObj'
 
 const DEFAULT_RETRY_TIME = 10

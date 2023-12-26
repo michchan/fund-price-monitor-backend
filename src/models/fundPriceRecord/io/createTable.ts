@@ -1,5 +1,5 @@
 import { DynamoDB, Lambda } from 'aws-sdk'
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import { Quarter } from 'simply-utils/dateTime/getQuarter'
 
 import AWS from 'src/lib/AWS'
 import getTableName from '../utils/getTableName'

@@ -1,4 +1,4 @@
-import { GetDataWithPage } from 'simply-utils/dist/scraping/launchPuppeteerBrowserSession'
+import { GetDataWithPage } from 'simply-utils/scraping/launchPuppeteerBrowserSession'
 import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import batchCreate from 'src/models/fundPriceRecord/io/batchCreate'

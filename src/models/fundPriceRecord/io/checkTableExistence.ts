@@ -1,4 +1,4 @@
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import { Quarter } from 'simply-utils/dateTime/getQuarter'
 
 import listTables from 'src/models/fundPriceRecord/io/listTables'
 import getTableName from 'src/models/fundPriceRecord/utils/getTableName'

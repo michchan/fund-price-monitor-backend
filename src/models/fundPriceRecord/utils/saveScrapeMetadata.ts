@@ -1,6 +1,6 @@
 import mapKeys from 'lodash/mapKeys'
 import mapValues from 'lodash/mapValues'
-import isDeepEmpty from 'simply-utils/dist/object/isDeepEmpty'
+import isDeepEmpty from 'simply-utils/object/isDeepEmpty'
 
 import updateTableDetails, { Input as I, Output as O } from 'src/models/fundPriceRecord/io/updateTableDetails'
 import attrs from 'src/models/fundPriceRecord/constants/attributeNames'

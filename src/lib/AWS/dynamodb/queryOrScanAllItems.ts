@@ -1,5 +1,5 @@
 import { DynamoDB } from 'aws-sdk'
-import queryOrScanAllDynamodbItems from 'simply-utils/dist/AWS/queryOrScanAllDynamodbItems'
+import queryOrScanAllDynamodbItems from 'simply-utils/AWS/queryOrScanAllDynamodbItems'
 
 import AWS from '..'
 

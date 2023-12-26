@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import zeroPadding from 'simply-utils/dist/number/zeroPadding'
+import zeroPadding from 'simply-utils/number/zeroPadding'
 
 const parseWeekPeriodParam = (
   /** In format `YYYY.nthWeek` */

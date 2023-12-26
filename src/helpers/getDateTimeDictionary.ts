@@ -1,6 +1,6 @@
-import zeroPadding from 'simply-utils/dist/number/zeroPadding'
-import getWeekOfYear from 'simply-utils/dist/dateTime/getWeekOfYear'
-import getQuarter, { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import zeroPadding from 'simply-utils/number/zeroPadding'
+import getWeekOfYear from 'simply-utils/dateTime/getWeekOfYear'
+import getQuarter, { Quarter } from 'simply-utils/dateTime/getQuarter'
 
 const PADDING = 2
 

@@ -1,8 +1,8 @@
 import { DynamoDB } from 'aws-sdk'
 import { ScheduledHandler } from 'aws-lambda'
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
-import getQuarterOffset from 'simply-utils/dist/dateTime/getQuarterOffset'
-import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
+import { Quarter } from 'simply-utils/dateTime/getQuarter'
+import getQuarterOffset from 'simply-utils/dateTime/getQuarterOffset'
+import getEnvVar from 'simply-utils/utils/getEnvVar'
 
 import AWS from 'src/lib/AWS'
 import checkTableExistence from 'src/models/fundPriceRecord/io/checkTableExistence'

@@ -1,4 +1,4 @@
-import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
+import getEnvVar from 'simply-utils/utils/getEnvVar'
 
 import AWS from 'src/lib/AWS'
 import logObj from 'src/helpers/logObj'

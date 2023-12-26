@@ -1,7 +1,7 @@
 import { Handler } from 'aws-lambda'
-import pipeAsync from 'simply-utils/dist/async/pipeAsync'
-import wait from 'simply-utils/dist/async/wait'
-import listAllS3Objects from 'simply-utils/dist/AWS/listAllS3Objects'
+import pipeAsync from 'simply-utils/async/pipeAsync'
+import wait from 'simply-utils/async/wait'
+import listAllS3Objects from 'simply-utils/AWS/listAllS3Objects'
 import { AttributeMap } from 'aws-sdk/clients/dynamodb'
 
 import getBucketName from '../helpers/getBucketName'

@@ -1,6 +1,6 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
 import { AWSError } from 'aws-sdk'
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import { Quarter } from 'simply-utils/dateTime/getQuarter'
 import {
   AggregatedRecordType,
   ListCompanySinglePeriodRatesPathParams,

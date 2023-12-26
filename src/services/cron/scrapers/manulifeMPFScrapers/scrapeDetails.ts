@@ -1,5 +1,5 @@
-import puppeteer = require('puppeteer')
-import pipeAsync from 'simply-utils/dist/async/pipeAsync'
+import { Page } from 'puppeteer-core'
+import pipeAsync from 'simply-utils/async/pipeAsync'
 
 import {
   FundDetails,
@@ -146,7 +146,7 @@ const getDetailsData = (
 // =================================== / CLIENT-SIDE CODE ===================================
 
 const evaluateIndexData = async <T extends IndexData>(
-  page: puppeteer.Page,
+  page: Page,
   evaluateCallback: (containerSelector: string, clientDataJSON: string) => T[],
   clientData: SerializableStaticClientData
 ): Promise<T[]> => {
@@ -165,7 +165,7 @@ const evaluateIndexData = async <T extends IndexData>(
 }
 
 const evaluateDetailsRecordData = async (
-  page: puppeteer.Page,
+  page: Page,
   evaluateCallback: (clientDataJSON: string) => ScrapedDetails,
   clientData: SerializableDynamicClientData
 ): Promise<ScrapedDetails> => {
@@ -188,7 +188,7 @@ const getDetailsPageUrl = (lng: Languages, code: string) => `https://www.manulif
 
 /** The name 'scrapeDetails' is required by scripts/buildScrapers */
 export const scrapeDetails = async (
-  page: puppeteer.Page
+  page: Page
 ): Promise<FundDetails[]> => {
   await page.goto(getIndexPageUrl(Languages.en))
   const indexData = await evaluateIndexData(page, getIndexData, serializableStaticClientData)

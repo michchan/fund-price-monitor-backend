@@ -1,4 +1,4 @@
-import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
+import getEnvVar from 'simply-utils/utils/getEnvVar'
 import getParameter from 'src/lib/AWS/parameterStore/getParameter'
 
 /* Get the telegram notification channel chat ID passed from

@@ -1,4 +1,4 @@
-import isISOTimestamp from 'simply-utils/dist/dateTime/isISOTimestamp'
+import isISOTimestamp from 'simply-utils/dateTime/isISOTimestamp'
 
 import composeParameterErrMsg from '../helpers/composeParameterErrMsg'
 import createParameterError from '../helpers/createParameterError'

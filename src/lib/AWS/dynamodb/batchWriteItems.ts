@@ -2,7 +2,7 @@ import { DynamoDB } from 'aws-sdk'
 import batchWriteDynamodbItems, {
   BatchWriteDynamoDBItemsOptions as Opts,
   BatchWriteDynamoDBItemsResult,
-} from 'simply-utils/dist/AWS/batchWriteDynamodbItems'
+} from 'simply-utils/AWS/batchWriteDynamodbItems'
 
 import AWS from 'src/lib/AWS'
 

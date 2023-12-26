@@ -4,7 +4,7 @@ import pick from 'lodash/pick'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import statusCodes from 'http-status-codes'
 import { ListResponse } from '@michchan/fund-price-monitor-lib'
-import getEnvVar from 'simply-utils/dist/utils/getEnvVar'
+import getEnvVar from 'simply-utils/utils/getEnvVar'
 
 import stringify from 'src/helpers/stringify'
 

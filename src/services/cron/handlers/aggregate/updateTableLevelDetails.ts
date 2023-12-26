@@ -1,4 +1,4 @@
-import { Quarter } from 'simply-utils/dist/dateTime/getQuarter'
+import { Quarter } from 'simply-utils/dateTime/getQuarter'
 import uniq from 'lodash/uniq'
 
 import { FundPriceRecord } from '@michchan/fund-price-monitor-lib'

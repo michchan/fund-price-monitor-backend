@@ -1,4 +1,4 @@
-import puppeteer = require('puppeteer')
+import { Page } from 'puppeteer-core'
 
 import {
   FundPriceRecord,
@@ -108,7 +108,7 @@ const getRecords = (
 // =================================== / CLIENT-SIDE CODE ===================================
 
 const evaluateData = async <T extends TRec>(
-  page: puppeteer.Page,
+  page: Page,
   evaluateCallback: (containerSelector: string, clientDataJSON: string) => T[],
   clientData: SerializableClientData
 ): Promise<T[]> => {
@@ -127,7 +127,7 @@ const evaluateData = async <T extends TRec>(
 }
 
 /** The name 'scrapeRecords' is required by scripts/buildScrapers */
-export const scrapeRecords = async (page: puppeteer.Page): Promise<TRec[]> => {
+export const scrapeRecords = async (page: Page): Promise<TRec[]> => {
   const lng = Languages.zh_HK
   await page.goto(getIndexPageUrl(lng))
   return evaluateData(page, getRecords, clientData)

@@ -1,6 +1,6 @@
 import pick from 'lodash/pick'
 import isEqual from 'lodash/isEqual'
-import pipeAsync from 'simply-utils/dist/async/pipeAsync'
+import pipeAsync from 'simply-utils/async/pipeAsync'
 import { FundPriceRecord, FundType, RecordType } from '@michchan/fund-price-monitor-lib'
 
 import queryItemsByCompany from '../io/queryItemsByCompany'

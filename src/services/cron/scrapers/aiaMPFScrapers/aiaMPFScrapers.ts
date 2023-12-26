@@ -1,5 +1,5 @@
-import puppeteer = require('puppeteer')
-import pipeAsync from 'simply-utils/dist/async/pipeAsync'
+import { Page } from 'puppeteer-core'
+import pipeAsync from 'simply-utils/async/pipeAsync'
 import {
   FundPriceRecord,
   CompanyType,
@@ -40,7 +40,7 @@ const fundType = FundType.mpf
 const recordType = RecordType.record
 
 const evaluateData = async <T> (
-  page: puppeteer.Page,
+  page: Page,
   lng: Languages,
   mapRecord: RecordMapper<T>,
 ): Promise<T[]> => {
@@ -71,7 +71,7 @@ const evaluateData = async <T> (
 
 /** The name 'scrapeRecords' is required by scripts/buildScrapers */
 export const scrapeRecords = (
-  page: puppeteer.Page
+  page: Page
 ): Promise<TRec[]> => evaluateData(
   page,
   Languages.zh_HK,
@@ -91,7 +91,7 @@ export const scrapeRecords = (
 )
 
 /** The name 'scrapeDetails' is required by scripts/buildScrapers */
-export const scrapeDetails = async (page: puppeteer.Page): Promise<FundDetails[]> => {
+export const scrapeDetails = async (page: Page): Promise<FundDetails[]> => {
   const batches = await pipeAsync<FundDetails[][]>(
     ...Object.values(Languages).map(lng => async (recordsOfLangs: FundDetails[][] = []) => {
       const recordsPerLang = await evaluateData(page, lng, (
