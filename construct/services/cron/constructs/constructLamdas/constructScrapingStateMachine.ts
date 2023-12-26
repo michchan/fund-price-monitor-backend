@@ -4,7 +4,13 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions'
 import * as sfnTasks from 'aws-cdk-lib/aws-stepfunctions-tasks'
 import * as fs from 'fs'
 import upperFirst from 'lodash/upperFirst'
+
+import env from 'construct/lib/env'
+
 import getDefaultLambdaInput from './getDefaultLambdaInput'
+
+const { DISABLED_SCRAPE_HANDLERS = '' } = env.values
+const isDisabledHandler = (fileName: string): boolean => DISABLED_SCRAPE_HANDLERS.split(',').some(disabledHandlerName => fileName.includes(disabledHandlerName))
 
 // Common lambda configs for scrape handlers
 const getDefaultScrapersInput = () => {
@@ -61,22 +67,22 @@ const constructScrapingHandlers = (
 
   // Handlers for scraping records and saving records
   const scrapeHandlers = handlers
-    .filter(fileName => /^__recordScraper__/i.test(fileName))
+    .filter(fileName => /^__recordScraper__/i.test(fileName) && !isDisabledHandler(fileName))
     .map(createMapper(/^__recordScraper__/i, 'CronRecordScraper'))
 
   /** @DEBUG * Testing handlers for scrapers */
   const testScrapeHandlers = handlers
-    .filter(fileName => /^__testRecordScraper__/i.test(fileName))
+    .filter(fileName => /^__testRecordScraper__/i.test(fileName) && !isDisabledHandler(fileName))
     .map(createTestMapper(/^__testRecordScraper__/i, 'CronTestRecordScraper'))
 
   // Handlers for scraping details
   const detailsScrapeHandlers = handlers
-    .filter(fileName => /^__detailScraper__/i.test(fileName))
+    .filter(fileName => /^__detailScraper__/i.test(fileName) && !isDisabledHandler(fileName))
     .map(createMapper(/^__detailScraper__/i, 'CronDetailsScraper'))
 
   /** @DEBUG * Testing handlers for details scrapers */
   const testDetailsScrapeHandlers = handlers
-    .filter(fileName => /^__testDetailScraper__/i.test(fileName))
+    .filter(fileName => /^__testDetailScraper__/i.test(fileName) && !isDisabledHandler(fileName))
     .map(createTestMapper(/^__testDetailScraper__/i, 'CronTestDetailsScraper'))
 
   return {
