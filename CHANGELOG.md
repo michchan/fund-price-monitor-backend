@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.70.1](https://github.com/michchan/fund-price-monitor-backend/compare/v0.70.0...v0.70.1) (2023-12-28)
+
+
+### Bug Fixes
+
+* all scrapers are disabled ([674992b](https://github.com/michchan/fund-price-monitor-backend/commit/674992be4f131ddd0a3607d19ffe4294d063a148))
+
 ## [0.70.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.69.0...v0.70.0) (2023-12-26)
 
 ## [0.69.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.68.3...v0.69.0) (2023-04-10)
