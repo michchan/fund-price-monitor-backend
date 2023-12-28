@@ -10,7 +10,8 @@ import env from 'construct/lib/env'
 import getDefaultLambdaInput from './getDefaultLambdaInput'
 
 const { DISABLED_SCRAPE_HANDLERS = '' } = env.values
-const isDisabledHandler = (fileName: string): boolean => DISABLED_SCRAPE_HANDLERS.split(',').some(disabledHandlerName => fileName.includes(disabledHandlerName))
+const isDisabledHandler = (fileName: string): boolean => DISABLED_SCRAPE_HANDLERS.split(',')
+  .some(disabledHandlerName => disabledHandlerName.trim() && fileName.includes(disabledHandlerName))
 
 // Common lambda configs for scrape handlers
 const getDefaultScrapersInput = () => {
