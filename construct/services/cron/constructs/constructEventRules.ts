@@ -64,9 +64,9 @@ const constructQuarterlyEventRules = (
   >,
 ) => {
   // Run every END of a quarter
-  // At 15:00 UTC, on the 28th day, in March, June, September and December
+  // At 15:00 UTC, on the 20th day, in March, June, September and December
   const quarterNearEndRule = new events.Rule(scope, 'QuarterNearEndRule', {
-    schedule: events.Schedule.expression('cron(0 15 28 3,6,9,12 ? *)'),
+    schedule: events.Schedule.expression('cron(0 15 20 3,6,9,12 ? *)'),
   })
   quarterNearEndRule.addTarget(new targets.LambdaFunction(createNextQuarterTable))
   quarterNearEndRule.addTarget(new targets.LambdaFunction(notifyQuarterly))
