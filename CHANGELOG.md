@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.71.0](https://github.com/michchan/fund-price-monitor-backend/compare/v0.70.2...v0.71.0) (2024-05-04)
+
+
+### Features
+
+* list single fund records by tenor ([ae0148e](https://github.com/michchan/fund-price-monitor-backend/commit/ae0148e53309eadfb0540e62f99b6f504b0f9e66))
+
 ### [0.70.2](https://github.com/michchan/fund-price-monitor-backend/compare/v0.70.1...v0.70.2) (2024-03-26)
 
 
