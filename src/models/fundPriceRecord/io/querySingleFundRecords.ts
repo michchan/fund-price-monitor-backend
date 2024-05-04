@@ -20,7 +20,7 @@ const EXP_TIME_SK_END = ':timeSK_end' as string
 export type Input = Omit<DocumentClient.QueryInput, 'TableName'>
 export type PartialInput = Partial<Input>
 
-type TVariants = FundPriceRecord | FundPriceChangeRate
+export type TVariants = FundPriceRecord | FundPriceChangeRate
 export type Parser <T> = (attributes: DocumentClient.AttributeMap) => T
 
 export interface Output <T extends TVariants = FundPriceRecord> extends O {

@@ -80,7 +80,7 @@
     "webpack-cli": "^4.3.1"
   },
   "dependencies": {
-    "@michchan/fund-price-monitor-lib": "0.10.0",
+    "@michchan/fund-price-monitor-lib": "0.13.1",
     "@octokit/core": "^3.4.0",
     "axios": "^0.21.1",
     "chrome-aws-lambda": "10.0.0",

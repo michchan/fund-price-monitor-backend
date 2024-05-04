@@ -3,9 +3,8 @@ import { AWSError } from 'aws-sdk'
 import { ListQuartersQueryParams, ListQuartersResponse } from '@michchan/fund-price-monitor-lib'
 
 import createReadResponse from '../helpers/createReadResponse'
-import listAllTables from 'src/lib/AWS/dynamodb/listAllTables'
-import { Quarter } from 'simply-utils/dateTime/getQuarter'
 import validateYearQuarter from '../validators/validateYearQuarter'
+import { listQuarters } from 'src/models/fundPriceRecord/io/listQuarters'
 
 export type Res = ListQuartersResponse
 
@@ -27,12 +26,10 @@ export const handler: APIGatewayProxyHandler = async event => {
     const [year, quarter] = exclusiveStartQuarter?.split('.') ?? []
 
     // Query
-    const { TableNames = [] } = await listAllTables(year, quarter as unknown as Quarter)
+    const quarters = await listQuarters(year, quarter)
 
     return createReadResponse(event, null, {
-      parsedItems: TableNames
-        .map(tableName => (tableName.match(/[0-9]{4}_q[1-4]/)?.shift() ?? '').replace(/_q/i, '.'))
-        .filter(v => !!v),
+      parsedItems: quarters,
     })
   } catch (error) {
     // Send back failed response
