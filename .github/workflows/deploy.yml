@@ -4,8 +4,9 @@ name: CD
 
 # Controls when the action will run. Triggers the workflow on push new tag.
 on:
+  workflow_dispatch:
   push:
-    tags: 
+    tags:
       - v*
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -45,8 +46,8 @@ jobs:
       - name: Setup Node with the right version
         uses: actions/setup-node@v1
         with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "16.x"
+          registry-url: "https://registry.npmjs.org"
 
       # Yarn install
       - run: yarn install --frozen-lockfile
@@ -63,7 +64,7 @@ jobs:
       - name: Build
         run: yarn run build
 
-      # CDK Deploy 
+      # CDK Deploy
       - name: cdk deploy
         run: yarn run deploy
         env:
