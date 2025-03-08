@@ -10,6 +10,8 @@ function constructS3Bucket (scope: Construct) {
     // @TODO: Move to environment variable
     bucketName: 'fundprice.dev',
     publicReadAccess: true,
+    // Allow bucket-level public access
+    blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
     websiteErrorDocument: '404.html',
     websiteIndexDocument: 'index.html',
   })

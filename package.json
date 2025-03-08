@@ -1,6 +1,6 @@
 {
   "name": "fund-price-monitor-backend",
-  "version": "0.72.0",
+  "version": "0.72.1",
   "bin": {
     "fund-price-monitor-backend": "bin/fund-price-monitor-backend.ts"
   },
@@ -60,12 +60,11 @@
     "@types/lodash": "^4.14.167",
     "@types/node": "14.14.20",
     "@types/puppeteer": "5.4.5",
-    "aws-cdk": "2.17.0",
-    "aws-cdk-lib": "2.17.0",
+    "aws-cdk": "2.1003.0",
+    "aws-cdk-lib": "2.182.0",
     "aws-lambda-mock-context": "^3.2.1",
-    "aws-sdk": "2.824.0",
     "concurrently": "^7.6.0",
-    "constructs": "10.0.91",
+    "constructs": "^10.4.2",
     "eslint": "^7.11.0",
     "file-loader": "^6.0.0",
     "jest": "^26.6.1",
@@ -82,7 +81,9 @@
   "dependencies": {
     "@michchan/fund-price-monitor-lib": "0.13.1",
     "@octokit/core": "^3.4.0",
+    "aws-sdk": "^2.1692.0",
     "axios": "^0.21.1",
+    "bufferutil": "^4.0.1",
     "chrome-aws-lambda": "10.0.0",
     "dayjs": "^1.10.5",
     "dotenv": "^8.2.0",
@@ -92,6 +93,7 @@
     "puppeteer": "10.0.0",
     "puppeteer-core": "10.0.0",
     "simply-utils": "0.69.0",
-    "source-map-support": "^0.5.19"
+    "source-map-support": "^0.5.19",
+    "utf-8-validate": "^5.0.2"
   }
 }

@@ -1,5 +1,6 @@
 const fs = require('fs')
 const { createConfig, createBundleAnalyzerPlugin, chromeAWSLambdaRules } = require('@michchan/webpack-config-aws-cdk')
+const { omit } = require('lodash')
 
 require('dotenv').config()
 
@@ -25,5 +26,11 @@ module.exports = fs.readdirSync(SERVICES_PATH_INPUT)
       module: {
         rules: chromeAWSLambdaRules,
       },
+      /**
+       * Aws-sdk v2 is needed to be bundled explicitly on Nodejs 18.x onwards.
+       * Remove this when the project upgrades aws-sdk to v3.
+       * Reference: https://aws.amazon.com/blogs/compute/node-js-18-x-runtime-now-available-in-aws-lambda/
+       */
+      externals: omit(defaultConfig.externals, 'aws-sdk'),
     }
   })

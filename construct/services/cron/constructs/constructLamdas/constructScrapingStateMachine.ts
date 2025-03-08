@@ -105,7 +105,7 @@ const constructStateMachine = (
     const id = `${idPrefix}Task${i}`
     return new sfnTasks.LambdaInvoke(scope, id, { lambdaFunction: scraper })
   })
-  const definition = tasks.reduce<sfn.Chain>(
+  const chainable = tasks.reduce<sfn.Chain>(
     (chain, task, i, arr) => chain
       .next(task)
       .next(new sfn.Wait(scope, `${idPrefix}WaitTask${i}`, {
@@ -118,7 +118,9 @@ const constructStateMachine = (
       })),
     startTask as unknown as sfn.Chain
   )
-  const stateMachine = new sfn.StateMachine(scope, `${idPrefix}StateMachine`, { definition })
+  const stateMachine = new sfn.StateMachine(scope, `${idPrefix}StateMachine`, {
+    definitionBody: sfn.DefinitionBody.fromChainable(chainable),
+  })
   // Grant execution
   handlers.forEach(scraper => scraper.grantInvoke(stateMachine.role))
   return stateMachine
