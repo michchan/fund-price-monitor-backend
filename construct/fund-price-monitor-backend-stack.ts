@@ -39,11 +39,11 @@ const bindRuntimeEnvVars = (handlers: lambda.Function[]): void => {
 
 export class FundPriceMonitorBackendStack extends Stack {
   constructor (scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props)
+
     // PAUSE Project
     // eslint-disable-next-line no-constructor-return
     return
-
-    super(scope, id, props)
 
     // Initialize web deployment service
     const { handlers: webDeploymentHandlers } = webDeployment.construct(this)
