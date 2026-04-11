@@ -1,9 +1,7 @@
 {
   "name": "fund-price-monitor-backend",
-  "version": "0.74.1",
-  "bin": {
-    "fund-price-monitor-backend": "bin/fund-price-monitor-backend.ts"
-  },
+  "version": "0.74.2",
+  "bin": "bin/fund-price-monitor-backend.ts",
   "engines": {
     "node": ">=16.0.0",
     "npm": "please-use-yarn",
